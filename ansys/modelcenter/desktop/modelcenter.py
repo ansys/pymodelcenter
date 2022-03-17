@@ -7,7 +7,7 @@ class ModelCenter:
     """Manages the main ModelCenter Desktop application.
 
     Creating an instance of this object will start an instance of ModelCenter Desktop in batch mode.
-    LTTODO: add more notes on usage as the api is filled out. See the COM api documentation for
+    LTTODO: add more notes on usage as the api is filled out. See the COM api documentation for /
         some of the examples we probably want.
     """
 
