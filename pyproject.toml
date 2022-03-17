@@ -3,10 +3,10 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "ansys-modelcenter-api"
+name = "ansys-modelcenter-desktop"
 version = "0.1.0"
 
-description = "Python ModelCenter API."
+description = "Python ModelCenter Desktop API."
 readme = "README.rst"
 homepage = "https://github.com/pyansys/pymodelcenter/"
 

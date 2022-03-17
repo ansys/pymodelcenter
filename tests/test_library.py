@@ -21,7 +21,7 @@ With coverage.
 
 .. code::
 
-   $ pytest --cov ansys.modelcenter.api
+   $ pytest --cov ansys.modelcenter.desktop
 
     ============================= test session starts =============================
     platform linux -- Python 3.8.10, pytest-6.2.5, py-1.10.0, pluggy-1.0.0
@@ -49,12 +49,12 @@ With coverage.
 
 import pytest
 
-from ansys.modelcenter import api
+from ansys.modelcenter import desktop
 
 # this is a fixture that simplifies reuse of common components
 @pytest.fixture
 def my_complex():
-    return api.Complex(1, -2)
+    return desktop.Complex(1, -2)
 
 @pytest.fixture
 def py_complex():
@@ -66,7 +66,7 @@ def py_complex():
 def test_add(a, b):
     a = 1
     b = 3
-    assert api.add(a, b) == a + b
+    assert desktop.add(a, b) == a + b
 
 
 def test_complex_abs(my_complex, py_complex):

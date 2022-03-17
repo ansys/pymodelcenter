@@ -6,14 +6,14 @@ For example, if you want to avoid this behavior:
 
 .. code::
 
-   >>> from ansys.modelcenter.api.module import add
+   >>> from ansys.modelcenter.desktop.module import add
 
 Then add the import within this module to enable:
 
 .. code::
 
-   >>> from ansys.modelcenter import api
-   >>> api.add(1, 2)
+   >>> from ansys.modelcenter import desktop
+   >>> desktop.add(1, 2)
 
 .. note::
    The version is obtained from the installation metadata. During development,
@@ -28,5 +28,5 @@ except ModuleNotFoundError:
 
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
 
-from ansys.modelcenter.api.module import add
-from ansys.modelcenter.api.other_module import Complex
+from ansys.modelcenter.desktop.module import add
+from ansys.modelcenter.desktop.other_module import Complex

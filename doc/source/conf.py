@@ -3,10 +3,10 @@ from datetime import datetime
 
 from pyansys_sphinx_theme import pyansys_logo_black
 
-from ansys.modelcenter.api import __version__
+from ansys.modelcenter.desktop import __version__
 
 # Project information
-project = 'ansys-modelcenter-api'
+project = 'ansys-modelcenter-desktop'
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "Ansys Inc."
 release = version = __version__

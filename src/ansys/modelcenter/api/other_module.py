@@ -20,8 +20,8 @@ class ExampleClass:
     --------
     An example of how to initialize this class should be given.
 
-    >>> from ansys.modelcenter import api
-    >>> example = api.ExampleClass('mystr', ['apple', 'orange'], 3)
+    >>> from ansys.modelcenter import desktop
+    >>> example = desktop.ExampleClass('mystr', ['apple', 'orange'], 3)
 
     """
 
@@ -44,8 +44,8 @@ class ExampleClass:
 
         Examples
         --------
-        >>> from ansys.modelcenter import api
-        >>> example = api.ExampleClass('mystr', ['apple', 'orange'], 3)
+        >>> from ansys.modelcenter import desktop
+        >>> example = desktop.ExampleClass('mystr', ['apple', 'orange'], 3)
         >>> example.readonly_property
         "readonly_property"
 
@@ -63,8 +63,8 @@ class ExampleClass:
 
         Examples
         --------
-        >>> from ansys.modelcenter import api
-        >>> example = api.ExampleClass('mystr', ['apple', 'orange'], 3)
+        >>> from ansys.modelcenter import desktop
+        >>> example = desktop.ExampleClass('mystr', ['apple', 'orange'], 3)
         >>> example.readwrite_property
         "readwrite_property"
 
@@ -100,8 +100,8 @@ class ExampleClass:
 
         Examples
         --------
-        >>> from ansys.modelcenter import api
-        >>> example = api.ExampleClass('mystr', ['apple', 'orange'], 3)
+        >>> from ansys.modelcenter import desktop
+        >>> example = desktop.ExampleClass('mystr', ['apple', 'orange'], 3)
         >>> example.example_method('foo', 'bar')
         True
 
@@ -146,8 +146,8 @@ class Complex:
 
     Examples
     --------
-    >>> from ansys.modelcenter import api
-    >>> my_num = api.Complex(real=1, imag=-1.0)
+    >>> from ansys.modelcenter import desktop
+    >>> my_num = desktop.Complex(real=1, imag=-1.0)
     >>> my_num
     (1.0 + 1.0j)
 
@@ -163,8 +163,8 @@ class Complex:
 
         Examples
         --------
-        >>> from ansys.modelcenter import api
-        >>> my_num = api.Complex(real=1, imag=-1.0)
+        >>> from ansys.modelcenter import desktop
+        >>> my_num = desktop.Complex(real=1, imag=-1.0)
         >>> my_num.real
         1.0
 
@@ -181,8 +181,8 @@ class Complex:
 
         Examples
         --------
-        >>> from ansys.modelcenter import api
-        >>> my_num = api.Complex(real=1, imag=-1.0)
+        >>> from ansys.modelcenter import desktop
+        >>> my_num = desktop.Complex(real=1, imag=-1.0)
         >>> my_num.imag
         -1.0
 
@@ -220,8 +220,8 @@ class Complex:
 
         Examples
         --------
-        >>> from ansys.modelcenter import api
-        >>> my_num = api.Complex(real=1, imag=1.0)
+        >>> from ansys.modelcenter import desktop
+        >>> my_num = desktop.Complex(real=1, imag=1.0)
         >>> my_num.abs
         """
         return (self._real**2 + self._imag**2)**0.5

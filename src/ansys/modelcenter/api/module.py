@@ -5,8 +5,8 @@ can span multiple lines and include examples.
 
 Examples
 --------
->>> from ansys.modelcenter import api
->>> api.add(1, 2)
+>>> from ansys.modelcenter import desktop
+>>> desktop.add(1, 2)
 3
 
 """
@@ -40,13 +40,13 @@ def add(arg1, arg2):
 
     Examples
     --------
-    >>> from ansys.modelcenter.api import add
+    >>> from ansys.modelcenter.desktop import add
     >>> add(1, 2)
     3
 
     See Also
     --------
-    :class:`ExampleClass <ansys.modelcenter.api.ExampleClass>`
+    :class:`ExampleClass <ansys.modelcenter.desktop.ExampleClass>`
 
     """
     return arg1 + arg2
