@@ -3,12 +3,12 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "ansys-product-library"
-version = "0.1.0"
+name = "ansys-modelcenter-desktop"
+version = "22.0.0"
 
-description = "Template PyAnsys library"
+description = "Python API for using ModelCenter Desktop"
 readme = "README.rst"
-homepage = "https://github.com/pyansys/template/"
+homepage = "https://github.com/pyansys/modelcenter/"
 
 authors = ["Ansys, Inc."] # this is required
 maintainers = ["PyAnsys developers <pyansys.support@ansys.com>"] # You can change the name. The email group works.
@@ -23,12 +23,13 @@ classifiers = [
 ]
 
 packages = [
-    { include = "ansys", from = "src" },
+    { include = "ansys" },
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7" # Plan on supporting only the currently supported versions of Python
+python = ">=3.7,<3.11"
 importlib-metadata = {version = "^4.0", python = "<3.8"}
+numpy = "^1.19.5"
 
 Sphinx =  {version="^4.4", optional=true}
 numpydoc =  {version="^1.2", optional=true}
@@ -40,8 +41,13 @@ flake8 = {version="^3.9", optional=true}
 
 pytest = {version="^7.0", optional=true}
 pytest-cov = {version="^3.0", optional=true}
+pre-commit = {version="^2.17.0", optional=true}
+mypy = {version="^0.940", optional=true}
+pywin32 = ">=303"
 
 [tool.poetry.extras]
+dev = ["Sphinx", "numpydoc", "pyansys_sphinx_theme", "sphinx-copybutton", "codespell",
+    "flake8", "pytest", "pytest-cov", "pre-commit", "mypy"]
 docs = ["Sphinx", "numpydoc", "pyansys_sphinx_theme", "sphinx-copybutton"]
 style = ["codespell", "flake8"]
 test = ["pytest", "pytest-cov"]
