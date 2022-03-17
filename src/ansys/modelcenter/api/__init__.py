@@ -28,5 +28,5 @@ except ModuleNotFoundError:
 
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
 
-from ansys.product.library.module import add
-from ansys.product.library.other_module import Complex
+from ansys.modelcenter.api.module import add
+from ansys.modelcenter.api.other_module import Complex
