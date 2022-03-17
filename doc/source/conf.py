@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pyansys_sphinx_theme import pyansys_logo_black
 
-from ansys.product.library import __version__
+from ansys.modelcenter.api import __version__
 
 # Project information
 project = 'ansys-modelcenter-api'

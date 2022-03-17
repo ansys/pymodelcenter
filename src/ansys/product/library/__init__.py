@@ -6,14 +6,14 @@ For example, if you want to avoid this behavior:
 
 .. code::
 
-   >>> from ansys.product.library.module import add
+   >>> from ansys.modelcenter.api.module import add
 
 Then add the import within this module to enable:
 
 .. code::
 
-   >>> from ansys.product import library
-   >>> library.add(1, 2)
+   >>> from ansys.modelcenter import api
+   >>> api.add(1, 2)
 
 .. note::
    The version is obtained from the installation metadata. During development,

@@ -21,7 +21,7 @@ With coverage.
 
 .. code::
 
-   $ pytest --cov ansys.product.library
+   $ pytest --cov ansys.modelcenter.api
 
     ============================= test session starts =============================
     platform linux -- Python 3.8.10, pytest-6.2.5, py-1.10.0, pluggy-1.0.0
