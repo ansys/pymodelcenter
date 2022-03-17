@@ -7,7 +7,7 @@ name = "ansys-modelcenter-api"
 version = "0.1.0"
 
 description = "Python ModelCenter API."
-readme = "README.md"
+readme = "README.rst"
 homepage = "https://github.com/pyansys/pymodelcenter/"
 
 authors = ["Ansys, Inc."] # this is required
