@@ -19,9 +19,10 @@ class ModelCenter:
         """
         The version of the ModelCenter Desktop application being used.
         ModelCenter versions are in the form ``1.2.3`` where
-            -1 is the major version,
-            -2 is the minor version, and
-            -3 is the patch version
+
+        * -1 is the major version,
+        * -2 is the minor version, and
+        * -3 is the patch version
         """
         version = {
             "major": self._instance.version(0),
