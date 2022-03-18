@@ -72,7 +72,7 @@ jobs:
 
   docs:
     name: Build Documentation
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -90,8 +90,9 @@ jobs:
 
       - name: Build PDF Documentation
         run: |
-          sudo apt update
-          sudo apt-get install -y texlive-latex-extra latexmk
+          # sudo apt update
+          # sudo apt-cyg install -y texlive-latex-extra latexmk
+          choco install texlive --params="'/collections:latex /scheme:full /extraPackages:latexmk'" 
           make -C doc latexpdf
 
       - name: Upload HTML Documentation
