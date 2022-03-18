@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ansys-modelcenter-desktop"
-version = "22.0.0"
+version = "0.1.dev0"
 
 description = "Python API for using ModelCenter Desktop"
 readme = "README.rst"
