@@ -21,7 +21,7 @@ With coverage.
 
 .. code::
 
-   $ pytest --cov ansys.product.library
+   $ pytest --cov ansys.modelcenter.desktop
 
     ============================= test session starts =============================
     platform linux -- Python 3.8.10, pytest-6.2.5, py-1.10.0, pluggy-1.0.0
@@ -46,28 +46,32 @@ With coverage.
 
 
 """
+# Deleted the sample code this used, but keeping it here for reference when we write our own tests.
+# import pytest
+#
+# from ansys.product import library
+#
+# # this is a fixture that simplifies reuse of common components
+# @pytest.fixture
+# def my_complex():
+#     return library.Complex(1, -2)
+#
+# @pytest.fixture
+# def py_complex():
+#     return 1 - 2j
+#
+#
+# @pytest.mark.parametrize('a', range(1, 3))
+# @pytest.mark.parametrize('b', range(1, 4))
+# def test_add(a, b):
+#     a = 1
+#     b = 3
+#     assert library.add(a, b) == a + b
+#
+#
+# def test_complex_abs(my_complex, py_complex):
+#     assert my_complex.abs == abs(py_complex)
 
-import pytest
 
-from ansys.product import library
-
-# this is a fixture that simplifies reuse of common components
-@pytest.fixture
-def my_complex():
-    return library.Complex(1, -2)
-
-@pytest.fixture
-def py_complex():
-    return 1 - 2j
-
-
-@pytest.mark.parametrize('a', range(1, 3))
-@pytest.mark.parametrize('b', range(1, 4))
-def test_add(a, b):
-    a = 1
-    b = 3
-    assert library.add(a, b) == a + b
-
-
-def test_complex_abs(my_complex, py_complex):
-    assert my_complex.abs == abs(py_complex)
+def test_placeholder():
+    assert True
