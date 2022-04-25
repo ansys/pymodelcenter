@@ -1,6 +1,7 @@
 from string import Template
-import win32com.client as comclient
-from ansys.modelcenter.desktop.generated import modelcentertypelibrary as mclib
+import clr
+clr.AddReference("Phoenix.Mock.v45")
+from Phoenix.Mock import MockModelCenter
 
 
 class ModelCenter:
@@ -12,7 +13,7 @@ class ModelCenter:
     """
 
     def __init__(self):
-        self._instance = mclib.IModelCenter = comclient.Dispatch(mclib.Application.CLSID)
+        self._instance = MockModelCenter()
 
     @property
     def version(self) -> str:
@@ -25,8 +26,8 @@ class ModelCenter:
         * -3 is the patch version
         """
         version = {
-            "major": self._instance.version(0),
-            "minor": self._instance.version(1),
-            "patch": self._instance.version(2)
+            "major": self._instance.get_version(0),
+            "minor": self._instance.get_version(1),
+            "patch": self._instance.get_version(2)
         }
         return Template("${major}.${minor}.${patch}").safe_substitute(version)
