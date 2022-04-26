@@ -72,7 +72,7 @@ class Workflow:
         pass
 
     # IDispatch* getModel();
-    def get_model(self) -> object:  # IAssembly
+    def get_assembly(self) -> object:  # IAssembly
         pass
 
     # VARIANT getValueAbsolute(BSTR varName);
