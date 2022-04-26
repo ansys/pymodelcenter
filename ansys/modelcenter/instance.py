@@ -43,7 +43,7 @@ class Instance:
         pass
 
     # void closeModel();
-    def close_mode(self) -> None:
+    def close_workflow(self) -> None:
         pass
 
     # IDispatch* getVariable(BSTR name);
