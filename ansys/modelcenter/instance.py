@@ -9,7 +9,7 @@ class Instance:
 
     # BSTR modelFileName;
     @property
-    def model_file_name(self) -> str:
+    def workflow_file_name(self) -> str:
         pass
 
     # void setValue(BSTR varName, BSTR value);
