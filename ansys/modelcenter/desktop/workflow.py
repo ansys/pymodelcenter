@@ -72,7 +72,7 @@ class Workflow:
         pass
 
     # IDispatch* getModel();
-    def get_assembly(self) -> object:  # IAssembly
+    def get_top_assembly(self) -> object:  # IAssembly
         pass
 
     # VARIANT getValueAbsolute(BSTR varName);
@@ -149,7 +149,7 @@ class Workflow:
         pass
 
     # IDispatch* getAssembly(BSTR name);
-    def get_assembly(self, name: str) -> object:    # IAsempty
+    def get_assembly(self, name: str) -> object:    # IAssembly
         pass
 
     # IDispatch* createAndInitComponent(

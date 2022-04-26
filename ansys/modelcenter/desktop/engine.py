@@ -1,3 +1,6 @@
+import ansys.modelcenter.desktop.workflow as workflow
+
+
 class Engine:
     def __init__(self):
         pass
@@ -13,11 +16,11 @@ class Engine:
         pass
 
     # void newModel([optional]VARIANT modelType);
-    def new_workflow(self, workflow_type: object = None) -> Workflow:
+    def new_workflow(self, workflow_type: object = None) -> workflow.Workflow:
         pass
 
     # void loadModel(BSTR fileName, [optional]VARIANT onConnectError);
-    def load_workflow(self, file_name: str, on_connect_error: object) -> Workflow:
+    def load_workflow(self, file_name: str, on_connect_error: object) -> workflow.Workflow:
         pass
 
     # IDispatch* getFormatter(BSTR format);
