@@ -112,7 +112,7 @@ class Instance:
         pass
 
     # BSTR getModelUUID();
-    def get_module_uuid(self) -> str:
+    def get_workflow_uuid(self) -> str:
         pass
 
     # void halt();
