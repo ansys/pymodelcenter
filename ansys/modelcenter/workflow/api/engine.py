@@ -7,8 +7,15 @@ from Phoenix.Mock import MockModelCenter
 
 
 class WorkflowType(Enum):
+    """Enumeration of the types of workflows that can be created."""
     DATA = "dataModel",
     PROCESS = "processModel"
+
+
+class OnConnectionErrorMode(Enum):
+    ERROR = 3,
+    IGNORE = 1,
+    DIALOG = -1
 
 
 class Engine:
@@ -25,11 +32,38 @@ class Engine:
     def process_id(self) -> int:
         pass
 
-    def new_workflow(self, workflow_type: object = None) -> Workflow:
-        pass
+    def new_workflow(self, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
+        """
+        Create a new workflow.
 
-    def load_workflow(self, file_name: str, on_connect_error: object) -> Workflow:
-        self._instance.loadModel(file_name, on_connect_error)
+        Parameters
+        ----------
+        workflow_type The type of workflow to create. Defaults to a data
+        workflow.
+
+        Returns
+        -------
+        A new Workflow instance.
+        """
+        self._instance.newModel(workflow_type.value)
+        return Workflow()
+
+    def load_workflow(self, file_name: str,
+                      on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR) \
+            -> Workflow:
+        """
+        Load a saved workflow from a file.
+
+        Parameters
+        ----------
+        file_name The path to the file to load.
+        on_connect_error What to do in the event of an error.
+
+        Returns
+        -------
+        A new Workflow instance.
+        """
+        self._instance.loadModel(file_name, on_connect_error.value)
         return Workflow()
 
     # IDispatch* getFormatter(BSTR format);
