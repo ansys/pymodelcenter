@@ -61,5 +61,5 @@ class Engine:
         pass
 
     # void saveTradeStudy(BSTR uri, int format, LPDISPATCH dataExplorer);
-    def save_trade_stud(self, uri: str, format_: int, data_explorer: object) -> None:
+    def save_trade_study(self, uri: str, format_: int, data_explorer: object) -> None:
         pass
