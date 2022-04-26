@@ -76,7 +76,7 @@ class Instance:
         pass
 
     # VARIANT getValueAbsolute(BSTR varName);
-    def get_value_absolut(self, var_name: str) -> object:    # IVariableValue:
+    def get_value_absolute(self, var_name: str) -> object:    # IVariableValue:
         pass
 
     # void setScheduler(BSTR scheduler);
