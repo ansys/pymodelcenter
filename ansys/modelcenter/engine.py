@@ -13,7 +13,7 @@ class Engine:
         pass
 
     # void newModel([optional]VARIANT modelType);
-    def new_model(self, model_type: object = None) -> None:
+    def new_workflow(self, workflow_type: object = None) -> Workflow:
         pass
 
     # void loadModel(BSTR fileName, [optional]VARIANT onConnectError);
