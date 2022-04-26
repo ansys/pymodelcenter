@@ -1,12 +1,16 @@
 """Definition of Engine and associated classes."""
+from abc import ABC
 from enum import Enum
+from overrides import overrides
 
 import clr
+from numpy import float64, int64
 
+from .iformat import IFormat
 from .workflow import Workflow
 
 clr.AddReference("Phoenix.Mock.v45")
-from Phoenix.Mock import MockModelCenter
+from Phoenix.Mock import MockModelCenter, MockFormatter
 
 
 class WorkflowType(Enum):
@@ -80,21 +84,105 @@ class Engine:
         self._instance.loadModel(file_name, on_connect_error.value)
         return Workflow()
 
-    # IDispatch* getFormatter(BSTR format);
-    def get_formatter(self, format_: str) -> object:     # IPHXFormat
-        pass
+    def get_formatter(self, fmt: str) -> IFormat:
+        """
+        Creates an instance of a formatter that can be used to format \
+        numbers to and from a particular string style.
 
-    # void setUserName(BSTR userName);
+        See documentation on IFormat.set_format for more information on
+        available styles.
+
+        Parameters
+        ----------
+        fmt Specified string format for the IFormat object.
+
+        Returns
+        -------
+        An IFormat object that formats in the given style.
+        """
+
+        class MockFormatWrapper(IFormat):
+
+            def __init__(self, instance: MockFormatter):
+                """Initializer."""
+                self._instance = instance
+
+            @overrides
+            def get_format(self) -> str:
+                return self._instance.getFormat()
+
+            @overrides
+            def set_format(self, fmt: str) -> None:
+                raise NotImplementedError
+
+            @overrides
+            def string_to_integer(self, string: str) -> int64:
+                raise NotImplementedError
+
+            @overrides
+            def string_to_real(self, string: str) -> float64:
+                raise NotImplementedError
+
+            @overrides
+            def integer_to_string(self, integer: int64) -> str:
+                raise NotImplementedError
+
+            @overrides
+            def real_to_string(self, real: float64) -> str:
+                raise NotImplementedError
+
+            @overrides
+            def string_to_string(self, string: str) -> str:
+                raise NotImplementedError
+
+            @overrides
+            def integer_to_editable_string(self, integer: int64) -> str:
+                raise NotImplementedError
+
+            @overrides
+            def real_to_editable_string(self, real: float64) -> str:
+                raise NotImplementedError
+
+        formatter: IFormat = MockFormatWrapper(self._instance.getFormatter(fmt))
+        return formatter
+
     def set_user_name(self, user_name: str) -> None:
-        pass
+        """
+        Set the username used for authentication.
 
-    # void setPassword(BSTR password);
+        Parameters
+        ----------
+        user_name The username.
+        """
+        self._instance.setUserName(user_name)
+
     def set_password(self, password: str) -> None:
-        pass
+        """
+        Set the password used for authentication.
 
-    # VARIANT getPreference(BSTR pref);
-    def get_preference(self, pref: str) -> object:
-        pass
+        Parameters
+        ----------
+        user_name The password.
+        """
+        self._instance.setPassword(password)
+
+    def get_preference(self, pref: str) -> [bool, int, float, str]:
+        """
+        Get the value of a preference.
+
+        Preferences control how the engine behaves in various ways.
+        The value returned may be boolean, integer, real, or string
+        typed.
+
+        Parameters
+        ----------
+        pref The name of the preference for which to return the value.
+
+        Returns
+        -------
+        The value of the given preference.
+        """
+        return self._instance.getPreference(pref)
 
     # long getNumUnitCategories();
     def get_num_unit_categories(self) -> int:
