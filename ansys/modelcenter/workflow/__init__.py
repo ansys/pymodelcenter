@@ -24,4 +24,3 @@ except ModuleNotFoundError:
 
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
 
-from ansys.modelcenter.desktop.modelcenter import ModelCenter
