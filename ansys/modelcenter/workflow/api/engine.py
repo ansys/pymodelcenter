@@ -6,6 +6,7 @@ import clr
 from numpy import float64, int64
 from overrides import overrides
 
+from .i18n import i18n
 from .iformat import IFormat
 from .workflow import Workflow
 
@@ -39,6 +40,7 @@ class Engine:
     def __init__(self):
         """Initialize a new Engine instance."""
         self._instance = MockModelCenter()
+        self._workflow: Union[Workflow, None] = None
 
     # BOOL IsInteractive;
     @property
@@ -63,8 +65,13 @@ class Engine:
         -------
         A new Workflow instance.
         """
-        self._instance.newModel(workflow_type.value)
-        return Workflow()
+        if self._workflow is not None:
+            msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
+            raise Exception(msg)
+        else:
+            self._instance.newModel(workflow_type.value)
+            self._workflow = Workflow()
+            return self._workflow
 
     def load_workflow(self, file_name: str,
                       on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR) \
@@ -81,8 +88,13 @@ class Engine:
         -------
         A new Workflow instance.
         """
-        self._instance.loadModel(file_name, on_connect_error.value)
-        return Workflow()
+        if self._workflow is not None:
+            msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
+            raise Exception(msg)
+        else:
+            self._instance.loadModel(file_name, on_connect_error.value)
+            self._workflow = Workflow()
+            return self._workflow
 
     def get_formatter(self, fmt: str) -> IFormat:
         """

@@ -30,6 +30,26 @@ def test_new_workflow(workflow_type: mcapi.WorkflowType) -> None:
     assert engine._instance.getCallCount("newModel") == 1
 
 
+def test_new_workflow_with_existing() -> None:
+    """
+    Verify that new_workflow throws an appropriate exception when an \
+    existing Workflow is not closed beforehand.
+    """
+
+    # Setup
+    engine = mcapi.Engine()
+    result: mcapi.Workflow = engine.new_workflow()
+
+    # SUT
+    with pytest.raises(Exception) as except_info:
+        engine.new_workflow()
+
+    # Verification
+    assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "\
+                                        "Close the current Workflow before loading or creating a "\
+                                        "new one."
+
+
 @pytest.mark.parametrize(
     "path, error",
     [
@@ -56,6 +76,26 @@ def test_load_workflow(path: str, error: mcapi.OnConnectionErrorMode) -> None:
     # Verification
     assert isinstance(result, mcapi.Workflow)
     assert engine._instance.getCallCount("loadModel") == 1
+
+
+def test_load_workflow_existing() -> None:
+    """
+    Verify that load_workflow throws an appropriate exception when an \
+    existing Workflow is not closed beforehand.
+    """
+
+    # Setup
+    engine = mcapi.Engine()
+    result: mcapi.Workflow = engine.new_workflow()
+
+    # SUT
+    with pytest.raises(Exception) as except_info:
+        engine.load_workflow("", mcapi.OnConnectionErrorMode.ERROR)
+
+    # Verification
+    assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. " \
+                                        "Close the current Workflow before loading or creating a " \
+                                        "new one."
 
 
 @pytest.mark.parametrize(
