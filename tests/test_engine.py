@@ -34,3 +34,18 @@ def test_is_interactive(actual_value: int, expected_result: bool) -> None:
 
     # Verify
     assert result == expected_result
+
+
+def test_process_id() -> None:
+    # Setup
+    # Construct a mock MC.
+    mock_mc: Any = MockModelCenter()
+    # Construct an instance of the API adaptor.
+    sut: Engine = Engine(mock_mc)
+    # The mock contains a hardcoded implementation for the tested method.
+
+    # Execute
+    result: int = sut.process_id
+
+    # Verify
+    assert result == 4294967290

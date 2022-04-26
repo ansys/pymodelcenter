@@ -25,7 +25,7 @@ class Engine:
     # unsigned long ProcessID;
     @property
     def process_id(self) -> int:
-        pass
+        return int(self.__modelcenter.ProcessID)
 
     # void newModel([optional]VARIANT modelType);
     def new_workflow(self, workflow_type: object = None) -> Workflow:
