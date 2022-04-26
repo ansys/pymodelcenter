@@ -20,5 +20,5 @@ class UIConfigureInstance:
         pass
 
     # AssemblyStyle getAssemblyStyle(BSTR assemblyName, int *width, int *height);
-    def get_assembly_style(self, assembly_name) -> Tuple[int, int]:
+    def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         pass
