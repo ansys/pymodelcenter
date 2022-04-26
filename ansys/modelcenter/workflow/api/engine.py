@@ -1,25 +1,39 @@
+"""Definition of Engine and associated classes."""
 from enum import Enum
 
-from .workflow import Workflow
 import clr
+
+from .workflow import Workflow
+
 clr.AddReference("Phoenix.Mock.v45")
 from Phoenix.Mock import MockModelCenter
 
 
 class WorkflowType(Enum):
     """Enumeration of the types of workflows that can be created."""
+
     DATA = "dataModel",
+    """Legacy style workflow where execution flow is determined from
+    links between components and an execution strategy."""
     PROCESS = "processModel"
+    """Modern style workflow where execution flow is explicitly designed
+    by the user using flow components."""
 
 
 class OnConnectionErrorMode(Enum):
+    """Enumeration of actions to take on connection error."""
+
     ERROR = 3,
+    """Abort loading and throw the error back to the caller."""
     IGNORE = 1,
+    """Ignore the error and continue loading."""
     DIALOG = -1
+    """(UI mode only) Show an error dialog."""
 
 
 class Engine:
     def __init__(self):
+        """Initialize a new Engine instance."""
         self._instance = MockModelCenter()
 
     # BOOL IsInteractive;
