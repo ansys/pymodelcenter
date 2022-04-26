@@ -39,7 +39,7 @@ class Instance:
         pass
 
     # void saveModelAs(BSTR fileName);
-    def save_model_as(self, file_name: str) -> None:
+    def save_workflow_as(self, file_name: str) -> None:
         pass
 
     # void closeModel();
