@@ -1,7 +1,7 @@
 from typing import Tuple
 
 
-class UIConfigureInstance:
+class UIConfigureWorkflow:
     """
     Collection of methods that can change UI related configuration on
     an instance, but does not require an active UI to operate.
