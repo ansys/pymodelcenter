@@ -1,14 +1,26 @@
+# Do not let isort move this somewhere else. It must be imported before attempting to import
+# the Mocks assembly.
+import clr
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+
 from ansys.modelcenter.workflow.api.workflow import Workflow
+from typing import Any
 
 
 class Engine:
-    def __init__(self):
-        pass
+    def __init__(self, modelcenter: Any):
+        """
+        Create a new instance of the Engine API.
+        """
+
+        # TODO: Can we get mypy to check our calls to the MC object somehow?
+        self.__modelcenter: Any = modelcenter
 
     # BOOL IsInteractive;
     @property
     def is_interactive(self) -> bool:
-        pass
+        # IsInteractive is an int property on the interface for COM reasons.
+        return bool(self.__modelcenter.IsInteractive)
 
     # unsigned long ProcessID;
     @property
