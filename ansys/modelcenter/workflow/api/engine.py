@@ -1,16 +1,16 @@
 """Definition of Engine and associated classes."""
-from abc import ABC
 from enum import Enum
-from overrides import overrides
+from typing import Union
 
 import clr
 from numpy import float64, int64
+from overrides import overrides
 
 from .iformat import IFormat
 from .workflow import Workflow
 
 clr.AddReference("Phoenix.Mock.v45")
-from Phoenix.Mock import MockModelCenter, MockFormatter
+from Phoenix.Mock import MockFormatter, MockModelCenter
 
 
 class WorkflowType(Enum):
@@ -86,7 +86,7 @@ class Engine:
 
     def get_formatter(self, fmt: str) -> IFormat:
         """
-        Creates an instance of a formatter that can be used to format \
+        Create an instance of a formatter that can be used to format \
         numbers to and from a particular string style.
 
         See documentation on IFormat.set_format for more information on
@@ -104,7 +104,7 @@ class Engine:
         class MockFormatWrapper(IFormat):
 
             def __init__(self, instance: MockFormatter):
-                """Initializer."""
+                """Initialize."""
                 self._instance = instance
 
             @overrides
@@ -166,7 +166,7 @@ class Engine:
         """
         self._instance.setPassword(password)
 
-    def get_preference(self, pref: str) -> [bool, int, float, str]:
+    def get_preference(self, pref: str) -> Union[bool, int, float, str]:
         """
         Get the value of a preference.
 

@@ -1,6 +1,7 @@
 """Definition of IFormat."""
 from abc import ABC, abstractmethod
-from numpy import int64, float64
+
+from numpy import float64, int64
 
 
 class IFormat(ABC):
