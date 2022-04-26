@@ -43,3 +43,6 @@ test-output.xml
 .\#*
 /.ipynb_checkpoints
 
+# PyCharm user config & storage
+.idea
+
