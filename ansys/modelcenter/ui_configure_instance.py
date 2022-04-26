@@ -1,4 +1,7 @@
-class UIControlInstance:
+from typing import Tuple
+
+
+class UIConfigureInstance:
     """
     Collection of methods that can change UI related configuration on
     an instance, but does not require an active UI to operate.
@@ -17,5 +20,5 @@ class UIControlInstance:
         pass
 
     # AssemblyStyle getAssemblyStyle(BSTR assemblyName, int *width, int *height);
-    def get_assembly_style(self, assembly_name) -> tuple[int, int]:
+    def get_assembly_style(self, assembly_name) -> Tuple[int, int]:
         pass
