@@ -1,5 +1,5 @@
 """
-Ansys ModelCenter Desktop
+Ansys ModelCenter Workflow
 ----------------------------
 
 Python interface for automating ModelCenter Desktop.

@@ -10,6 +10,6 @@ automatically generate class and method documentation.
 .. autosummary::
    :toctree: _autosummary/
 
-   ansys.modelcenter.desktop.ModelCenter
+   ansys.modelcenter.workflow.desktop.ModelCenter
 
 Note how each method or attribute has its own page.
