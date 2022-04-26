@@ -1,6 +1,6 @@
 from string import Template
 import win32com.client as comclient
-from ansys.modelcenter.desktop.generated import modelcentertypelibrary as mclib
+from ansys.modelcenter.workflow.desktop.generated import modelcentertypelibrary as mclib
 
 
 class ModelCenter:

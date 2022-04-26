@@ -71,10 +71,6 @@ class Workflow:
     def get_halt_status(self) -> bool:
         pass
 
-    # IDispatch* getModel();
-    def get_top_assembly(self) -> object:  # IAssembly
-        pass
-
     # VARIANT getValueAbsolute(BSTR varName);
     def get_value_absolute(self, var_name: str) -> object:    # IVariableValue:
         pass
@@ -148,8 +144,10 @@ class Workflow:
     def set_xml_extension(self, xml: str) -> None:
         pass
 
+    # IDispatch* getModel();
     # IDispatch* getAssembly(BSTR name);
-    def get_assembly(self, name: str) -> object:    # IAssembly
+    def get_assembly(self, name: str = None) -> object:    # IAssembly
+        """Gets the named assembly or the top level assembly."""
         pass
 
     # IDispatch* createAndInitComponent(
