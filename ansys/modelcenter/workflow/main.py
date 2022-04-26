@@ -1,6 +1,6 @@
 # Copyright (c) 2022, Ansys Inc. Unauthorised use, distribution or duplication is prohibited
 
-from ansys.modelcenter.desktop import ModelCenter
+from ansys.modelcenter.workflow.desktop import ModelCenter
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
