@@ -186,7 +186,7 @@ class Instance:
         pass
 
     # LPDISPATCH getVariableMetaData(BSTR name);
-    def get_variable_mata_data(self, name: str) -> object:  # PHXDATAHISTORYLib.IDHVariable
+    def get_variable_meta_data(self, name: str) -> object:  # PHXDATAHISTORYLib.IDHVariable
         pass
 
     # IDispatch* createDataExplorer(BSTR tradeStudyType, BSTR setup);
