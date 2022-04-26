@@ -53,19 +53,19 @@ class Engine:
 
     # long getNumUnitCategories();
     def get_num_unit_categories(self) -> int:
-        pass
+        return self.__modelcenter.getNumUnitCategories()
 
     # BSTR getUnitCategoryName(long index);
     def get_unit_category_name(self, index: int) -> str:
-        pass
+        return self.__modelcenter.getUnitCategoryName(index)
 
     # long getNumUnits(BSTR category);
     def get_num_units(self, category: str) -> int:
-        pass
+        return self.__modelcenter.getNumUnits(category)
 
     # BSTR getUnitName(BSTR category, long index);
     def get_unit_name(self, category: str, index: int) -> str:
-        pass
+        return self.__modelcenter.getUnitName(category, index)
 
     # boolean getRunOnlyMode();
     def get_run_only_mode(self) -> bool:
