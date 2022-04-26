@@ -4,7 +4,7 @@ class Instance:
 
     # BSTR modelDirectory;
     @property
-    def model_directory(self) -> str:
+    def workflow_directory(self) -> str:
         pass
 
     # BSTR modelFileName;
