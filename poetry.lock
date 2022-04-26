@@ -188,7 +188,7 @@ name = "importlib-metadata"
 version = "4.11.3"
 description = "Read metadata from Python packages"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -318,7 +318,7 @@ develop = false
 type = "git"
 url = "https://github.com/Phoenix-Integration-Inc/phx-nuget-repo.git"
 reference = "py/phoenix-mocks"
-resolved_reference = "cbc08a93f918a51bb69d311d67e391d060a39bd6"
+resolved_reference = "fc648cf7cf5730444a240d0c11c3b1d435b96a62"
 
 [[package]]
 name = "platformdirs"
@@ -712,7 +712,7 @@ name = "zipp"
 version = "3.8.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.extras]
@@ -728,7 +728,7 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "3c1c56a8f4515800f533f4feb34df1df2e6f8499e2f4e99e2cb95c48929fab71"
+content-hash = "36617402a20bc682fa450183f7b1e7009f30fc6e25a4a2f34933e0da88570a46"
 
 [metadata.files]
 alabaster = [
