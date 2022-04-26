@@ -17,7 +17,7 @@ class Engine:
         pass
 
     # void loadModel(BSTR fileName, [optional]VARIANT onConnectError);
-    def load_model(self, file_name: str, on_connect_error: object) -> None:
+    def load_workflow(self, file_name: str, on_connect_error: object) -> Workflow:
         pass
 
     # IDispatch* getFormatter(BSTR format);
