@@ -22,6 +22,10 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: setup-git-credentials
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
+
       - name: Install style requirements
         run: |
           pip install .[style] --disable-pip-version-check
@@ -44,6 +48,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+
+      - name: setup-git-credentials
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
 
       - name: Create wheel
         run: |
@@ -80,6 +88,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+
+      - name: setup-git-credentials
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
 
       - name: Install library, with docs extra
         run: pip install .[docs]
