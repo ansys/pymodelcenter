@@ -7,30 +7,6 @@ optional = true
 python-versions = "*"
 
 [[package]]
-name = "ansys-engineeringworkflow-api"
-version = "0.1.dev0"
-description = "API specification for an engineering workflow engine"
-category = "main"
-optional = false
-python-versions = ">=3.7,<4.0"
-develop = false
-
-[package.dependencies]
-numpy = "^1.19.5"
-
-[package.extras]
-dev = ["Sphinx (>=4.4,<5.0)", "numpydoc (>=1.2,<2.0)", "pyansys_sphinx_theme (>=0.2,<0.3)", "sphinx-copybutton (>=0.4,<0.5)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pre-commit (>=2.17.0,<3.0.0)", "mypy (>=0.940,<0.941)"]
-docs = ["Sphinx (>=4.4,<5.0)", "numpydoc (>=1.2,<2.0)", "pyansys_sphinx_theme (>=0.2,<0.3)", "sphinx-copybutton (>=0.4,<0.5)"]
-style = ["codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)"]
-test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/pyansys/ansys-engineeringworkflow-api.git"
-reference = "8edb51a07ca74e42bd59e183db119bf11eb85d30"
-resolved_reference = "8edb51a07ca74e42bd59e183db119bf11eb85d30"
-
-[[package]]
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
@@ -748,14 +724,13 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "756226e9d4806cb3aee6cb66d6d8b4e6843321be0d92ef095f3979e563bbe977"
+content-hash = "d2f7957e6ef79fe8201a6313d3d4f1f1a081545241ba59c26e7564b05ce8bff9"
 
 [metadata.files]
 alabaster = [
     {file = "alabaster-0.7.12-py2.py3-none-any.whl", hash = "sha256:446438bdcca0e05bd45ea2de1668c1d9b032e1a9154c2c259092d77031ddd359"},
     {file = "alabaster-0.7.12.tar.gz", hash = "sha256:a661d72d58e6ea8a57f7a86e37d86716863ee5e92788398526d58b26a4e4dc02"},
 ]
-ansys-engineeringworkflow-api = []
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
     {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
