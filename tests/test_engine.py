@@ -16,8 +16,7 @@ def test_new_workflow(workflow_type: mcapi.WorkflowType) -> None:
 
     Parameters
     ----------
-    workflow_type: mcapi.WorkflowType
-        The type of workflow to create.
+    workflow_type The type of workflow to create.
     """
 
     # Setup
