@@ -58,11 +58,11 @@ class Workflow:
 
     # void saveModel();
     def save_workflow(self) -> None:
-        pass
+        self._engine._instance.saveModel()
 
     # void saveModelAs(BSTR fileName);
     def save_workflow_as(self, file_name: str) -> None:
-        pass
+        self._engine._instance.saveModelAs(file_name)
 
     # void closeModel();
     def close_workflow(self) -> None:

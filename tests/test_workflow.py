@@ -74,3 +74,31 @@ def test_workflow_close():
     next_workflow = sut_engine.new_workflow()
     assert isinstance(next_workflow, mcapi.Workflow)
     assert sut_engine._instance.getCallCount("closeModel") == 1
+
+
+def test_save_workflow():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("saveModel") == 0
+
+    # Execute
+    sut_workflow.save_workflow()
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("saveModel") == 1
+
+
+def test_save_workflow_as():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("saveModelAs") == 0
+
+    # Execute
+    sut_workflow.save_workflow_as(r"C:\Temp\workflow.pxcz")
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("saveModelAs") == 1
+    argument = sut_workflow._instance.getArgumentRecord("saveModelAs", 0)[0]
+    assert argument == r"C:\Temp\workflow.pxcz"
