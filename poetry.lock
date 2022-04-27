@@ -295,6 +295,17 @@ sphinx = ">=1.8"
 testing = ["pytest", "pytest-cov", "matplotlib"]
 
 [[package]]
+name = "overrides"
+version = "6.1.0"
+description = "A decorator to automatically detect mismatch when overriding a method."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+typing-utils = ">=0.0.3"
+
+[[package]]
 name = "packaging"
 version = "21.3"
 description = "Core utilities for Python packages"
@@ -673,6 +684,17 @@ optional = true
 python-versions = ">=3.7"
 
 [[package]]
+name = "typing-utils"
+version = "0.1.0"
+description = "utils to inspect Python type annotations"
+category = "main"
+optional = false
+python-versions = ">=3.6.1"
+
+[package.extras]
+test = ["pytest"]
+
+[[package]]
 name = "urllib3"
 version = "1.26.9"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -724,7 +746,7 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "d2f7957e6ef79fe8201a6313d3d4f1f1a081545241ba59c26e7564b05ce8bff9"
+content-hash = "412fd59726738b2bdfdae5762f8289c6caf81906fdc5678245fe897b6a169444"
 
 [metadata.files]
 alabaster = [
@@ -1125,6 +1147,10 @@ tomli = [
 typing-extensions = [
     {file = "typing_extensions-4.2.0-py3-none-any.whl", hash = "sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708"},
     {file = "typing_extensions-4.2.0.tar.gz", hash = "sha256:f1c24655a0da0d1b67f07e17a5e6b2a105894e6824b92096378bb3668ef02376"},
+]
+typing-utils = [
+    {file = "typing_utils-0.1.0-py3-none-any.whl", hash = "sha256:6bd26f3d38a5dd526ca3a59f0a451ccb59bcee9dc829c872dd6c0aae4ec8bbef"},
+    {file = "typing_utils-0.1.0.tar.gz", hash = "sha256:8ff6b6705414b82575ad5ae0925ac414a9650fb8c5718289b1327dec61252f65"},
 ]
 urllib3 = [
     {file = "urllib3-1.26.9-py2.py3-none-any.whl", hash = "sha256:44ece4d53fb1706f667c9bd1c648f5469a2ec925fcf3a776667042d645472c14"},
