@@ -1,6 +1,18 @@
+from typing import List, Union
+
+import clr
+from overrides import overrides
+
+from .i18n import i18n
+from .icomponent import IComponent
+
+clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
+import Phoenix.Mock as phxmock
+
+
 class Workflow:
-    def __init__(self):
-        pass
+    def __init__(self, instance: phxmock.MockModelCenter):
+        self._instance = instance
 
     # BSTR modelDirectory;
     @property
@@ -53,19 +65,125 @@ class Workflow:
     def get_variable(self, name: str) -> object:
         pass
 
-    # IDispatch* getComponent(BSTR name);
-    def get_component(self, name: str) -> object:   # IComponenet, IIfComponenet, IScriptComponent
-        pass
+    def get_component(self, name: str) -> object:   # IComponent, IIfComponent, IScriptComponent
+        """
+        Get a component from the workflow.
 
-    # void tradeStudyEnd();
+        Parameters
+        ----------
+        name: str
+            The full path to the component.
+
+        Returns
+        -------
+        The component.
+        """
+
+        class MockComponentWrapper(IComponent):
+            @property  # type: ignore
+            @overrides
+            def variables(self) -> object:
+                pass
+
+            @property  # type: ignore
+            @overrides
+            def groups(self) -> object:
+                pass
+
+            @property  # type: ignore
+            @overrides
+            def user_data(self) -> object:
+                pass
+
+            @property  # type: ignore
+            @overrides
+            def associated_files(self) -> Union[str, List[str]]:
+                pass
+
+            @property  # type: ignore
+            @overrides
+            def index_in_parent(self) -> int:
+                pass
+
+            @property  # type: ignore
+            @overrides
+            def parent_assembly(self) -> object:
+                pass
+
+            @overrides
+            def get_name(self) -> str:
+                return self._instance.getName()
+
+            @overrides
+            def get_full_name(self) -> str:
+                pass
+
+            @overrides
+            def get_source(self) -> str:
+                pass
+
+            @overrides
+            def get_variable(self, name: str) -> object:
+                pass
+
+            @overrides
+            def get_type(self) -> str:
+                pass
+
+            @overrides
+            def get_metadata(self, name: str) -> object:
+                pass
+
+            @overrides
+            def set_metadata(self, name: str, type_: object, value: object, access: object,
+                             archive: bool) -> None:
+                pass
+
+            @overrides
+            def run(self) -> None:
+                pass
+
+            @overrides
+            def invoke_method(self, method: str) -> None:
+                pass
+
+            @overrides
+            def invalidate(self) -> None:
+                pass
+
+            @overrides
+            def reconnect(self) -> None:
+                pass
+
+            @overrides
+            def download_values(self) -> None:
+                pass
+
+            @overrides
+            def rename(self, name: str) -> None:
+                pass
+
+            @overrides
+            def show(self) -> None:
+                pass
+
+            def __init__(self, instance: phxmock.MockComponent):
+                self._instance = instance
+
+        mock: phxmock.MockComponent = self._instance.getComponent(name)
+        if mock is None:
+            msg: str = i18n("Exceptions", "ERROR_COMPONENT_NOT_FOUND")
+            raise Exception(msg)
+        comp: IComponent = MockComponentWrapper(mock)
+        return comp
+
     def trade_study_end(self) -> None:
-        pass
+        self._instance.tradeStudyEnd()
 
     # Skip IDispatch* createJobManager([optional]VARIANT showProgressDialog);
 
-    # void tradeStudyStart();
     def trade_study_start(self) -> None:
-        pass
+        self._instance.tradeStudyStart()
 
     # boolean getHaltStatus();
     def get_halt_status(self) -> bool:

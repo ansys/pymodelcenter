@@ -108,7 +108,7 @@ class Engine:
             raise Exception(msg)
         else:
             self._instance.newModel(workflow_type.value)
-            self._workflow = Workflow()
+            self._workflow = Workflow(self._instance)
             return self._workflow
 
     def load_workflow(self, file_name: str,
@@ -133,7 +133,7 @@ class Engine:
             raise Exception(msg)
         else:
             self._instance.loadModel(file_name, on_connect_error.value)
-            self._workflow = Workflow()
+            self._workflow = Workflow(self._instance)
             return self._workflow
 
     def get_formatter(self, fmt: str) -> IFormat:
