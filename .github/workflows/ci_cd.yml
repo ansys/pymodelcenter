@@ -23,12 +23,12 @@ jobs:
           python-version: 3.8
 
       - name: setup-git-credentials
-        # You may pin to the exact commit or the version.
-        # uses: de-vri-es/setup-git-credentials@22398fb46e8acdbfd51d7197e53c4f9fc3e0a53e
-        uses: de-vri-es/setup-git-credentials@v2.0.8
-        with:
-          # git credentials use
-          credentials: ${{ secrets.PHX_NIGHTLY_SECRET }}
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-nuget-repo.insteadOf https://github.com/Phoenix-Integration-Inc/phx-nuget-repo
+          # phx-nightly:PAT
+
+
+          ${{ secrets.PHX_NIGHTLY_SECRET }}
 
       - name: Install style requirements
         run: |
