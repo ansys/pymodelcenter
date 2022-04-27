@@ -43,8 +43,11 @@ def setup_function(_):
         The function about to test.
     """
     global mock_mc, workflow
-    mock_mc = MockModelCenter()
-    engine = mcapi.Engine(mock_mc)
+    # To use when Engine supports injection of ModelCenter:
+    # mock_mc = MockModelCenter()
+    # engine = mcapi.Engine(mock_mc)
+    engine = mcapi.Engine()
+    mock_mc = engine._instance
     workflow = engine.new_workflow()
 
 

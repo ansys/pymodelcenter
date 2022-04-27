@@ -1,5 +1,5 @@
 
-from typing import Tuple
+from typing import Tuple, Any
 
 
 class Workflow:
