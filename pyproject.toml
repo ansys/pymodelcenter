@@ -29,6 +29,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
 numpy = "^1.22.3"
+overrides = "^6.1"
 pythonnet = "^2.5.2"
 
 Sphinx =  {version="^4.4", optional=true}
