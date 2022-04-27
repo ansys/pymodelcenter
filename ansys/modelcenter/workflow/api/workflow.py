@@ -69,7 +69,7 @@ class Workflow:
 
     # void createLink(BSTR variable, BSTR equation);
     def create_link(self, variable: str, equation: str) -> None:
-        pass
+        self._engine._instance.createLink(variable, equation)
 
     # void saveModel();
     def save_workflow(self) -> None:

@@ -140,3 +140,21 @@ def test_create_component(
     assert sut_workflow._instance.getCallCount("createComponent") == 1
     assert sut_workflow._instance.getArgumentRecord("createComponent", 0) == [
         server_path, name, parent, expected_passed_x_pos, expected_passed_y_pos]
+
+
+def test_create_link() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("createLink") == 0
+    test_var_name = "inputs.var1"
+    test_eqn = "Workflow.comp.output4"
+
+    # Execute
+    sut_workflow.create_link(test_var_name, test_eqn)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("createLink") == 1
+    assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [
+        test_var_name, test_eqn
+    ]
