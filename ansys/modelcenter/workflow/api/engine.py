@@ -1,44 +1,39 @@
-from ansys.modelcenter.workflow.api.workflow import Workflow
-
+# Do not let isort move this somewhere else. It must be imported before attempting to import
+# the Mocks assembly.
 import clr
-from enum import Enum
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 
-clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
-from Phoenix.Mock import MockModelCenter
-
-class WorkflowType(Enum):
-    """Enumeration of the types of workflows that can be created."""
-
-    DATA = "dataModel",
-    """Legacy style workflow where execution flow is determined from
-    links between components and an execution strategy."""
-    PROCESS = "processModel"
-    """Modern style workflow where execution flow is explicitly designed
-    by the user using flow components."""
+from ansys.modelcenter.workflow.api.workflow import Workflow
+from typing import Any
 
 
 class Engine:
-    def __init__(self):
-        """Initialize a new Engine instance."""
-        self._instance = MockModelCenter()
+    def __init__(self, modelcenter: Any):
+        """
+        Create a new instance of the Engine API.
+        """
+
+        # TODO: Can we get mypy to check our calls to the MC object somehow?
+        self.__modelcenter: Any = modelcenter
 
     # BOOL IsInteractive;
     @property
     def is_interactive(self) -> bool:
-        pass
+        # IsInteractive is an int property on the interface for COM reasons.
+        return bool(self.__modelcenter.IsInteractive)
 
     # unsigned long ProcessID;
     @property
     def process_id(self) -> int:
-        pass
+        return int(self.__modelcenter.ProcessID)
 
     # void newModel([optional]VARIANT modelType);
-    def new_workflow(self, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
-        return Workflow(self._instance)
+    def new_workflow(self, workflow_type: object = None) -> Workflow:
+        pass
 
     # void loadModel(BSTR fileName, [optional]VARIANT onConnectError);
     def load_workflow(self, file_name: str, on_connect_error: object) -> Workflow:
-        return Workflow(_instance)
+        pass
 
     # IDispatch* getFormatter(BSTR format);
     def get_formatter(self, format_: str) -> object:     # IPHXFormat
@@ -58,19 +53,19 @@ class Engine:
 
     # long getNumUnitCategories();
     def get_num_unit_categories(self) -> int:
-        pass
+        return self.__modelcenter.getNumUnitCategories()
 
     # BSTR getUnitCategoryName(long index);
     def get_unit_category_name(self, index: int) -> str:
-        pass
+        return self.__modelcenter.getUnitCategoryName(index)
 
     # long getNumUnits(BSTR category);
     def get_num_units(self, category: str) -> int:
-        pass
+        return self.__modelcenter.getNumUnits(category)
 
     # BSTR getUnitName(BSTR category, long index);
     def get_unit_name(self, category: str, index: int) -> str:
-        pass
+        return self.__modelcenter.getUnitName(category, index)
 
     # boolean getRunOnlyMode();
     def get_run_only_mode(self) -> bool:
