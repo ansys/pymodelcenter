@@ -9,8 +9,10 @@ def i18n(category: str, key: str):
 
     Parameters
     ----------
-    category The string category in the strings.properties file.
-    key The string key in the strings.properties file.
+    category: str
+        The string category in the strings.properties file.
+    key: str
+        The string key in the strings.properties file.
 
     Returns
     -------

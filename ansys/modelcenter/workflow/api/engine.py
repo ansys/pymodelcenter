@@ -10,7 +10,7 @@ from .i18n import i18n
 from .iformat import IFormat
 from .workflow import Workflow
 
-clr.AddReference("Phoenix.Mock.v45")
+clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 from Phoenix.Mock import MockFormatter, MockModelCenter
 
 
@@ -58,8 +58,8 @@ class Engine:
 
         Parameters
         ----------
-        workflow_type The type of workflow to create. Defaults to a data
-        workflow.
+        workflow_type: WorkflowType
+            The type of workflow to create. Defaults to a data workflow.
 
         Returns
         -------
@@ -81,8 +81,10 @@ class Engine:
 
         Parameters
         ----------
-        file_name The path to the file to load.
-        on_connect_error What to do in the event of an error.
+        file_name: str
+            The path to the file to load.
+        on_connect_error: OnConnectionErrorMode
+            What to do in the event of an error.
 
         Returns
         -------
@@ -106,7 +108,8 @@ class Engine:
 
         Parameters
         ----------
-        fmt Specified string format for the IFormat object.
+        fmt: str
+            Specified string format for the IFormat object.
 
         Returns
         -------
@@ -164,7 +167,8 @@ class Engine:
 
         Parameters
         ----------
-        user_name The username.
+        user_name: str
+            The username.
         """
         self._instance.setUserName(user_name)
 
@@ -174,7 +178,8 @@ class Engine:
 
         Parameters
         ----------
-        user_name The password.
+        password: str
+            The password.
         """
         self._instance.setPassword(password)
 
@@ -188,7 +193,8 @@ class Engine:
 
         Parameters
         ----------
-        pref The name of the preference for which to return the value.
+        pref: str
+            The name of the preference for which to return the value.
 
         Returns
         -------

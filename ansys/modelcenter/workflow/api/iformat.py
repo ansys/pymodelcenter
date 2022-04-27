@@ -20,7 +20,8 @@ class IFormat(ABC):
 
         Parameters
         ----------
-        fmt The format string to use.
+        fmt: str
+            The format string to use.
         """
         raise NotImplementedError
 
@@ -34,7 +35,8 @@ class IFormat(ABC):
 
         Parameters
         ----------
-        string The formatted string.
+        string: str
+            The formatted string.
 
         Returns
         -------
@@ -52,7 +54,8 @@ class IFormat(ABC):
 
         Parameters
         ----------
-        string The formatted string.
+        string: str
+            The formatted string.
 
         Returns
         -------
@@ -67,7 +70,8 @@ class IFormat(ABC):
 
         Parameters
         ----------
-        integer The value to format.
+        integer: int64
+            The value to format.
 
         Returns
         -------
@@ -82,7 +86,8 @@ class IFormat(ABC):
 
         Parameters
         ----------
-        real The value to format.
+        real: float64
+            The value to format.
 
         Returns
         -------
@@ -108,7 +113,8 @@ class IFormat(ABC):
 
         Parameters
         ----------
-        string The unformatted string.
+        string: str
+            The unformatted string.
 
         Returns
         -------
@@ -124,7 +130,8 @@ class IFormat(ABC):
 
         Parameters
         ----------
-        integer The value to format.
+        integer: int64
+            The value to format.
 
         Returns
         -------
@@ -140,7 +147,8 @@ class IFormat(ABC):
 
         Parameters
         ----------
-        real The value to format.
+        real: float64
+            The value to format.
 
         Returns
         -------
