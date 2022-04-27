@@ -2,7 +2,7 @@ import clr
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
-from typing import List, TYPE_CHECKING, Union
+from typing import Any, List, Optional, TYPE_CHECKING, Union
 from overrides import overrides
 
 from .icomponent import IComponent
@@ -47,10 +47,25 @@ class Workflow:
     def create_component(
             self,
             server_path: str,
+            name: str,
             parent: str,
-            x_pos: object = None,
-            y_pos: object = None) -> None:
+            x_pos: Optional[object] = None,
+            y_pos: Optional[object] = None) -> None:
         pass
+
+        # LTTODO: The mock expects System.Reflection.Missing.Value for x_pos and y_pos to indicate
+        # that no value was passed, but it's not feasible to actually pass that, since pythonnet
+        # seems to get tripped up while it's using reflection to find a method to actually call
+        # (Missing.Value has a special meaning there, it seems.)
+        # This is something the actual GRPC API will probably have to solve.
+
+        self._engine._instance.createComponent(
+            server_path,
+            name,
+            parent,
+            x_pos,
+            y_pos
+        )
 
     # void createLink(BSTR variable, BSTR equation);
     def create_link(self, variable: str, equation: str) -> None:

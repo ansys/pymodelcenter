@@ -1,8 +1,7 @@
 """Tests for Workflow."""
-
-import pytest
-
 import ansys.modelcenter.workflow.api as mcapi
+import pytest
+from typing import Optional
 
 
 def test_get_component():
@@ -102,3 +101,42 @@ def test_save_workflow_as():
     assert sut_workflow._instance.getCallCount("saveModelAs") == 1
     argument = sut_workflow._instance.getArgumentRecord("saveModelAs", 0)[0]
     assert argument == r"C:\Temp\workflow.pxcz"
+
+
+@pytest.mark.parametrize(
+    'server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos',
+    [
+        pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, 42,
+                     47, 42, id="fully specified position"),
+        # It's difficult to test these cases, because the mock expects Missing.Value,
+        # and that really screws with the reflection-based method matching in pythonnet,
+        # since it seems Missing.Value has special meaning in that case.
+        # Passing None doesn't work and neither does leaving the method off.
+        # This is probably something that the real GRPC api will have to solve.
+        # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', None, 42,
+        #             Missing.Value, 42, id="missing x value"),
+        # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, None,
+        #             47, Missing.Value, id="missing y value")
+    ]
+)
+def test_create_component(
+        server_path: str,
+        name: str,
+        parent: str,
+        x_pos: Optional[object],
+        y_pos: Optional[object],
+        expected_passed_x_pos,
+        expected_passed_y_pos
+) -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("createComponent") == 0
+
+    # Execute
+    sut_workflow.create_component(server_path, name, parent, x_pos, y_pos)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("createComponent") == 1
+    assert sut_workflow._instance.getArgumentRecord("createComponent", 0) == [
+        server_path, name, parent, expected_passed_x_pos, expected_passed_y_pos]
