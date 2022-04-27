@@ -1,4 +1,5 @@
-import pytest
+from typing import Optional, Any
+# import pytest
 import ansys.modelcenter.workflow.api as mcapi
 # from ansys.common.variableinterop import (
 #     BooleanArrayValue,
@@ -12,14 +13,48 @@ import ansys.modelcenter.workflow.api as mcapi
 #     StringValue,
 # )
 
+# import clr
+# clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+#
+# from Phoenix.Mock import MockModelCenter
+
+
+
+mock_mc: Optional[Any] = None
+"""
+Mock ModelCenter object.
+ 
+Used to simulate ModelCenter's response to different API calls.
+"""
+
+workflow: Optional[mcapi.Workflow] = None
+"""
+Workflow object under test.
+"""
+
+
+def setup_function(_):
+    """
+    Setup called before each test function in this module.
+
+    Parameters
+    ----------
+    _ :
+        The function about to test.
+    """
+    global mock_mc, workflow
+    mock_mc = MockModelCenter()
+    engine = mcapi.Engine(mock_mc)
+    workflow = engine.new_workflow()
+
+
 def test_workflow_directory() -> None:
     """
     Testing of workflow_directory method.
     """
-    engine = mcapi.Engine()
-    engine._instance.modelDirectory = "D:\\Some\\Path\\model.ext"
-    workflow = engine.new_workflow()
-    engine._instance.clearCallCounts()
+    global mock_mc, workflow
+    mock_mc.modelDirectory = "D:\\Some\\Path\\model.ext"
+    mock_mc.clearCallCounts()
 
     # SUT
     result = workflow.workflow_directory
@@ -27,17 +62,17 @@ def test_workflow_directory() -> None:
     # Verify
     assert isinstance(result, str)
     assert result == "D:\\Some\\Path\\model.ext"
-    # assert engine._instance.getCallCount("modelDirectory") == 1
-    assert engine._instance.getTotalCallCount() == 1
+    # assert mock_mc.getCallCount("modelDirectory") == 1
+    assert mock_mc.getTotalCallCount() == 1
+
 
 def test_workflow_file_name():
     """
     Testing of workflow_file_name method.
     """
-    engine = mcapi.Engine()
-    engine._instance.modelFileName = "model.ext"
-    workflow = engine.new_workflow()
-    engine._instance.clearCallCounts()
+    global mock_mc, workflow
+    mock_mc.modelFileName = "model.ext"
+    mock_mc.clearCallCounts()
 
     # SUT
     result = workflow.workflow_file_name
@@ -45,22 +80,22 @@ def test_workflow_file_name():
     # Verify
     assert isinstance(result, str)
     assert result == "model.ext"
-    # assert engine._instance.getCallCount("modelFileName") == 1
-    assert engine._instance.getTotalCallCount() == 1
+    # assert mock_mc.getCallCount("modelFileName") == 1
+    assert mock_mc.getTotalCallCount() == 1
+
 
 def test_set_value():
     """
     Testing of set_value method.
     """
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     workflow.set_value("var.name", "value")
 
     # Verify
-    assert engine._instance.getCallCount("setValue") == 1
-    args = engine._instance.getLastArgumentRecord("setValue")
+    assert mock_mc.getCallCount("setValue") == 1
+    args = mock_mc.getLastArgumentRecord("setValue")
     assert args[0] == "var.name"
     assert args[1] == "value"
 
@@ -81,7 +116,7 @@ def test_set_value():
 #     Testing of get_value_tests method pulling each of the different
 #     variable types.
 #     """
-#     engine = mcapi.Engine()
+#     global mock_mc, workflow
 #     vars = ['b', 'i', 'r', 's', 'ba', 'ia', 'ra', 'sa']
 #     vals = [
 #         False, 42, 3.14, "sVal",
@@ -90,8 +125,7 @@ def test_set_value():
 #         [1.414, 0.717, 3.14],
 #         ["one", "two", "three"]
 #     ]
-#     engine._instance.SetMockVariables(vars, vals)
-#     workflow = engine.new_workflow()
+#     mock_mc.SetMockVariables(vars, vals)
 #
 #     # SUT
 #     result = workflow.get_value(var_name)
@@ -99,4 +133,4 @@ def test_set_value():
 #     # Verify
 #     assert result == expected
 #     assert type(result) == type(expected)
-#     assert engine._instance.getCallCount("getValue")
+#     assert mock_mc.getCallCount("getValue")

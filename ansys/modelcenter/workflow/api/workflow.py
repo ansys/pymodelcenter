@@ -1,24 +1,19 @@
 
-import clr
-import sys
 from typing import Tuple
-
-clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
-from Phoenix.Mock import MockModelCenter
 
 
 class Workflow:
-    def __init__(self, mc_instance: MockModelCenter):
+    def __init__(self, modelcenter: Any):
         """
         Initialize a new Workflow instance.
 
         Parameters
         ----------
-        mc_instance : MockModelCenter
+        modelcenter : object
             The row interface object to use to make direct calls to
             ModelCenter.
         """
-        self._mc_instance = mc_instance
+        self.__modelcenter = modelcenter
 
     @property
     def workflow_directory(self) -> str:
@@ -27,14 +22,14 @@ class Workflow:
         will raise an error. If the model has not yet been saved, it
         will return an empty string.
         """
-        return self._mc_instance.modelDirectory
+        return self.__modelcenter.modelDirectory
 
     @property
     def workflow_file_name(self) -> str:
         """
         The Full path of the current Workflow.
         """
-        return self._mc_instance.modelFileName
+        return self.__modelcenter.modelFileName
 
     def set_value(self, var_name: str, value: str) -> None:
         """
@@ -47,7 +42,7 @@ class Workflow:
         value : str
             The New serialized value to set variable to.
         """
-        self._mc_instance.setValue(var_name, value)
+        self.__modelcenter.setValue(var_name, value)
 
     def get_value(self, var_name: str) -> object:
         """
@@ -62,7 +57,7 @@ class Workflow:
         -------
         The value as one of the IVariableValue types.
         """
-        return self._mc_instance.getValue(var_name)
+        return self.__modelcenter.getValue(var_name)
 
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
