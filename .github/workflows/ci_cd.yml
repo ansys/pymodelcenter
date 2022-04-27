@@ -24,7 +24,7 @@ jobs:
 
       - name: setup-git-credentials
         run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-nuget-repo.insteadOf https://github.com/Phoenix-Integration-Inc/phx-nuget-repo
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
 
       - name: Install style requirements
         run: |
