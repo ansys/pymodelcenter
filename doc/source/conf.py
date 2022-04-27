@@ -3,12 +3,12 @@ from datetime import datetime
 
 from pyansys_sphinx_theme import pyansys_logo_black
 
-from ansys.modelcenter.desktop import __version__
+from ansys.modelcenter.workflow import __version__
 
 # Project information
 project = 'ansys-product-library'
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
-author = "Ansys Inc."
+author = "Ansys, Inc."
 release = version = __version__
 
 # use the default pyansys logo
