@@ -5,10 +5,8 @@ from numpy import float64, int64
 
 
 class IFormat(ABC):
-    """
-    Interface that defines operations for formatting values in various
-    string formats (percentage, currency, etc.).
-    """
+    """Interface that defines operations for formatting values in \
+    various string formats (percentage, currency, etc.)."""
 
     @abstractmethod
     def set_format(self, fmt: str) -> None:
