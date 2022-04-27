@@ -53,3 +53,24 @@ def test_trade_study_end():
 
     # Verification
     assert engine._instance.getCallCount("tradeStudyEnd") == 1
+
+
+def test_workflow_close():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+
+    # Check pre-reqs.
+    try:
+        sut_engine.new_workflow()
+        assert False, "Should have failed by now."
+    except Exception:
+        pass
+
+    # Execute
+    sut_workflow.close_workflow()
+
+    # Verify
+    next_workflow = sut_engine.new_workflow()
+    assert isinstance(next_workflow, mcapi.Workflow)
+    assert sut_engine._instance.getCallCount("closeModel") == 1

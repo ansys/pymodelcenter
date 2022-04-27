@@ -1,18 +1,28 @@
-from typing import List, Union
-
 import clr
-from overrides import overrides
-
-from .i18n import i18n
-from .icomponent import IComponent
-
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
+from typing import List, TYPE_CHECKING, Union
+from overrides import overrides
+
+from .icomponent import IComponent
+if TYPE_CHECKING:
+    from .engine import Engine
+from .i18n import i18n
+
 
 class Workflow:
-    def __init__(self, instance: phxmock.MockModelCenter):
+    def __init__(self, instance: phxmock.MockModelCenter, engine: 'Engine'):
+        """
+        Create a new instance.
+
+        Parameters
+        ----------
         self._instance = instance
+        engine: Engine the engine that created this instance
+        """
+        self._instance = instance
+        self._engine = engine
 
     # BSTR modelDirectory;
     @property
@@ -56,7 +66,8 @@ class Workflow:
 
     # void closeModel();
     def close_workflow(self) -> None:
-        pass
+        self._engine._instance.closeModel()
+        self._engine._notify_close_workflow(self)
 
     # IDispatch* getVariable(BSTR name);
     #   IDoubleVariable IDoubleArray IBooleanVariable IIntegerVariable IReferenceVariable
