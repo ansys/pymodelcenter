@@ -1,8 +1,9 @@
-
-from typing import Tuple, Any
+from typing import Any, Tuple
 
 
 class Workflow:
+    """Represents a Workflow or Model in  ModelCenter."""
+
     def __init__(self, modelcenter: Any):
         """
         Initialize a new Workflow instance.
@@ -18,17 +19,16 @@ class Workflow:
     @property
     def workflow_directory(self) -> str:
         """
-        Directory of the current Workflow. If no workflow is open it
-        will raise an error. If the model has not yet been saved, it
-        will return an empty string.
+        Directory of the current Workflow.
+
+        If no workflow is open it will raise an error. If the model has
+        not yet been saved, it will return an empty string.
         """
         return self.__modelcenter.modelDirectory
 
     @property
     def workflow_file_name(self) -> str:
-        """
-        The Full path of the current Workflow.
-        """
+        """The Full path of the current Workflow."""
         return self.__modelcenter.modelFileName
 
     def set_value(self, var_name: str, value: str) -> None:

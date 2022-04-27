@@ -1,6 +1,8 @@
-from typing import Optional, Any
+from typing import Any, Optional
+
 # import pytest
 import ansys.modelcenter.workflow.api as mcapi
+
 # from ansys.common.variableinterop import (
 #     BooleanArrayValue,
 #     BooleanValue,
@@ -19,11 +21,10 @@ import ansys.modelcenter.workflow.api as mcapi
 # from Phoenix.Mock import MockModelCenter
 
 
-
 mock_mc: Optional[Any] = None
 """
 Mock ModelCenter object.
- 
+
 Used to simulate ModelCenter's response to different API calls.
 """
 
