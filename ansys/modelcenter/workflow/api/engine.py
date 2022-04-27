@@ -1,9 +1,26 @@
 from ansys.modelcenter.workflow.api.workflow import Workflow
 
+import clr
+from enum import Enum
+
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockModelCenter
+
+class WorkflowType(Enum):
+    """Enumeration of the types of workflows that can be created."""
+
+    DATA = "dataModel",
+    """Legacy style workflow where execution flow is determined from
+    links between components and an execution strategy."""
+    PROCESS = "processModel"
+    """Modern style workflow where execution flow is explicitly designed
+    by the user using flow components."""
+
 
 class Engine:
     def __init__(self):
-        pass
+        """Initialize a new Engine instance."""
+        self._instance = MockModelCenter()
 
     # BOOL IsInteractive;
     @property
@@ -16,12 +33,12 @@ class Engine:
         pass
 
     # void newModel([optional]VARIANT modelType);
-    def new_workflow(self, workflow_type: object = None) -> Workflow:
-        pass
+    def new_workflow(self, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
+        return Workflow(self._instance)
 
     # void loadModel(BSTR fileName, [optional]VARIANT onConnectError);
     def load_workflow(self, file_name: str, on_connect_error: object) -> Workflow:
-        pass
+        return Workflow(_instance)
 
     # IDispatch* getFormatter(BSTR format);
     def get_formatter(self, format_: str) -> object:     # IPHXFormat

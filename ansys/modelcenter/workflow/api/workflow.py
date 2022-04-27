@@ -1,24 +1,68 @@
-class Workflow:
-    def __init__(self):
-        pass
 
-    # BSTR modelDirectory;
+import clr
+import sys
+from typing import Tuple
+
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockModelCenter
+
+
+class Workflow:
+    def __init__(self, mc_instance: MockModelCenter):
+        """
+        Initialize a new Workflow instance.
+
+        Parameters
+        ----------
+        mc_instance : MockModelCenter
+            The row interface object to use to make direct calls to
+            ModelCenter.
+        """
+        self._mc_instance = mc_instance
+
     @property
     def workflow_directory(self) -> str:
-        pass
+        """
+        Directory of the current Workflow. If no workflow is open it
+        will raise an error. If the model has not yet been saved, it
+        will return an empty string.
+        """
+        return self._mc_instance.modelDirectory
 
-    # BSTR modelFileName;
     @property
     def workflow_file_name(self) -> str:
-        pass
+        """
+        The Full path of the current Workflow.
+        """
+        return self._mc_instance.modelFileName
 
-    # void setValue(BSTR varName, BSTR value);
     def set_value(self, var_name: str, value: str) -> None:
-        pass
+        """
+        Set the value of a variable.
 
-    # VARIANT getValue(BSTR varName);
+        Parameters
+        ----------
+        var_name : str
+            Full ModelCenter path of the variable.
+        value : str
+            The New serialized value to set variable to.
+        """
+        self._mc_instance.setValue(var_name, value)
+
     def get_value(self, var_name: str) -> object:
-        pass
+        """
+        Get the value of a variable.
+
+        Parameters
+        ----------
+        var_name :  str
+            Full ModelCenter path of the variable.
+
+        Returns
+        -------
+        The value as one of the IVariableValue types.
+        """
+        return self._mc_instance.getValue(var_name)
 
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
@@ -142,6 +186,20 @@ class Workflow:
 
     # void setXMLExtension(BSTR xml);
     def set_xml_extension(self, xml: str) -> None:
+        pass
+
+    # void setAssemblyStyle(
+    #   BSTR assemblyName, AssemblyStyle style, [optional]VARIANT width, [optional]VARIANT height);
+    def set_assembly_style(
+            self,
+            assembly_name: str,
+            style: object,
+            width: object = None,
+            height: object = None) -> None:
+        pass
+
+    # AssemblyStyle getAssemblyStyle(BSTR assemblyName, int *width, int *height);
+    def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         pass
 
     # IDispatch* getModel();
