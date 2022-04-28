@@ -11,6 +11,20 @@ if TYPE_CHECKING:
 from .i18n import i18n
 
 
+class WorkflowVariable:
+    # LTTODO: Fleshing this out is part of another PBI.
+
+    def __init__(self, variable: Any):
+        """
+        Create a new instance
+        Parameters
+        ----------
+        variable: Any
+            the actual ModelCenter variable to wrap.
+        """
+        self._variable = variable
+
+
 class Workflow:
     def __init__(self, instance: phxmock.MockModelCenter, engine: 'Engine'):
         """
@@ -89,7 +103,7 @@ class Workflow:
     #   IObjectVariable IFileVariable IStringVariable IBooleanArray IIntegerArray IReferenceArray
     #   IFileArray IStringArray IGeometryVariable:
     def get_variable(self, name: str) -> object:
-        pass
+        return WorkflowVariable(self._engine._instance.getVariable(name))
 
     def get_component(self, name: str) -> object:   # IComponent, IIfComponent, IScriptComponent
         """

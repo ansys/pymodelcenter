@@ -158,3 +158,20 @@ def test_create_link() -> None:
     assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [
         test_var_name, test_eqn
     ]
+
+
+def test_get_variable() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    test_var_name = "test_assembly_var"
+    sut_workflow._instance.createAssemblyVariable(test_var_name, "Input", "Model")
+    assert sut_workflow._instance.getCallCount("getVariable") == 0
+
+    # Execute
+    result = sut_workflow.get_variable("Model.test_assembly_var")
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("getVariable") == 1
+    assert sut_workflow._instance.getArgumentRecord("getVariable", 0) == ["Model.test_assembly_var"]
+    assert result._variable.getFullName() == "Model.test_assembly_var"
