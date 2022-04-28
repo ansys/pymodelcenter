@@ -60,16 +60,15 @@ def test_workflow_close():
     sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
 
     # Check pre-reqs.
-    try:
+    with pytest.raises(Exception) as except_info:
         sut_engine.new_workflow()
-        assert False, "Should have failed by now."
-    except Exception:
-        pass
 
     # Execute
     sut_workflow.close_workflow()
 
     # Verify
+    assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "\
+        "Close the current Workflow before loading or creating a new one."
     next_workflow = sut_engine.new_workflow()
     assert isinstance(next_workflow, mcapi.Workflow)
     assert sut_engine._instance.getCallCount("closeModel") == 1
@@ -109,7 +108,7 @@ def test_save_workflow_as():
         pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, 42,
                      47, 42, id="fully specified position"),
         # It's difficult to test these cases, because the mock expects Missing.Value,
-        # and that really screws with the reflection-based method matching in pythonnet,
+        # and that really screws with the teflection-based method matching in pythonnet,
         # since it seems Missing.Value has special meaning in that case.
         # Passing None doesn't work and neither does leaving the method off.
         # This is probably something that the real GRPC api will have to solve.
