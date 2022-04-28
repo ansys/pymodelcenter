@@ -45,12 +45,13 @@ class Engine:
     # BOOL IsInteractive;
     @property
     def is_interactive(self) -> bool:
-        pass
+        # IsInteractive is an int property on the interface for COM reasons.
+        return bool(self._instance.IsInteractive)
 
     # unsigned long ProcessID;
     @property
     def process_id(self) -> int:
-        pass
+        return int(self._instance.ProcessID)
 
     def new_workflow(self, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         """
@@ -204,19 +205,19 @@ class Engine:
 
     # long getNumUnitCategories();
     def get_num_unit_categories(self) -> int:
-        pass
+        return self._instance.getNumUnitCategories()
 
     # BSTR getUnitCategoryName(long index);
     def get_unit_category_name(self, index: int) -> str:
-        pass
+        return self._instance.getUnitCategoryName(index)
 
     # long getNumUnits(BSTR category);
     def get_num_units(self, category: str) -> int:
-        pass
+        return self._instance.getNumUnits(category)
 
     # BSTR getUnitName(BSTR category, long index);
     def get_unit_name(self, category: str, index: int) -> str:
-        pass
+        return self._instance.getUnitName(category, index)
 
     # boolean getRunOnlyMode();
     def get_run_only_mode(self) -> bool:
