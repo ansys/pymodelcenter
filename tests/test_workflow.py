@@ -93,7 +93,8 @@ def py_list_to_net_typed_list(src: List) -> DotNetList:
 
     Returns
     -------
-    A DotNet list of
+    A DotNet list of one of the DotNet primitive types.  i.e.
+    List<Boolean>, List<Int64>, List<Double> or List<String>.
     """
     first = src[0]
     if isinstance(first, bool):
