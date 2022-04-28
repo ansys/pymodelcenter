@@ -569,3 +569,16 @@ def test_get_links(link_lhs_values: Iterable[str]) -> None:
 
     # Verify
     assert [link.lhs for link in links] == link_lhs_values
+
+
+def test_halt() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("halt") == 0
+
+    # Execute
+    sut_workflow.halt()
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("halt") == 1

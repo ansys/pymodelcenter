@@ -350,7 +350,7 @@ class Workflow:
 
     # void halt();
     def halt(self) -> None:
-        pass
+        self._instance.halt()
 
     # void run(BSTR variableArray);
     def run(self, variable_array: str) -> None:
