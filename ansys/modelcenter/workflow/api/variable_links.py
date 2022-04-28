@@ -1,4 +1,5 @@
 """Defines classes and functions for working with VariableLinks."""
+from typing import Iterable
 
 
 class VariableLink:
@@ -33,3 +34,8 @@ class VariableLink:
     @rhs.setter
     def rhs(self, rhs: str) -> None:
         self._link.RHS = rhs
+
+
+def dotnet_links_to_iterable(dotnet_links) -> Iterable[VariableLink]:
+    return [VariableLink(dotnet_links.Item(var_index))
+            for var_index in range(0, dotnet_links.Count)]

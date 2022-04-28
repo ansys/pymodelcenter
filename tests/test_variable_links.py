@@ -1,10 +1,11 @@
 """Tests for variable_links"""
 import clr
+
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockVariableLink
+import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
-import pytest
 
 
 def test_suspend_link() -> None:

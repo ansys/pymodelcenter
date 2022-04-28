@@ -1,5 +1,5 @@
 """Tests for Workflow."""
-from typing import Any, List, Optional
+from typing import Any, Iterable, List, Optional
 
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
@@ -544,3 +544,28 @@ def test_break_link() -> None:
     # Verify
     assert sut_workflow._instance.getCallCount("breakLink") == 1
     assert sut_workflow._instance.getArgumentRecord("breakLink", 0) == [link_var_name]
+
+
+@pytest.mark.parametrize(
+    "link_lhs_values",
+    [
+        pytest.param([], id="empty"),
+        pytest.param(['linkTarget1', 'linkTarget2', 'linkTarget3'], id="some links")
+    ]
+)
+def test_get_links(link_lhs_values: Iterable[str]) -> None:
+    """
+    Verify that get_links works when there are no links.
+    """
+
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    for link_lhs in link_lhs_values:
+        sut_workflow.create_link(link_lhs, "LINKSOURCE")
+
+    # Execute
+    links: Iterable[mcapi.VariableLink] = sut_workflow.get_links()
+
+    # Verify
+    assert [link.lhs for link in links] == link_lhs_values

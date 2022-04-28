@@ -1,7 +1,8 @@
 import clr
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
+
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, Union
 
 import Phoenix.Mock as phxmock
 import ansys.common.variableinterop as acvi
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     from .engine import Engine
 
 from .i18n import i18n
+from .variable_links import VariableLink, dotnet_links_to_iterable
 
 
 class WorkflowVariable:
@@ -339,8 +341,8 @@ class Workflow:
         pass
 
     # LPDISPATCH getLinks([optional]VARIANT reserved);
-    def get_links(self, reserved: object = None):
-        pass
+    def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
+        return dotnet_links_to_iterable(self._instance.getLinks(reserved))
 
     # BSTR getModelUUID();
     def get_workflow_uuid(self) -> str:
