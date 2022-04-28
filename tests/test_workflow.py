@@ -1,6 +1,6 @@
 """Tests for Workflow."""
 import pytest
-from typing import List, Any, Optional,Type
+from typing import List, Any, Optional, Type
 
 import pytest
 import ansys.common.variableinterop as acvi
@@ -12,6 +12,7 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
 
+from ansys.modelcenter.workflow.api.IAssembly import IAssembly
 
 mock_mc: Optional[Any] = None
 """
@@ -188,14 +189,14 @@ def test_workflow_file_name():
 
 
 set_value_tests = [
-    pytest.param(BooleanValue(True), "True", id="bool"),
-    pytest.param(IntegerValue(42), "42", id="int"),
-    pytest.param(RealValue(3.14), "3.14", id="read"),
-    pytest.param(StringValue("strVal"), "strVal", id="str"),
-    pytest.param(BooleanArrayValue(values=[True, False]), "True,False", id="bool[]"),
-    pytest.param(IntegerArrayValue(values=[86, 42]), "86,42", id="int[]"),
-    pytest.param(RealArrayValue(values=[0.717, 1.414]), "0.717,1.414", id="real[]"),
-    pytest.param(StringArrayValue(values=["one", "two"]), '"one","two"', id="str[]"),
+    pytest.param(acvi.BooleanValue(True), "True", id="bool"),
+    pytest.param(acvi.IntegerValue(42), "42", id="int"),
+    pytest.param(acvi.RealValue(3.14), "3.14", id="read"),
+    pytest.param(acvi.StringValue("strVal"), "strVal", id="str"),
+    pytest.param(acvi.BooleanArrayValue(values=[True, False]), "True,False", id="bool[]"),
+    pytest.param(acvi.IntegerArrayValue(values=[86, 42]), "86,42", id="int[]"),
+    pytest.param(acvi.RealArrayValue(values=[0.717, 1.414]), "0.717,1.414", id="real[]"),
+    pytest.param(acvi.StringArrayValue(values=["one", "two"]), '"one","two"', id="str[]"),
     pytest.param("Some String", "Some String", id="raw str"),
     pytest.param(14.44, "14.44", id="raw float"),
 ]
@@ -262,7 +263,7 @@ def setup_test_values():
 
 
 @pytest.mark.parametrize("var_name,expected", get_value_tests)
-def test_get_value(var_name: str, expected: IVariableValue):
+def test_get_value(var_name: str, expected: acvi.IVariableValue):
     """
     Testing of get_value_tests method pulling each of the different
     variable types.
@@ -304,17 +305,17 @@ Reusing the tests for get_values, but then adding some additional tests
 below."""
 
 value_absolute_tests.extend([
-    pytest.param("root.ba[1]", BooleanValue(False), id="bool array indexed"),
-    pytest.param("root.ia[2]", IntegerValue(1), id="int array indexed"),
-    pytest.param("root.ra[0]", RealValue(1.414), id="real array indexed"),
-    pytest.param("root.sa[1]", StringValue("two"), id="str array indexed"),
+    pytest.param("root.ba[1]", acvi.BooleanValue(False), id="bool array indexed"),
+    pytest.param("root.ia[2]", acvi.IntegerValue(1), id="int array indexed"),
+    pytest.param("root.ra[0]", acvi.RealValue(1.414), id="real array indexed"),
+    pytest.param("root.sa[1]", acvi.StringValue("two"), id="str array indexed"),
 ])
 
 
 @pytest.mark.parametrize(
     "var_name,expected", value_absolute_tests
 )
-def test_get_value_absolute(var_name: str, expected: IVariableValue):
+def test_get_value_absolute(var_name: str, expected: acvi.IVariableValue):
     """
     Testing of get_value_tests method pulling each of the different \
     variable types.
@@ -543,4 +544,3 @@ def test_get_macro_timeout() -> None:
     # Verification
     assert mock_mc.getCallCount("getMacroTimeout") == 1
     assert timeout == 25.0  # arbitrary value from MockModelCenter
-

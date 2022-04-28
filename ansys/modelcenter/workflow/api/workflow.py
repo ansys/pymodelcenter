@@ -1,4 +1,4 @@
-from typing import Any, Tuple
+from typing import Any, Tuple, Union, List
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -16,7 +16,7 @@ from ansys.modelcenter.workflow.api.IAssembly import IAssembly
 class Workflow:
     """Represents a Workflow or Model in  ModelCenter."""
 
-    def __init__(self, modelcenter: Any):
+    def __init__(self, instance: Any):
         """
         Initialize a new Workflow instance.
 
@@ -29,7 +29,7 @@ class Workflow:
         self._instance = instance
 
     @staticmethod
-    def value_to_variable_value(value: Any) -> IVariableValue:
+    def value_to_variable_value(value: Any) -> acvi.IVariableValue:
         """
         Convert the given python value to the appropriate \
         IVariableValue type.
@@ -45,23 +45,23 @@ class Workflow:
         An IVariableValue type appropriate for the value given.
         """
         if isinstance(value, bool):
-            return BooleanValue(value)
+            return acvi.BooleanValue(value)
         elif isinstance(value, int):
-            return IntegerValue(value)
+            return acvi.IntegerValue(value)
         elif isinstance(value, float):
-            return RealValue(value)
+            return acvi.RealValue(value)
         elif isinstance(value, str):
-            return StringValue(value)
+            return acvi.StringValue(value)
         elif isinstance(value, list):
             first = value[0]
             if isinstance(first, bool):
-                return BooleanArrayValue(values=value)
+                return acvi.BooleanArrayValue(values=value)
             elif isinstance(first, int):
-                return IntegerArrayValue(values=value)
+                return acvi.IntegerArrayValue(values=value)
             elif isinstance(first, float):
-                return RealArrayValue(values=value)
+                return acvi.RealArrayValue(values=value)
             elif isinstance(first, str):
-                return StringArrayValue(values=value)
+                return acvi.StringArrayValue(values=value)
         raise TypeError
 
     @property
@@ -114,7 +114,7 @@ class Workflow:
         -------
         The value as one of the IVariableValue types.
         """
-        value = self.__modelcenter.getValue(var_name)
+        value = self._instance.getValue(var_name)
         return Workflow.value_to_variable_value(value)
 
     # void createComponent(
@@ -281,9 +281,9 @@ class Workflow:
         -------
         Boolean True for yes or False for no.
         """
-        return self.__modelcenter.getHaltStatus()
+        return self._instance.getHaltStatus()
 
-    def get_value_absolute(self, var_name: str) -> IVariableValue:
+    def get_value_absolute(self, var_name: str) -> acvi.IVariableValue:
         """
         Gets the value of a variable without validating it.
 
@@ -299,7 +299,7 @@ class Workflow:
         -------
         The value as a variant.
         """
-        value = self.__modelcenter.getValueAbsolute(var_name)
+        value = self._instance.getValueAbsolute(var_name)
         return Workflow.value_to_variable_value(value)
 
     def set_scheduler(self, schedular: str) -> None:
@@ -319,7 +319,7 @@ class Workflow:
                 * script
             Note: all scheduler types are case-sensitive.
         """
-        self.__modelcenter.setScheduler(schedular)
+        self._instance.setScheduler(schedular)
 
     def remove_component(self, name: str) -> None:
         """
@@ -333,7 +333,7 @@ class Workflow:
         name :
             Full ModelCenter path of the component to remove.
         """
-        self.__modelcenter.removeComponent(name)
+        self._instance.removeComponent(name)
 
     # void breakLink(BSTR variable);
     def break_link(self, variable: str) -> None:
@@ -428,9 +428,9 @@ class Workflow:
     def get_assembly(self, name: str = None) -> object:    # IAssembly
         """Gets the named assembly or the top level assembly."""
         if name is None or name == "":
-            assembly = self.__modelcenter.getModel()
+            assembly = self._instance.getModel()
         else:
-            assembly = self.__modelcenter.getAssembly(name)
+            assembly = self._instance.getAssembly(name)
         if assembly is None:
             return None
         return IAssembly(assembly)
