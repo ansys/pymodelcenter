@@ -206,8 +206,23 @@ class Workflow:
         pass
 
     # VARIANT runMacro(BSTR macro, [optional]VARIANT useMCObject);
-    def run_macro(self, macro: str, use_mc_object: object = None) -> object:
-        pass
+    def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
+        """
+        Run the specified macro.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+        use_mc_object : bool
+            Whether to use the ModelCenter object.
+
+        Returns
+        -------
+        object :
+            The script text.
+        """
+        return self._instance.runMacro(macro_name, use_mc_object)
 
     # IDispatch* createAssembly(BSTR name, BSTR parent, [optional]VARIANT assemblyType);
     def create_assembly(self, name: str, parent: str, assembly_type: object = None):
@@ -283,23 +298,92 @@ class Workflow:
 
     # BSTR getMacroScript(BSTR macroName);
     def get_macro_script(self, macro_name: str) -> str:
-        pass
+        """
+        Get a macro script.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+
+        Returns
+        -------
+        str :
+            The script text.
+        """
+        return self._instance.getMacroScript(macro_name)
 
     # void setMacroScript(BSTR macroName, BSTR script);
     def set_macro_script(self, macro_name: str, script: str) -> None:
-        pass
+        """
+        Set a macro script.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+        script : str
+            The script text.
+        """
+        self._instance.setMacroScript(macro_name, script)
 
     # BSTR getMacroScriptLanguage(BSTR macroName);
     def get_macro_script_language(self, macro_name: str) -> str:
-        pass
+        """
+        Get a macro script language.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+
+        Returns
+        -------
+        str :
+            A string representing the macro script language.
+        """
+        return self._instance.getMacroScriptLanguage(macro_name)
 
     # void setMacroScriptLanguage(BSTR macroName, BSTR language);
-    def set_macro_script_langauge(self, macro_name: str, language: str) -> None:
-        pass
+    def set_macro_script_language(self, macro_name: str, language: str) -> None:
+        """
+        Set a macro script language.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+        language : str
+            A string representing the macro script language.
+        """
+        self._instance.setMacroScriptLanguage(macro_name, language)
 
     # void addNewMacro(BSTR macroName, boolean isAppMacro);
     def add_new_macro(self, macro_name: str, is_app_macro: bool) -> None:
-        pass
+        """
+        Add a new macro.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro to show in the editor.
+        is_app_macro : bool
+            If true, the new macro will be an application macro.
+            Otherwise, the new macro will be a workflow macro.
+        """
+        self._instance.addNewMacro(macro_name, is_app_macro)
 
     # LPDISPATCH getVariableMetaData(BSTR name);
     def get_variable_meta_data(self, name: str) -> object:  # PHXDATAHISTORYLib.IDHVariable
@@ -311,8 +395,39 @@ class Workflow:
 
     # double getMacroTimeout(BSTR macroName);
     def get_macro_timeout(self, macro_name: str) -> float:
-        pass
+        """
+        Get a macro's timeout.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+
+        Returns
+        -------
+        float :
+            Number of seconds to allow a script to run before canceling
+            it; -1 indicates no timeout.
+        """
+        return self._instance.getMacroTimeout(macro_name)
 
     # void setMacroTimeout(BSTR macroName, double timeout);
     def set_macro_timeout(self, macro_name: str, timeout: float) -> None:
-        pass
+        """
+        Set a macro's timeout.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+        timeout : float
+            The number of seconds to allow a script to run before canceling it;
+             -1 indicates no timeout.
+        """
+        self._instance.setMacroTimeout(macro_name, timeout)
