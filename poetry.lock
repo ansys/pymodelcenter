@@ -360,6 +360,24 @@ python-versions = ">=3.6"
 pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 
 [[package]]
+name = "phoenix-mocks"
+version = "2022R1"
+description = "ModelCenter mock utilities."
+category = "main"
+optional = false
+python-versions = "^3.8"
+develop = false
+
+[package.dependencies]
+pythonnet = "^2.5.2"
+
+[package.source]
+type = "git"
+url = "https://github.com/Phoenix-Integration-Inc/phx-mocks.git"
+reference = "48807210861c50d667b00bfd72b984ef560f88cc"
+resolved_reference = "48807210861c50d667b00bfd72b984ef560f88cc"
+
+[[package]]
 name = "platformdirs"
 version = "2.5.2"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -797,7 +815,7 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "ecc0bbb16bd751c5fc7a65a57024ecaa8a32f4f4d316a07e3d0069a5dd8c350e"
+content-hash = "8c694d737a469719ea79c1c655616c041da2527722dc9178acef8e0bb53e60f4"
 
 [metadata.files]
 alabaster = [
@@ -1041,6 +1059,7 @@ packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
     {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
 ]
+phoenix-mocks = []
 platformdirs = [
     {file = "platformdirs-2.5.2-py3-none-any.whl", hash = "sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788"},
     {file = "platformdirs-2.5.2.tar.gz", hash = "sha256:58c8abb07dcb441e6ee4b11d8df0ac856038f944ab98b7be6b27b2a3c7feef19"},
