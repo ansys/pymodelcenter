@@ -1,16 +1,6 @@
 from typing import Any, List, Tuple, Union
 
-from ansys.common.variableinterop import (
-    BooleanArrayValue,
-    BooleanValue,
-    IntegerArrayValue,
-    IntegerValue,
-    IVariableValue,
-    RealArrayValue,
-    RealValue,
-    StringArrayValue,
-    StringValue,
-)
+import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
@@ -68,7 +58,7 @@ class Workflow:
         value : str
             The New serialized value to set variable to.
         """
-        if isinstance(value, IVariableValue):
+        if isinstance(value, acvi.IVariableValue):
             api_value = value.to_api_string()
         else:
             api_value = str(value)
@@ -87,27 +77,27 @@ class Workflow:
 
         Returns
         -------
-        The value as one of the IVariableValue types.
+        The value as one of the acvi.IVariableValue types.
         """
         raw = self._instance.getValue(var_name)
         if isinstance(raw, bool):
-            return BooleanValue(raw)
+            return acvi.BooleanValue(raw)
         elif isinstance(raw, int):
-            return IntegerValue(raw)
+            return acvi.IntegerValue(raw)
         elif isinstance(raw, float):
-            return RealValue(raw)
+            return acvi.RealValue(raw)
         elif isinstance(raw, str):
-            return StringValue(raw)
+            return acvi.StringValue(raw)
         elif isinstance(raw, list):
             first = raw[0]
             if isinstance(first, bool):
-                return BooleanArrayValue(values=raw)
+                return acvi.BooleanArrayValue(values=raw)
             elif isinstance(first, int):
-                return IntegerArrayValue(values=raw)
+                return acvi.IntegerArrayValue(values=raw)
             elif isinstance(first, float):
-                return RealArrayValue(values=raw)
+                return acvi.RealArrayValue(values=raw)
             elif isinstance(first, str):
-                return StringArrayValue(values=raw)
+                return acvi.StringArrayValue(values=raw)
         raise TypeError
 
     # void createComponent(

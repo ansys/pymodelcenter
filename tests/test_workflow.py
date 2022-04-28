@@ -2,18 +2,8 @@
 import pytest
 from typing import List, Any, Optional
 
+import ansys.common.variableinterop as acvi
 import ansys.modelcenter.workflow.api as mcapi
-from ansys.common.variableinterop import (
-    BooleanArrayValue,
-    BooleanValue,
-    IntegerArrayValue,
-    IntegerValue,
-    IVariableValue,
-    RealArrayValue,
-    RealValue,
-    StringArrayValue,
-    StringValue,
-)
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
@@ -195,14 +185,14 @@ def test_workflow_file_name():
 
 
 set_value_tests = [
-    pytest.param(BooleanValue(True), "True", id="bool"),
-    pytest.param(IntegerValue(42), "42", id="int"),
-    pytest.param(RealValue(3.14), "3.14", id="read"),
-    pytest.param(StringValue("strVal"), "strVal", id="str"),
-    pytest.param(BooleanArrayValue(values=[True, False]), "True,False", id="bool[]"),
-    pytest.param(IntegerArrayValue(values=[86, 42]), "86,42", id="int[]"),
-    pytest.param(RealArrayValue(values=[0.717, 1.414]), "0.717,1.414", id="real[]"),
-    pytest.param(StringArrayValue(values=["one", "two"]), '"one","two"', id="str[]"),
+    pytest.param(acvi.BooleanValue(True), "True", id="bool"),
+    pytest.param(acvi.IntegerValue(42), "42", id="int"),
+    pytest.param(acvi.RealValue(3.14), "3.14", id="read"),
+    pytest.param(acvi.StringValue("strVal"), "strVal", id="str"),
+    pytest.param(acvi.BooleanArrayValue(values=[True, False]), "True,False", id="bool[]"),
+    pytest.param(acvi.IntegerArrayValue(values=[86, 42]), "86,42", id="int[]"),
+    pytest.param(acvi.RealArrayValue(values=[0.717, 1.414]), "0.717,1.414", id="real[]"),
+    pytest.param(acvi.StringArrayValue(values=["one", "two"]), '"one","two"', id="str[]"),
     pytest.param("Some String", "Some String", id="raw str"),
     pytest.param(14.44, "14.44", id="raw float"),
 ]
@@ -228,19 +218,19 @@ def test_set_value(src: Any, expected: str):
 
 
 get_value_tests = [
-    pytest.param("root.b", BooleanValue(False), id="bool"),
-    pytest.param("root.i", IntegerValue(42), id="int"),
-    pytest.param("root.r", RealValue(3.14), id="real"),
-    pytest.param("root.s", StringValue("sVal"), id="str"),
-    pytest.param("root.ba", BooleanArrayValue(values=[True, False, True]), id="bool array"),
-    pytest.param("root.ia", IntegerArrayValue(values=[86, 42, 1]), id="int array"),
-    pytest.param("root.ra", RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
-    pytest.param("root.sa", StringArrayValue(values=["one", "two", "three"]), id="str array"),
+    pytest.param("root.b", acvi.BooleanValue(False), id="bool"),
+    pytest.param("root.i", acvi.IntegerValue(42), id="int"),
+    pytest.param("root.r", acvi.RealValue(3.14), id="real"),
+    pytest.param("root.s", acvi.StringValue("sVal"), id="str"),
+    pytest.param("root.ba", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
+    pytest.param("root.ia", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
+    pytest.param("root.ra", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
+    pytest.param("root.sa", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
 ]
 
 
 @pytest.mark.parametrize("var_name,expected", get_value_tests)
-def test_get_value(var_name: str, expected: IVariableValue):
+def test_get_value(var_name: str, expected: acvi.IVariableValue):
     """
     Testing of get_value_tests method pulling each of the different
     variable types.
