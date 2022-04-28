@@ -2,9 +2,11 @@ import clr
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
-from typing import Any, List, Optional, TYPE_CHECKING, Union
+import ansys.common.variableinterop as acvi
+from typing import Any, List, Optional, Tuple, TYPE_CHECKING, Union
 from overrides import overrides
 
+from . import DataExplorer
 from .icomponent import IComponent
 if TYPE_CHECKING:
     from .engine import Engine
@@ -28,33 +30,90 @@ class WorkflowVariable:
 class Workflow:
     def __init__(self, instance: phxmock.MockModelCenter, engine: 'Engine'):
         """
-        Create a new instance.
+        Initialize a new Workflow instance.
 
         Parameters
         ----------
-        self._instance = instance
-        engine: Engine the engine that created this instance
+        instance : object
+            The raw interface object to use to make direct calls to
+            ModelCenter.
+        engine : Engine
+            The engine that created this instance.
         """
         self._instance = instance
         self._engine = engine
 
-    # BSTR modelDirectory;
     @property
     def workflow_directory(self) -> str:
-        pass
+        """
+        Directory of the current Workflow.
 
-    # BSTR modelFileName;
+        If no workflow is open it will raise an error. If the model has
+        not yet been saved, it will return an empty string.
+        """
+        return self._instance.modelDirectory
+
     @property
     def workflow_file_name(self) -> str:
-        pass
+        """Full path of the current Workflow."""
+        return self._instance.modelFileName
 
-    # void setValue(BSTR varName, BSTR value);
     def set_value(self, var_name: str, value: str) -> None:
         pass
+        """
+        Set the value of a variable.
+        
+        A wrapper around the
+        IModelCenter.setValue(BSTR varName, BSTR value) method.
 
-    # VARIANT getValue(BSTR varName);
+        Parameters
+        ----------
+        var_name : str
+            Full ModelCenter path of the variable.
+        value : str
+            The New serialized value to set variable to.
+        """
+        if isinstance(value, acvi.IVariableValue):
+            api_value = value.to_api_string()
+        else:
+            api_value = str(value)
+        self._instance.setValue(var_name, api_value)
+
     def get_value(self, var_name: str) -> object:
-        pass
+        """
+        Get the value of a variable.
+
+        A wrapper around the IModelCenter.getValue(BSTR varName) method.
+
+        Parameters
+        ----------
+        var_name :  str
+            Full ModelCenter path of the variable.
+
+        Returns
+        -------
+        The value as one of the acvi.IVariableValue types.
+        """
+        raw = self._instance.getValue(var_name)
+        if isinstance(raw, bool):
+            return acvi.BooleanValue(raw)
+        elif isinstance(raw, int):
+            return acvi.IntegerValue(raw)
+        elif isinstance(raw, float):
+            return acvi.RealValue(raw)
+        elif isinstance(raw, str):
+            return acvi.StringValue(raw)
+        elif isinstance(raw, list):
+            first = raw[0]
+            if isinstance(first, bool):
+                return acvi.BooleanArrayValue(values=raw)
+            elif isinstance(first, int):
+                return acvi.IntegerArrayValue(values=raw)
+            elif isinstance(first, float):
+                return acvi.RealArrayValue(values=raw)
+            elif isinstance(first, str):
+                return acvi.StringArrayValue(values=raw)
+        raise TypeError
 
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
@@ -105,7 +164,7 @@ class Workflow:
     def get_variable(self, name: str) -> object:
         return WorkflowVariable(self._instance.getVariable(name))
 
-    def get_component(self, name: str) -> object:   # IComponent, IIfComponent, IScriptComponent
+    def get_component(self, name: str) -> IComponent:   # IComponent, IIfComponent, IScriptComponent
         """
         Get a component from the workflow.
 
@@ -246,8 +305,23 @@ class Workflow:
         pass
 
     # VARIANT runMacro(BSTR macro, [optional]VARIANT useMCObject);
-    def run_macro(self, macro: str, use_mc_object: object = None) -> object:
-        pass
+    def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
+        """
+        Run the specified macro.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+        use_mc_object : bool
+            Whether to use the ModelCenter object.
+
+        Returns
+        -------
+        object :
+            The script text.
+        """
+        return self._instance.runMacro(macro_name, use_mc_object)
 
     # IDispatch* createAssembly(BSTR name, BSTR parent, [optional]VARIANT assemblyType);
     def create_assembly(self, name: str, parent: str, assembly_type: object = None):
@@ -278,7 +352,7 @@ class Workflow:
         pass
 
     # IDispatch* getDataMonitor(BSTR component, VARIANT index);
-    def get_data_monitor(self, componenet: str, index: object) -> object:   # IDataMonitor
+    def get_data_monitor(self, component: str, index: object) -> object:   # IDataMonitor
         pass
 
     # IDispatch* createDataMonitor(BSTR component, BSTR name, int x, int y);
@@ -302,6 +376,20 @@ class Workflow:
     def set_xml_extension(self, xml: str) -> None:
         pass
 
+    # void setAssemblyStyle(
+    #   BSTR assemblyName, AssemblyStyle style, [optional]VARIANT width, [optional]VARIANT height);
+    def set_assembly_style(
+            self,
+            assembly_name: str,
+            style: object,
+            width: object = None,
+            height: object = None) -> None:
+        pass
+
+    # AssemblyStyle getAssemblyStyle(BSTR assemblyName, int *width, int *height);
+    def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
+        pass
+
     # IDispatch* getModel();
     # IDispatch* getAssembly(BSTR name);
     def get_assembly(self, name: str = None) -> object:    # IAssembly
@@ -323,36 +411,158 @@ class Workflow:
 
     # BSTR getMacroScript(BSTR macroName);
     def get_macro_script(self, macro_name: str) -> str:
-        pass
+        """
+        Get a macro script.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+
+        Returns
+        -------
+        str :
+            The script text.
+        """
+        return self._instance.getMacroScript(macro_name)
 
     # void setMacroScript(BSTR macroName, BSTR script);
     def set_macro_script(self, macro_name: str, script: str) -> None:
-        pass
+        """
+        Set a macro script.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+        script : str
+            The script text.
+        """
+        self._instance.setMacroScript(macro_name, script)
 
     # BSTR getMacroScriptLanguage(BSTR macroName);
     def get_macro_script_language(self, macro_name: str) -> str:
-        pass
+        """
+        Get a macro script language.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+
+        Returns
+        -------
+        str :
+            A string representing the macro script language.
+        """
+        return self._instance.getMacroScriptLanguage(macro_name)
 
     # void setMacroScriptLanguage(BSTR macroName, BSTR language);
-    def set_macro_script_langauge(self, macro_name: str, language: str) -> None:
-        pass
+    def set_macro_script_language(self, macro_name: str, language: str) -> None:
+        """
+        Set a macro script language.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+        language : str
+            A string representing the macro script language.
+        """
+        self._instance.setMacroScriptLanguage(macro_name, language)
 
     # void addNewMacro(BSTR macroName, boolean isAppMacro);
     def add_new_macro(self, macro_name: str, is_app_macro: bool) -> None:
-        pass
+        """
+        Add a new macro.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro to show in the editor.
+        is_app_macro : bool
+            If true, the new macro will be an application macro.
+            Otherwise, the new macro will be a workflow macro.
+        """
+        self._instance.addNewMacro(macro_name, is_app_macro)
 
     # LPDISPATCH getVariableMetaData(BSTR name);
     def get_variable_meta_data(self, name: str) -> object:  # PHXDATAHISTORYLib.IDHVariable
         pass
 
     # IDispatch* createDataExplorer(BSTR tradeStudyType, BSTR setup);
-    def create_data_explorer(self, trade_study_type: str, setup: str) -> object:    # IDataExplorer
-        pass
+    def create_data_explorer(self, trade_study_type: str, setup: str) -> DataExplorer:
+        """
+        Creates a new Data Explorer.
+
+        This documentation assumes you're creating it for a trade study.
+        If you're not you can pass almost anything in for
+        trade_study_type or setup.
+
+        Parameters
+        ----------
+        trade_study_type : str
+            Registry ID of the Plug-In.
+        setup : str
+            A string that is generated from the Plug-In's ``toString``
+            method that can be restored later by the Plug-In's
+            ``fromString`` method.
+
+        Returns
+        -------
+        object :
+            IDataExplorer object.
+        """
+        de_object: object = self._instance.createDataExplorer(trade_study_type, setup)
+        return DataExplorer(de_object)
 
     # double getMacroTimeout(BSTR macroName);
     def get_macro_timeout(self, macro_name: str) -> float:
-        pass
+        """
+        Get a macro's timeout.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+
+        Returns
+        -------
+        float :
+            Number of seconds to allow a script to run before canceling
+            it; -1 indicates no timeout.
+        """
+        return self._instance.getMacroTimeout(macro_name)
 
     # void setMacroTimeout(BSTR macroName, double timeout);
     def set_macro_timeout(self, macro_name: str, timeout: float) -> None:
-        pass
+        """
+        Set a macro's timeout.
+
+        This method is not safe for use from a component in parallel
+        mode and will throw an exception if used in such a manner.
+
+        Parameters
+        ----------
+        macro_name : str
+            The name of the macro.
+        timeout : float
+            The number of seconds to allow a script to run before canceling it;
+             -1 indicates no timeout.
+        """
+        self._instance.setMacroTimeout(macro_name, timeout)
