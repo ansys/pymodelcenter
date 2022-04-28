@@ -11,6 +11,7 @@ from ansys.common.variableinterop import (
     StringArrayValue,
     StringValue,
 )
+from ansys.modelcenter.workflow.api.IAssembly import IAssembly
 
 
 class Workflow:
@@ -27,6 +28,42 @@ class Workflow:
             ModelCenter.
         """
         self.__modelcenter = modelcenter
+
+    @staticmethod
+    def value_to_variable_value(value: Any) -> IVariableValue:
+        """
+        Convert the given python value to the appropriate \
+        IVariableValue type.
+
+        Supported types: bool, int, float, str, and list of the same.
+
+        Parameters
+        ----------
+        value : Any
+            The python type to convert.
+        Returns
+        -------
+        An IVariableValue type appropriate for the value given.
+        """
+        if isinstance(value, bool):
+            return BooleanValue(value)
+        elif isinstance(value, int):
+            return IntegerValue(value)
+        elif isinstance(value, float):
+            return RealValue(value)
+        elif isinstance(value, str):
+            return StringValue(value)
+        elif isinstance(value, list):
+            first = value[0]
+            if isinstance(first, bool):
+                return BooleanArrayValue(values=value)
+            elif isinstance(first, int):
+                return IntegerArrayValue(values=value)
+            elif isinstance(first, float):
+                return RealArrayValue(values=value)
+            elif isinstance(first, str):
+                return StringArrayValue(values=value)
+        raise TypeError
 
     @property
     def workflow_directory(self) -> str:
@@ -73,26 +110,8 @@ class Workflow:
         -------
         The value as one of the IVariableValue types.
         """
-        raw = self.__modelcenter.getValue(var_name)
-        if isinstance(raw, bool):
-            return BooleanValue(raw)
-        elif isinstance(raw, int):
-            return IntegerValue(raw)
-        elif isinstance(raw, float):
-            return RealValue(raw)
-        elif isinstance(raw, str):
-            return StringValue(raw)
-        elif isinstance(raw, list):
-            first = raw[0]
-            if isinstance(first, bool):
-                return BooleanArrayValue(values=raw)
-            elif isinstance(first, int):
-                return IntegerArrayValue(values=raw)
-            elif isinstance(first, float):
-                return RealArrayValue(values=raw)
-            elif isinstance(first, str):
-                return StringArrayValue(values=raw)
-        raise TypeError
+        value = self.__modelcenter.getValue(var_name)
+        return Workflow.value_to_variable_value(value)
 
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
@@ -141,21 +160,69 @@ class Workflow:
     def trade_study_start(self) -> None:
         pass
 
-    # boolean getHaltStatus();
     def get_halt_status(self) -> bool:
-        pass
+        """
+        Finds out if the user has pressed the halt button.
 
-    # VARIANT getValueAbsolute(BSTR varName);
-    def get_value_absolute(self, var_name: str) -> object:    # IVariableValue:
-        pass
+        A wrapper around the IModelCenter.getHaltStatus() method.
 
-    # void setScheduler(BSTR scheduler);
+        Returns
+        -------
+        Boolean True for yes or False for no.
+        """
+        return self.__modelcenter.getHaltStatus()
+
+    def get_value_absolute(self, var_name: str) -> IVariableValue:
+        """
+        Gets the value of a variable without validating it.
+
+        A wrapper around the IModelCenter.getValueAbolute(BSTR varName)
+        method.
+
+        Parameters
+        ----------
+        var_name : str
+            Full ModelCenter Path of the variable.
+
+        Returns
+        -------
+        The value as a variant.
+        """
+        value = self.__modelcenter.getValueAbsolute(var_name)
+        return Workflow.value_to_variable_value(value)
+
     def set_scheduler(self, schedular: str) -> None:
-        pass
+        """
+        Sets the current active scheduler for the Model.
 
-    # void removeComponent(BSTR name);
+        A wrapper around the IModelCenter.setScheduler(BSTR varName)
+        method.
+
+        Parameters
+        ----------
+        schedular : str
+            The scheduler type. Possible types are:
+                * forward
+                * backward
+                * mixed
+                * script
+            Note: all scheduler types are case-sensitive.
+        """
+        self.__modelcenter.setScheduler(schedular)
+
     def remove_component(self, name: str) -> None:
-        pass
+        """
+        Removes the specified component from the Model.
+
+        A wrapper around the IModelCenter.removeComponent(BSTR name)
+        method.
+
+        Parameters
+        ----------
+        name :
+            Full ModelCenter path of the component to remove.
+        """
+        self.__modelcenter.removeComponent(name)
 
     # void breakLink(BSTR variable);
     def break_link(self, variable: str) -> None:
@@ -232,11 +299,12 @@ class Workflow:
     def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         pass
 
-    # IDispatch* getModel();
-    # IDispatch* getAssembly(BSTR name);
     def get_assembly(self, name: str = None) -> object:    # IAssembly
         """Gets the named assembly or the top level assembly."""
-        pass
+        if name is None or name == "":
+            return IAssembly(self.__modelcenter.getModel())
+        else:
+            return IAssembly(self.__modelcenter.getAssembly(name))
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,
