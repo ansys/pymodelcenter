@@ -305,7 +305,7 @@ class Workflow:
 
     # void breakLink(BSTR variable);
     def break_link(self, variable: str) -> None:
-        pass
+        self._instance.breakLink(variable)
 
     # VARIANT runMacro(BSTR macro, [optional]VARIANT useMCObject);
     def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:

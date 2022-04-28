@@ -525,3 +525,22 @@ def test_get_macro_timeout() -> None:
     # Verification
     assert mock_mc.getCallCount("getMacroTimeout") == 1
     assert timeout == 25.0  # arbitrary value from MockModelCenter
+
+
+def test_break_link() -> None:
+    """
+    Verify that breaking a link works correctly.
+    """
+
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    link_var_name: str = "Component.dont.link.me"
+    assert sut_workflow._instance.getCallCount("breakLink") == 0
+
+    # Execute
+    sut_workflow.break_link(link_var_name)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("breakLink") == 1
+    assert sut_workflow._instance.getArgumentRecord("breakLink", 0) == [link_var_name]
