@@ -3,6 +3,7 @@ from typing import List, Union
 import clr
 from overrides import overrides
 
+from . import DataExplorer
 from .i18n import i18n
 from .icomponent import IComponent
 
@@ -390,8 +391,30 @@ class Workflow:
         pass
 
     # IDispatch* createDataExplorer(BSTR tradeStudyType, BSTR setup);
-    def create_data_explorer(self, trade_study_type: str, setup: str) -> object:    # IDataExplorer
-        pass
+    def create_data_explorer(self, trade_study_type: str, setup: str) -> DataExplorer:
+        """
+        Creates a new Data Explorer.
+
+        This documentation assumes you're creating it for a trade study.
+        If you're not you can pass almost anything in for
+        trade_study_type or setup.
+
+        Parameters
+        ----------
+        trade_study_type : str
+            Registry ID of the Plug-In.
+        setup : str
+            A string that is generated from the Plug-In's ``toString``
+            method that can be restored later by the Plug-In's
+            ``fromString`` method.
+
+        Returns
+        -------
+        object :
+            IDataExplorer object.
+        """
+        de_object: object = self._instance.createDataExplorer(trade_study_type, setup)
+        return DataExplorer(de_object)
 
     # double getMacroTimeout(BSTR macroName);
     def get_macro_timeout(self, macro_name: str) -> float:

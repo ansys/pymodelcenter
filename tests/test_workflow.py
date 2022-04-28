@@ -55,6 +55,22 @@ def test_trade_study_end():
     assert engine._instance.getCallCount("tradeStudyEnd") == 1
 
 
+def test_create_data_explorer():
+    """
+    Verify that create_data_explorer works as expected.
+    """
+    # Setup
+    engine = mcapi.Engine()
+    workflow = engine.new_workflow()
+
+    # SUT
+    de: mcapi.DataExplorer = workflow.create_data_explorer("MockTradeStudyType", "Mock Setup")
+
+    # Verification
+    assert engine._instance.getCallCount("createDataExplorer") == 1
+    assert de is not None
+
+
 def test_run_macro() -> None:
     """
     Verify that run_macro works as expected.

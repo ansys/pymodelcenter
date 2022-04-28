@@ -1,12 +1,16 @@
 import clr
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 
-from System.Collections.Generic import List
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference('System.Collections')
+
+from typing import Any
+
+from Phoenix.Mock import MockDataExplorer
 from System import String
+from System.Collections.Generic import List
+import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
-from typing import Any
-import pytest
 
 
 @pytest.mark.parametrize(
@@ -358,7 +362,8 @@ def test_save_trade_study() -> None:
     engine = mcapi.Engine()
 
     # SUT
-    engine.save_trade_study("uri", mcapi.DataExplorer())
+    mock_de = MockDataExplorer("MockTradeStudyType")
+    engine.save_trade_study("uri", mcapi.DataExplorer(mock_de))
 
     # Verification
     assert engine._instance.getCallCount("saveTradeStudy") == 1
