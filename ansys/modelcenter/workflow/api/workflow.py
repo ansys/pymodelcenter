@@ -83,9 +83,6 @@ class Workflow:
         """
         Set the value of a variable.
         
-        A wrapper around the
-        IModelCenter.setValue(BSTR varName, BSTR value) method.
-
         Parameters
         ----------
         var_name : str
@@ -102,8 +99,6 @@ class Workflow:
     def get_value(self, var_name: str) -> object:
         """
         Get the value of a variable.
-
-        A wrapper around the IModelCenter.getValue(BSTR varName) method.
 
         Parameters
         ----------
@@ -262,7 +257,6 @@ class Workflow:
         comp: IComponent = MockComponentWrapper(mock)
         return comp
 
-
     def trade_study_end(self) -> None:
         self._instance.tradeStudyEnd()
 
@@ -275,8 +269,6 @@ class Workflow:
         """
         Finds out if the user has pressed the halt button.
 
-        A wrapper around the IModelCenter.getHaltStatus() method.
-
         Returns
         -------
         Boolean True for yes or False for no.
@@ -286,9 +278,6 @@ class Workflow:
     def get_value_absolute(self, var_name: str) -> acvi.IVariableValue:
         """
         Gets the value of a variable without validating it.
-
-        A wrapper around the IModelCenter.getValueAbolute(BSTR varName)
-        method.
 
         Parameters
         ----------
@@ -306,9 +295,6 @@ class Workflow:
         """
         Sets the current active scheduler for the Model.
 
-        A wrapper around the IModelCenter.setScheduler(BSTR varName)
-        method.
-
         Parameters
         ----------
         schedular : str
@@ -324,9 +310,6 @@ class Workflow:
     def remove_component(self, name: str) -> None:
         """
         Removes the specified component from the Model.
-
-        A wrapper around the IModelCenter.removeComponent(BSTR name)
-        method.
 
         Parameters
         ----------

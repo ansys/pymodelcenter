@@ -236,7 +236,7 @@ get_value_tests = [
 
 def setup_test_values():
     """
-    Setup some values usable fo testing get_value and \
+    Setup some values usable of testing get_value and \
     get_value_absolute.
     """
     global mock_mc
