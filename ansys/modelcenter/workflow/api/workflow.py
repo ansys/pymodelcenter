@@ -73,7 +73,7 @@ class Workflow:
         # (Missing.Value has a special meaning there, it seems.)
         # This is something the actual GRPC API will probably have to solve.
 
-        self._engine._instance.createComponent(
+        self._instance.createComponent(
             server_path,
             name,
             parent,
@@ -83,19 +83,19 @@ class Workflow:
 
     # void createLink(BSTR variable, BSTR equation);
     def create_link(self, variable: str, equation: str) -> None:
-        self._engine._instance.createLink(variable, equation)
+        self._instance.createLink(variable, equation)
 
     # void saveModel();
     def save_workflow(self) -> None:
-        self._engine._instance.saveModel()
+        self._instance.saveModel()
 
     # void saveModelAs(BSTR fileName);
     def save_workflow_as(self, file_name: str) -> None:
-        self._engine._instance.saveModelAs(file_name)
+        self._instance.saveModelAs(file_name)
 
     # void closeModel();
     def close_workflow(self) -> None:
-        self._engine._instance.closeModel()
+        self._instance.closeModel()
         self._engine._notify_close_workflow(self)
 
     # IDispatch* getVariable(BSTR name);
@@ -103,7 +103,7 @@ class Workflow:
     #   IObjectVariable IFileVariable IStringVariable IBooleanArray IIntegerArray IReferenceArray
     #   IFileArray IStringArray IGeometryVariable:
     def get_variable(self, name: str) -> object:
-        return WorkflowVariable(self._engine._instance.getVariable(name))
+        return WorkflowVariable(self._instance.getVariable(name))
 
     def get_component(self, name: str) -> object:   # IComponent, IIfComponent, IScriptComponent
         """
