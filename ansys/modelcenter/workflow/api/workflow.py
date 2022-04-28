@@ -1,5 +1,6 @@
-from typing import List, Union
+from typing import Any, List, Tuple, Union
 
+import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
@@ -12,26 +13,92 @@ import Phoenix.Mock as phxmock
 
 
 class Workflow:
+    """Represents a Workflow or Model in  ModelCenter."""
+
     def __init__(self, instance: phxmock.MockModelCenter):
         self._instance = instance
+        """
+        Initialize a new Workflow instance.
 
-    # BSTR modelDirectory;
+        Parameters
+        ----------
+        instance : object
+            The raw interface object to use to make direct calls to
+            ModelCenter.
+        """
+        self._instance = instance
+
     @property
     def workflow_directory(self) -> str:
-        pass
+        """
+        Directory of the current Workflow.
 
-    # BSTR modelFileName;
+        If no workflow is open it will raise an error. If the model has
+        not yet been saved, it will return an empty string.
+        """
+        return self._instance.modelDirectory
+
     @property
     def workflow_file_name(self) -> str:
-        pass
+        """Full path of the current Workflow."""
+        return self._instance.modelFileName
 
-    # void setValue(BSTR varName, BSTR value);
     def set_value(self, var_name: str, value: str) -> None:
         pass
+        """
+        Set the value of a variable.
+        
+        A wrapper around the
+        IModelCenter.setValue(BSTR varName, BSTR value) method.
 
-    # VARIANT getValue(BSTR varName);
+        Parameters
+        ----------
+        var_name : str
+            Full ModelCenter path of the variable.
+        value : str
+            The New serialized value to set variable to.
+        """
+        if isinstance(value, acvi.IVariableValue):
+            api_value = value.to_api_string()
+        else:
+            api_value = str(value)
+        self._instance.setValue(var_name, api_value)
+
     def get_value(self, var_name: str) -> object:
-        pass
+        """
+        Get the value of a variable.
+
+        A wrapper around the IModelCenter.getValue(BSTR varName) method.
+
+        Parameters
+        ----------
+        var_name :  str
+            Full ModelCenter path of the variable.
+
+        Returns
+        -------
+        The value as one of the acvi.IVariableValue types.
+        """
+        raw = self._instance.getValue(var_name)
+        if isinstance(raw, bool):
+            return acvi.BooleanValue(raw)
+        elif isinstance(raw, int):
+            return acvi.IntegerValue(raw)
+        elif isinstance(raw, float):
+            return acvi.RealValue(raw)
+        elif isinstance(raw, str):
+            return acvi.StringValue(raw)
+        elif isinstance(raw, list):
+            first = raw[0]
+            if isinstance(first, bool):
+                return acvi.BooleanArrayValue(values=raw)
+            elif isinstance(first, int):
+                return acvi.IntegerArrayValue(values=raw)
+            elif isinstance(first, float):
+                return acvi.RealArrayValue(values=raw)
+            elif isinstance(first, str):
+                return acvi.StringArrayValue(values=raw)
+        raise TypeError
 
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
@@ -66,7 +133,7 @@ class Workflow:
     def get_variable(self, name: str) -> object:
         pass
 
-    def get_component(self, name: str) -> object:   # IComponent, IIfComponent, IScriptComponent
+    def get_component(self, name: str) -> IComponent:   # IComponent, IIfComponent, IScriptComponent
         """
         Get a component from the workflow.
 
@@ -254,7 +321,7 @@ class Workflow:
         pass
 
     # IDispatch* getDataMonitor(BSTR component, VARIANT index);
-    def get_data_monitor(self, componenet: str, index: object) -> object:   # IDataMonitor
+    def get_data_monitor(self, component: str, index: object) -> object:   # IDataMonitor
         pass
 
     # IDispatch* createDataMonitor(BSTR component, BSTR name, int x, int y);
@@ -276,6 +343,20 @@ class Workflow:
 
     # void setXMLExtension(BSTR xml);
     def set_xml_extension(self, xml: str) -> None:
+        pass
+
+    # void setAssemblyStyle(
+    #   BSTR assemblyName, AssemblyStyle style, [optional]VARIANT width, [optional]VARIANT height);
+    def set_assembly_style(
+            self,
+            assembly_name: str,
+            style: object,
+            width: object = None,
+            height: object = None) -> None:
+        pass
+
+    # AssemblyStyle getAssemblyStyle(BSTR assemblyName, int *width, int *height);
+    def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         pass
 
     # IDispatch* getModel();
