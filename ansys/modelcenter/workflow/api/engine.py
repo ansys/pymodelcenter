@@ -36,6 +36,42 @@ class OnConnectionErrorMode(Enum):
     """(UI mode only) Show an error dialog."""
 
 
+class EngineInfo:
+    """Information about the engine."""
+
+    def __init__(self, exec_path: str, version: str, dir_path: str):
+        """
+        Initialize.
+
+        Parameters
+        ----------
+        exec_path: str
+            Path to the engine executable.
+        version: str
+            Version of the engine.
+        dir_path: str
+            Path to the directory the engine executable is in.
+        """
+        self._engine_directory_path: str = dir_path
+        self._engine_executable_path: str = exec_path
+        self._version: str = version
+
+    @property
+    def directory_path(self) -> str:
+        """Path to the directory the engine executable is in."""
+        return self._engine_directory_path
+
+    @property
+    def executable_path(self) -> str:
+        """Path to the engine executable."""
+        return self._engine_executable_path
+
+    @property
+    def version(self) -> str:
+        """Version of the engine."""
+        return self._version
+
+
 class Engine:
     def __init__(self):
         """Initialize a new Engine instance."""
@@ -45,12 +81,13 @@ class Engine:
     # BOOL IsInteractive;
     @property
     def is_interactive(self) -> bool:
-        pass
+        # IsInteractive is an int property on the interface for COM reasons.
+        return bool(self._instance.IsInteractive)
 
     # unsigned long ProcessID;
     @property
     def process_id(self) -> int:
-        pass
+        return int(self._instance.ProcessID)
 
     def new_workflow(self, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         """
@@ -218,14 +255,64 @@ class Engine:
     def get_unit_name(self, category: str, index: int) -> str:
         return self._instance.getUnitName(category, index)
 
-    # boolean getRunOnlyMode();
     def get_run_only_mode(self) -> bool:
-        pass
+        """
+        Get whether the engine is in Run-Only mode.
 
-    # void setRunOnlyMode(boolean shouldBeInRunOnly);
+        Run-Only mode has lower licensing requirements, but does not
+        allow for the workflow to be edited.
+
+        Returns
+        -------
+        True if in Run-Only mode; otherwise, False.
+        """
+        return self._instance.getRunOnlyMode()
+
     def set_run_only_mode(self, should_be_in_run_only: bool) -> None:
-        pass
+        """
+        Set whether the engine is in Run-Only mode.
 
-    # void saveTradeStudy(BSTR uri, int format, LPDISPATCH dataExplorer);
-    def save_trade_study(self, uri: str, format_: int, data_explorer: object) -> None:
-        pass
+        Note that this method call only be called immediately after
+        creation of the Engine, and will throw otherwise.
+
+        Parameters
+        ----------
+        should_be_in_run_only: bool
+            True if Run-Only mode should be enabled; otherwise, False.
+        """
+        self._instance.setRunOnlyMode(should_be_in_run_only)
+
+    def save_trade_study(self, uri: str, data_explorer: DataExplorer) -> None:
+        """
+        Save the trade study currently loaded in the DataExplorer to \
+        the given URI.
+
+        The file will be overwritten if it exists.
+
+        Parameters
+        ----------
+        uri: str
+            The uri to which to write the trade study.
+        data_explorer: DataExplorer
+            The data explorer whose plots and data should be saved.
+        """
+        self._instance.saveTradeStudy(uri, 3, data_explorer)
+
+    def get_engine_info(self) -> EngineInfo:
+        """
+        Get information about the engine.
+
+        Returns
+        -------
+        A EngineInfo object with information about the Engine.
+        """
+        full_path: str = self._instance.appFullPath
+        version = {
+            "major": self._instance.get_version(0),
+            "minor": self._instance.get_version(1),
+            "patch": self._instance.get_version(2)
+        }
+        version_str: str = Template("${major}.${minor}.${patch}").safe_substitute(version)
+        mc_path: str = self._instance.getModelCenterPath()
+        info: EngineInfo = EngineInfo(full_path, version_str, mc_path)
+        return info

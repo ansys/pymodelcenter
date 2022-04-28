@@ -1,6 +1,165 @@
-import pytest
+import clr
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+
+from System.Collections.Generic import List
+from System import String
 
 import ansys.modelcenter.workflow.api as mcapi
+from typing import Any
+import pytest
+
+
+@pytest.mark.parametrize(
+    "actual_value,expected_result",
+    [
+        pytest.param(0, False, id='zero is false'),
+        pytest.param(1, True, id='one is true'),
+        pytest.param(-1, True, id='negative one is true'),
+    ]
+)
+def test_is_interactive(actual_value: int, expected_result: bool) -> None:
+    """
+    Test that the is_interactive implementation properly calls and interprets results
+    from the mock.
+    """
+    sut: mcapi.Engine = mcapi.Engine()
+    # Configure the mock to report a particular result when asked if it is interactive.
+    sut._instance.IsInteractive = actual_value
+
+    # Execute
+    result: bool = sut.is_interactive
+
+    # Verify
+    assert result == expected_result
+
+
+def test_process_id() -> None:
+    # Setup
+    # Construct an instance of the API adaptor.
+    sut: mcapi.Engine = mcapi.Engine()
+    # The mock contains a hardcoded implementation for the tested method.
+
+    # Execute
+    result: int = sut.process_id
+
+    # Verify
+    assert result == 4294967290
+
+
+def __set_up_test_unit_categories(mock_mc: Any) -> None:
+    mock_mc.SetSimulatedUnitCategoryUnits("001_empty_category", List[String]())
+    length_measures: List[String] = List[String]()
+    length_measures.Add("inches")
+    length_measures.Add("feet")
+    length_measures.Add("mm")
+    length_measures.Add("cm")
+    mock_mc.SetSimulatedUnitCategoryUnits("002_length", length_measures)
+    seconds: List[String] = List[String]()
+    seconds.Add("seconds")
+    mock_mc.SetSimulatedUnitCategoryUnits("003_seconds", seconds)
+
+
+def test_get_num_unit_categories_zero() -> None:
+    # Setup
+    # Construct an instance of the API adaptor.
+    sut: mcapi.Engine = mcapi.Engine()
+
+    # Execute
+    result: int = sut.get_num_unit_categories()
+
+    # Verify
+    assert result == 0
+
+
+def test_get_num_unit_categories() -> None:
+    # Setup
+    # Construct a mock MC.
+    # Construct an instance of the API adaptor.
+    sut: mcapi.Engine = mcapi.Engine()
+    __set_up_test_unit_categories(sut._instance)
+
+    # Execute
+    result: int = sut.get_num_unit_categories()
+
+    # Verify
+    assert result == 3
+
+
+def test_get_num_unit_categories() -> None:
+    # Setup
+    # Construct an instance of the API adaptor.
+    sut: mcapi.Engine = mcapi.Engine()
+    __set_up_test_unit_categories(sut._instance)
+
+    # Execute
+    result: int = sut.get_num_unit_categories()
+
+    # Verify
+    assert result == 3
+
+
+@pytest.mark.parametrize(
+    'category,expected_result',
+    [
+        pytest.param('001_empty_category', 0, id="empty category"),
+        pytest.param('002_length', 4, id="four units"),
+        pytest.param('003_seconds', 1, id="one unit"),
+    ]
+)
+def test_get_num_units(category: str, expected_result: int) -> None:
+    # Setup
+    # Construct an instance of the API adaptor.
+    sut: mcapi.Engine = mcapi.Engine()
+    __set_up_test_unit_categories(sut._instance)
+
+    # Execute
+    result: int = sut.get_num_units(category)
+
+    # Verify
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    'category_index,expected_result',
+    [
+        pytest.param(0, '001_empty_category'),
+        pytest.param(1, '002_length'),
+        pytest.param(2, "003_seconds")
+    ]
+)
+def test_get_unit_category_name(category_index: int, expected_result: str) -> None:
+    # Setup
+    # Construct an instance of the API adaptor.
+    sut: mcapi.Engine = mcapi.Engine()
+    __set_up_test_unit_categories(sut._instance)
+
+    # Execute
+    result: str = sut.get_unit_category_name(category_index)
+
+    # Verify
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    'category,unit_index,expected_result',
+    [
+        pytest.param('002_length', 0, 'inches', id="inches"),
+        pytest.param('002_length', 1, 'feet', id="feet"),
+        pytest.param('002_length', 2, 'mm', id="cm"),
+        pytest.param('002_length', 3, 'cm', id="mm"),
+    ]
+)
+def test_get_unit_name(category: str, unit_index: int, expected_result: str) -> None:
+    # Setup
+    # Construct an instance of the API adaptor.
+    sut: mcapi.Engine = mcapi.Engine()
+    __set_up_test_unit_categories(sut._instance)
+
+    # Execute
+    result: str = sut.get_unit_name(category, unit_index)
+
+    # Verify
+    assert result == expected_result
 
 
 @pytest.mark.parametrize(
@@ -63,8 +222,10 @@ def test_load_workflow(path: str, error: mcapi.OnConnectionErrorMode) -> None:
 
     Parameters
     ----------
-    path The path to the file to load.
-    error The error handling mode to use.
+    path: str
+        The path to the file to load.
+    error: mcapi.OnConnectionErrorMode
+        The error handling mode to use.
     """
 
     # Setup
@@ -116,7 +277,8 @@ def test_get_formatter(fmt: str) -> None:
 
     Parameters
     ----------
-    fmt The format style to use in the formatter.
+    fmt: str
+        The format style to use in the formatter.
     """
     # Setup
     engine = mcapi.Engine()
@@ -167,11 +329,14 @@ def test_set_password() -> None:
 )
 def test_get_preference(key: str, value: object) -> None:
     """
+    Verify that preferences of different value types can be retrieved.
 
     Parameters
     ----------
-    key The preference key.
-    value The preference value.
+    key: str
+        The preference key.
+    value: object
+        The preference value.
     """
 
     # Setup
@@ -184,3 +349,34 @@ def test_get_preference(key: str, value: object) -> None:
     # Verification
     assert result == value or result == str(value)
     # boolean's return raw value, everything else is a string
+
+
+def test_save_trade_study() -> None:
+    """Verify that save_trade_study works as expected."""
+
+    # Setup
+    engine = mcapi.Engine()
+
+    # SUT
+    engine.save_trade_study("uri", mcapi.DataExplorer())
+
+    # Verification
+    assert engine._instance.getCallCount("saveTradeStudy") == 1
+
+
+def test_get_engine_info() -> None:
+    """
+    Verify that get_engine_info returns the correct information.
+    """
+
+    # Setup
+    engine = mcapi.Engine()
+    engine._instance.appFullPath = "C:\\Path\\To\\ModelCenter\\app.exe"
+
+    # SUT
+    info: mcapi.EngineInfo = engine.get_engine_info()
+
+    # Verification
+    assert info.directory_path == "C:\\Path\\To\\ModelCenter\\"
+    assert info.executable_path == "C:\\Path\\To\\ModelCenter\\app.exe"
+    assert info.version == "12.0.1"

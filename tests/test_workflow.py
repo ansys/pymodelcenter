@@ -1,6 +1,7 @@
-from typing import Any, List, Optional
+"""Tests for Workflow."""
 
 import pytest
+
 import ansys.modelcenter.workflow.api as mcapi
 from ansys.common.variableinterop import (
     BooleanArrayValue,
@@ -50,6 +51,56 @@ def setup_function(_):
     engine = mcapi.Engine()
     mock_mc = engine._instance
     workflow = engine.new_workflow()
+
+
+def test_get_component():
+    # Setup
+    engine = mcapi.Engine()
+    workflow = engine.new_workflow()
+    engine._instance.createComponent("a", "word", "a", 0, 0)
+
+    # SUT
+    result: mcapi.IComponent = workflow.get_component("a.word")
+
+    # Verification
+    assert result.get_name() == "word"
+
+
+def test_get_component_missing():
+    # Setup
+    engine = mcapi.Engine()
+    workflow = engine.new_workflow()
+
+    # SUT
+    with pytest.raises(Exception) as except_info:
+        workflow.get_component("a.word")
+
+    # Verification
+    assert except_info.value.args[0] == "Error: A component with the given name was not found."
+
+
+def test_trade_study_start():
+    # Setup
+    engine = mcapi.Engine()
+    workflow = engine.new_workflow()
+
+    # SUT
+    workflow.trade_study_start()
+
+    # Verification
+    assert engine._instance.getCallCount("tradeStudyStart") == 1
+
+
+def test_trade_study_end():
+    # Setup
+    engine = mcapi.Engine()
+    workflow = engine.new_workflow()
+
+    # SUT
+    workflow.trade_study_end()
+
+    # Verification
+    assert engine._instance.getCallCount("tradeStudyEnd") == 1
 
 
 def py_list_to_net_list(src : List) -> DotNetList:
