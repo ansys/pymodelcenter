@@ -1,5 +1,17 @@
 from typing import Any, Tuple
 
+from ansys.common.variableinterop import (
+    BooleanArrayValue,
+    BooleanValue,
+    IntegerArrayValue,
+    IntegerValue,
+    IVariableValue,
+    RealArrayValue,
+    RealValue,
+    StringArrayValue,
+    StringValue,
+)
+
 
 class Workflow:
     """Represents a Workflow or Model in  ModelCenter."""
@@ -28,7 +40,7 @@ class Workflow:
 
     @property
     def workflow_file_name(self) -> str:
-        """The Full path of the current Workflow."""
+        """Full path of the current Workflow."""
         return self.__modelcenter.modelFileName
 
     def set_value(self, var_name: str, value: str) -> None:
@@ -42,7 +54,11 @@ class Workflow:
         value : str
             The New serialized value to set variable to.
         """
-        self.__modelcenter.setValue(var_name, value)
+        if isinstance(value, IVariableValue):
+            api_value = value.to_api_string()
+        else:
+            api_value = str(value)
+        self.__modelcenter.setValue(var_name, api_value)
 
     def get_value(self, var_name: str) -> object:
         """
@@ -57,7 +73,26 @@ class Workflow:
         -------
         The value as one of the IVariableValue types.
         """
-        return self.__modelcenter.getValue(var_name)
+        raw = self.__modelcenter.getValue(var_name)
+        if isinstance(raw, bool):
+            return BooleanValue(raw)
+        elif isinstance(raw, int):
+            return IntegerValue(raw)
+        elif isinstance(raw, float):
+            return RealValue(raw)
+        elif isinstance(raw, str):
+            return StringValue(raw)
+        elif isinstance(raw, list):
+            first = raw[0]
+            if isinstance(first, bool):
+                return BooleanArrayValue(values=raw)
+            elif isinstance(first, int):
+                return IntegerArrayValue(values=raw)
+            elif isinstance(first, float):
+                return RealArrayValue(values=raw)
+            elif isinstance(first, str):
+                return StringArrayValue(values=raw)
+        raise TypeError
 
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
