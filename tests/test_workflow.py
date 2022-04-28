@@ -1,63 +1,59 @@
 """Tests for Workflow."""
-
 import pytest
+from typing import List, Any, Optional
 
 import ansys.modelcenter.workflow.api as mcapi
+from ansys.common.variableinterop import (
+    BooleanArrayValue,
+    BooleanValue,
+    IntegerArrayValue,
+    IntegerValue,
+    IVariableValue,
+    RealArrayValue,
+    RealValue,
+    StringArrayValue,
+    StringValue,
+)
+from System import Boolean as DotNetBoolean
+from System import Double as DotNetDouble
+from System import Int64 as DotNetInt64
+from System import Object as DotNetObject
+from System import String as DotNetString
+from System.Collections.Generic import List as DotNetList
 
 
-def test_get_component():
-    # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
-    engine._instance.createComponent("a", "word", "a", 0, 0)
+mock_mc: Optional[Any] = None
+"""
+Mock ModelCenter object.
+Used to simulate ModelCenter's response to different API calls.
+"""
 
-    # SUT
-    result: mcapi.IComponent = workflow.get_component("a.word")
-
-    # Verification
-    assert result.get_name() == "word"
-
-
-def test_get_component_missing():
-    # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
-
-    # SUT
-    with pytest.raises(Exception) as except_info:
-        workflow.get_component("a.word")
-
-    # Verification
-    assert except_info.value.args[0] == "Error: A component with the given name was not found."
+workflow: Optional[mcapi.Workflow] = None
+"""
+Workflow object under test.
+"""
 
 
-def test_trade_study_start():
-    # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
-
-    # SUT
-    workflow.trade_study_start()
-
-    # Verification
-    assert engine._instance.getCallCount("tradeStudyStart") == 1
-
-
-def test_trade_study_end():
-    # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
-
-    # SUT
-    workflow.trade_study_end()
-
-    # Verification
-    assert engine._instance.getCallCount("tradeStudyEnd") == 1
-
-
-def py_list_to_net_list(src : List) -> DotNetList:
+def setup_function(_):
     """
-    Convert the given Python list to a Dot Net Object List.
+    Setup called before each test function in this module.
+    Parameters
+    ----------
+    _ :
+        The function about to test.
+    """
+    global mock_mc, workflow
+    # To use when Engine supports injection of ModelCenter:
+    # mock_mc = MockModelCenter()
+    # engine = mcapi.Engine(mock_mc)
+    engine = mcapi.Engine()
+    mock_mc = engine._instance
+    workflow = engine.new_workflow()
+
+
+def py_list_to_net_list(src: List) -> DotNetList:
+    """
+    Convert the given Python-list to a DotNet-Object-List.
 
     Parameters
     ----------
@@ -67,7 +63,7 @@ def py_list_to_net_list(src : List) -> DotNetList:
 
     Returns
     -------
-    A DotNetList of objects. i.e. in Dot Net terminology: List<Object>
+    A DotNetList of objects. i.e. in DotNet terminology: List<Object>
     """
     result = DotNetList[DotNetObject]()
     for item in src:
@@ -79,13 +75,13 @@ def py_list_to_net_list(src : List) -> DotNetList:
     return result
 
 
-def py_list_to_net_typed_list(src : List) -> DotNetList:
+def py_list_to_net_typed_list(src: List) -> DotNetList:
     """
-    Convert the given Python list to a Dot Net List of the appropriate \
+    Convert the given Python-list to a DotNet-List of the appropriate \
     primitive type.
 
     Types are one of four different primitive types.  For Python the
-    types are: bool, int, float or str.  For Dot Net the type are:
+    types are: bool, int, float or str.  For DotNet the type are:
     Boolean, Int64, Double and String.
 
     Parameters
@@ -113,6 +109,52 @@ def py_list_to_net_typed_list(src : List) -> DotNetList:
     for item in src:
         result.Add(item)
     return result
+
+
+def test_get_component():
+    # Setup
+    global workflow, mock_mc
+    mock_mc.createComponent("a", "word", "a", 0, 0)
+
+    # SUT
+    result: mcapi.IComponent = workflow.get_component("a.word")
+
+    # Verification
+    assert result.get_name() == "word"
+
+
+def test_get_component_missing():
+    # Setup
+    global workflow, mock_mc
+
+    # SUT
+    with pytest.raises(Exception) as except_info:
+        workflow.get_component("a.word")
+
+    # Verification
+    assert except_info.value.args[0] == "Error: A component with the given name was not found."
+
+
+def test_trade_study_start():
+    # Setup
+    global workflow, mock_mc
+
+    # SUT
+    workflow.trade_study_start()
+
+    # Verification
+    assert mock_mc.getCallCount("tradeStudyStart") == 1
+
+
+def test_trade_study_end():
+    # Setup
+    global workflow, mock_mc
+
+    # SUT
+    workflow.trade_study_end()
+
+    # Verification
+    assert mock_mc.getCallCount("tradeStudyEnd") == 1
 
 
 def test_workflow_directory() -> None:
@@ -185,14 +227,14 @@ def test_set_value(src: Any, expected: str):
 
 
 get_value_tests = [
-    pytest.param("root.b", BooleanValue(False), id = "bool"),
-    pytest.param("root.i", IntegerValue(42), id = "int"),
-    pytest.param("root.r", RealValue(3.14), id = "real"),
-    pytest.param("root.s", StringValue("sVal"), id = "str"),
-    pytest.param("root.ba", BooleanArrayValue(values=[True, False, True]), id = "bool array"),
-    pytest.param("root.ia", IntegerArrayValue(values=[86, 42, 1]), id = "int array"),
-    pytest.param("root.ra", RealArrayValue(values=[1.414, 0.717, 3.14]), id = "real array"),
-    pytest.param("root.sa", StringArrayValue(values=["one", "two", "three"]), id = "str array"),
+    pytest.param("root.b", BooleanValue(False), id="bool"),
+    pytest.param("root.i", IntegerValue(42), id="int"),
+    pytest.param("root.r", RealValue(3.14), id="real"),
+    pytest.param("root.s", StringValue("sVal"), id="str"),
+    pytest.param("root.ba", BooleanArrayValue(values=[True, False, True]), id="bool array"),
+    pytest.param("root.ia", IntegerArrayValue(values=[86, 42, 1]), id="int array"),
+    pytest.param("root.ra", RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
+    pytest.param("root.sa", StringArrayValue(values=["one", "two", "three"]), id="str array"),
 ]
 
 
@@ -238,14 +280,13 @@ def test_create_data_explorer():
     Verify that create_data_explorer works as expected.
     """
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     de: mcapi.DataExplorer = workflow.create_data_explorer("MockTradeStudyType", "Mock Setup")
 
     # Verification
-    assert engine._instance.getCallCount("createDataExplorer") == 1
+    assert mock_mc.getCallCount("createDataExplorer") == 1
     assert de is not None
 
 
@@ -255,14 +296,13 @@ def test_run_macro() -> None:
     """
 
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     result: object = workflow.run_macro("macro", False)
 
     # Verification
-    assert engine._instance.getCallCount("runMacro") == 1
+    assert mock_mc.getCallCount("runMacro") == 1
     assert result is None  # arbitrary value from MockModelCenter
 
 
@@ -272,14 +312,13 @@ def test_add_new_macro() -> None:
     """
 
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     workflow.add_new_macro("macro", False)
 
     # Verification
-    assert engine._instance.getCallCount("addNewMacro") == 1
+    assert mock_mc.getCallCount("addNewMacro") == 1
 
 
 def test_set_macro_script() -> None:
@@ -288,14 +327,13 @@ def test_set_macro_script() -> None:
     """
 
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     workflow.set_macro_script("macro", "a script to run")
 
     # Verification
-    assert engine._instance.getCallCount("setMacroScript") == 1
+    assert mock_mc.getCallCount("setMacroScript") == 1
 
 
 def test_get_macro_script() -> None:
@@ -304,14 +342,13 @@ def test_get_macro_script() -> None:
     """
 
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     script: str = workflow.get_macro_script("macro")
 
     # Verification
-    assert engine._instance.getCallCount("getMacroScript") == 1
+    assert mock_mc.getCallCount("getMacroScript") == 1
     assert script == "ここには何もない！目を逸らしてください！"  # arbitrary value from MockModelCenter
 
 
@@ -321,14 +358,13 @@ def test_set_macro_script_language() -> None:
     """
 
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     workflow.set_macro_script_language("macro", "JavaScript")
 
     # Verification
-    assert engine._instance.getCallCount("setMacroScriptLanguage") == 1
+    assert mock_mc.getCallCount("setMacroScriptLanguage") == 1
 
 
 def test_get_macro_script_language() -> None:
@@ -337,14 +373,13 @@ def test_get_macro_script_language() -> None:
     """
 
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     script: str = workflow.get_macro_script_language("macro")
 
     # Verification
-    assert engine._instance.getCallCount("getMacroScriptLanguage") == 1
+    assert mock_mc.getCallCount("getMacroScriptLanguage") == 1
     assert script == "いろいろなブランドの美味しさが楽しめます"  # arbitrary value from MockModelCenter
 
 
@@ -354,14 +389,13 @@ def test_set_macro_timeout() -> None:
     """
 
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     workflow.set_macro_timeout("macro", 3.5)
 
     # Verification
-    assert engine._instance.getCallCount("setMacroTimeout") == 1
+    assert mock_mc.getCallCount("setMacroTimeout") == 1
 
 
 def test_get_macro_timeout() -> None:
@@ -370,12 +404,11 @@ def test_get_macro_timeout() -> None:
     """
 
     # Setup
-    engine = mcapi.Engine()
-    workflow = engine.new_workflow()
+    global mock_mc, workflow
 
     # SUT
     timeout: float = workflow.get_macro_timeout("macro")
 
     # Verification
-    assert engine._instance.getCallCount("getMacroTimeout") == 1
+    assert mock_mc.getCallCount("getMacroTimeout") == 1
     assert timeout == 25.0  # arbitrary value from MockModelCenter

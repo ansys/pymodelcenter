@@ -32,8 +32,8 @@ class Workflow:
 
         Parameters
         ----------
-        modelcenter : object
-            The row interface object to use to make direct calls to
+        instance : object
+            The raw interface object to use to make direct calls to
             ModelCenter.
         """
         self._instance = instance
@@ -46,18 +46,20 @@ class Workflow:
         If no workflow is open it will raise an error. If the model has
         not yet been saved, it will return an empty string.
         """
-        return self.__modelcenter.modelDirectory
+        return self._instance.modelDirectory
 
     @property
     def workflow_file_name(self) -> str:
         """Full path of the current Workflow."""
-        return self.__modelcenter.modelFileName
+        return self._instance.modelFileName
 
-    # void setValue(BSTR varName, BSTR value);
     def set_value(self, var_name: str, value: str) -> None:
         pass
         """
         Set the value of a variable.
+        
+        A wrapper around the
+        IModelCenter.setValue(BSTR varName, BSTR value) method.
 
         Parameters
         ----------
@@ -70,11 +72,13 @@ class Workflow:
             api_value = value.to_api_string()
         else:
             api_value = str(value)
-        self.__modelcenter.setValue(var_name, api_value)
-    # VARIANT getValue(BSTR varName);
+        self._instance.setValue(var_name, api_value)
+
     def get_value(self, var_name: str) -> object:
         """
         Get the value of a variable.
+
+        A wrapper around the IModelCenter.getValue(BSTR varName) method.
 
         Parameters
         ----------
@@ -85,7 +89,7 @@ class Workflow:
         -------
         The value as one of the IVariableValue types.
         """
-        raw = self.__modelcenter.getValue(var_name)
+        raw = self._instance.getValue(var_name)
         if isinstance(raw, bool):
             return BooleanValue(raw)
         elif isinstance(raw, int):
@@ -139,7 +143,7 @@ class Workflow:
     def get_variable(self, name: str) -> object:
         pass
 
-    def get_component(self, name: str) -> object:   # IComponent, IIfComponent, IScriptComponent
+    def get_component(self, name: str) -> IComponent:   # IComponent, IIfComponent, IScriptComponent
         """
         Get a component from the workflow.
 
@@ -327,7 +331,7 @@ class Workflow:
         pass
 
     # IDispatch* getDataMonitor(BSTR component, VARIANT index);
-    def get_data_monitor(self, componenet: str, index: object) -> object:   # IDataMonitor
+    def get_data_monitor(self, component: str, index: object) -> object:   # IDataMonitor
         pass
 
     # IDispatch* createDataMonitor(BSTR component, BSTR name, int x, int y);

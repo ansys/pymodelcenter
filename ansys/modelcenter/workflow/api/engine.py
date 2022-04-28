@@ -1,11 +1,13 @@
 """Definition of Engine and associated classes."""
 from enum import Enum
+from string import Template
 from typing import Union
 
 import clr
 from numpy import float64, int64
 from overrides import overrides
 
+from .data_explorer import DataExplorer
 from .i18n import i18n
 from .iformat import IFormat
 from .workflow import Workflow
