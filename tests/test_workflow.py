@@ -181,7 +181,7 @@ def test_set_value(src: Any, expected: str):
     assert result == expected
 
 
-get_value_tests = [
+value_tests = [
     pytest.param("root.b", BooleanValue(False), id = "bool"),
     pytest.param("root.i", IntegerValue(42), id = "int"),
     pytest.param("root.r", RealValue(3.14), id = "real"),
@@ -193,13 +193,16 @@ get_value_tests = [
 ]
 
 
-@pytest.mark.parametrize("var_name,expected", get_value_tests)
-def test_get_value(var_name: str, expected: IVariableValue):
-    """
-    Testing of get_value_tests method pulling each of the different
-    variable types.
-    """
-    global mock_mc, workflow
+def setup_test_values():
+    global mock_mc
+    mock_mc.createAssemblyVariable('b', "Input", "root")
+    mock_mc.createAssemblyVariable('i', "Input", "root")
+    mock_mc.createAssemblyVariable('r', "Input", "root")
+    mock_mc.createAssemblyVariable('s', "Input", "root")
+    mock_mc.createAssemblyVariable('ba', "Input", "root")
+    mock_mc.createAssemblyVariable('ia', "Input", "root")
+    mock_mc.createAssemblyVariable('ra', "Input", "root")
+    mock_mc.createAssemblyVariable('sa', "Input", "root")
     vars_ = py_list_to_net_typed_list([
         'root.b', 'root.i', 'root.r', 'root.s',
         'root.ba', 'root.ia', 'root.ra', 'root.sa'
@@ -211,15 +214,17 @@ def test_get_value(var_name: str, expected: IVariableValue):
         [1.414, 0.717, 3.14],
         ["one", "two", "three"]
     ])
-    mock_mc.createAssemblyVariable('b', "Input", "root")
-    mock_mc.createAssemblyVariable('i', "Input", "root")
-    mock_mc.createAssemblyVariable('r', "Input", "root")
-    mock_mc.createAssemblyVariable('s', "Input", "root")
-    mock_mc.createAssemblyVariable('ba', "Input", "root")
-    mock_mc.createAssemblyVariable('ia', "Input", "root")
-    mock_mc.createAssemblyVariable('ra', "Input", "root")
-    mock_mc.createAssemblyVariable('sa', "Input", "root")
     mock_mc.SetMockValues(vars_, vals)
+
+
+@pytest.mark.parametrize("var_name,expected", value_tests)
+def test_get_value(var_name: str, expected: IVariableValue):
+    """
+    Testing of get_value_tests method pulling each of the different
+    variable types.
+    """
+    global mock_mc, workflow
+    setup_test_values()
 
     # SUT
     result = workflow.get_value(var_name)
@@ -228,3 +233,78 @@ def test_get_value(var_name: str, expected: IVariableValue):
     assert result == expected
     assert type(result) == type(expected)
     assert mock_mc.getCallCount("getValue")
+
+
+@pytest.mark.parametrize(
+    "halted", [pytest.param(False, id="running"), pytest.param(True, id="halted")]
+ )
+def test_get_halt_status(halted: bool):
+    global mock_mc, workflow
+    if halted:
+        mock_mc.halt()
+
+    # SUT
+    result = workflow.get_halt_status()
+
+    # Verify
+    assert result == halted
+    assert type(result) == bool
+    assert mock_mc.getCallCount("getHaltStatus")
+
+
+value_absolute_tests = value_tests.copy()
+value_absolute_tests.extend([
+    pytest.param("root.ba[1]", BooleanValue(False), id="bool array indexed"),
+    pytest.param("root.ia[2]", IntegerValue(1), id="int array indexed"),
+    pytest.param("root.ra[0]", RealValue(1.414), id="real array indexed"),
+    pytest.param("root.sa[1]", StringValue("two"), id="str array indexed"),
+])
+
+
+@pytest.mark.parametrize(
+    "var_name,expected", value_absolute_tests
+)
+def test_get_value_absolute(var_name:str, expected: IVariableValue):
+    """
+    Testing of get_value_tests method pulling each of the different
+    variable types.
+    """
+    global mock_mc, workflow
+    setup_test_values()
+
+    # SUT
+    result = workflow.get_value_absolute(var_name)
+
+    # Verify
+    assert result == expected
+    assert type(result) == type(expected)
+    assert mock_mc.getCallCount("getValueAbsolute")
+
+
+@pytest.mark.parametrize("schedular", ["forward", "backward", "mixed", "script"])
+def test_set_scheduler(schedular: str) -> None:
+    """
+    Testing of set_scheduler method with different schedular values
+    Parameters
+    ----------
+    schedular :  str
+        schedular value to test
+    """
+    global mock_mc, workflow
+
+    # SUT
+    workflow.set_scheduler(schedular)
+
+    # Verify
+    assert mock_mc.getCallCount("setScheduler") == 1
+    args: list = mock_mc.getLastArgumentRecord("setScheduler")
+    assert len(args) == 1
+    assert args[0] == schedular
+
+
+def test_remove_component():
+    pass
+
+
+def test_get_assembly():
+    pass
