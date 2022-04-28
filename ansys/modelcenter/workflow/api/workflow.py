@@ -302,9 +302,12 @@ class Workflow:
     def get_assembly(self, name: str = None) -> object:    # IAssembly
         """Gets the named assembly or the top level assembly."""
         if name is None or name == "":
-            return IAssembly(self.__modelcenter.getModel())
+            assembly = self.__modelcenter.getModel()
         else:
-            return IAssembly(self.__modelcenter.getAssembly(name))
+            assembly = self.__modelcenter.getAssembly(name)
+        if assembly is None:
+            return None
+        return IAssembly(assembly)
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,

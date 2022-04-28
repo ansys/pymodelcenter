@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Type
 
 import pytest
 import ansys.modelcenter.workflow.api as mcapi
@@ -20,6 +20,7 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
 
+from ansys.modelcenter.workflow.api.IAssembly import IAssembly
 
 mock_mc: Optional[Any] = None
 """
@@ -52,9 +53,9 @@ def setup_function(_):
     workflow = engine.new_workflow()
 
 
-def py_list_to_net_list(src : List) -> DotNetList:
+def py_list_to_net_list(src: List) -> DotNetList:
     """
-    Convert the given Python list to a Dot Net Object List.
+    Convert the given Python-list to a DotNet Object List.
 
     Parameters
     ----------
@@ -64,7 +65,7 @@ def py_list_to_net_list(src : List) -> DotNetList:
 
     Returns
     -------
-    A DotNetList of objects. i.e. in Dot Net terminology: List<Object>
+    A DotNetList of objects. i.e. in DotNet terminology: List<Object>
     """
     result = DotNetList[DotNetObject]()
     for item in src:
@@ -76,13 +77,13 @@ def py_list_to_net_list(src : List) -> DotNetList:
     return result
 
 
-def py_list_to_net_typed_list(src : List) -> DotNetList:
+def py_list_to_net_typed_list(src: List) -> DotNetList:
     """
-    Convert the given Python list to a Dot Net List of the appropriate \
+    Convert the given Python-list to a DotNet-List of the appropriate \
     primitive type.
 
     Types are one of four different primitive types.  For Python the
-    types are: bool, int, float or str.  For Dot Net the type are:
+    types are: bool, int, float or str.  For DotNet the type are:
     Boolean, Int64, Double and String.
 
     Parameters
@@ -181,19 +182,24 @@ def test_set_value(src: Any, expected: str):
     assert result == expected
 
 
-value_tests = [
-    pytest.param("root.b", BooleanValue(False), id = "bool"),
-    pytest.param("root.i", IntegerValue(42), id = "int"),
-    pytest.param("root.r", RealValue(3.14), id = "real"),
-    pytest.param("root.s", StringValue("sVal"), id = "str"),
-    pytest.param("root.ba", BooleanArrayValue(values=[True, False, True]), id = "bool array"),
-    pytest.param("root.ia", IntegerArrayValue(values=[86, 42, 1]), id = "int array"),
-    pytest.param("root.ra", RealArrayValue(values=[1.414, 0.717, 3.14]), id = "real array"),
-    pytest.param("root.sa", StringArrayValue(values=["one", "two", "three"]), id = "str array"),
+get_value_tests = [
+    pytest.param("root.b", BooleanValue(False), id="bool"),
+    pytest.param("root.i", IntegerValue(42), id="int"),
+    pytest.param("root.r", RealValue(3.14), id="real"),
+    pytest.param("root.s", StringValue("sVal"), id="str"),
+    pytest.param("root.ba", BooleanArrayValue(values=[True, False, True]), id="bool array"),
+    pytest.param("root.ia", IntegerArrayValue(values=[86, 42, 1]), id="int array"),
+    pytest.param("root.ra", RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
+    pytest.param("root.sa", StringArrayValue(values=["one", "two", "three"]), id="str array"),
 ]
+"""Collection of tests for get_value, used in test_get_value."""
 
 
 def setup_test_values():
+    """
+    Setup some values usable fo testing get_value and \
+    get_value_absolute.
+    """
     global mock_mc
     mock_mc.createAssemblyVariable('b', "Input", "root")
     mock_mc.createAssemblyVariable('i', "Input", "root")
@@ -217,7 +223,7 @@ def setup_test_values():
     mock_mc.SetMockValues(vars_, vals)
 
 
-@pytest.mark.parametrize("var_name,expected", value_tests)
+@pytest.mark.parametrize("var_name,expected", get_value_tests)
 def test_get_value(var_name: str, expected: IVariableValue):
     """
     Testing of get_value_tests method pulling each of the different
@@ -239,6 +245,7 @@ def test_get_value(var_name: str, expected: IVariableValue):
     "halted", [pytest.param(False, id="running"), pytest.param(True, id="halted")]
  )
 def test_get_halt_status(halted: bool):
+    """Testing of get_halt_status method."""
     global mock_mc, workflow
     if halted:
         mock_mc.halt()
@@ -252,7 +259,12 @@ def test_get_halt_status(halted: bool):
     assert mock_mc.getCallCount("getHaltStatus")
 
 
-value_absolute_tests = value_tests.copy()
+value_absolute_tests = get_value_tests.copy()
+"""Collection of test for get_value_absolute.
+
+Reusing the tests for get_values, but then adding some additional tests
+below."""
+
 value_absolute_tests.extend([
     pytest.param("root.ba[1]", BooleanValue(False), id="bool array indexed"),
     pytest.param("root.ia[2]", IntegerValue(1), id="int array indexed"),
@@ -264,9 +276,9 @@ value_absolute_tests.extend([
 @pytest.mark.parametrize(
     "var_name,expected", value_absolute_tests
 )
-def test_get_value_absolute(var_name:str, expected: IVariableValue):
+def test_get_value_absolute(var_name: str, expected: IVariableValue):
     """
-    Testing of get_value_tests method pulling each of the different
+    Testing of get_value_tests method pulling each of the different \
     variable types.
     """
     global mock_mc, workflow
@@ -303,8 +315,54 @@ def test_set_scheduler(schedular: str) -> None:
 
 
 def test_remove_component():
-    pass
+    """ Testing of remove_component method."""
+    global mock_mc, workflow
+
+    # SUT
+    workflow.remove_component("componentName")
+
+    # Verify
+    assert mock_mc.getCallCount("removeComponent")
+    args: list = mock_mc.getLastArgumentRecord("removeComponent")
+    assert len(args) == 1
+    assert args[0] == "componentName"
 
 
-def test_get_assembly():
-    pass
+@pytest.mark.parametrize(
+    "name,get_model_call_count,get_assembly_call_count,result_type",
+    [
+        pytest.param(None,           1, 0, IAssembly,  id="root"),
+        pytest.param("root.aName",   0, 1, IAssembly,  id="named"),
+        pytest.param("root.noExist", 0, 1, None,       id="missing")
+    ]
+)
+def test_get_assembly(
+        name: str, get_model_call_count: int, get_assembly_call_count: int, result_type: Type):
+    """
+    Testing of get_assembly.
+
+    Parameters
+    ----------
+    name : str
+        name of assembly to request.
+    get_model_call_count : int
+        expected call count of IModelCenter.getModel
+    get_assembly_call_count : int
+        expected call count of IModelCenter.getAssembly
+    result_type : Type or None
+        expected type of result, or None is expected to return None
+    """
+    global mock_mc, workflow
+    mock_mc.createAssembly("aName", "root", "aType")
+
+    # SUT
+    result = workflow.get_assembly(name)
+
+    # Verify
+    if result_type is None:
+        assert result is None
+    else:
+        assert type(result) == result_type
+    # MockModelCenter.getAssembly doesn't have call tracking enabled
+    # assert mock_mc.getCallCount("getAssembly") == get_assembly_call_count
+    assert mock_mc.getCallCount("getModel") == get_model_call_count
