@@ -222,8 +222,10 @@ def test_load_workflow(path: str, error: mcapi.OnConnectionErrorMode) -> None:
 
     Parameters
     ----------
-    path The path to the file to load.
-    error The error handling mode to use.
+    path: str
+        The path to the file to load.
+    error: mcapi.OnConnectionErrorMode
+        The error handling mode to use.
     """
 
     # Setup
@@ -275,7 +277,8 @@ def test_get_formatter(fmt: str) -> None:
 
     Parameters
     ----------
-    fmt The format style to use in the formatter.
+    fmt: str
+        The format style to use in the formatter.
     """
     # Setup
     engine = mcapi.Engine()
@@ -326,11 +329,14 @@ def test_set_password() -> None:
 )
 def test_get_preference(key: str, value: object) -> None:
     """
+    Verify that preferences of different value types can be retrieved.
 
     Parameters
     ----------
-    key The preference key.
-    value The preference value.
+    key: str
+        The preference key.
+    value: object
+        The preference value.
     """
 
     # Setup
@@ -343,3 +349,34 @@ def test_get_preference(key: str, value: object) -> None:
     # Verification
     assert result == value or result == str(value)
     # boolean's return raw value, everything else is a string
+
+
+def test_save_trade_study() -> None:
+    """Verify that save_trade_study works as expected."""
+
+    # Setup
+    engine = mcapi.Engine()
+
+    # SUT
+    engine.save_trade_study("uri", mcapi.DataExplorer())
+
+    # Verification
+    assert engine._instance.getCallCount("saveTradeStudy") == 1
+
+
+def test_get_engine_info() -> None:
+    """
+    Verify that get_engine_info returns the correct information.
+    """
+
+    # Setup
+    engine = mcapi.Engine()
+    engine._instance.appFullPath = "C:\\Path\\To\\ModelCenter\\app.exe"
+
+    # SUT
+    info: mcapi.EngineInfo = engine.get_engine_info()
+
+    # Verification
+    assert info.directory_path == "C:\\Path\\To\\ModelCenter\\"
+    assert info.executable_path == "C:\\Path\\To\\ModelCenter\\app.exe"
+    assert info.version == "12.0.1"
