@@ -346,7 +346,7 @@ class Workflow:
 
     # BSTR getModelUUID();
     def get_workflow_uuid(self) -> str:
-        pass
+        return self._instance.getModelUUID()
 
     # void halt();
     def halt(self) -> None:

@@ -582,3 +582,16 @@ def test_halt() -> None:
 
     # Verify
     assert sut_workflow._instance.getCallCount("halt") == 1
+
+
+def test_get_uuid() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    sut_workflow._instance.setModelUUID("15B9E8D5-602F-44D9-AF58-9CF0E6C27F9E")
+
+    # Execute
+    result: str = sut_workflow.get_workflow_uuid()
+
+    # Verify
+    assert result == "15B9E8D5-602F-44D9-AF58-9CF0E6C27F9E"
