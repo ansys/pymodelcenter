@@ -1,15 +1,19 @@
 class IAssembly:
     """COM Instance."""
 
-    def variables(self):
+    @property
+    def variables(self) -> object:  # IVariables:
         """
         Pointer to the variables in the Assembly.
 
-        @return    IDispatch* to an IVariables object.
+        Returns
+        -------
+        IVariables object.
         """
         # VARIANT Variables;
         raise NotImplementedError
 
+    @property
     def groups(self) -> object:     # IGroups
         """
         Pointer to the Groups in the Assembly.
@@ -21,6 +25,7 @@ class IAssembly:
         # VARIANT Groups;
         raise NotImplementedError
 
+    @property
     def assemblies(self) -> object:     # IAssemblies
         """
         Pointer to the Assemblies in the Assembly.
@@ -32,6 +37,7 @@ class IAssembly:
         # VARIANT Assemblies;
         raise NotImplementedError
 
+    @property
     def components(self) -> object:     # IComponent
         """
         Pointer to the Components in the Assembly.
@@ -43,16 +49,19 @@ class IAssembly:
         # VARIANT Components;
         raise NotImplementedError
 
+    @property
     def icon_id(self):
         """The ID number of the icon to use for the Assembly."""
         # int iconID;
         raise NotImplementedError
 
+    @property
     def index_in_parent(self) -> int:
         """Gets the position of the Assembly within the parent."""
         # int IndexInParent;
         raise NotImplementedError
 
+    @property
     def parent_assembly(self) -> object:    # IAssembly:
         """
         Gets the parent of assembly of this assembly.
@@ -65,15 +74,19 @@ class IAssembly:
         # LPDISPATCH ParentAssembly;
         raise NotImplementedError
 
+    @property
     def assembly_type(self) -> str:
         """Gets the type of the Assembly (Sequence, Assembly, etc)."""
         # BSTR AssemblyType;
         raise NotImplementedError
 
+    @property
     def user_data(self) -> object:
         """
-        An arbitrary Variant which is not used internally by %ModelCenter but can
-        store data for programmatic purposes. Value is not stored across file save/load.
+        An arbitrary Variant which is not used internally by \
+        ModelCenter but can store data for programmatic purposes.
+
+        Value is not stored across file save/load.
 
         Returns
         -------
@@ -94,7 +107,7 @@ class IAssembly:
 
     def add_assembly(self, name: str, assembly_type) -> object:     # IAssembly
         """
-        This method creates a sub-Assembly in the current Assembly object.
+        Creates a sub-Assembly in the current Assembly object.
 
         Parameters
         ----------

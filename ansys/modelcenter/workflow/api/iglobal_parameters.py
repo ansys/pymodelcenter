@@ -1,7 +1,8 @@
 
 class IGlobalParameters:
     """
-    A set of name/value pairs that can be used for programmatic purposes.
+    A set of name/value pairs that can be used for programmatic \
+    purposes.
 
     Values are not stored with Model files. They can optionally be
     passed up to external servers, such as MCRE server.
