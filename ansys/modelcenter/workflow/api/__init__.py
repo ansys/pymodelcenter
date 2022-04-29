@@ -7,4 +7,8 @@ from .idata_monitor import IDataMonitor
 from .iformat import IFormat
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup
+from .igroups import IGroups
+from .iref_array_prop import IRefArrayProp
+from .ireference_array import IReferenceArray
+from .ireference_variable import IReferenceVariable
 from .workflow import Workflow
