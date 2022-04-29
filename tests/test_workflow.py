@@ -1,5 +1,12 @@
 """Tests for Workflow."""
+import clr
+import pytest
 from typing import Any, List, Optional
+
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockModelCenter, MockDoubleVariable, MockIntegerVariable,\
+    MockBooleanVariable, MockStringVariable, MockBooleanArray, MockIntegerArray, MockDoubleArray,\
+    MockStringArray
 
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
@@ -8,9 +15,8 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
 import ansys.common.variableinterop as acvi
-import pytest
-
 import ansys.modelcenter.workflow.api as mcapi
+import pytest
 
 mock_mc: Optional[Any] = None
 """
@@ -279,6 +285,148 @@ def test_create_data_explorer():
     # Verification
     assert mock_mc.getCallCount("createDataExplorer") == 1
     assert de is not None
+
+
+def _setup_variables(mc: MockModelCenter) -> None:
+    """
+    Setup various mock variables along with values.
+
+    Parameters
+    ----------
+    mc : MockModelCenter
+        MockModelCenter to be set up with variables.
+    """
+    variables = DotNetList[DotNetObject]()
+    values = DotNetList[DotNetObject]()
+
+    # Boolean
+    var = MockBooleanVariable("model.boolean", 0)
+    var.description = "Boolean value in Model."
+    variables.Add(var)
+    values.Add(True)
+
+    # Integer
+    var = MockIntegerVariable("model.integer", 0)
+    var.lowerBound = 0
+    var.upperBound = 5
+    var.units = "persons"
+    var.description = "Integer value in Model."
+    var.format = "a format"
+    var.enumValues = "1, 2, 3"
+    var.enumAliases = "one, two, three"
+    variables.Add(var)
+    values.Add(3)
+
+    # Double
+    var = MockDoubleVariable("model.double", 0)
+    var.lowerBound = -10
+    var.upperBound = 15
+    var.units = "m/s"
+    var.description = "Double value in Model."
+    var.format = "mock format"
+    var.enumValues = "1.0, 2.1, 3.0"
+    var.enumAliases = "one, more_than_two, three"
+    variables.Add(var)
+    values.Add(3.75)
+
+    # String
+    var = MockStringVariable("model.string", 0)
+    var.description = "String value in Model."
+    var.enumValues = "\"one\" \"two\" \"three\""
+    var.enumAliases = "One Two Three"
+    variables.Add(var)
+    values.Add("Capsule 1")
+
+    # Boolean[]
+    var = MockBooleanArray("model.booleans", 0)
+    var.description = "Boolean array in Model."
+    variables.Add(var)
+    values.Add(True)  # ?
+
+    # Integer[]
+    var = MockIntegerArray("model.integers", 0)
+    var.lowerBound = 0
+    var.upperBound = 5
+    var.units = "persons"
+    var.description = "Integer array in Model."
+    var.format = "a format"
+    var.enumValues = "1, 2, 3"
+    var.enumAliases = "one, two, three"
+    variables.Add(var)
+    values.Add(3)
+
+    # Double[]
+    var = MockDoubleArray("model.doubles", 0)
+    var.lowerBound = -10
+    var.upperBound = 15
+    var.units = "m/s"
+    var.description = "Double array in Model."
+    var.format = "mock format"
+    var.enumValues = "1.0, 2.1, 3.0"
+    var.enumAliases = "one, more_than_two, three"
+    variables.Add(var)
+    values.Add(3.75)
+
+    # String[]
+    var = MockStringArray("model.strings", 0)
+    var.description = "String array in Model."
+    var.enumValues = "\"one\" \"two\" \"three\""
+    var.enumAliases = "One Two Three"
+    variables.Add(var)
+    values.Add("Capsule 1")
+
+    mc.SetMockVariables(variables, values)
+
+
+def test_get_variable_meta_data() -> None:
+    # Setup
+    _setup_variables(mock_mc)
+
+    # SUT
+    boolean_metadata = workflow.get_variable_meta_data("model.boolean")
+    integer_metadata = workflow.get_variable_meta_data("model.integer")
+    double_metadata = workflow.get_variable_meta_data("model.double")
+    string_metadata = workflow.get_variable_meta_data("model.string")
+    boolean_array_metadata = workflow.get_variable_meta_data("model.booleans")
+    integer_array_metadata = workflow.get_variable_meta_data("model.integers")
+    double_array_metadata = workflow.get_variable_meta_data("model.doubles")
+    string_array_metadata = workflow.get_variable_meta_data("model.strings")
+
+    # Verification
+    assert mock_mc.getCallCount("getVariableMetaData") == 8
+
+    assert boolean_metadata.variable_type == acvi.VariableType.BOOLEAN
+    assert integer_metadata.variable_type == acvi.VariableType.INTEGER
+    assert double_metadata.variable_type == acvi.VariableType.REAL
+    assert string_metadata.variable_type == acvi.VariableType.STRING
+    assert boolean_array_metadata.variable_type == acvi.VariableType.BOOLEAN_ARRAY
+    assert integer_array_metadata.variable_type == acvi.VariableType.INTEGER_ARRAY
+    assert double_array_metadata.variable_type == acvi.VariableType.REAL_ARRAY
+    assert string_array_metadata.variable_type == acvi.VariableType.STRING_ARRAY
+
+
+@pytest.mark.parametrize(
+    'mc_type,acvi_type',
+    [
+        # TODO: Other types require support from MockModelCenter.
+        pytest.param('boolean', acvi.VariableType.BOOLEAN),
+        pytest.param('integer', acvi.VariableType.INTEGER),
+        pytest.param('double', acvi.VariableType.REAL),
+        pytest.param('string', acvi.VariableType.STRING),
+        # arrays
+        pytest.param('boolean[]', acvi.VariableType.BOOLEAN_ARRAY),
+        pytest.param('integer[]', acvi.VariableType.INTEGER_ARRAY),
+        pytest.param('double[]', acvi.VariableType.REAL_ARRAY),
+        pytest.param('string[]', acvi.VariableType.STRING_ARRAY),
+    ]
+)
+def test_create_assembly_variable(mc_type: str, acvi_type: acvi.VariableType) -> None:
+    # SUT
+    metadata: acvi.CommonVariableMetadata =\
+        workflow.create_assembly_variable("variable_name", mc_type, "container")
+
+    # Verification
+    assert metadata.variable_type == acvi_type
 
 
 def test_run_macro() -> None:
