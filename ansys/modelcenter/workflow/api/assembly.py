@@ -1,6 +1,13 @@
 class Assembly:
     """COM Instance."""
 
+    def __init__(self, assembly):
+        """
+        Construct a new instance.
+        Parameters:
+        """
+        self._assembly = assembly
+
     @property
     def variables(self) -> object:  # IVariables:
         """
@@ -97,13 +104,12 @@ class Assembly:
 
     def get_name(self) -> str:
         """Get the name of the Assembly."""
-        # BSTR getName();
-        raise NotImplementedError
+        return self._assembly.getName()
 
     def get_full_name(self) -> str:
         """Get the Full ModelCenter path of the Assembly."""
         # BSTR getFullName();
-        raise NotImplementedError
+        return self._assembly.getFullName()
 
     def add_assembly(self, name: str, assembly_type) -> object:     # IAssembly
         """

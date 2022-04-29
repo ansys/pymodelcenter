@@ -1,4 +1,21 @@
-import pytest
+import ansys.modelcenter.workflow.api as mcapi
+
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockAssembly
+
+wrapped_mock_comp: MockAssembly = None
+
+
+sut_instance: mcapi.Assembly(wrapped_mock_comp) = None
+
+
+def setup_function(test_func):
+    """
+    Called before each test in the module.
+    """
+    global wrapped_mock_comp, sut_instance
+    wrapped_mock_comp = MockAssembly("mock_comp_name")
+    sut_instance = mcapi.Assembly(wrapped_mock_comp)
 
 
 @pytest.mark.skip(reason="Not implemented.")
@@ -55,17 +72,13 @@ def test_user_data() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_name() -> None:
-    """Testing of the get_name method."""
-    # BSTR getName();
-    raise NotImplementedError
+    assert sut_instance.get_name() == "mock_comp_name"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_full_name() -> None:
     """Testing of the get_full_name method."""
-    raise NotImplementedError
+    assert sut_instance.get_full_name() == "mock_comp_name"
 
 
 @pytest.mark.skip(reason="Not implemented.")
