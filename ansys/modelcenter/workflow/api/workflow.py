@@ -1,15 +1,18 @@
 import clr
-clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-import Phoenix.Mock as phxmock
 
+clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
+
+import Phoenix.Mock as phxmock
 import ansys.common.variableinterop as acvi
-from typing import Any, List, Optional, Tuple, TYPE_CHECKING, Union
 from overrides import overrides
 
 from . import DataExplorer
 from .icomponent import IComponent
+
 if TYPE_CHECKING:
     from .engine import Engine
+
 from .i18n import i18n
 
 
@@ -62,7 +65,7 @@ class Workflow:
         pass
         """
         Set the value of a variable.
-        
+
         A wrapper around the
         IModelCenter.setValue(BSTR varName, BSTR value) method.
 
