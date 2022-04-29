@@ -1,16 +1,16 @@
 """Tests for Workflow."""
-import pytest
-from typing import List, Any, Optional
+from typing import Any, List, Optional
 
-import ansys.common.variableinterop as acvi
-import ansys.modelcenter.workflow.api as mcapi
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
 from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
+import ansys.common.variableinterop as acvi
+import pytest
 
+import ansys.modelcenter.workflow.api as mcapi
 
 mock_mc: Optional[Any] = None
 """
