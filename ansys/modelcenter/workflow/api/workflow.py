@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import Any, Tuple, Union, List
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -10,13 +10,13 @@ from .icomponent import IComponent
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
+from ansys.modelcenter.workflow.api.IAssembly import IAssembly
 
 
 class Workflow:
     """Represents a Workflow or Model in  ModelCenter."""
 
-    def __init__(self, instance: phxmock.MockModelCenter):
-        self._instance = instance
+    def __init__(self, instance: Any):
         """
         Initialize a new Workflow instance.
 
@@ -27,6 +27,42 @@ class Workflow:
             ModelCenter.
         """
         self._instance = instance
+
+    @staticmethod
+    def value_to_variable_value(value: Any) -> acvi.IVariableValue:
+        """
+        Convert the given python value to the appropriate \
+        IVariableValue type.
+
+        Supported types: bool, int, float, str, and list of the same.
+
+        Parameters
+        ----------
+        value : Any
+            The python type to convert.
+        Returns
+        -------
+        An IVariableValue type appropriate for the value given.
+        """
+        if isinstance(value, bool):
+            return acvi.BooleanValue(value)
+        elif isinstance(value, int):
+            return acvi.IntegerValue(value)
+        elif isinstance(value, float):
+            return acvi.RealValue(value)
+        elif isinstance(value, str):
+            return acvi.StringValue(value)
+        elif isinstance(value, list):
+            first = value[0]
+            if isinstance(first, bool):
+                return acvi.BooleanArrayValue(values=value)
+            elif isinstance(first, int):
+                return acvi.IntegerArrayValue(values=value)
+            elif isinstance(first, float):
+                return acvi.RealArrayValue(values=value)
+            elif isinstance(first, str):
+                return acvi.StringArrayValue(values=value)
+        raise TypeError
 
     @property
     def workflow_directory(self) -> str:
@@ -44,7 +80,6 @@ class Workflow:
         return self._instance.modelFileName
 
     def set_value(self, var_name: str, value: str) -> None:
-        pass
         """
         Set the value of a variable.
 
@@ -68,8 +103,6 @@ class Workflow:
         """
         Get the value of a variable.
 
-        A wrapper around the IModelCenter.getValue(BSTR varName) method.
-
         Parameters
         ----------
         var_name :  str
@@ -77,28 +110,10 @@ class Workflow:
 
         Returns
         -------
-        The value as one of the acvi.IVariableValue types.
+        The value as one of the IVariableValue types.
         """
-        raw = self._instance.getValue(var_name)
-        if isinstance(raw, bool):
-            return acvi.BooleanValue(raw)
-        elif isinstance(raw, int):
-            return acvi.IntegerValue(raw)
-        elif isinstance(raw, float):
-            return acvi.RealValue(raw)
-        elif isinstance(raw, str):
-            return acvi.StringValue(raw)
-        elif isinstance(raw, list):
-            first = raw[0]
-            if isinstance(first, bool):
-                return acvi.BooleanArrayValue(values=raw)
-            elif isinstance(first, int):
-                return acvi.IntegerArrayValue(values=raw)
-            elif isinstance(first, float):
-                return acvi.RealArrayValue(values=raw)
-            elif isinstance(first, str):
-                return acvi.StringArrayValue(values=raw)
-        raise TypeError
+        value = self._instance.getValue(var_name)
+        return Workflow.value_to_variable_value(value)
 
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
@@ -253,21 +268,58 @@ class Workflow:
     def trade_study_start(self) -> None:
         self._instance.tradeStudyStart()
 
-    # boolean getHaltStatus();
     def get_halt_status(self) -> bool:
-        pass
+        """
+        Finds out if the user has pressed the halt button.
 
-    # VARIANT getValueAbsolute(BSTR varName);
-    def get_value_absolute(self, var_name: str) -> object:    # IVariableValue:
-        pass
+        Returns
+        -------
+        Boolean True for yes or False for no.
+        """
+        return self._instance.getHaltStatus()
 
-    # void setScheduler(BSTR scheduler);
+    def get_value_absolute(self, var_name: str) -> acvi.IVariableValue:
+        """
+        Gets the value of a variable without validating it.
+
+        Parameters
+        ----------
+        var_name : str
+            Full ModelCenter Path of the variable.
+
+        Returns
+        -------
+        The value as a variant.
+        """
+        value = self._instance.getValueAbsolute(var_name)
+        return Workflow.value_to_variable_value(value)
+
     def set_scheduler(self, schedular: str) -> None:
-        pass
+        """
+        Sets the current active scheduler for the Model.
 
-    # void removeComponent(BSTR name);
+        Parameters
+        ----------
+        schedular : str
+            The scheduler type. Possible types are:
+                * forward
+                * backward
+                * mixed
+                * script
+            Note: all scheduler types are case-sensitive.
+        """
+        self._instance.setScheduler(schedular)
+
     def remove_component(self, name: str) -> None:
-        pass
+        """
+        Removes the specified component from the Model.
+
+        Parameters
+        ----------
+        name :
+            Full ModelCenter path of the component to remove.
+        """
+        self._instance.removeComponent(name)
 
     # void breakLink(BSTR variable);
     def break_link(self, variable: str) -> None:
@@ -422,7 +474,7 @@ class Workflow:
         pass
 
     # IDispatch* getDataMonitor(BSTR component, VARIANT index);
-    def get_data_monitor(self, component: str, index: object) -> object:   # IDataMonitor
+    def get_data_monitor(self, componenet: str, index: object) -> object:   # IDataMonitor
         pass
 
     # IDispatch* createDataMonitor(BSTR component, BSTR name, int x, int y);
@@ -460,11 +512,15 @@ class Workflow:
     def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         pass
 
-    # IDispatch* getModel();
-    # IDispatch* getAssembly(BSTR name);
     def get_assembly(self, name: str = None) -> object:    # IAssembly
         """Gets the named assembly or the top level assembly."""
-        pass
+        if name is None or name == "":
+            assembly = self._instance.getModel()
+        else:
+            assembly = self._instance.getAssembly(name)
+        if assembly is None:
+            return None
+        return IAssembly(assembly)
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,

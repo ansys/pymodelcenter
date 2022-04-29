@@ -1,7 +1,7 @@
 """Tests for Workflow."""
 import clr
 import pytest
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Type
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockModelCenter, MockDoubleVariable, MockIntegerVariable,\
@@ -14,6 +14,9 @@ from System import Int64 as DotNetInt64
 from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
+
+from ansys.modelcenter.workflow.api.IAssembly import IAssembly
+
 import ansys.common.variableinterop as acvi
 import ansys.modelcenter.workflow.api as mcapi
 import pytest
@@ -21,6 +24,7 @@ import pytest
 mock_mc: Optional[Any] = None
 """
 Mock ModelCenter object.
+
 Used to simulate ModelCenter's response to different API calls.
 """
 
@@ -33,6 +37,7 @@ Workflow object under test.
 def setup_function(_):
     """
     Setup called before each test function in this module.
+
     Parameters
     ----------
     _ :
@@ -77,7 +82,7 @@ def py_list_to_net_typed_list(src: List) -> DotNetList:
     primitive type.
 
     Types are one of four different primitive types.  For Python the
-    types are: bool, int, float or str.  For DotNet the type are:
+    types are: bool, int, float or str.  For Dot Net the type are:
     Boolean, Int64, Double and String.
 
     Parameters
@@ -233,15 +238,23 @@ get_value_tests = [
     pytest.param("root.ra", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
     pytest.param("root.sa", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
 ]
+"""Collection of tests for get_value, used in test_get_value."""
 
 
-@pytest.mark.parametrize("var_name,expected", get_value_tests)
-def test_get_value(var_name: str, expected: acvi.IVariableValue):
+def setup_test_values():
     """
-    Testing of get_value_tests method pulling each of the different
-    variable types.
+    Setup some values usable of testing get_value and \
+    get_value_absolute.
     """
-    global mock_mc, workflow
+    global mock_mc
+    mock_mc.createAssemblyVariable('b', "Input", "root")
+    mock_mc.createAssemblyVariable('i', "Input", "root")
+    mock_mc.createAssemblyVariable('r', "Input", "root")
+    mock_mc.createAssemblyVariable('s', "Input", "root")
+    mock_mc.createAssemblyVariable('ba', "Input", "root")
+    mock_mc.createAssemblyVariable('ia', "Input", "root")
+    mock_mc.createAssemblyVariable('ra', "Input", "root")
+    mock_mc.createAssemblyVariable('sa', "Input", "root")
     vars_ = py_list_to_net_typed_list([
         'root.b', 'root.i', 'root.r', 'root.s',
         'root.ba', 'root.ia', 'root.ra', 'root.sa'
@@ -253,15 +266,17 @@ def test_get_value(var_name: str, expected: acvi.IVariableValue):
         [1.414, 0.717, 3.14],
         ["one", "two", "three"]
     ])
-    mock_mc.createAssemblyVariable('b', "Input", "root")
-    mock_mc.createAssemblyVariable('i', "Input", "root")
-    mock_mc.createAssemblyVariable('r', "Input", "root")
-    mock_mc.createAssemblyVariable('s', "Input", "root")
-    mock_mc.createAssemblyVariable('ba', "Input", "root")
-    mock_mc.createAssemblyVariable('ia', "Input", "root")
-    mock_mc.createAssemblyVariable('ra', "Input", "root")
-    mock_mc.createAssemblyVariable('sa', "Input", "root")
     mock_mc.SetMockValues(vars_, vals)
+
+
+@pytest.mark.parametrize("var_name,expected", get_value_tests)
+def test_get_value(var_name: str, expected: acvi.IVariableValue):
+    """
+    Testing of get_value_tests method pulling each of the different
+    variable types.
+    """
+    global mock_mc, workflow
+    setup_test_values()
 
     # SUT
     result = workflow.get_value(var_name)
@@ -270,6 +285,133 @@ def test_get_value(var_name: str, expected: acvi.IVariableValue):
     assert result == expected
     assert type(result) == type(expected)
     assert mock_mc.getCallCount("getValue")
+
+
+@pytest.mark.parametrize(
+    "halted", [pytest.param(False, id="running"), pytest.param(True, id="halted")]
+ )
+def test_get_halt_status(halted: bool):
+    """Testing of get_halt_status method."""
+    global mock_mc, workflow
+    if halted:
+        mock_mc.halt()
+
+    # SUT
+    result = workflow.get_halt_status()
+
+    # Verify
+    assert result == halted
+    assert type(result) == bool
+    assert mock_mc.getCallCount("getHaltStatus")
+
+
+value_absolute_tests = get_value_tests.copy()
+"""Collection of test for get_value_absolute.
+
+Reusing the tests for get_values, but then adding some additional tests
+below."""
+
+value_absolute_tests.extend([
+    pytest.param("root.ba[1]", acvi.BooleanValue(False), id="bool array indexed"),
+    pytest.param("root.ia[2]", acvi.IntegerValue(1), id="int array indexed"),
+    pytest.param("root.ra[0]", acvi.RealValue(1.414), id="real array indexed"),
+    pytest.param("root.sa[1]", acvi.StringValue("two"), id="str array indexed"),
+])
+
+
+@pytest.mark.parametrize(
+    "var_name,expected", value_absolute_tests
+)
+def test_get_value_absolute(var_name: str, expected: acvi.IVariableValue):
+    """
+    Testing of get_value_tests method pulling each of the different \
+    variable types.
+    """
+    global mock_mc, workflow
+    setup_test_values()
+
+    # SUT
+    result = workflow.get_value_absolute(var_name)
+
+    # Verify
+    assert result == expected
+    assert type(result) == type(expected)
+    assert mock_mc.getCallCount("getValueAbsolute")
+
+
+@pytest.mark.parametrize("schedular", ["forward", "backward", "mixed", "script"])
+def test_set_scheduler(schedular: str) -> None:
+    """
+    Testing of set_scheduler method with different schedular values
+    Parameters
+    ----------
+    schedular :  str
+        schedular value to test
+    """
+    global mock_mc, workflow
+
+    # SUT
+    workflow.set_scheduler(schedular)
+
+    # Verify
+    assert mock_mc.getCallCount("setScheduler") == 1
+    args: list = mock_mc.getLastArgumentRecord("setScheduler")
+    assert len(args) == 1
+    assert args[0] == schedular
+
+
+def test_remove_component():
+    """ Testing of remove_component method."""
+    global mock_mc, workflow
+
+    # SUT
+    workflow.remove_component("componentName")
+
+    # Verify
+    assert mock_mc.getCallCount("removeComponent")
+    args: list = mock_mc.getLastArgumentRecord("removeComponent")
+    assert len(args) == 1
+    assert args[0] == "componentName"
+
+
+@pytest.mark.parametrize(
+    "name,get_model_call_count,get_assembly_call_count,result_type",
+    [
+        pytest.param(None,           1, 0, IAssembly,  id="root"),
+        pytest.param("root.aName",   0, 1, IAssembly,  id="named"),
+        pytest.param("root.noExist", 0, 1, None,       id="missing")
+    ]
+)
+def test_get_assembly(
+        name: str, get_model_call_count: int, get_assembly_call_count: int, result_type: Type):
+    """
+    Testing of get_assembly.
+
+    Parameters
+    ----------
+    name : str
+        name of assembly to request.
+    get_model_call_count : int
+        expected call count of IModelCenter.getModel
+    get_assembly_call_count : int
+        expected call count of IModelCenter.getAssembly
+    result_type : Type or None
+        expected type of result, or None is expected to return None
+    """
+    global mock_mc, workflow
+    mock_mc.createAssembly("aName", "root", "aType")
+
+    # SUT
+    result = workflow.get_assembly(name)
+
+    # Verify
+    if result_type is None:
+        assert result is None
+    else:
+        assert type(result) == result_type
+    # MockModelCenter.getAssembly doesn't have call tracking enabled
+    # assert mock_mc.getCallCount("getAssembly") == get_assembly_call_count
+    assert mock_mc.getCallCount("getModel") == get_model_call_count
 
 
 def test_create_data_explorer():
