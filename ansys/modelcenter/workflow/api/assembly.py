@@ -1,4 +1,4 @@
-class IAssembly:
+class Assembly:
     """COM Instance."""
 
     @property

@@ -1,6 +1,6 @@
+from .assembly import Assembly
 from .data_explorer import DataExplorer
 from .engine import Engine, EngineInfo, OnConnectionErrorMode, WorkflowType
-from .iassembly import IAssembly
 from .icomponent import IComponent
 from .idatamonitor import IDataMonitor
 from .iformat import IFormat

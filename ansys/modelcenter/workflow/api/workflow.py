@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from .engine import Engine
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
-from ansys.modelcenter.workflow.api.iassembly import IAssembly
+from ansys.modelcenter.workflow.api.assembly import Assembly
 
 
 class MockDataMonitorWrapper(IDataMonitor):
@@ -649,7 +649,7 @@ class Workflow:
             assembly = self._instance.getAssembly(name)
         if assembly is None:
             return None
-        return IAssembly(assembly)
+        return Assembly(assembly)
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,

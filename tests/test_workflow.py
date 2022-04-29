@@ -1,13 +1,21 @@
 """Tests for Workflow."""
-import clr
-import pytest
 from typing import Any, List, Optional, Type
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockModelCenter, MockDoubleVariable, MockIntegerVariable,\
-    MockBooleanVariable, MockStringVariable, MockBooleanArray, MockIntegerArray, MockDoubleArray,\
-    MockStringArray
+import clr
+import pytest
 
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import (
+    MockBooleanArray,
+    MockBooleanVariable,
+    MockDoubleArray,
+    MockDoubleVariable,
+    MockIntegerArray,
+    MockIntegerVariable,
+    MockModelCenter,
+    MockStringArray,
+    MockStringVariable,
+)
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
@@ -16,8 +24,9 @@ from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
 
 import ansys.common.variableinterop as acvi
-import ansys.modelcenter.workflow.api as mcapi
 import pytest
+
+import ansys.modelcenter.workflow.api as mcapi
 
 mock_mc: Optional[Any] = None
 """
@@ -497,8 +506,8 @@ def test_remove_component():
 @pytest.mark.parametrize(
     "name,get_model_call_count,get_assembly_call_count,result_type",
     [
-        pytest.param(None,           1, 0, mcapi.IAssembly,  id="root"),
-        pytest.param("root.aName",   0, 1, mcapi.IAssembly,  id="named"),
+        pytest.param(None,           1, 0, mcapi.Assembly,  id="root"),
+        pytest.param("root.aName",   0, 1, mcapi.Assembly,  id="named"),
         pytest.param("root.noExist", 0, 1, None,       id="missing")
     ]
 )
