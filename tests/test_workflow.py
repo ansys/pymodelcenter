@@ -611,3 +611,22 @@ def test_auto_link() -> None:
     assert sut_workflow._instance.getArgumentRecord("autoLink", 0) == [
         "Workflow.source_comp", "Workflow.dest_comp"
     ]
+
+
+def test_create_assembly() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("createAssembly") == 0
+    test_assembly_name = "test_assembly"
+    test_assembly_parent = "Workflow"
+    test_assembly_type = "DataAssembly"
+
+    # Execute
+    sut_workflow.create_assembly(test_assembly_name, test_assembly_parent, test_assembly_type)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("createAssembly") == 1
+    assert sut_workflow._instance.getArgumentRecord("createAssembly", 0) == [
+        test_assembly_name, test_assembly_parent, test_assembly_type
+    ]

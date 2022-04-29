@@ -329,8 +329,8 @@ class Workflow:
         return self._instance.runMacro(macro_name, use_mc_object)
 
     # IDispatch* createAssembly(BSTR name, BSTR parent, [optional]VARIANT assemblyType);
-    def create_assembly(self, name: str, parent: str, assembly_type: object = None):
-        pass
+    def create_assembly(self, name: str, parent: str, assembly_type: Optional[str] = None):
+        return self._instance.createAssembly(name, parent, assembly_type)
 
     # IDispatch* createAssemblyVariable(BSTR name, BSTR type, BSTR parent);
     def create_assembly_variable(self, name: str, type_: str, parent: str) -> object:    # IVariable
