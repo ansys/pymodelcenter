@@ -595,3 +595,19 @@ def test_get_uuid() -> None:
 
     # Verify
     assert result == "15B9E8D5-602F-44D9-AF58-9CF0E6C27F9E"
+
+
+def test_auto_link() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("autoLink") == 0
+
+    # Execute
+    sut_workflow.auto_link("Workflow.source_comp", "Workflow.dest_comp")
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("autoLink") == 1
+    assert sut_workflow._instance.getArgumentRecord("autoLink", 0) == [
+        "Workflow.source_comp", "Workflow.dest_comp"
+    ]

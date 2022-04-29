@@ -338,7 +338,7 @@ class Workflow:
 
     # void autoLink(BSTR srcComp, BSTR destComp);
     def auto_link(self, src_comp: str, dest_comp: str) -> None:
-        pass
+        self._instance.autoLink(src_comp, dest_comp)
 
     # LPDISPATCH getLinks([optional]VARIANT reserved);
     def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
