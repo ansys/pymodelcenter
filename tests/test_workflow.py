@@ -307,14 +307,13 @@ def _setup_variables(mc: MockModelCenter) -> None:
 
     # Integer
     var = MockIntegerVariable("model.integer", 0)
-    # Not implemented in MockIntegerVariable:
-    # var.lowerBound = 0
-    # var.upperBound = 5
-    # var.units = "persons"
-    # var.description = "Integer value in Model."
-    # var.format = "a format"
-    # var.enumValues =
-    # var.enumAliases =
+    var.lowerBound = 0
+    var.upperBound = 5
+    var.units = "persons"
+    var.description = "Integer value in Model."
+    var.format = "a format"
+    var.enumValues = "1, 2, 3"
+    var.enumAliases = "one, two, three"
     variables.Add(var)
     values.Add(3)
 
@@ -325,16 +324,16 @@ def _setup_variables(mc: MockModelCenter) -> None:
     var.units = "m/s"
     var.description = "Double value in Model."
     var.format = "mock format"
-    # var.enumValues =
-    # var.enumAliases =
+    var.enumValues = "1.0, 2.1, 3.0"
+    var.enumAliases = "one, more_than_two, three"
     variables.Add(var)
     values.Add(3.75)
 
     # String
     var = MockStringVariable("model.string", 0)
     var.description = "String value in Model."
-    # var.enumValues =
-    # var.enumAliases =
+    var.enumValues = "\"one\" \"two\" \"three\""
+    var.enumAliases = "One Two Three"
     variables.Add(var)
     values.Add("Capsule 1")
 
@@ -346,14 +345,13 @@ def _setup_variables(mc: MockModelCenter) -> None:
 
     # Integer[]
     var = MockIntegerArray("model.integers", 0)
-    # Not implemented in MockIntegerArray:
-    # var.lowerBound = 0
-    # var.upperBound = 5
-    # var.units = "persons"
-    # var.description = "Integer array in Model."
-    # var.format = "a format"
-    # var.enumValues =
-    # var.enumAliases =
+    var.lowerBound = 0
+    var.upperBound = 5
+    var.units = "persons"
+    var.description = "Integer array in Model."
+    var.format = "a format"
+    var.enumValues = "1, 2, 3"
+    var.enumAliases = "one, two, three"
     variables.Add(var)
     values.Add(3)
 
@@ -364,16 +362,16 @@ def _setup_variables(mc: MockModelCenter) -> None:
     var.units = "m/s"
     var.description = "Double array in Model."
     var.format = "mock format"
-    # var.enumValues =
-    # var.enumAliases =
+    var.enumValues = "1.0, 2.1, 3.0"
+    var.enumAliases = "one, more_than_two, three"
     variables.Add(var)
     values.Add(3.75)
 
     # String[]
     var = MockStringArray("model.strings", 0)
-    # var.description = "String array in Model."
-    # var.enumValues =
-    # var.enumAliases =
+    var.description = "String array in Model."
+    var.enumValues = "\"one\" \"two\" \"three\""
+    var.enumAliases = "One Two Three"
     variables.Add(var)
     values.Add("Capsule 1")
 
@@ -411,10 +409,15 @@ def test_get_variable_meta_data() -> None:
     'mc_type,acvi_type',
     [
         # TODO: Other types require support from MockModelCenter.
-        # pytest.param('boolean', acvi.VariableType.BOOLEAN),
-        # pytest.param('integer', acvi.VariableType.INTEGER),
+        pytest.param('boolean', acvi.VariableType.BOOLEAN),
+        pytest.param('integer', acvi.VariableType.INTEGER),
         pytest.param('double', acvi.VariableType.REAL),
-        # pytest.param('string', acvi.VariableType.STRING),
+        pytest.param('string', acvi.VariableType.STRING),
+        # arrays
+        pytest.param('boolean[]', acvi.VariableType.BOOLEAN_ARRAY),
+        pytest.param('integer[]', acvi.VariableType.INTEGER_ARRAY),
+        pytest.param('double[]', acvi.VariableType.REAL_ARRAY),
+        pytest.param('string[]', acvi.VariableType.STRING_ARRAY),
     ]
 )
 def test_create_assembly_variable(mc_type: str, acvi_type: acvi.VariableType) -> None:

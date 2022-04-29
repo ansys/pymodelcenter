@@ -352,7 +352,7 @@ class Workflow:
         is_array: bool = False
         if type_.endswith('[]'):
             is_array = True
-            type_ = variable.type[:-2]
+            type_ = type_[:-2]
 
         if type_ == 'boolean':
             if is_array:
@@ -373,8 +373,11 @@ class Workflow:
             metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
             metadata.enumerated_aliases =\
                 acvi.StringArrayValue.from_api_string(variable.enumAliases)
-        elif type_ == 'int':
-            metadata = acvi.IntegerMetadata()
+        elif type_ == 'integer':
+            if is_array:
+                metadata = acvi.IntegerArrayMetadata()
+            else:
+                metadata = acvi.IntegerMetadata()
             metadata.description = variable.description
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
@@ -382,7 +385,10 @@ class Workflow:
             metadata.enumerated_aliases =\
                 acvi.StringArrayValue.from_api_string(variable.enumAliases)
         elif type_ == 'string':
-            metadata = acvi.StringMetadata()
+            if is_array:
+                metadata = acvi.StringArrayMetadata()
+            else:
+                metadata = acvi.StringMetadata()
             metadata.description = variable.description
             metadata.enumerated_values = acvi.StringArrayValue.from_api_string(variable.enumValues)
             metadata.enumerated_aliases =\
