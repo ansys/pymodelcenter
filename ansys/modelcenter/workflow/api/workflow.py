@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple, Union
+from typing import List, Tuple, Union
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -47,7 +47,7 @@ class Workflow:
         pass
         """
         Set the value of a variable.
-        
+
         A wrapper around the
         IModelCenter.setValue(BSTR varName, BSTR value) method.
 
