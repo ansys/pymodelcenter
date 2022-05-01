@@ -5,13 +5,13 @@ class IReferenceArray:
     """
 
     # boolean hasChanged;
-    
+
     # boolean hide;
-    
+
     # LPDISPATCH OwningComponent;
-    
+
     # long size;
-    
+
     # long numDimensions;
 
     @property
@@ -22,56 +22,56 @@ class IReferenceArray:
         raise NotImplementedError
 
     # boolean isValid();
-    
+
     # void validate();
-    
+
     # BSTR getName();
-    
+
     # BSTR getFullName();
-    
+
     # BSTR getType();
-    
+
     # boolean isInput();
-    
+
     # BSTR toString();
-    
+
     # void fromString(BSTR value);
-    
+
     # BSTR toStringAbsolute();
-    
+
     # void invalidate();
-    
+
     # LPDISPATCH directPrecedents( [optional]VARIANT followSuspended, [optional]VARIANT reserved);
-    
+
     # LPDISPATCH directDependents( [optional]VARIANT followSuspended, [optional]VARIANT reserved);
-    
+
     # LPDISPATCH precedentLinks( [optional]VARIANT reserved);
-    
+
     # LPDISPATCH dependentLinks( [optional]VARIANT reserved);
-    
+
     # LPDISPATCH precedents( [optional]VARIANT followSuspended, [optional]VARIANT reserved);
-    
+
     # LPDISPATCH dependents( [optional]VARIANT followSuspended, [optional]VARIANT reserved);
-    
+
     # boolean isInputToComponent();
-    
+
     # boolean isInputToModel();
-    
+
     # void setMetadata(
     #   BSTR name, MetadataType type, VARIANT value, MetadataAccess access, boolean archive);
-    
+
     # VARIANT getMetadata(BSTR name);
-    
+
     # BSTR toStringEx(long index);
-    
+
     # void fromStringEx(BSTR value, long index);
-    
+
     # BSTR toStringAbsoluteEx(long index);
-    
+
     # long getLength( [optional] VARIANT dim);
-    
+
     # void setLength(long length, [optional] VARIANT dim);
-    
+
     # void setDimensions(
     #   long d1,
     #   [optional] VARIANT d2, [optional] VARIANT d3, [optional] VARIANT d4,
