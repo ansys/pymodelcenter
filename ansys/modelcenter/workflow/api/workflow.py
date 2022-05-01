@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple, Union
+from typing import List, Tuple, Union
 
 import ansys.common.variableinterop as acvi
 import clr
