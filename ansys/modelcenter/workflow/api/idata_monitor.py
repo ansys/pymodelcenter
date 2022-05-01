@@ -7,7 +7,8 @@ class IDataMonitor:
         Parameters
         ----------
         row :
-            The row number in the Data Monitor of interest (0-based index).
+            The row number in the Data Monitor of interest (0-based
+            index).
 
         Returns
         -------
@@ -50,14 +51,17 @@ class IDataMonitor:
 
     def get_link(self, row: int) -> str:
         """
-        Retrieves the %ModelCenter variable associated with a given row in the Data Monitor.
+        Retrieves the ModelCenter variable associated with a given row
+        in the Data Monitor.
 
-        Returns a blank string if the specified row doesn't link to a %ModelCenter variable.
+        Returns a blank string if the specified row doesn't link to a
+        ModelCenter variable.
 
         Parameters
         ----------
         row :
-            The row number in the Data Monitor of interest (0-based index).
+            The row number in the Data Monitor of interest (0-based
+            index).
 
         Returns
         -------
@@ -68,14 +72,16 @@ class IDataMonitor:
 
     def set_link(self, row: int, link: str) -> bool:
         """
-        Sets the %ModelCenter variable associated with a given row in the Data Monitor.
+        Sets the %ModelCenter variable associated with a given row in
+        the Data Monitor.
 
         Parameters
         ----------
         row :
             The row in the Data Monitor of interest (0-based index).
         link :
-            The %ModelCenter variable to associate with a given row in the Data Monitor.
+            The ModelCenter variable to associate with a given row in
+            the Data Monitor.
 
         Returns
         -------
@@ -86,7 +92,8 @@ class IDataMonitor:
 
     def add_item(self, name: str, link: str) -> int:
         """
-        Add an item to the Data Monitor that links to a variable in the model.
+        Add an item to the Data Monitor that links to a variable in \
+        the model.
 
         Parameters
         ----------
@@ -104,7 +111,8 @@ class IDataMonitor:
 
     def add_unlinked_item(self, name: str) -> int:
         """
-        Add an item to the Data Monitor that does not link to a variable within %ModelCenter.
+        Add an item to the Data Monitor that does not link to a \
+        variable within ModelCenter.
 
         Parameters
         ----------
@@ -262,13 +270,14 @@ class IDataMonitor:
 
     def set_location(self, x: int, y: int) -> None:
         """
-        Sets the x and y location of the Data Monitor in the Analysis View.
+        Sets the x and y location of the Data Monitor in the Analysis \
+        View.
 
         Parameters
         ----------
-        x :
+        x : int
             The new x position.
-        y :
+        y : int
             The new y position.
         """
         # void setLocation( int x, int y);

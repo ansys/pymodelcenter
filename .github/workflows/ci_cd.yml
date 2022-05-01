@@ -25,6 +25,7 @@ jobs:
       - name: setup-git-credentials
         run: |
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
 
       - name: Install style requirements
         run: |
@@ -52,6 +53,7 @@ jobs:
       - name: setup-git-credentials
         run: |
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
 
       - name: Create wheel
         run: |
@@ -92,6 +94,7 @@ jobs:
       - name: setup-git-credentials
         run: |
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
 
       - name: Install library, with docs extra
         run: pip install .[docs]
