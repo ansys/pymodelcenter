@@ -1,3 +1,4 @@
+
 from typing import Any, List, Tuple, Union
 
 import ansys.common.variableinterop as acvi
@@ -6,11 +7,12 @@ from overrides import overrides
 
 from . import DataExplorer
 from .i18n import i18n
+
+from .iassembly import IAssembly
 from .icomponent import IComponent
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
-from ansys.modelcenter.workflow.api.IAssembly import IAssembly
 
 
 class Workflow:
