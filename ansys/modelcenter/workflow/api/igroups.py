@@ -3,7 +3,7 @@ from .igroup import IGroup
 
 
 class IGroups(Arrayish[IGroup]):
-    """COM Instance."""
+    """A collection of IGroups, accessible by name or integer ID."""
 
     def __init__(self, instance) -> None:
         """
