@@ -15,7 +15,7 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
 
-from ansys.modelcenter.workflow.api.IAssembly import IAssembly
+from ansys.modelcenter.workflow.api.iassembly import IAssembly
 
 import ansys.common.variableinterop as acvi
 import ansys.modelcenter.workflow.api as mcapi
