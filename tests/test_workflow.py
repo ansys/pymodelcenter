@@ -211,7 +211,7 @@ def test_save_workflow_as():
         pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, 42,
                      47, 42, id="fully specified position"),
         # It's difficult to test these cases, because the mock expects Missing.Value,
-        # and that really screws with the teflection-based method matching in pythonnet,
+        # and that really screws with the reflection-based method matching in pythonnet,
         # since it seems Missing.Value has special meaning in that case.
         # Passing None doesn't work and neither does leaving the method off.
         # This is probably something that the real GRPC api will have to solve.

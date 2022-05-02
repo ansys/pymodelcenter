@@ -54,6 +54,8 @@ class WorkflowVariable:
 
 
 class Workflow:
+    """Represents a Workflow or Model in ModelCenter."""
+
     def __init__(self, instance: phxmock.MockModelCenter, engine: 'Engine'):
         """
         Initialize a new Workflow instance.
