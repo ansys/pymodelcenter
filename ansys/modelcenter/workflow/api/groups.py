@@ -12,6 +12,6 @@ class Groups(Arrayish[Group]):
         Parameters
         ----------
         instance :
-            ModelCenter API Groups interface object.
+            ModelCenter API groups interface object.
         """
         Arrayish.__init__(self, instance, Group)
