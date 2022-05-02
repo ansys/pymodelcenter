@@ -23,27 +23,27 @@ class DataMonitor:
 
     def get_name(self, row: int) -> str:
         """
+        Get the name of a row in the DataMonitor.
+
         Parameters
         ----------
         row :
-            The row number in the Data Monitor of interest (0-based
-            index).
+            The row number in the DataMonitor of interest.
 
         Returns
         -------
         The name of the row.
-
         """
         return self._instance.getName(row)
 
     def set_name(self, row: int, name: str) -> None:
         """
-        Sets the display name of the specified row in the Data Monitor.
+        Set the display name of the specified row in the DataMonitor.
 
         Parameters
         ----------
         row : int
-            The row in the Data Monitor of interest (0-based index).
+            The row in the DataMonitor of interest.
         name : str
             The new display name.
         """
@@ -51,13 +51,13 @@ class DataMonitor:
 
     def is_renamed(self, row: int) -> bool:
         """
-        Determines whether the name of a row in the Data Monitor lines \
-        up to the %ModelCenter variable it represents.
+        Determine whether the name of a row in the DataMonitor lines \
+        up to the variable it represents.
 
         Parameters
         ----------
         row : int
-            The row in the Data Monitor of interest (0-based index).
+            The row in the DataMonitor of interest.
 
         Returns
         -------
@@ -67,17 +67,15 @@ class DataMonitor:
 
     def get_link(self, row: int) -> str:
         """
-        Retrieves the ModelCenter variable associated with a given row
-        in the Data Monitor.
+        Retrieve the variable associated with a row in the DataMonitor.
 
         Returns a blank string if the specified row doesn't link to a
-        ModelCenter variable.
+        variable.
 
         Parameters
         ----------
         row :
-            The row number in the Data Monitor of interest (0-based
-            index).
+            The row number in the DataMonitor of interest.
 
         Returns
         -------
@@ -87,16 +85,15 @@ class DataMonitor:
 
     def set_link(self, row: int, link: str) -> bool:
         """
-        Sets the %ModelCenter variable associated with a given row in
-        the Data Monitor.
+        Set the variable associated with a given row in the DataMonitor.
 
         Parameters
         ----------
         row :
-            The row in the Data Monitor of interest (0-based index).
+            The row in the DataMonitor of interest.
         link :
-            The ModelCenter variable to associate with a given row in
-            the Data Monitor.
+            The variable to associate with a given row in the
+            DataMonitor.
 
         Returns
         -------
@@ -107,58 +104,58 @@ class DataMonitor:
 
     def add_item(self, name: str, link: str) -> int:
         """
-        Add an item to the Data Monitor that links to a variable in \
+        Add an item to the DataMonitor that links to a variable in \
         the model.
 
         Parameters
         ----------
         name :
-            The name to use for the item in the Data Monitor.
+            The name to use for the item in the DataMonitor.
         link :
-            The name of the %ModelCenter variable this item links to.
+            The name of the variable this item links to.
 
         Returns
         -------
-        The index of the new item in the data monitor.
+        The index of the new item in the DataMonitor.
         """
         return self._instance.addItem(name, link)
 
     def add_unlinked_item(self, name: str) -> int:
         """
-        Add an item to the Data Monitor that does not link to a \
-        variable within ModelCenter.
+        Add an item to the DataMonitor that does not link to a \
+        variable.
 
         Parameters
         ----------
         name :
-            The name to use for the item in the Data Monitor.
+            The name to use for the item in the DataMonitor.
 
         Returns
         -------
-            The index of the new item in the data monitor.
+            The index of the new item in the DataMonitor.
         """
         return self._instance.addUnlinkedItem(name)
 
     def remove_item(self, row: int) -> None:
         """
-        Removes the selected row from the Data Monitor.
+        Remove the selected row from the DataMonitor.
 
         Parameters
         ----------
         row : int
-            The row in the Data Monitor of interest (0-based index).
+            The row in the DataMonitor of interest.
         """
         return self._instance.removeItem(row)
 
     def remove_link(self, row: int) -> None:
         """
-        Removes the associated link from the row specified in the Data \
-        Monitor.
+        Remove the associated link from the row specified in the \
+        DataMonitor.
 
         Parameters
         ----------
         row :
-            The row in the Data Monitor of interest (0-based index).
+            The row in the DataMonitor of interest.
         """
         return self._instance.removeLink(row)
 
@@ -169,17 +166,17 @@ class DataMonitor:
 
     @display_full_names.setter
     def display_full_names(self, display_full_names: bool) -> None:
-        """Sets the "Display Full Names" option."""
+        """Set the "Display Full Names" option."""
         self._instance.setDisplayFullNames(display_full_names)
 
     @property
     def auto_delete(self) -> bool:
-        """Gets the status of the Auto Delete option."""
+        """Get the status of the Auto Delete option."""
         return self._instance.getAutoDelete()
 
     @auto_delete.setter
     def auto_delete(self, auto_delete: bool) -> None:
-        """Sets the status of the Auto Delete option."""
+        """Set the status of the Auto Delete option."""
         self._instance.setAutoDelete(auto_delete)
 
     @property
@@ -189,17 +186,17 @@ class DataMonitor:
 
     @display_units.setter
     def display_units(self, display_units) -> None:
-        """Sets the "Display Units" option."""
+        """Set the "Display Units" option."""
         self._instance.setDisplayUnits(display_units)
 
     def get_col_width(self, col: int) -> int:
         """
-        Gets the column width for the specified column.
+        Get the column width for the specified column.
 
         Parameters
         ----------
         col : int
-            The column number to fetch the width of (0-based index).
+            The column in the DataMonitor of interest.
 
         Returns
         -------
@@ -209,25 +206,25 @@ class DataMonitor:
 
     def set_col_width(self, col: int, width: int) -> None:
         """
-        Sets the width of the specified column.
+        Set the width of the specified column.
 
         Parameters
         ----------
         col :
-            The column in the Data Monitor of interest (0-based index).
+            The column in the DataMonitor of interest.
         width :
             The new width for the column.
         """
         self._instance.setColWidth(col, width)
 
     def is_valid(self) -> bool:
-        """Determines whether all the items in the Data Monitor are \
+        """Determine whether all the items in the DataMonitor are \
         valid or not."""
         return self._instance.isValid()
 
     @property
     def title(self) -> str:
-        """Get the title of the Data Monitor."""
+        """Get the title of the DataMonitor."""
         return self._instance.getTitle()
 
     @title.setter
@@ -263,7 +260,6 @@ class DataMonitor:
         size: Tuple[int, int]
             The new (width, height) of the DataMonitor.
         """
-        # void setSize( int width, int height );
         self._instance.setSize(size[0], size[1])
 
     @property
@@ -287,5 +283,4 @@ class DataMonitor:
         location: Tuple[int, int]
             The new (x,y) location.
         """
-        # void setLocation( int x, int y);
         self._instance.setLocation(location[0], location[1])

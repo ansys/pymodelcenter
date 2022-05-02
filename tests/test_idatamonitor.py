@@ -1,4 +1,3 @@
-import ansys.common.variableinterop as acvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
