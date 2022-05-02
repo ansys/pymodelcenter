@@ -22,7 +22,6 @@ from System import Int64 as DotNetInt64
 from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
-
 import ansys.common.variableinterop as acvi
 import pytest
 
