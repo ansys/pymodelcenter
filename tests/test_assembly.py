@@ -132,10 +132,16 @@ def test_add_assembly_no_position(x_pos: Optional[int], y_pos: Optional[int]) ->
     assert result.get_name() == subassembly_name
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_add_variable() -> None:
-    """Testing of the add_variable method."""
-    raise NotImplementedError
+    var_name = "variable_name"
+    var_type = "real"
+    assert wrapped_mock_comp.getCallCount("addVariable") == 0
+
+    sut_instance.add_variable(var_name, var_type)
+
+    assert wrapped_mock_comp.getCallCount("addVariable") == 1
+    assert wrapped_mock_comp.getArgumentRecord("addVariable", 0) == [
+        var_name, var_type]
 
 
 @pytest.mark.skip(reason="Not implemented.")

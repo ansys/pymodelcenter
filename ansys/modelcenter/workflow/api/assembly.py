@@ -176,7 +176,8 @@ class Assembly:
         -------
         IVariable object.
         """
-        raise NotImplementedError
+        # TODO: Wrap and return when variable wrappers are available
+        self._assembly.addVariable(name, type_)
 
     def rename(self, name: str) -> None:
         """
