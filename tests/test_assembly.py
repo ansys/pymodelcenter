@@ -1,3 +1,8 @@
+from typing import Optional
+
+import clr
+import pytest
+
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
@@ -81,10 +86,50 @@ def test_get_full_name() -> None:
     assert sut_instance.get_full_name() == "mock_comp_name"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_add_assembly() -> None:
-    """Testing of the add_assembly method."""
-    raise NotImplementedError
+    """Testing of the add_assembly method when position info is specified."""
+    subassembly_name = "subassembly"
+    x_pos = 47
+    y_pos = 9001
+    sub_assembly_type = "Sequence"
+    assert wrapped_mock_comp.getCallCount("addAssembly2") == 0
+    assert wrapped_mock_comp.getCallCount("addAssembly") == 0
+
+    result: mcapi.Assembly = sut_instance.add_assembly(
+        subassembly_name, x_pos, y_pos, sub_assembly_type)
+
+    assert wrapped_mock_comp.getCallCount("addAssembly2") == 1
+    assert wrapped_mock_comp.getCallCount("addAssembly") == 0
+    assert wrapped_mock_comp.getArgumentRecord("addAssembly2", 0) == [
+        subassembly_name, x_pos, y_pos, sub_assembly_type]
+    assert isinstance(result, mcapi.Assembly)
+    assert result.get_name() == subassembly_name
+
+
+@pytest.mark.parametrize(
+    'x_pos,y_pos',
+    [
+        pytest.param(47, None, id="no y"),
+        pytest.param(None, 47, id="no x"),
+        pytest.param(None, None, id="no position"),
+    ]
+)
+def test_add_assembly_no_position(x_pos: Optional[int], y_pos: Optional[int]) -> None:
+    """Testing of the add_assembly method when some position info is missing"""
+    subassembly_name = "subassembly"
+    sub_assembly_type = "Sequence"
+    assert wrapped_mock_comp.getCallCount("addAssembly2") == 0
+    assert wrapped_mock_comp.getCallCount("addAssembly") == 0
+
+    result: mcapi.Assembly = sut_instance.add_assembly(
+        subassembly_name, x_pos, y_pos, sub_assembly_type)
+
+    assert wrapped_mock_comp.getCallCount("addAssembly2") == 0
+    assert wrapped_mock_comp.getCallCount("addAssembly") == 1
+    assert wrapped_mock_comp.getArgumentRecord("addAssembly", 0) == [
+        subassembly_name, sub_assembly_type]
+    assert isinstance(result, mcapi.Assembly)
+    assert result.get_name() == subassembly_name
 
 
 @pytest.mark.skip(reason="Not implemented.")
@@ -102,12 +147,6 @@ def test_rename() -> None:
 @pytest.mark.skip(reason="Not implemented.")
 def test_delete_variable() -> None:
     """Testing of the delete_variable method."""
-    raise NotImplementedError
-
-
-@pytest.mark.skip(reason="Not implemented.")
-def test_add_assembly2() -> None:
-    """Testing of the add_assembly2 method."""
     raise NotImplementedError
 
 

@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class Assembly:
     """COM Instance."""
 
@@ -111,22 +114,34 @@ class Assembly:
         # BSTR getFullName();
         return self._assembly.getFullName()
 
-    def add_assembly(self, name: str, assembly_type) -> object:     # IAssembly
+    def add_assembly(self,
+                     name: str,
+                     x_pos: Optional[int],
+                     y_pos: Optional[int],
+                     assembly_type: Optional[str] = None) -> 'Assembly':     # IAssembly
         """
-        Creates a sub-Assembly in the current Assembly object.
+        This method creates a sub-Assembly in the current Assembly \
+        with a specific type and position.
 
         Parameters
         ----------
-        name :
-            The name of the sub-Assembly to create.
+        name : str
+            the name of the subassembly
+        x_pos : Optional[int]
+            the position of the sub-assembly on the x axis. Ignored if y_pos is not also specified.
+        y_pos : Optional[int]
+            the position of the sub-assembly on the y axis. Ignored if x_pos is not also specified.
         assembly_type :
 
         Returns
         -------
         IAssembly object.
         """
-        # IDispatch* addAssembly(BSTR name, [optional]VARIANT assemblyType);
-        raise NotImplementedError
+
+        if x_pos is not None and y_pos is not None:
+            return Assembly(self._assembly.addAssembly2(name, x_pos, y_pos, assembly_type))
+        else:
+            return Assembly(self._assembly.addAssembly(name, assembly_type))
 
     def add_variable(self, name: str, type_: str) -> object:    # IVariable
         # IDispatch* addVariable(BSTR name, BSTR type);
@@ -185,26 +200,6 @@ class Assembly:
             Name of the variable to delete.
         """
         # void deleteVariable(BSTR name);
-        raise NotImplementedError
-
-    def add_assembly2(self, name: str, x_pos, y_pos, assembly_type=None) -> object:     # IAssembly
-        """
-        This method creates a sub-Assembly in the current Assembly \
-        with a specific type and position.
-
-        Parameters
-        ----------
-        name :
-        x_pos :
-        y_pos :
-        assembly_type :
-
-        Returns
-        -------
-        IAssembly object.
-        """
-        # LPDISPATCH addAssembly2(
-        #       BSTR name, VARIANT xPos, VARIANT yPos, [optional]VARIANT assemblyType);
         raise NotImplementedError
 
     def set_metadata(self, name: str, type_, value, access, archive) -> None:
