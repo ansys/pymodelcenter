@@ -124,10 +124,22 @@ def test_assembly_type_readonly() -> None:
         sut_instance.assembly_type = "Sequence"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_user_data() -> None:
     """Testing of the user_data method."""
-    raise NotImplementedError
+    wrapped_mock_comp.userData = "some user data"
+
+    result = sut_instance.user_data
+
+    assert result == "some user data"
+
+
+def test_user_data_set() -> None:
+    """Testing of the user_data setter method."""
+    wrapped_mock_comp.userData = "unchanged"
+
+    sut_instance.user_data = "pass test"
+
+    assert wrapped_mock_comp.userData == "pass test"
 
 
 def test_get_name() -> None:

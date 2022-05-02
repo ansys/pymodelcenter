@@ -106,13 +106,32 @@ class Assembly:
         ModelCenter but can store data for programmatic purposes.
 
         Value is not stored across file save/load.
-
-        Returns
-        -------
-
         """
-        # VARIANT userData;
-        raise NotImplementedError
+        return self._assembly.userData
+
+    @user_data.setter
+    def user_data(self, value: any) -> object:
+        """
+        An arbitrary Variant which is not used internally by \
+        ModelCenter but can store data for programmatic purposes.
+
+        Value is not stored across file save/load.
+        """
+        # LTTODO: It's difficult to know exactly what to do here, since
+        # the user_data type is defined as a VARIANT on the MC API, and MC itself allows any
+        # VARIANT to be set.
+        # The documentation suggests that the restriction to VARIANT is not actually important
+        # but is probably a consequence of the restrictions of the COM API; that is, there's nothing
+        # wrong with allowing this to be any data type, since the receiving application (MCD) is
+        # not actually supposed to do anything with this data but store it (allowing the client
+        # script to "tag" assemblies, etc, with arbitrary data).
+        # It's likely that we'll need to do some input validation here
+        # to conform to the particulars of the actual API "transport" winds up being used
+        # (i.e. GRPC as opposed to COM) and then also allow whatever is on the receiving
+        # end to decide whether it has other restrictions.
+        # For now, we do nothing and just pass the unmodified value in, and let pythonnet
+        # decide whether it can set it into the user data field.
+        self._assembly.userData = value
 
     def get_name(self) -> str:
         """Get the name of the Assembly."""
