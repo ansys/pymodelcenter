@@ -26,13 +26,14 @@ class IVariable(ABC):
         raise NotImplementedError
 
     @property
-    def owning_component(self) -> LPDISPATCH:
+    def owning_component(self) -> object:
         """
         Gets the component that owns this variable.
 
         Returns
         -------
-        IDispatch* to an IComponent object.
+        object
+            IDispatch* to an IComponent object.
         """
         raise NotImplementedError
 
@@ -43,7 +44,8 @@ class IVariable(ABC):
 
         Returns
         -------
-        True if variable is valid. False if the variable is not valid.
+        bool
+            True if variable is valid. False if the variable is not valid.
         """
         raise NotImplementedError
 
@@ -61,7 +63,8 @@ class IVariable(ABC):
 
         Returns
         -------
-        The name of the variable.
+        str
+            The name of the variable.
         """
         raise NotImplementedError
 
@@ -72,7 +75,8 @@ class IVariable(ABC):
 
         Returns
         -------
-        The full %ModelCenter path of the variable.
+        str
+            The full %ModelCenter path of the variable.
         """
         raise NotImplementedError
 
@@ -83,7 +87,8 @@ class IVariable(ABC):
 
         Returns
         -------
-        The type of the variable as a string.
+        str
+            The type of the variable as a string.
         """
         raise NotImplementedError
 
@@ -102,7 +107,8 @@ class IVariable(ABC):
 
         Returns
         -------
-        The value of the variable as a string.
+        str
+            The value of the variable as a string.
         """
         raise NotImplementedError
 
@@ -125,7 +131,8 @@ class IVariable(ABC):
 
         Returns
         -------
-        The value of the variable as a string.
+        str
+            The value of the variable as a string.
         """
         raise NotImplementedError
 
@@ -138,8 +145,8 @@ class IVariable(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def direct_precedents(self, follow_suspended: Optional[VARIANT],
-                          reserved: Optional[VARIANT]) -> LPDISPATCH:
+    def direct_precedents(self, follow_suspended: Optional[object],
+                          reserved: Optional[object]) -> object:
         """
         Returns a list of variables that are immediate precedents to the value of this variable.
         This function returns all variables that influence this variable and are directly
@@ -155,13 +162,14 @@ class IVariable(ABC):
 
         Returns
         -------
-        IDispatch* to an IVariables object.
+        object
+            IDispatch* to an IVariables object.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def direct_dependents(self, follow_suspended: Optional[VARIANT],
-                          reserved: Optional[VARIANT]) -> LPDISPATCH:
+    def direct_dependents(self, follow_suspended: Optional[object],
+                          reserved: Optional[object]) -> object:
         """
         Returns a list of variables that are immediate dependents of the value of this variable.
         This function returns all variables that are influenced by this variable and are
@@ -177,12 +185,13 @@ class IVariable(ABC):
 
         Returns
         -------
-        IDispatch* to an IVariables object.
+        object
+            IDispatch* to an IVariables object.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def precedent_links(self, reserved: Optional[VARIANT]) -> LPDISPATCH:
+    def precedent_links(self, reserved: Optional[object]) -> object:
         """
         Returns a list of links that are immediate precedents to the value of this variable.
         All the returned links will have this variable as the LHS of the equation. Except
@@ -195,12 +204,13 @@ class IVariable(ABC):
 
         Returns
         -------
-        IDispatch* to an IVariableLinks object.
+        object
+            IDispatch* to an IVariableLinks object.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def dependent_links(self, reserved: Optional[VARIANT]) -> LPDISPATCH:
+    def dependent_links(self, reserved: Optional[object]) -> object:
         """
         Returns a list of links that immediately depend on the value of this variable.
         All the returned links will have this variable as part of a RHS equation.
@@ -212,13 +222,13 @@ class IVariable(ABC):
 
         Returns
         -------
-        IDispatch* to an IVariableLinks object.
+        object
+            IDispatch* to an IVariableLinks object.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def precedents(self, follow_suspended: Optional[VARIANT],
-                   reserved: Optional[VARIANT]) -> LPDISPATCH:
+    def precedents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
         """
         Returns a list of variables that are precedents to the value of this variable. This
         function returns all variables that influence this variable, not just directly connected
@@ -234,13 +244,13 @@ class IVariable(ABC):
 
         Returns
         -------
-        IDispatch* to an IVariables object.
+        object
+            IDispatch* to an IVariables object.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def dependents(self, follow_suspended: Optional[VARIANT],
-                   reserved: Optional[VARIANT]) -> LPDISPATCH:
+    def dependents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
         """
         Returns a list of variables that are dependent upon the value of this variable.
         This function returns all variables that are influenced by this variable,
@@ -256,7 +266,8 @@ class IVariable(ABC):
 
         Returns
         -------
-        IDispatch* to an IVariables object.
+        object
+            IDispatch* to an IVariables object.
         """
         raise NotImplementedError
 
@@ -277,7 +288,7 @@ class IVariable(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def set_metadata(self, name: str, type: MetadataType, value: VARIANT, access: MetadataAccess,
+    def set_metadata(self, name: str, type: MetadataType, value: object, access: MetadataAccess,
                      archive: bool) -> None:
         """
         Sets the meta data value of the given meta data key name.
@@ -294,7 +305,7 @@ class IVariable(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_metadata(self, name: str) -> VARIANT:
+    def get_metadata(self, name: str) -> object:
         """
         Gets the meta data value of the given meta data key name.
 
@@ -305,6 +316,7 @@ class IVariable(ABC):
 
         Returns
         -------
-        Metadata value.
+        object
+            Metadata value.
         """
         raise NotImplementedError
