@@ -1,4 +1,4 @@
-class IGroup:
+class Group:
     """COM Instance."""
 
     def variables(self) -> object:
@@ -6,7 +6,7 @@ class IGroup:
         # VARIANT Variables;
         raise NotImplementedError
 
-    def groups(self) -> object:     # IGroup
+    def groups(self) -> object:     # Group
         """The Groups this Group is a member of."""
         # VARIANT Groups;
         raise NotImplementedError

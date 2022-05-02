@@ -9,7 +9,7 @@ from overrides import overrides
 
 from .data_explorer import DataExplorer
 from .i18n import i18n
-from .format import IFormat
+from .format import Format
 from .workflow import Workflow
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
@@ -142,25 +142,25 @@ class Engine:
         if calling_workflow is self._workflow:
             self._workflow = None
 
-    def get_formatter(self, fmt: str) -> IFormat:
+    def get_formatter(self, fmt: str) -> Format:
         """
         Create an instance of a formatter that can be used to format \
         numbers to and from a particular string style.
 
-        See documentation on IFormat.set_format for more information on
+        See documentation on Format.set_format for more information on
         available styles.
 
         Parameters
         ----------
         fmt: str
-            Specified string format for the IFormat object.
+            Specified string format for the Format object.
 
         Returns
         -------
-        An IFormat object that formats in the given style.
+        An Format object that formats in the given style.
         """
 
-        class MockFormatWrapper(IFormat):
+        class MockFormatWrapper(Format):
 
             def __init__(self, instance: MockFormatter):
                 """Initialize."""
@@ -202,7 +202,7 @@ class Engine:
             def real_to_editable_string(self, real: float64) -> str:
                 raise NotImplementedError
 
-        formatter: IFormat = MockFormatWrapper(self._instance.getFormatter(fmt))
+        formatter: Format = MockFormatWrapper(self._instance.getFormatter(fmt))
         return formatter
 
     def set_user_name(self, user_name: str) -> None:

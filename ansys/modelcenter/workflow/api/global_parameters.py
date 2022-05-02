@@ -1,5 +1,5 @@
 
-class IGlobalParameters:
+class GlobalParameters:
     """
     A set of name/value pairs that can be used for programmatic \
     purposes.

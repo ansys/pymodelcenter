@@ -1,4 +1,4 @@
-class IRefArrayProp:
+class RefArrayProp:
     """COM Instance."""
 
     @property

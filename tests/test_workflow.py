@@ -125,7 +125,7 @@ def test_get_component():
     mock_mc.createComponent("a", "word", "a", 0, 0)
 
     # SUT
-    result: mcapi.IComponent = workflow.get_component("a.word")
+    result: mcapi.Component = workflow.get_component("a.word")
 
     # Verification
     assert result.get_name() == "word"
@@ -505,8 +505,8 @@ def test_remove_component():
 @pytest.mark.parametrize(
     "name,get_model_call_count,get_assembly_call_count,result_type",
     [
-        pytest.param(None,           1, 0, mcapi.IAssembly,  id="root"),
-        pytest.param("root.aName",   0, 1, mcapi.IAssembly,  id="named"),
+        pytest.param(None, 1, 0, mcapi.Assembly, id="root"),
+        pytest.param("root.aName", 0, 1, mcapi.Assembly, id="named"),
         pytest.param("root.noExist", 0, 1, None,       id="missing")
     ]
 )
@@ -980,7 +980,7 @@ def test_get_datamonitor(index: int) -> None:
         workflow.create_data_monitor("comp", "DM" + str(x), 0, 0)
 
     # SUT
-    result: mcapi.IDataMonitor = workflow.get_data_monitor("comp", index)
+    result: mcapi.DataMonitor = workflow.get_data_monitor("comp", index)
 
     # Verification
     assert result.title == "DM" + str(index)
@@ -991,7 +991,7 @@ def test_create_datamonitor() -> None:
     global workflow
 
     # SUT
-    result: mcapi.IDataMonitor = workflow.create_data_monitor("comp", "DM0", 0, 0)
+    result: mcapi.DataMonitor = workflow.create_data_monitor("comp", "DM0", 0, 0)
 
     # Verification
     assert result.title == "DM0"

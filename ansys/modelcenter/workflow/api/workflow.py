@@ -7,19 +7,19 @@ import ansys.common.variableinterop as acvi
 from overrides import overrides
 
 from . import DataExplorer
-from .component import IComponent
-from .datamonitor import IDataMonitor
+from .component import Component
+from .datamonitor import DataMonitor
 
 if TYPE_CHECKING:
     from .engine import Engine
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
-from ansys.modelcenter.workflow.api.assembly import IAssembly
+from ansys.modelcenter.workflow.api.assembly import Assembly
 
 
-class MockDataMonitorWrapper(IDataMonitor):
-    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
+class MockDataMonitorWrapper(DataMonitor):
+    """Maps a COM MockDataMonitor to the DataMonitor interface."""
 
     def __init__(self, monitor: phxmock.MockDataMonitor):
         """
@@ -202,13 +202,13 @@ class Workflow:
         self._engine._notify_close_workflow(self)
 
     # IDispatch* getVariable(BSTR name);
-    #   IDoubleVariable IDoubleArray IBooleanVariable IIntegerVariable IReferenceVariable
-    #   IObjectVariable IFileVariable IStringVariable IBooleanArray IIntegerArray IReferenceArray
+    #   IDoubleVariable IDoubleArray IBooleanVariable IIntegerVariable ReferenceVariable
+    #   IObjectVariable IFileVariable IStringVariable IBooleanArray IIntegerArray ReferenceArray
     #   IFileArray IStringArray IGeometryVariable:
     def get_variable(self, name: str) -> object:
         return WorkflowVariable(self._instance.getVariable(name))
 
-    def get_component(self, name: str) -> IComponent:   # IComponent, IIfComponent, IScriptComponent
+    def get_component(self, name: str) -> Component:   # Component, IIfComponent, IScriptComponent
         """
         Get a component from the workflow.
 
@@ -222,7 +222,7 @@ class Workflow:
         The component.
         """
 
-        class MockComponentWrapper(IComponent):
+        class MockComponentWrapper(Component):
             @property  # type: ignore
             @overrides
             def variables(self) -> object:
@@ -317,7 +317,7 @@ class Workflow:
         if mock is None:
             msg: str = i18n("Exceptions", "ERROR_COMPONENT_NOT_FOUND")
             raise Exception(msg)
-        comp: IComponent = MockComponentWrapper(mock)
+        comp: Component = MockComponentWrapper(mock)
         return comp
 
     def trade_study_end(self) -> None:
@@ -542,7 +542,7 @@ class Workflow:
         """
         self._instance.run(variable_array or "")
 
-    def get_data_monitor(self, component: str, index: int) -> IDataMonitor:
+    def get_data_monitor(self, component: str, index: int) -> DataMonitor:
         """
         Get the DataMonitor at the given index for the given component.
 
@@ -642,7 +642,7 @@ class Workflow:
     def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         pass
 
-    def get_assembly(self, name: str = None) -> object:    # IAssembly
+    def get_assembly(self, name: str = None) -> object:    # Assembly
         """Gets the named assembly or the top level assembly."""
         if name is None or name == "":
             assembly = self._instance.getModel()
@@ -650,7 +650,7 @@ class Workflow:
             assembly = self._instance.getAssembly(name)
         if assembly is None:
             return None
-        return IAssembly(assembly)
+        return Assembly(assembly)
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,

@@ -1,5 +1,5 @@
 
-class IAssemblies:
+class Assemblies:
     """
     COM Instance.
     """
@@ -10,7 +10,7 @@ class IAssemblies:
         # VARIANT Count;
         raise NotImplementedError
 
-    def item(self, id_: int) -> object:   # IAssembly:
+    def item(self, id_: int) -> object:   # Assembly:
         """
         Get a pointer to the specified Assembly.
 
@@ -21,7 +21,7 @@ class IAssemblies:
 
         Returns
         -------
-        IAssembly object.
+        Assembly object.
         """
         # VARIANT Item(VARIANT id);
         raise NotImplementedError

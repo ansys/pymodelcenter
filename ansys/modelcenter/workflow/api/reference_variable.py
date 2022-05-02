@@ -1,8 +1,8 @@
-from ansys.modelcenter.workflow.api import IRefProp
+from ansys.modelcenter.workflow.api import RefProp
 
 
 # TODO: inherit from IVariable when available.
-class IReferenceVariable:   # (IVariable):
+class ReferenceVariable:   # (IVariable):
     """COM Instance.
     @implements IVariable"""
 
@@ -38,7 +38,7 @@ class IReferenceVariable:   # (IVariable):
         # VARIANT referencedVariable;
         raise NotImplementedError
 
-    def create_ref_prop(self,  name: str, type_: str) -> IRefProp:
+    def create_ref_prop(self,  name: str, type_: str) -> RefProp:
         """
         Creates a reference property for the variable.
 
@@ -52,7 +52,7 @@ class IReferenceVariable:   # (IVariable):
 
         Returns
         -------
-        IRefProp object.
+        RefProp object.
         """
         # IDispatch* createRefProp( BSTR name, BSTR type );
         raise NotImplementedError

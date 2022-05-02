@@ -1,4 +1,4 @@
-class IRefProp:
+class RefProp:
     """COM Instance."""
 
     @property

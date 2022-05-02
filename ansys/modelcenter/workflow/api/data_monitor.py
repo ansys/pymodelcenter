@@ -1,5 +1,5 @@
 
-class IDataMonitor:
+class DataMonitor:
     """COM Instance."""
 
     def get_name(self, row: int) -> str:

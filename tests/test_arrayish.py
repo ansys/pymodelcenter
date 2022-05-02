@@ -77,8 +77,8 @@ class MockItem:
     """
     A python object that wraps the MockAPIItem.
 
-    Logically equivalent to IAssembly, IComponent, IGroup, IVariableLink,
-    or IVariable in their relationship to IAssemblies, IComponents,
+    Logically equivalent to Assembly, Component, Group, IVariableLink,
+    or IVariable in their relationship to Assemblies, IComponents,
     IVariableLinks and IVariables.
     """
 

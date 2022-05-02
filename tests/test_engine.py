@@ -288,7 +288,7 @@ def test_get_formatter(fmt: str) -> None:
     engine = mcapi.Engine()
 
     # SUT
-    result: mcapi.IFormat = engine.get_formatter(fmt)
+    result: mcapi.Format = engine.get_formatter(fmt)
 
     # Verification
     assert result.get_format() == fmt

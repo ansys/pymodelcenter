@@ -1,10 +1,10 @@
 from typing import MutableSequence
 
-from .ref_array_prop import IRefArrayProp
+from .ref_array_prop import RefArrayProp
 
 
 # TODO: inherit from IArray when available.
-class IReferenceArray:      # (IArray):
+class ReferenceArray:      # (IArray):
     """
     COM Instance.
     @implements IArray
@@ -71,7 +71,7 @@ class IReferenceArray:      # (IArray):
         # double setValue(double value, int index);
         raise NotImplementedError
 
-    def create_ref_prop(self, name: str, type_: str) -> IRefArrayProp:
+    def create_ref_prop(self, name: str, type_: str) -> RefArrayProp:
         """
         Creates a reference property for the array.
 
@@ -85,7 +85,7 @@ class IReferenceArray:      # (IArray):
 
         Returns
         -------
-        IRefArrayProp object.
+        RefArrayProp object.
         """
         # IDispatch* createRefProp(BSTR name, BSTR type);
         raise NotImplementedError

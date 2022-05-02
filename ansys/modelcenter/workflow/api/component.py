@@ -1,9 +1,9 @@
-"""Definition of IComponent."""
+"""Definition of Component."""
 from abc import ABC, abstractmethod
 from typing import List, Union
 
 
-class IComponent(ABC):
+class Component(ABC):
     """A component in a Workflow."""
 
     @property
@@ -14,7 +14,7 @@ class IComponent(ABC):
 
     @property
     @abstractmethod
-    def groups(self) -> object:  # IGroups
+    def groups(self) -> object:  # Groups
         """All groups in the component."""
         raise NotImplementedError
 
@@ -42,7 +42,7 @@ class IComponent(ABC):
 
     @property
     @abstractmethod
-    def parent_assembly(self) -> object: # IAssembly
+    def parent_assembly(self) -> object: # Assembly
         """Parent assembly of this component."""
         raise NotImplementedError
 

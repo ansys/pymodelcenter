@@ -1,4 +1,4 @@
-class IAssembly:
+class Assembly:
     """COM Instance."""
 
     def __init__(self, instance: object):
@@ -8,7 +8,7 @@ class IAssembly:
         Parameters
         ----------
         instance : object
-            The raw IAssembly interface object ot use to make direct
+            The raw Assembly interface object ot use to make direct
             call to ModelCenter.
         """
         self._instance = instance
@@ -26,31 +26,31 @@ class IAssembly:
         raise NotImplementedError
 
     @property
-    def groups(self) -> object:     # IGroups
+    def groups(self) -> object:     # Groups
         """
         Pointer to the Groups in the Assembly.
 
         Returns
         -------
-        IGroups object.
+        Groups object.
         """
         # VARIANT Groups;
         raise NotImplementedError
 
     @property
-    def assemblies(self) -> object:     # IAssemblies
+    def assemblies(self) -> object:     # Assemblies
         """
         Pointer to the Assemblies in the Assembly.
 
         Returns
         -------
-        IAssemblies object.
+        Assemblies object.
         """
         # VARIANT Assemblies;
         raise NotImplementedError
 
     @property
-    def components(self) -> object:     # IComponent
+    def components(self) -> object:     # Component
         """
         Pointer to the Components in the Assembly.
 
@@ -74,13 +74,13 @@ class IAssembly:
         raise NotImplementedError
 
     @property
-    def parent_assembly(self) -> object:    # IAssembly:
+    def parent_assembly(self) -> object:    # Assembly:
         """
         Gets the parent of assembly of this assembly.
 
         Returns
         -------
-        IAssembly object.
+        Assembly object.
 
         """
         # LPDISPATCH ParentAssembly;
@@ -117,7 +117,7 @@ class IAssembly:
         # BSTR getFullName();
         raise NotImplementedError
 
-    def add_assembly(self, name: str, assembly_type) -> object:     # IAssembly
+    def add_assembly(self, name: str, assembly_type) -> object:     # Assembly
         """
         Creates a sub-Assembly in the current Assembly object.
 
@@ -129,7 +129,7 @@ class IAssembly:
 
         Returns
         -------
-        IAssembly object.
+        Assembly object.
         """
         # IDispatch* addAssembly(BSTR name, [optional]VARIANT assemblyType);
         raise NotImplementedError
@@ -193,7 +193,7 @@ class IAssembly:
         # void deleteVariable(BSTR name);
         raise NotImplementedError
 
-    def add_assembly2(self, name: str, x_pos, y_pos, assembly_type=None) -> object:     # IAssembly
+    def add_assembly2(self, name: str, x_pos, y_pos, assembly_type=None) -> object:     # Assembly
         """
         This method creates a sub-Assembly in the current Assembly \
         with a specific type and position.
@@ -207,7 +207,7 @@ class IAssembly:
 
         Returns
         -------
-        IAssembly object.
+        Assembly object.
         """
         # LPDISPATCH addAssembly2(
         #       BSTR name, VARIANT xPos, VARIANT yPos, [optional]VARIANT assemblyType);

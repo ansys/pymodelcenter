@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class IDataMonitor(ABC):
+class DataMonitor(ABC):
     # TODO: Fill out all methods and properties
 
     @property
