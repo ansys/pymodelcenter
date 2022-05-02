@@ -1,9 +1,7 @@
-import clr
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
 
-from typing import Any, List, Optional, Tuple, TYPE_CHECKING, Union
-
-import Phoenix.Mock as phxmock
 import ansys.common.variableinterop as acvi
+import clr
 from overrides import overrides
 
 from . import DataExplorer

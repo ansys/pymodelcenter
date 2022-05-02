@@ -131,4 +131,3 @@ def test_get_position_y() -> None:
 def test_show() -> None:
     """Testing of the show method."""
     raise NotImplementedError
-
