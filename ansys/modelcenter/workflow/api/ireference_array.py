@@ -1,18 +1,13 @@
-class IReferenceArray:
+from typing import MutableSequence
+
+from .iref_array_prop import IRefArrayProp
+
+
+class IReferenceArray:      # (IArray):
     """
     COM Instance.
     @implements IArray
     """
-
-    # boolean hasChanged;
-
-    # boolean hide;
-
-    # LPDISPATCH OwningComponent;
-
-    # long size;
-
-    # long numDimensions;
 
     @property
     def auto_grow(self) -> bool:
@@ -21,66 +16,29 @@ class IReferenceArray:
         # boolean autoGrow;
         raise NotImplementedError
 
-    # boolean isValid();
-
-    # void validate();
-
-    # BSTR getName();
-
-    # BSTR getFullName();
-
-    # BSTR getType();
-
-    # boolean isInput();
-
-    # BSTR toString();
-
-    # void fromString(BSTR value);
-
-    # BSTR toStringAbsolute();
-
-    # void invalidate();
-
-    # LPDISPATCH directPrecedents( [optional]VARIANT followSuspended, [optional]VARIANT reserved);
-
-    # LPDISPATCH directDependents( [optional]VARIANT followSuspended, [optional]VARIANT reserved);
-
-    # LPDISPATCH precedentLinks( [optional]VARIANT reserved);
-
-    # LPDISPATCH dependentLinks( [optional]VARIANT reserved);
-
-    # LPDISPATCH precedents( [optional]VARIANT followSuspended, [optional]VARIANT reserved);
-
-    # LPDISPATCH dependents( [optional]VARIANT followSuspended, [optional]VARIANT reserved);
-
-    # boolean isInputToComponent();
-
-    # boolean isInputToModel();
-
-    # void setMetadata(
-    #   BSTR name, MetadataType type, VARIANT value, MetadataAccess access, boolean archive);
-
-    # VARIANT getMetadata(BSTR name);
-
-    # BSTR toStringEx(long index);
-
-    # void fromStringEx(BSTR value, long index);
-
-    # BSTR toStringAbsoluteEx(long index);
-
-    # long getLength( [optional] VARIANT dim);
-
-    # void setLength(long length, [optional] VARIANT dim);
-
-    # void setDimensions(
-    #   long d1,
-    #   [optional] VARIANT d2, [optional] VARIANT d3, [optional] VARIANT d4,
-    #   [optional] VARIANT d5, [optional] VARIANT d6, [optional] VARIANT d7,
-    #   [optional] VARIANT d8, [optional] VARIANT d9, [optional] VARIANT d10);
-
-    def get_value(self, index: int) -> float:   # RealValue:
+    @property
+    def value(self) -> MutableSequence[float]:
         """
-        Value of an array element.
+        An access wrapper to the values, assuming the array of values \
+        is a single dimensional array.
+        """
+        # double value(long index);
+        # void value(long index, double newValue);
+        raise NotImplementedError
+
+    @property
+    def reference(self) -> MutableSequence[str]:
+        """
+        An access wrapper to the references, assuming the array of
+        references is a single dimensional array.
+        """
+        # BSTR reference(long index);
+        # void reference(long index, BSTR newValue);
+        raise NotImplementedError
+
+    def get_value(self, index: int) -> float:
+        """
+        Gets the value of an array element.
 
         Parameters
         ----------
@@ -89,98 +47,152 @@ class IReferenceArray:
 
         Returns
         -------
+        The value.
+        """
+        # double getValue(int index);
+        raise NotImplementedError
+
+    def set_value(self, value: float, index: int) -> float:
+        """
+        Sets the value of an array element.
+
+        Parameters
+        ----------
+        value : float
+            New value.
+        index : int
+            Index of the array element (0-based index).
+
+        Returns
+        -------
 
         """
-        # double value(long index);
+        # double setValue(double value, int index);
+        raise NotImplementedError
 
-#    # void value(long index, double newValue);
-#    Value of an array element.
-#
-#    @param index      Index of the array element (0-based index).
-#    @param newValue
-#
-#    # BSTR reference(long index);
-#    Reference of an array element.
-#
-#    @param index   Index of the array element (0-based index).
-#
-#    @return
-#
-#    # void reference(long index, BSTR newValue);
-#    Reference of an array element.
-#
-#    @param index      Index of the array element (0-based index).
-#
-#    @param newValue
-#
-#    def get_value(self):
-#    # double getValue(int index);
-#    Gets the value of an array element.
-#
-#    @param index   Index of the array element (0-based index).
-#
-#    @return       The value.
-#
-#    # double setValue(double value, int index);
-#    Sets the value of an array element.
-#
-#    @param value   New value.
-#    @param index   Index of the array element (0-based index).
-#
-#    @return
-#
-#    # IDispatch* createRefProp(BSTR name, BSTR type);
-#    Creates a reference property for the array.
-#
-#    @param name    Name of the reference property.
-#    @param type    Type of reference property to create.
-#                    Allowed types are: double, long, boolean, and string.
-#
-#    @return       IDispatch* to an IRefArrayProp object.
-#
-#    # VARIANT getRefPropValue( BSTR name, int index );
-#    Gets the value of a specified reference property for an element in the array.
-#
-#    @param name    Name of the reference property.
-#    @param index   Index of the array element (0-based index).
-#
-#    @return       The value as a variant.
-#
-#    # void setRefPropValue( BSTR name, int index, BSTR value );
-#    Sets the value of a specified reference property for an element in the array.
-#
-#    @param name    Name of the reference property.
-#    @param index   Index of the array element (0-based index).
-#    @param value   New value.
-#
-#    # VARIANT getRefPropValueAbsolute( BSTR name, int index );
-#    Gets the value of a specified reference property for an element in
-#    the array without runningto validate.
-#
-#    @param name    Name of the reference property.
-#    @param index   Index of the array element (0-based index).
-#
-#    @return       The value as a variant.
-#
-#    # VARIANT referencedVariables(long index);
-#    Gets the reference variables of the index element of the array.
-#
-#    @param index   Index of the array element (0-based index).
-#
-#    @return       The references variables of the element.
-#
-#    # VARIANT referencedVariable(long index);
-#    Gets the reference variable of the index element of the array.
-#
-#    Convenience method for if the indexed variable only has one reference.
-#
-#    @param index   Index of the array element (0-based index).
-#
-#    @return       The reference variable of the index element.
-#
-#    # double getValueAbsolute(int index);
-#    gets the value of the variable at a specific location without validating.
-#
-#    @param index    The array element index (0-based index).
-#
-#    @return        The reference value.
+    def create_ref_prop(self, name: str, type_: str) -> IRefArrayProp:
+        """
+        Creates a reference property for the array.
+
+        Parameters
+        ----------
+        name : str
+            Name of the reference property.
+        type_ : str
+            Type of reference property to create. Allowed types are:
+            double, long, boolean, and string.
+
+        Returns
+        -------
+        IRefArrayProp object.
+        """
+        # IDispatch* createRefProp(BSTR name, BSTR type);
+        raise NotImplementedError
+
+    def get_ref_prop_value(self, name: str, index: int) -> object:
+        """
+        Gets the value of a specified reference property for an \
+        element in the array.
+
+        Parameters
+        ----------
+        name : str
+            Name of the reference property.
+        index : int
+            Index of the array element (0-based index).
+
+        Returns
+        -------
+        The value as a variant.
+        """
+        # VARIANT getRefPropValue( BSTR name, int index );
+        raise NotImplementedError
+
+    def set_ref_prop_value(self, name: str, index: int, value: str) -> None:
+        """
+        Sets the value of a specified reference property for an \
+        element in the array.
+
+        Parameters
+        ----------
+        name : str
+            Name of the reference property.
+        index : int
+            Index of the array element (0-based index).
+        value : str
+            New value.
+        """
+        # void setRefPropValue( BSTR name, int index, BSTR value );
+        raise NotImplementedError
+
+    def get_ref_prop_value_absolute(self, name: str, index: int) -> object:
+        """
+        Gets the value of a specified reference property for an \
+        element in the array without running to validate.
+
+        Parameters
+        ----------
+        name : str
+            Name of the reference property.
+        index : int
+            Index of the array element (0-based index).
+
+        Returns
+        -------
+        The value as a variant.
+        """
+        # VARIANT getRefPropValueAbsolute( BSTR name, int index );
+        raise NotImplementedError
+
+    def referenced_variables(self, index: int) -> object:
+        """
+        Gets the reference variables of the index element of the array.
+
+        Parameters
+        ----------
+        index : int
+            Index of the array element (0-based index).
+
+        Returns
+        -------
+        The references variables of the element.
+
+        """
+        # VARIANT referencedVariables(long index);
+        raise NotImplementedError
+
+    def referenced_variable(self, index: int) -> object:
+        """
+        Gets the reference variable of the index element of the array.
+
+        Convenience method for if the indexed variable only has one
+        reference.
+
+        Parameters
+        ----------
+        index : int
+            Index of the array element (0-based index).
+
+        Returns
+        -------
+        The reference variable of the index element.
+        """
+        # VARIANT referencedVariable(long index);
+        raise NotImplementedError
+
+    def get_value_absolute(self, index: int) -> float:
+        """
+        Gets the value of the variable at a specific location without \
+        validating.
+
+        Parameters
+        ----------
+        index : int
+            The array element index (0-based index).
+
+        Returns
+        -------
+        The reference value.
+        """
+        # double getValueAbsolute(int index);
+        raise NotImplementedError
