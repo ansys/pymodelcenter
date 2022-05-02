@@ -11,6 +11,7 @@ from .idatamonitor import IDataMonitor
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
+
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 
 
