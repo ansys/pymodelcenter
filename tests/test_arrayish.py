@@ -1,7 +1,7 @@
 from typing import Union, List
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
-from tests.mock_access import MockAccess
+from mock_access import MockAccess
 
 
 class MockAPIItem:
