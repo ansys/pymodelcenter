@@ -1,4 +1,4 @@
-from typing import Sequence, TypeVar, Union, Type
+from typing import Sequence, Type, TypeVar, Union
 
 VT = TypeVar('VT')
 """A generic value type."""

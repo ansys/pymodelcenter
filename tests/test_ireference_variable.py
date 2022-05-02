@@ -47,4 +47,3 @@ def test_set_ref_prop_value() -> None:
 def test_get_ref_prop_value_absolute() -> None:
     """Testing of the get_ref_prop_value_absolute method."""
     raise NotImplementedError
-
