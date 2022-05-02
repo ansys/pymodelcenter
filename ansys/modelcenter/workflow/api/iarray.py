@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from .ivariable import IVariable
 
-class IArray(ABC):
+
+class IArray(IVariable, ABC):
     """
     Base class for all array types.  Has common functionality for getting/setting array
     sizes and getting/setting values as strings.
@@ -12,18 +14,6 @@ class IArray(ABC):
 
     Implements IVariable
     """
-
-    @property
-    def has_changed(self) -> bool:
-        raise NotImplementedError
-
-    @property
-    def hide(self) -> bool:
-        raise NotImplementedError
-
-    @property
-    def owning_component(self) -> LPDISPATCH:
-        raise NotImplementedError
 
     @property
     def size(self) -> int:
@@ -60,151 +50,6 @@ class IArray(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def is_valid(self) -> bool:
-        """
-        Finds out whether or not the array is valid.
-
-        Returns
-        -------
-        yes(TRUE) or no(FALSE).
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def validate(self) -> None:
-        """
-        Causes the array to validate itself.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_name(self) -> str:
-        """
-        Gets the name of the array.
-
-        Returns
-        -------
-        The name of the array.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_full_name(self) -> str:
-        """
-        Gets the full %ModelCenter path of the array.
-
-        Returns
-        -------
-        The full %ModelCenter path of the array.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_type(self) -> str:
-        """
-        Gets the type of the array.
-
-        Returns
-        -------
-        The type of the array as a string.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def is_input(self) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def to_string(self) -> str:
-        """
-        Converts the array to a string, validating the array if necessary. If the variable is an
-        array, it will to be of the form <c>"1, 2, 3"</c> for one-dimensional arrays or
-        <c>"bounds[3,3] {1, 2, 3, 4, 5, 6, 7, 8, 9}"</c> for multi-dimensional arrays.
-
-        Returns
-        -------
-        The converted string value of the array.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def from_string(self, value: str) -> None:
-        """
-        Sets the value of the array from a specified string. For \c 1D arrays, the specification
-        is of the form <c>'1,2,3'</c>.\n For \c nD arrays, the specification is of the form
-        <c>'bounds[2,2,2] {1,2,3,4,5,6,7,8}'</c>.\n String arrays may optionally have the
-        elements quoted in the form <c>'bounds[2,3] {"a", "b,c", "d", "", "e", "f"}'</c>
-
-        Parameters
-        ----------
-        value
-            New value.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def to_string_absolute(self) -> str:
-        """
-        Converts the array to a string. If the variable is an array, it will to be of the form
-        <c>"1, 2, 3"</c> for one-dimensional arrays or <c>"bounds[3,3] {1, 2, 3, 4, 5, 6, 7, 8,
-        9}"</c> for multi-dimensional arrays.
-
-        Returns
-        -------
-        The converted string value of the array.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def invalidate(self) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def direct_precedents(self, follow_suspended: Optional[VARIANT],
-                          reserved: Optional[VARIANT]) -> LPDISPATCH:
-        raise NotImplementedError
-
-    @abstractmethod
-    def direct_dependents(self, follow_suspended: Optional[VARIANT],
-                          reserved: Optional[VARIANT]) -> LPDISPATCH:
-        raise NotImplementedError
-
-    @abstractmethod
-    def precedent_links(self, reserved: Optional[VARIANT]) -> LPDISPATCH:
-        raise NotImplementedError
-
-    @abstractmethod
-    def dependent_links(self, reserved: Optional[VARIANT]) -> LPDISPATCH:
-        raise NotImplementedError
-
-    @abstractmethod
-    def precedents(self, follow_suspended: Optional[VARIANT],
-                   reserved: Optional[VARIANT]) -> LPDISPATCH:
-        raise NotImplementedError
-
-    @abstractmethod
-    def dependents(self, follow_suspended: Optional[VARIANT],
-                   reserved: Optional[VARIANT]) -> LPDISPATCH:
-        raise NotImplementedError
-
-    @abstractmethod
-    def is_input_to_component(self) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def is_input_to_model(self) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def set_metadata(self, name: str, type: MetadataType, value: VARIANT, access: MetadataAccess,
-                     archive: bool) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_metadata(self, name: str) -> VARIANT:
-        raise NotImplementedError
-
-    @abstractmethod
     def to_string_ex(self, index: int) -> str:
         """
         Converts the value of an array element to a string, validating the array if necessary.
@@ -216,7 +61,8 @@ class IArray(ABC):
 
         Returns
         -------
-        The value of the element as a string.
+        str
+            The value of the element as a string.
         """
         raise NotImplementedError
 
@@ -246,12 +92,13 @@ class IArray(ABC):
 
         Returns
         -------
-        The value of the element as a string.
+        str
+            The value of the element as a string.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def get_length(self, dim: Optional[VARIANT]) -> int:
+    def get_length(self, dim: Optional[object]) -> int:
         """
         Get the length of the n'th dimension of the array.
 
@@ -263,12 +110,13 @@ class IArray(ABC):
 
         Returns
         -------
-        Length(size) of the array.
+        int
+            Length(size) of the array.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def set_length(self, length: int, dim: Optional[VARIANT]) -> None:
+    def set_length(self, length: int, dim: Optional[object]) -> None:
         """
         Sets the length of the n'th dimension of the array
 
@@ -283,10 +131,10 @@ class IArray(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def set_dimensions(self, d1: int, d2: Optional[VARIANT], d3: Optional[VARIANT],
-                       d4: Optional[VARIANT], d5: Optional[VARIANT], d6: Optional[VARIANT],
-                       d7: Optional[VARIANT], d8: Optional[VARIANT], d9: Optional[VARIANT],
-                       d10: Optional[VARIANT]) -> None:
+    def set_dimensions(self, d1: int, d2: Optional[object], d3: Optional[object],
+                       d4: Optional[object], d5: Optional[object], d6: Optional[object],
+                       d7: Optional[object], d8: Optional[object], d9: Optional[object],
+                       d10: Optional[object]) -> None:
         """
         Sets the number of dimensions of an array and the length of each dimension in one call.  An
         array initializes to 0 length.  If any dimension of the array has 0 length, the whole array
@@ -319,7 +167,7 @@ class IArray(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_size(self, dim: Optional[VARIANT]) -> int:
+    def get_size(self, dim: Optional[object]) -> int:
         """
         Alias for the getLength() call
 
@@ -330,12 +178,13 @@ class IArray(ABC):
 
         Returns
         -------
-        Size of the dimension
+        int
+            Size of the dimension
         """
         raise NotImplementedError
 
     @abstractmethod
-    def set_size(self, length: int, dim: Optional[VARIANT]) -> None:
+    def set_size(self, length: int, dim: Optional[object]) -> None:
         """
         Alias for the setLength() call
 
@@ -349,14 +198,14 @@ class IArray(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_dimensions(self) -> VARIANT:
+    def get_dimensions(self) -> object:
         """
         Gets the dimensions of the array.
 
         Returns
         -------
-        Variant - either a single integer, in the case of a 1D array,
-        or an array of integers, in the case of multi-dimensional arrays.
+        object
+            Variant - either a single integer, in the case of a 1D array,
+            or an array of integers, in the case of multi-dimensional arrays.
         """
         raise NotImplementedError
-
