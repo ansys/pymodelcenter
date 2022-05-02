@@ -377,8 +377,8 @@ def test_remove_component():
 @pytest.mark.parametrize(
     "name,get_model_call_count,get_assembly_call_count,result_type",
     [
-        pytest.param(None,           1, 0, IAssembly,  id="root"),
-        pytest.param("root.aName",   0, 1, IAssembly,  id="named"),
+        pytest.param(None,           1, 0, mcapi.IAssembly,  id="root"),
+        pytest.param("root.aName",   0, 1, mcapi.IAssembly,  id="named"),
         pytest.param("root.noExist", 0, 1, None,       id="missing")
     ]
 )
@@ -693,3 +693,224 @@ def test_get_macro_timeout() -> None:
     # Verification
     assert mock_mc.getCallCount("getMacroTimeout") == 1
     assert timeout == 25.0  # arbitrary value from MockModelCenter
+
+
+def test_workflow_close():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+
+    # Check pre-reqs.
+    try:
+        sut_engine.new_workflow()
+        assert False, "Should have failed by now."
+    except Exception:
+        pass
+
+    # Execute
+    sut_workflow.close_workflow()
+
+    # Verify
+    next_workflow = sut_engine.new_workflow()
+    assert isinstance(next_workflow, mcapi.Workflow)
+    assert sut_engine._instance.getCallCount("closeModel") == 1
+
+
+def test_save_workflow():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("saveModel") == 0
+
+    # Execute
+    sut_workflow.save_workflow()
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("saveModel") == 1
+
+
+def test_save_workflow_as():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("saveModelAs") == 0
+
+    # Execute
+    sut_workflow.save_workflow_as(r"C:\Temp\workflow.pxcz")
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("saveModelAs") == 1
+    argument = sut_workflow._instance.getArgumentRecord("saveModelAs", 0)[0]
+    assert argument == r"C:\Temp\workflow.pxcz"
+
+
+@pytest.mark.parametrize(
+    'server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos',
+    [
+        pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, 42,
+                     47, 42, id="fully specified position"),
+        # It's difficult to test these cases, because the mock expects Missing.Value,
+        # and that really screws with the reflection-based method matching in pythonnet,
+        # since it seems Missing.Value has special meaning in that case.
+        # Passing None doesn't work and neither does leaving the method off.
+        # This is probably something that the real GRPC api will have to solve.
+        # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', None, 42,
+        #             Missing.Value, 42, id="missing x value"),
+        # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, None,
+        #             47, Missing.Value, id="missing y value")
+    ]
+)
+def test_create_component(
+        server_path: str,
+        name: str,
+        parent: str,
+        x_pos: Optional[object],
+        y_pos: Optional[object],
+        expected_passed_x_pos,
+        expected_passed_y_pos
+) -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("createComponent") == 0
+
+    # Execute
+    sut_workflow.create_component(server_path, name, parent, x_pos, y_pos)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("createComponent") == 1
+    assert sut_workflow._instance.getArgumentRecord("createComponent", 0) == [
+        server_path, name, parent, expected_passed_x_pos, expected_passed_y_pos]
+
+
+def test_create_link() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("createLink") == 0
+    test_var_name = "inputs.var1"
+    test_eqn = "Workflow.comp.output4"
+
+    # Execute
+    sut_workflow.create_link(test_var_name, test_eqn)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("createLink") == 1
+    assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [
+        test_var_name, test_eqn
+    ]
+
+
+def test_get_variable() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    test_var_name = "test_assembly_var"
+    sut_workflow._instance.createAssemblyVariable(test_var_name, "Input", "Model")
+    assert sut_workflow._instance.getCallCount("getVariable") == 0
+
+    # Execute
+    result = sut_workflow.get_variable("Model.test_assembly_var")
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("getVariable") == 1
+    assert sut_workflow._instance.getArgumentRecord("getVariable", 0) == ["Model.test_assembly_var"]
+    assert result._variable.getFullName() == "Model.test_assembly_var"
+
+
+@pytest.mark.parametrize(
+    'variables',
+    [
+        pytest.param(None),
+        pytest.param("Model.a,Model.b,Model.c"),
+    ]
+)
+def test_run(variables: Optional[str]) -> None:
+    # Setup
+    global workflow
+
+    # SUT
+    workflow.run(variables)
+
+    # Verification
+    assert workflow._instance.getCallCount("run") == 1
+    expected_arg: str = variables or ''
+    assert workflow._instance.getArgumentRecord("run", 0) == [expected_arg]
+
+
+@pytest.mark.parametrize(
+    'index',
+    [
+        pytest.param(0),
+        pytest.param(2),
+    ]
+)
+def test_get_datamonitor(index: int) -> None:
+    # Setup
+    global workflow
+    for x in range(index + 1):
+        workflow.create_data_monitor("comp", "DM" + str(x), 0, 0)
+
+    # SUT
+    result: mcapi.IDataMonitor = workflow.get_data_monitor("comp", index)
+
+    # Verification
+    assert result.title == "DM" + str(index)
+
+
+def test_create_datamonitor() -> None:
+    # Setup
+    global workflow
+
+    # SUT
+    result: mcapi.IDataMonitor = workflow.create_data_monitor("comp", "DM0", 0, 0)
+
+    # Verification
+    assert result.title == "DM0"
+
+
+def test_remove_datamonitor() -> None:
+    # Setup
+    global workflow
+    workflow.create_data_monitor("comp", "DM0", 0, 0)
+
+    # SUT
+    result: bool = workflow.remove_data_monitor("comp", 0)
+
+    # Verification
+    assert result is True
+
+
+def test_remove_datamonitor_at_invalid_index() -> None:
+    # Setup
+    global workflow
+
+    # SUT
+    result: bool = workflow.remove_data_monitor("comp", 0)
+
+    # Verification
+    assert result is False
+
+
+def test_get_data_explorer() -> None:
+    # Setup
+    global workflow
+    workflow.create_data_explorer("", "")
+
+    # SUT
+    result: mcapi.DataExplorer = workflow.get_data_explorer(0)
+
+    # Verification
+    assert result is not None
+    # TODO: more verification when DE is fleshed out
+
+
+def test_get_data_explorer_invalid_index() -> None:
+    # Setup
+    global workflow
+
+    # SUT
+    result: mcapi.DataExplorer = workflow.get_data_explorer(0)
+
+    # Verification
+    assert result is None
