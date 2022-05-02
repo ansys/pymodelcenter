@@ -8,7 +8,7 @@ class Assembly:
         Parameters
         ----------
         instance : object
-            The raw Assembly interface object ot use to make direct
+            The raw interface object to use to make direct
             call to ModelCenter.
         """
         self._instance = instance
