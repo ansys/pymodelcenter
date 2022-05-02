@@ -9,7 +9,7 @@ from overrides import overrides
 
 from .data_explorer import DataExplorer
 from .i18n import i18n
-from .iformat import IFormat
+from .format import IFormat
 from .workflow import Workflow
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")

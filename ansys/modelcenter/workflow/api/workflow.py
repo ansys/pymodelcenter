@@ -7,15 +7,15 @@ import ansys.common.variableinterop as acvi
 from overrides import overrides
 
 from . import DataExplorer
-from .icomponent import IComponent
-from .idatamonitor import IDataMonitor
+from .component import IComponent
+from .datamonitor import IDataMonitor
 
 if TYPE_CHECKING:
     from .engine import Engine
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
-from ansys.modelcenter.workflow.api.iassembly import IAssembly
+from ansys.modelcenter.workflow.api.assembly import IAssembly
 
 
 class MockDataMonitorWrapper(IDataMonitor):

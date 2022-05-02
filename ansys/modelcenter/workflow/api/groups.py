@@ -1,5 +1,5 @@
 from .arrayish import Arrayish
-from .igroup import IGroup
+from .group import IGroup
 
 
 class IGroups(Arrayish[IGroup]):
