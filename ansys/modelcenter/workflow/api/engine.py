@@ -1,7 +1,7 @@
 """Definition of Engine and associated classes."""
 from enum import Enum
 from string import Template
-from typing import Union
+from typing import Any, Union
 
 import clr
 from numpy import float64, int64
@@ -109,7 +109,7 @@ class Engine:
             raise Exception(msg)
         else:
             self._instance.newModel(workflow_type.value)
-            self._workflow = Workflow(self._instance)
+            self._workflow = Workflow(self._instance, self)
             return self._workflow
 
     def load_workflow(self, file_name: str,
@@ -134,8 +134,13 @@ class Engine:
             raise Exception(msg)
         else:
             self._instance.loadModel(file_name, on_connect_error.value)
-            self._workflow = Workflow(self._instance)
+            self._workflow = Workflow(self._instance, self)
             return self._workflow
+
+    def _notify_close_workflow(self, calling_workflow: Any):
+        """Notify this engine that a workflow has been closed."""
+        if calling_workflow is self._workflow:
+            self._workflow = None
 
     def get_formatter(self, fmt: str) -> IFormat:
         """
