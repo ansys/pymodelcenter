@@ -1,4 +1,4 @@
-"""Definition of IDataMonitor."""
+"""Definition of DataMonitor."""
 from typing import Tuple
 
 import clr

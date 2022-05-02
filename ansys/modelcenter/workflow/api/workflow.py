@@ -7,10 +7,11 @@ from overrides import overrides
 from . import DataExplorer
 from .i18n import i18n
 from .icomponent import IComponent
-from .idatamonitor import DataMonitor
+from .datamonitor import DataMonitor
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
+
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 
 
