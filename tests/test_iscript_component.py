@@ -59,4 +59,3 @@ def test_set_variables() -> None:
 def test_get_source_script() -> None:
     """Testing of the get_source_script method."""
     raise NotImplementedError
-

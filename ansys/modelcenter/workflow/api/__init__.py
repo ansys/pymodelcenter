@@ -6,10 +6,10 @@ from .iassembly import IAssembly
 from .icomponent import IComponent
 from .idatamonitor import IDataMonitor
 from .iformat import IFormat
-from .iif_component import IIfComponent
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup
 from .igroups import IGroups
+from .iif_component import IIfComponent
 from .iref_array_prop import IRefArrayProp
 from .iref_prop import IRefProp
 from .ireference_array import IReferenceArray
