@@ -1,4 +1,4 @@
-from typing import Any, Tuple, Union, List
+from typing import Any, List, Optional, Tuple, Union
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -7,10 +7,31 @@ from overrides import overrides
 from . import DataExplorer
 from .i18n import i18n
 from .icomponent import IComponent
+from .idatamonitor import IDataMonitor
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
-from ansys.modelcenter.workflow.api.IAssembly import IAssembly
+from ansys.modelcenter.workflow.api.iassembly import IAssembly
+
+
+class MockDataMonitorWrapper(IDataMonitor):
+    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
+
+    def __init__(self, monitor: phxmock.MockDataMonitor):
+        """
+        Initialize.
+
+        Parameters
+        ----------
+        monitor: phxmock.MockDataMonitor
+            The COM DataMonitor to wrap.
+        """
+        self._instance = monitor
+
+    @property  # type: ignore
+    @overrides
+    def title(self) -> str:
+        return self._instance.getTitle()
 
 
 class Workflow:
@@ -469,26 +490,96 @@ class Workflow:
     def halt(self) -> None:
         pass
 
-    # void run(BSTR variableArray);
-    def run(self, variable_array: str) -> None:
-        pass
+    def run(self, variable_array: Optional[str]) -> None:
+        """
+        Runs a specified set of variables in the workflow.
 
-    # IDispatch* getDataMonitor(BSTR component, VARIANT index);
-    def get_data_monitor(self, componenet: str, index: object) -> object:   # IDataMonitor
-        pass
+        Parameters
+        ----------
+        variable_array: Optional[str]
+            A comma-separated list of variables to validate.
+            If no variables are specified, then the entire workflow
+            will be run.
+        """
+        self._instance.run(variable_array or "")
 
-    # IDispatch* createDataMonitor(BSTR component, BSTR name, int x, int y);
-    def create_data_monitor(
-            self, component: str, name: str, x: int, y: int) -> object:     # IDataMonitor
-        pass
+    def get_data_monitor(self, component: str, index: int) -> IDataMonitor:
+        """
+        Get the DataMonitor at the given index for the given component.
 
-    # boolean removeDataMonitor(BSTR component, VARIANT index);
-    def remove_data_monitor(self, component: str, index: object) -> bool:
-        pass
+        Parameters
+        ----------
+        component: str
+            The name of the component.
+        index: int
+            The index of the DataMonitor in the component.
 
-    # IDispatch* getDataExplorer(int index);
-    def get_data_explorer(self, index: int) -> object:  # PHXDataExplorer
-        pass
+        Returns
+        -------
+        The component's DataMonitor at the given index.
+        """
+
+        dm_object: phxmock.MockDataMonitor = self._instance.getDataMonitor(component, index)
+        return MockDataMonitorWrapper(dm_object)
+
+    def create_data_monitor(self, component: str, name: str, x: int, y: int) -> object:
+        """
+        Create a DataMonitor associated with the specified component.
+
+        Parameters
+        ----------
+        component: str
+            The name of the component to associate the DataMonitor with.
+        name: str
+            The name of the DataMonitor.
+        x: int
+            The x-position of the DataMonitor.
+        y: int
+            The y-position of the DataMonitor.
+
+        Returns
+        -------
+        The created DataMonitor.
+        """
+
+        dm_object: phxmock.MockDataMonitor = self._instance.createDataMonitor(component, name, x, y)
+        return MockDataMonitorWrapper(dm_object)
+
+    def remove_data_monitor(self, component: str, index: int) -> bool:
+        """
+        Remove the DataMonitor at the given index for the given component.
+
+        Parameters
+        ----------
+        component: str
+            The name of the component.
+        index: int
+            The index of the DataMonitor in the component.
+
+        Returns
+        -------
+        True if the component had a DataMonitor at the given index.
+        """
+        return self._instance.removeDataMonitor(component, index)
+
+    def get_data_explorer(self, index: int) -> Optional[DataExplorer]:
+        """
+        Get the specified DataExplorer.
+
+        Parameters
+        ----------
+        index: int
+            The index of the DataExplorer.
+
+        Returns
+        -------
+        The DataExplorer at the given index.
+        """
+        de_object: object = self._instance.getDataExplorer(index)
+        if de_object is None:
+            return None
+        else:
+            return DataExplorer(de_object)
 
     # void moveComponent(BSTR component, BSTR parent, [optional]VARIANT index);
     def move_component(self, component: str, parent: str, index: object) -> None:
