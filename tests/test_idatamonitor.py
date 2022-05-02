@@ -149,115 +149,215 @@ def test_add_unlinked_item() -> None:
     assert sut.get_name(0) == "Massenkommunikationsdienstleistungsunternehmen"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_remove_item() -> None:
     """Testing of the remove_item method."""
-    raise NotImplementedError
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+    sut.add_unlinked_item("👀")
+
+    # SUT
+    sut.remove_item(0)
+
+    # Verification
+    assert sut.get_name(0) == ''
+    # LTTODO: a real implementation should probably return None or throw
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_remove_link() -> None:
     """Testing of the remove_link method."""
-    raise NotImplementedError
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+    sut.add_item("👀", "🌵")
+
+    # SUT
+    sut.remove_link(0)
+
+    # Verification
+    assert sut.get_link(0) is None
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_display_full_names() -> None:
-    """Testing of the get_display_full_names method."""
-    raise NotImplementedError
+    """Testing of getting the display_full_names property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    result: bool = sut.display_full_names
+
+    # Verification
+    assert result is False
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_display_full_names() -> None:
-    """Testing of the set_display_full_names method."""
-    raise NotImplementedError
+    """Testing of setting the display_full_names property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    sut.display_full_names = True
+    result: bool = sut.display_full_names
+
+    # Verification
+    assert result is True
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_auto_delete() -> None:
-    """Testing of the get_auto_delete method."""
-    raise NotImplementedError
+    """Testing of getting the auto_delete property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    result: bool = sut.auto_delete
+
+    # Verification
+    assert result is False
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_auto_delete() -> None:
-    """Testing of the set_auto_delete method."""
-    raise NotImplementedError
+    """Testing of setting the auto_delete property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    sut.auto_delete = True
+    result: bool = sut.auto_delete
+
+    # Verification
+    assert result is True
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_display_units() -> None:
-    """Testing of the get_display_units method."""
-    raise NotImplementedError
+    """Testing of getting the display_units property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    result: bool = sut.display_units
+
+    # Verification
+    assert result is False
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_display_units() -> None:
-    """Testing of the set_display_units method."""
-    raise NotImplementedError
+    """Testing of setting the display_units property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    sut.display_units = True
+    result: bool = sut.display_units
+
+    # Verification
+    assert result is True
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_col_width() -> None:
     """Testing of the get_col_width method."""
-    raise NotImplementedError
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    result = sut.get_col_width(0)
+
+    # Verification
+    assert result == 10
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_col_width() -> None:
     """Testing of the set_col_width method."""
-    raise NotImplementedError
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    sut.set_col_width(0, 5)
+    result = sut.get_col_width(0)
+
+    # Verification
+    assert result == 5
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_is_valid() -> None:
     """Testing of the is_valid method."""
-    raise NotImplementedError
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    result = sut.is_valid()
+
+    # Verification
+    assert result is True
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_title() -> None:
-    """Testing of the get_title method."""
-    raise NotImplementedError
+    """Testing of getting the title property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    result = sut.title
+
+    # Verification
+    assert result == "a"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_title() -> None:
-    """Testing of the set_title method."""
-    raise NotImplementedError
+    """Testing of setting the title property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    sut.title = "☕"
+    result = sut.title
+
+    # Verification
+    assert result == "☕"
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_width() -> None:
-    """Testing of the get_width method."""
-    raise NotImplementedError
+def test_get_size() -> None:
+    """Testing of getting the size property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    result = sut.size
+
+    # Verification
+    assert result == (100, 50)
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_height() -> None:
-    """Testing of the get_height method."""
-    raise NotImplementedError
-
-
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_size() -> None:
-    """Testing of the set_size method."""
-    raise NotImplementedError
+    """Testing of setting the size property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    sut.size = (50, 100)
+    result = sut.size
+
+    # Verification
+    assert result == (50, 100)
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_x() -> None:
-    """Testing of the get_x method."""
-    raise NotImplementedError
+def test_get_location() -> None:
+    """Testing of getting the location property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 10, 20)
+
+    # SUT
+    result = sut.location
+
+    # Verification
+    assert result == (10, 20)
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_y() -> None:
-    """Testing of the get_y method."""
-    raise NotImplementedError
-
-
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_location() -> None:
-    """Testing of the set_location method."""
-    raise NotImplementedError
+    """Testing of setting the location property."""
+    # Setup
+    sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
+
+    # SUT
+    sut.location = (10, 20)
+    result = sut.location
+
+    # Verification
+    assert result == (10, 20)

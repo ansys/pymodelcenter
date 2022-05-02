@@ -1,4 +1,6 @@
 """Definition of IDataMonitor."""
+from typing import Tuple
+
 import clr
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
@@ -117,7 +119,7 @@ class DataMonitor:
 
         Returns
         -------
-
+        The index of the new item in the data monitor.
         """
         return self._instance.addItem(name, link)
 
@@ -133,7 +135,7 @@ class DataMonitor:
 
         Returns
         -------
-
+            The index of the new item in the data monitor.
         """
         return self._instance.addUnlinkedItem(name)
 
@@ -146,8 +148,7 @@ class DataMonitor:
         row : int
             The row in the Data Monitor of interest (0-based index).
         """
-        # void removeItem( long row );
-        raise NotImplementedError
+        return self._instance.removeItem(row)
 
     def remove_link(self, row: int) -> None:
         """
@@ -157,40 +158,39 @@ class DataMonitor:
         Parameters
         ----------
         row :
-        The row in the Data Monitor of interest (0-based index).
+            The row in the Data Monitor of interest (0-based index).
         """
-        # void removeLink( long row );
-        raise NotImplementedError
+        return self._instance.removeLink(row)
 
-    def get_display_full_names(self) -> bool:
+    @property
+    def display_full_names(self) -> bool:
         """Get the status of the "Display Full Names" option."""
-        # boolean getDisplayFullNames( );
-        raise NotImplementedError
+        return self._instance.getDisplayFullNames()
 
-    def set_display_full_names(self, display_full_names: bool) -> None:
+    @display_full_names.setter
+    def display_full_names(self, display_full_names: bool) -> None:
         """Sets the "Display Full Names" option."""
-        # void setDisplayFullNames( boolean );
-        raise NotImplementedError
+        self._instance.setDisplayFullNames(display_full_names)
 
-    def get_auto_delete(self) -> bool:
+    @property
+    def auto_delete(self) -> bool:
         """Gets the status of the Auto Delete option."""
-        # boolean getAutoDelete( );
-        raise NotImplementedError
+        return self._instance.getAutoDelete()
 
-    def set_auto_delete(self, auto_delete: bool) -> None:
+    @auto_delete.setter
+    def auto_delete(self, auto_delete: bool) -> None:
         """Sets the status of the Auto Delete option."""
-        # void setAutoDelete( boolean );
-        raise NotImplementedError
+        self._instance.setAutoDelete(auto_delete)
 
-    def get_display_units(self) -> bool:
+    @property
+    def display_units(self) -> bool:
         """Get the status of the "Display Units" option."""
-        # boolean getDisplayUnits( );
-        raise NotImplementedError
+        return self._instance.getDisplayUnits()
 
-    def set_display_units(self, display_units) -> None:
+    @display_units.setter
+    def display_units(self, display_units) -> None:
         """Sets the "Display Units" option."""
-        # void setDisplayUnits( boolean );
-        raise NotImplementedError
+        self._instance.setDisplayUnits(display_units)
 
     def get_col_width(self, col: int) -> int:
         """
@@ -205,8 +205,7 @@ class DataMonitor:
         -------
         The column width.
         """
-        # int getColWidth( long col );
-        raise NotImplementedError
+        return self._instance.getColWidth(col)
 
     def set_col_width(self, col: int, width: int) -> None:
         """
@@ -219,65 +218,74 @@ class DataMonitor:
         width :
             The new width for the column.
         """
-        # void setColWidth( long col, int width );
-        raise NotImplementedError
+        self._instance.setColWidth(col, width)
 
     def is_valid(self) -> bool:
         """Determines whether all the items in the Data Monitor are \
         valid or not."""
-        # boolean isValid( );
-        raise NotImplementedError
+        return self._instance.isValid()
 
     @property
     def title(self) -> str:
-        """Gets the title of the Data Monitor."""
+        """Get the title of the Data Monitor."""
         return self._instance.getTitle()
 
-    def get_width(self) -> int:
-        """Gets the width of the Data Monitor."""
-        # int getWidth( );
-        raise NotImplementedError
-
-    def get_height(self) -> int:
-        """Get the height of the Data Monitor."""
-        # int getHeight( );
-        raise NotImplementedError
-
-    def set_size(self, width: int, height: int) -> None:
+    @title.setter
+    def title(self, title: str) -> None:
         """
-        Sets the height and width of the Data Monitor.
+        Set the title of the DataMonitor.
 
         Parameters
         ----------
-        width :
-            The new width for the Data Monitor.
-        height :
-            The new height of the Data Monitor.
+        title: str
+            The new title.
+        """
+        self._instance.setTitle(title)
+
+    @property
+    def size(self) -> Tuple[int, int]:
+        """
+        Get the size of the DataMonitor.
+
+        Returns
+        -------
+        A Tuple containing the (width, height) of the DataMonitor.
+        """
+        return self._instance.getWidth(), self._instance.getHeight()
+
+    @size.setter
+    def size(self, size: Tuple[int, int]) -> None:
+        """
+        Set the size of the DataMonitor.
+
+        Parameters
+        ----------
+        size: Tuple[int, int]
+            The new (width, height) of the DataMonitor.
         """
         # void setSize( int width, int height );
-        raise NotImplementedError
+        self._instance.setSize(size[0], size[1])
 
-    def get_x(self) -> int:
-        """Gets the X position of the Data Monitor."""
-        # int getX( );
-        raise NotImplementedError
-
-    def get_y(self) -> int:
-        """Gets the Y position of the Data Monitor."""
-        # int getY( );
-        raise NotImplementedError
-
-    def set_location(self, x: int, y: int) -> None:
+    @property
+    def location(self) -> Tuple[int, int]:
         """
-        Sets the x and y location of the Data Monitor in the Analysis \
-        View.
+        Get the location of the DataMonitor in the Analysis View.
+
+        Returns
+        -------
+        A tuple containing the (x,y) position of the DataMonitor.
+        """
+        return self._instance.getX(), self._instance.getY()
+
+    @location.setter
+    def location(self, location: Tuple[int, int]) -> None:
+        """
+        Set the location of the DataMonitor in the Analysis View.
 
         Parameters
         ----------
-        x : int
-            The new x position.
-        y : int
-            The new y position.
+        location: Tuple[int, int]
+            The new (x,y) location.
         """
         # void setLocation( int x, int y);
-        raise NotImplementedError
+        self._instance.setLocation(location[0], location[1])
