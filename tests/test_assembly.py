@@ -109,10 +109,19 @@ def test_parent_assembly_readonly() -> None:
         sut_instance.parent_assembly = mcapi.Assembly(MockAssembly("trying to set parent"))
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_assembly_type() -> None:
     """Testing of the assembly_type property."""
-    raise NotImplementedError
+    wrapped_mock_comp.AssemblyType = "Sequence"
+
+    result: str = sut_instance.assembly_type
+
+    assert result == "Sequence"
+
+
+def test_assembly_type_readonly() -> None:
+    """Testing of the assembly_type property."""
+    with pytest.raises(AttributeError, match="can't set"):
+        sut_instance.assembly_type = "Sequence"
 
 
 @pytest.mark.skip(reason="Not implemented.")

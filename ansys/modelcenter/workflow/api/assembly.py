@@ -97,8 +97,7 @@ class Assembly:
     @property
     def assembly_type(self) -> str:
         """Gets the type of the Assembly (Sequence, Assembly, etc)."""
-        # BSTR AssemblyType;
-        raise NotImplementedError
+        return self._assembly.AssemblyType
 
     @property
     def user_data(self) -> object:
