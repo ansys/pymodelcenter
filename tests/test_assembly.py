@@ -215,10 +215,16 @@ def test_rename() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_delete_variable() -> None:
     """Testing of the delete_variable method."""
-    raise NotImplementedError
+    delete_var_name = "variable_name"
+    var_type = "real"
+    assert wrapped_mock_comp.getCallCount("deleteVariable") == 0
+
+    sut_instance.delete_variable(delete_var_name)
+
+    assert wrapped_mock_comp.getCallCount("deleteVariable") == 1
+    assert wrapped_mock_comp.getArgumentRecord("deleteVariable", 0) == [delete_var_name]
 
 
 @pytest.mark.skip(reason="Not implemented.")

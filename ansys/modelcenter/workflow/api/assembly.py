@@ -220,16 +220,7 @@ class Assembly:
         raise NotImplementedError
 
     def delete_variable(self, name: str) -> None:
-        """
-        Deletes a variable from the current Assembly.
-
-        Parameters
-        ----------
-        name : str
-            Name of the variable to delete.
-        """
-        # void deleteVariable(BSTR name);
-        raise NotImplementedError
+        self._assembly.deleteVariable(name)
 
     def set_metadata(self, name: str, type_, value, access, archive) -> None:
         """
