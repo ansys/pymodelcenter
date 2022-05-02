@@ -87,10 +87,26 @@ def test_index_in_parent_readonly() -> None:
         sut_instance.index_in_parent = 9001
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_parent_assembly() -> None:
-    """Testing of the parent_assembly property."""
-    raise NotImplementedError
+    wrapped_mock_comp.ParentAssembly = MockAssembly("a parent")
+
+    result: Optional[mcapi.Assembly] = sut_instance.parent_assembly
+
+    assert isinstance(result, mcapi.Assembly)
+    assert result.get_name() == "a parent"
+
+
+def test_parent_assembly_none() -> None:
+    wrapped_mock_comp.ParentAssembly = None
+
+    result: Optional[mcapi.Assembly] = sut_instance.parent_assembly
+
+    assert result is None
+
+
+def test_parent_assembly_readonly() -> None:
+    with pytest.raises(AttributeError, match="can't set"):
+        sut_instance.parent_assembly = mcapi.Assembly(MockAssembly("trying to set parent"))
 
 
 @pytest.mark.skip(reason="Not implemented.")

@@ -82,7 +82,7 @@ class Assembly:
         return self._assembly.IndexInParent
 
     @property
-    def parent_assembly(self) -> object:    # IAssembly:
+    def parent_assembly(self) -> Optional['Assembly']:    # IAssembly:
         """
         Gets the parent of assembly of this assembly.
 
@@ -91,8 +91,8 @@ class Assembly:
         IAssembly object.
 
         """
-        # LPDISPATCH ParentAssembly;
-        raise NotImplementedError
+        to_wrap = self._assembly.ParentAssembly
+        return None if to_wrap is None else Assembly(to_wrap)
 
     @property
     def assembly_type(self) -> str:
