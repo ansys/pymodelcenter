@@ -1,23 +1,31 @@
 """Tests for Workflow."""
-import clr
-import pytest
 from typing import Any, List, Optional, Type
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockModelCenter, MockDoubleVariable, MockIntegerVariable,\
-    MockBooleanVariable, MockStringVariable, MockBooleanArray, MockIntegerArray, MockDoubleArray,\
-    MockStringArray
+import clr
+import pytest
 
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import (
+    MockBooleanArray,
+    MockBooleanVariable,
+    MockDoubleArray,
+    MockDoubleVariable,
+    MockIntegerArray,
+    MockIntegerVariable,
+    MockModelCenter,
+    MockStringArray,
+    MockStringVariable,
+)
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
 from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
-
 import ansys.common.variableinterop as acvi
-import ansys.modelcenter.workflow.api as mcapi
 import pytest
+
+import ansys.modelcenter.workflow.api as mcapi
 
 mock_mc: Optional[Any] = None
 """

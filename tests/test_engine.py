@@ -266,7 +266,7 @@ def test_load_workflow_existing() -> None:
 @pytest.mark.parametrize(
     "fmt",
     [
-        "",
+        "General",
         "0.00",
         "$#,##0.00",
         "0.00%",
@@ -288,10 +288,10 @@ def test_get_formatter(fmt: str) -> None:
     engine = mcapi.Engine()
 
     # SUT
-    result: mcapi.IFormat = engine.get_formatter(fmt)
+    result: mcapi.Format = engine.get_formatter(fmt)
 
     # Verification
-    assert result.get_format() == fmt
+    assert result.format == fmt
 
 
 def test_set_user_name() -> None:
