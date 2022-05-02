@@ -3,6 +3,7 @@ from typing import MutableSequence
 from .iref_array_prop import IRefArrayProp
 
 
+# TODO: inherit from IArray when available.
 class IReferenceArray:      # (IArray):
     """
     COM Instance.
