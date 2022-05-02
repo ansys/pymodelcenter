@@ -38,10 +38,10 @@ class IIfComponent(IComponent):
     def get_branch_condition(self, index: int) -> str:
         """
         "Gets the branch condition.
-        
+
         Parameters
         ----------
-        index : 
+        index :
             Index of the branch.
 
         Returns
