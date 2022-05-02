@@ -3,7 +3,7 @@ from .engine import Engine, EngineInfo, OnConnectionErrorMode, WorkflowType
 from .iassemblies import IAssemblies
 from .iassembly import IAssembly
 from .icomponent import IComponent
-from .idata_monitor import IDataMonitor
+from .idatamonitor import IDataMonitor
 from .iformat import IFormat
 from .iif_component import IIfComponent
 from .iglobal_parameters import IGlobalParameters

@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -7,16 +7,37 @@ from overrides import overrides
 from . import DataExplorer
 from .i18n import i18n
 from .icomponent import IComponent
+from .idatamonitor import IDataMonitor
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
+from ansys.modelcenter.workflow.api.iassembly import IAssembly
+
+
+class MockDataMonitorWrapper(IDataMonitor):
+    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
+
+    def __init__(self, monitor: phxmock.MockDataMonitor):
+        """
+        Initialize.
+
+        Parameters
+        ----------
+        monitor: phxmock.MockDataMonitor
+            The COM DataMonitor to wrap.
+        """
+        self._instance = monitor
+
+    @property  # type: ignore
+    @overrides
+    def title(self) -> str:
+        return self._instance.getTitle()
 
 
 class Workflow:
     """Represents a Workflow or Model in  ModelCenter."""
 
-    def __init__(self, instance: phxmock.MockModelCenter):
-        self._instance = instance
+    def __init__(self, instance: Any):
         """
         Initialize a new Workflow instance.
 
@@ -27,6 +48,42 @@ class Workflow:
             ModelCenter.
         """
         self._instance = instance
+
+    @staticmethod
+    def value_to_variable_value(value: Any) -> acvi.IVariableValue:
+        """
+        Convert the given python value to the appropriate \
+        IVariableValue type.
+
+        Supported types: bool, int, float, str, and list of the same.
+
+        Parameters
+        ----------
+        value : Any
+            The python type to convert.
+        Returns
+        -------
+        An IVariableValue type appropriate for the value given.
+        """
+        if isinstance(value, bool):
+            return acvi.BooleanValue(value)
+        elif isinstance(value, int):
+            return acvi.IntegerValue(value)
+        elif isinstance(value, float):
+            return acvi.RealValue(value)
+        elif isinstance(value, str):
+            return acvi.StringValue(value)
+        elif isinstance(value, list):
+            first = value[0]
+            if isinstance(first, bool):
+                return acvi.BooleanArrayValue(values=value)
+            elif isinstance(first, int):
+                return acvi.IntegerArrayValue(values=value)
+            elif isinstance(first, float):
+                return acvi.RealArrayValue(values=value)
+            elif isinstance(first, str):
+                return acvi.StringArrayValue(values=value)
+        raise TypeError
 
     @property
     def workflow_directory(self) -> str:
@@ -44,10 +101,9 @@ class Workflow:
         return self._instance.modelFileName
 
     def set_value(self, var_name: str, value: str) -> None:
-        pass
         """
         Set the value of a variable.
-        
+
         A wrapper around the
         IModelCenter.setValue(BSTR varName, BSTR value) method.
 
@@ -68,8 +124,6 @@ class Workflow:
         """
         Get the value of a variable.
 
-        A wrapper around the IModelCenter.getValue(BSTR varName) method.
-
         Parameters
         ----------
         var_name :  str
@@ -77,28 +131,10 @@ class Workflow:
 
         Returns
         -------
-        The value as one of the acvi.IVariableValue types.
+        The value as one of the IVariableValue types.
         """
-        raw = self._instance.getValue(var_name)
-        if isinstance(raw, bool):
-            return acvi.BooleanValue(raw)
-        elif isinstance(raw, int):
-            return acvi.IntegerValue(raw)
-        elif isinstance(raw, float):
-            return acvi.RealValue(raw)
-        elif isinstance(raw, str):
-            return acvi.StringValue(raw)
-        elif isinstance(raw, list):
-            first = raw[0]
-            if isinstance(first, bool):
-                return acvi.BooleanArrayValue(values=raw)
-            elif isinstance(first, int):
-                return acvi.IntegerArrayValue(values=raw)
-            elif isinstance(first, float):
-                return acvi.RealArrayValue(values=raw)
-            elif isinstance(first, str):
-                return acvi.StringArrayValue(values=raw)
-        raise TypeError
+        value = self._instance.getValue(var_name)
+        return Workflow.value_to_variable_value(value)
 
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
@@ -253,21 +289,58 @@ class Workflow:
     def trade_study_start(self) -> None:
         self._instance.tradeStudyStart()
 
-    # boolean getHaltStatus();
     def get_halt_status(self) -> bool:
-        pass
+        """
+        Finds out if the user has pressed the halt button.
 
-    # VARIANT getValueAbsolute(BSTR varName);
-    def get_value_absolute(self, var_name: str) -> object:    # IVariableValue:
-        pass
+        Returns
+        -------
+        Boolean True for yes or False for no.
+        """
+        return self._instance.getHaltStatus()
 
-    # void setScheduler(BSTR scheduler);
+    def get_value_absolute(self, var_name: str) -> acvi.IVariableValue:
+        """
+        Gets the value of a variable without validating it.
+
+        Parameters
+        ----------
+        var_name : str
+            Full ModelCenter Path of the variable.
+
+        Returns
+        -------
+        The value as a variant.
+        """
+        value = self._instance.getValueAbsolute(var_name)
+        return Workflow.value_to_variable_value(value)
+
     def set_scheduler(self, schedular: str) -> None:
-        pass
+        """
+        Sets the current active scheduler for the Model.
 
-    # void removeComponent(BSTR name);
+        Parameters
+        ----------
+        schedular : str
+            The scheduler type. Possible types are:
+                * forward
+                * backward
+                * mixed
+                * script
+            Note: all scheduler types are case-sensitive.
+        """
+        self._instance.setScheduler(schedular)
+
     def remove_component(self, name: str) -> None:
-        pass
+        """
+        Removes the specified component from the Model.
+
+        Parameters
+        ----------
+        name :
+            Full ModelCenter path of the component to remove.
+        """
+        self._instance.removeComponent(name)
 
     # void breakLink(BSTR variable);
     def break_link(self, variable: str) -> None:
@@ -297,8 +370,109 @@ class Workflow:
         pass
 
     # IDispatch* createAssemblyVariable(BSTR name, BSTR type, BSTR parent);
-    def create_assembly_variable(self, name: str, type_: str, parent: str) -> object:    # IVariable
-        pass
+    def create_assembly_variable(self, name: str, type_: str, parent: str) ->\
+            acvi.CommonVariableMetadata:
+        """
+        Create a new variable in an Assembly.
+
+        Possible variable types are:
+          - double
+          - int
+          - boolean
+          - string
+          - file
+          - double[]
+          - int[]
+          - boolean[]
+          - string[]
+          - quadfacet
+          - surfaceofrevolution
+          - nurbs
+          - bspline
+          - ruled
+          - skinned
+          - vrml
+          - node
+
+        Parameters
+        ----------
+        name : str
+            Desired name of the new variable.
+        type_ : str
+            Type of the new variable.
+        parent : str
+            Full path of the parent Assembly.
+
+        Returns
+        -------
+        CommonVariableMetadata :
+            Created variable metadata.
+        """
+        return self._convert_variable(self._instance.createAssemblyVariable(name, type_, parent))
+
+    @staticmethod
+    def _convert_variable(variable: object) -> acvi.CommonVariableMetadata:
+        """
+        Convert IVariable object into appropriate CommonVariableMetadata implementation.
+
+        Parameters
+        ----------
+        variable : object
+            IVariable object containing variable data.
+        """
+        metadata: acvi.CommonVariableMetadata = None
+        type_: str = variable.getType()
+        is_array: bool = False
+        if type_.endswith('[]'):
+            is_array = True
+            type_ = type_[:-2]
+
+        if type_ == 'boolean':
+            if is_array:
+                metadata = acvi.BooleanArrayMetadata()
+            else:
+                metadata = acvi.BooleanMetadata()
+            metadata.description = variable.description
+        elif type_ == 'double':
+            if is_array:
+                metadata = acvi.RealArrayMetadata()
+            else:
+                metadata = acvi.RealMetadata()
+            metadata.description = variable.description
+            metadata.units = variable.units
+            metadata.display_format = variable.format
+            metadata.lower_bound = variable.lowerBound
+            metadata.upper_bound = variable.upperBound
+            metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
+            metadata.enumerated_aliases =\
+                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+        elif type_ == 'integer':
+            if is_array:
+                metadata = acvi.IntegerArrayMetadata()
+            else:
+                metadata = acvi.IntegerMetadata()
+            metadata.description = variable.description
+            metadata.lower_bound = variable.lowerBound
+            metadata.upper_bound = variable.upperBound
+            metadata.enumerated_values = acvi.IntegerArrayValue.from_api_string(variable.enumValues)
+            metadata.enumerated_aliases =\
+                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+        elif type_ == 'string':
+            if is_array:
+                metadata = acvi.StringArrayMetadata()
+            else:
+                metadata = acvi.StringMetadata()
+            metadata.description = variable.description
+            metadata.enumerated_values = acvi.StringArrayValue.from_api_string(variable.enumValues)
+            metadata.enumerated_aliases =\
+                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+        else:
+            raise NotImplementedError
+
+        # TODO: Add remaining types.
+        # TODO: Copying custom metadata is not possible due to lack of getMetaDataKeys.
+
+        return metadata
 
     # void autoLink(BSTR srcComp, BSTR destComp);
     def auto_link(self, src_comp: str, dest_comp: str) -> None:
@@ -316,26 +490,96 @@ class Workflow:
     def halt(self) -> None:
         pass
 
-    # void run(BSTR variableArray);
-    def run(self, variable_array: str) -> None:
-        pass
+    def run(self, variable_array: Optional[str]) -> None:
+        """
+        Runs a specified set of variables in the workflow.
 
-    # IDispatch* getDataMonitor(BSTR component, VARIANT index);
-    def get_data_monitor(self, component: str, index: object) -> object:   # IDataMonitor
-        pass
+        Parameters
+        ----------
+        variable_array: Optional[str]
+            A comma-separated list of variables to validate.
+            If no variables are specified, then the entire workflow
+            will be run.
+        """
+        self._instance.run(variable_array or "")
 
-    # IDispatch* createDataMonitor(BSTR component, BSTR name, int x, int y);
-    def create_data_monitor(
-            self, component: str, name: str, x: int, y: int) -> object:     # IDataMonitor
-        pass
+    def get_data_monitor(self, component: str, index: int) -> IDataMonitor:
+        """
+        Get the DataMonitor at the given index for the given component.
 
-    # boolean removeDataMonitor(BSTR component, VARIANT index);
-    def remove_data_monitor(self, component: str, index: object) -> bool:
-        pass
+        Parameters
+        ----------
+        component: str
+            The name of the component.
+        index: int
+            The index of the DataMonitor in the component.
 
-    # IDispatch* getDataExplorer(int index);
-    def get_data_explorer(self, index: int) -> object:  # PHXDataExplorer
-        pass
+        Returns
+        -------
+        The component's DataMonitor at the given index.
+        """
+
+        dm_object: phxmock.MockDataMonitor = self._instance.getDataMonitor(component, index)
+        return MockDataMonitorWrapper(dm_object)
+
+    def create_data_monitor(self, component: str, name: str, x: int, y: int) -> object:
+        """
+        Create a DataMonitor associated with the specified component.
+
+        Parameters
+        ----------
+        component: str
+            The name of the component to associate the DataMonitor with.
+        name: str
+            The name of the DataMonitor.
+        x: int
+            The x-position of the DataMonitor.
+        y: int
+            The y-position of the DataMonitor.
+
+        Returns
+        -------
+        The created DataMonitor.
+        """
+
+        dm_object: phxmock.MockDataMonitor = self._instance.createDataMonitor(component, name, x, y)
+        return MockDataMonitorWrapper(dm_object)
+
+    def remove_data_monitor(self, component: str, index: int) -> bool:
+        """
+        Remove the DataMonitor at the given index for the given component.
+
+        Parameters
+        ----------
+        component: str
+            The name of the component.
+        index: int
+            The index of the DataMonitor in the component.
+
+        Returns
+        -------
+        True if the component had a DataMonitor at the given index.
+        """
+        return self._instance.removeDataMonitor(component, index)
+
+    def get_data_explorer(self, index: int) -> Optional[DataExplorer]:
+        """
+        Get the specified DataExplorer.
+
+        Parameters
+        ----------
+        index: int
+            The index of the DataExplorer.
+
+        Returns
+        -------
+        The DataExplorer at the given index.
+        """
+        de_object: object = self._instance.getDataExplorer(index)
+        if de_object is None:
+            return None
+        else:
+            return DataExplorer(de_object)
 
     # void moveComponent(BSTR component, BSTR parent, [optional]VARIANT index);
     def move_component(self, component: str, parent: str, index: object) -> None:
@@ -359,11 +603,15 @@ class Workflow:
     def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         pass
 
-    # IDispatch* getModel();
-    # IDispatch* getAssembly(BSTR name);
     def get_assembly(self, name: str = None) -> object:    # IAssembly
         """Gets the named assembly or the top level assembly."""
-        pass
+        if name is None or name == "":
+            assembly = self._instance.getModel()
+        else:
+            assembly = self._instance.getAssembly(name)
+        if assembly is None:
+            return None
+        return IAssembly(assembly)
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,
@@ -468,8 +716,78 @@ class Workflow:
         self._instance.addNewMacro(macro_name, is_app_macro)
 
     # LPDISPATCH getVariableMetaData(BSTR name);
-    def get_variable_meta_data(self, name: str) -> object:  # PHXDATAHISTORYLib.IDHVariable
-        pass
+    def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
+        """
+        Get metadata from a variable.
+
+        Throws an exception if the variable is not found.
+
+        Parameters
+        ----------
+        name : str
+            The full name of the variable.
+
+        Returns
+        -------
+        CommonVariableMetadata :
+            The metadata, in the form of a CommonVariableMetadata
+            implementation.
+        """
+        metadata: acvi.CommonVariableMetadata = None
+        variable = self._instance.getVariableMetaData(name)  # PHXDATAHISTORYLib.IDHVariable
+        is_array: bool = variable.type.endswith('[]')
+        type_: str = variable.type[:-2] if is_array else variable.type
+
+        if type_ == 'double':
+            if is_array:
+                metadata = acvi.RealArrayMetadata()
+            else:
+                metadata = acvi.RealMetadata()
+            # TODO: Where do other metadata come from? variable.getMetaData?
+            # metadata.description =
+            # metadata.units =
+            # metadata.display_format =
+            metadata.lower_bound = variable.lowerBound
+            metadata.upper_bound = variable.upperBound
+            metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
+            metadata.enumerated_aliases =\
+                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+
+        elif type_ == 'integer':
+            if is_array:
+                metadata = acvi.IntegerArrayMetadata()
+            else:
+                metadata = acvi.IntegerMetadata()
+            metadata.lower_bound = variable.lowerBound
+            metadata.upper_bound = variable.upperBound
+            metadata.enumerated_values = acvi.IntegerArrayValue.from_api_string(variable.enumValues)
+            metadata.enumerated_aliases =\
+                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+
+        elif type_ == 'boolean':
+            if is_array:
+                metadata = acvi.BooleanArrayMetadata()
+            else:
+                metadata = acvi.BooleanMetadata()
+
+        elif type_ == 'string':
+            if is_array:
+                metadata = acvi.StringArrayMetadata()
+            else:
+                metadata = acvi.StringMetadata()
+            metadata.enumerated_values = acvi.StringArrayValue.from_api_string(variable.enumValues)
+            metadata.enumerated_aliases =\
+                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+        else:
+            raise NotImplementedError
+
+        # TODO: Add remaining types.
+        if metadata is not None:
+            # Copy custom metadata.
+            keys = variable.getMetaDataKeys()
+            for key in keys:
+                metadata.custom_metadata[key] = variable.getMetaData(key)
+        return metadata
 
     # IDispatch* createDataExplorer(BSTR tradeStudyType, BSTR setup);
     def create_data_explorer(self, trade_study_type: str, setup: str) -> DataExplorer:
