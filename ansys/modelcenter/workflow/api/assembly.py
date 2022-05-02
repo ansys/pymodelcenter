@@ -60,10 +60,21 @@ class Assembly:
         raise NotImplementedError
 
     @property
-    def icon_id(self):
+    def icon_id(self) -> int:
         """The ID number of the icon to use for the Assembly."""
-        # int iconID;
-        raise NotImplementedError
+        return self._assembly.iconID
+
+    @icon_id.setter
+    def icon_id(self, value: int) -> None:
+        """
+        Set the ID number of the icon to use for the Assembly.
+
+        Parameters
+        ----------
+        value: int
+            The new value.
+        """
+        self._assembly.iconID = value
 
     @property
     def index_in_parent(self) -> int:

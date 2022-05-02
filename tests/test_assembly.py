@@ -47,10 +47,26 @@ def test_components() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_icon_id() -> None:
-    """Testing of the icon_id property"""
-    raise NotImplementedError
+    # Setup
+    wrapped_mock_comp.iconID = 8675309
+
+    # Execute
+    result = sut_instance.icon_id
+
+    # Verify
+    assert result == 8675309
+
+
+def test_set_icon_id() -> None:
+    # Setup
+    wrapped_mock_comp.iconId = 0
+
+    # Execute
+    sut_instance.icon_id = 8675309
+
+    # Verify
+    assert wrapped_mock_comp.iconID == 8675309
 
 
 @pytest.mark.skip(reason="Not implemented.")
