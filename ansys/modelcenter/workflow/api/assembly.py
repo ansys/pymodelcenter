@@ -79,8 +79,7 @@ class Assembly:
     @property
     def index_in_parent(self) -> int:
         """Gets the position of the Assembly within the parent."""
-        # int IndexInParent;
-        raise NotImplementedError
+        return self._assembly.IndexInParent
 
     @property
     def parent_assembly(self) -> object:    # IAssembly:

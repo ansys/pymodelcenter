@@ -69,10 +69,22 @@ def test_set_icon_id() -> None:
     assert wrapped_mock_comp.iconID == 8675309
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_index_in_parent() -> None:
     """Testing of the index_in_parent property."""
-    raise NotImplementedError
+    # Setup
+    wrapped_mock_comp.IndexInParent = 9001
+
+    # Execute
+    result: int = sut_instance.index_in_parent
+
+    # Verify
+    assert result == 9001
+
+
+def test_index_in_parent_readonly() -> None:
+    """Testing of the index_in_parent property."""
+    with pytest.raises(AttributeError, match="can't set"):
+        sut_instance.index_in_parent = 9001
 
 
 @pytest.mark.skip(reason="Not implemented.")
