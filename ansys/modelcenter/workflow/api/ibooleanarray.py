@@ -50,10 +50,10 @@ class IBooleanArray(IArray, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def set_value(self, d1: object, d2: Optional[object], d3: Optional[object], d4: Optional[object],
-              d5: Optional[object], d6: Optional[object], d7: Optional[object],
-              d8: Optional[object], d9: Optional[object], d10: Optional[object],
-              new_value: bool) -> None:
+    def set_value(self, d1: object, d2: Optional[object], d3: Optional[object],
+                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
+                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
+                  d10: Optional[object], new_value: bool) -> None:
         """
         Set the value of an array element.
 
