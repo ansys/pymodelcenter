@@ -10,14 +10,15 @@ class IAssemblies:
         # VARIANT Count;
         raise NotImplementedError
 
-    def item(self, id: int) -> object:   # IAssembly:
+    def item(self, id_: int) -> object:   # IAssembly:
         """
-        Gets a pointer to the specified Assembly.
+        Get a pointer to the specified Assembly.
 
         Parameters
         ----------
-        id : int
+        id_ : int
             ID of the specified Assembly. It can be a name or an index.
+
         Returns
         -------
         IAssembly object.
