@@ -1,7 +1,7 @@
-from typing import Optional, Union
+from typing import Optional, Sequence, Union
 
-from .i18n import i18n
 from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
+from .i18n import i18n
 
 
 class Assembly:
@@ -44,7 +44,7 @@ class Assembly:
         raise NotImplementedError
 
     @property
-    def assemblies(self) -> object:     # IAssemblies
+    def assemblies(self) -> Sequence['Assembly']:
         """
         Pointer to the Assemblies in the Assembly.
 
@@ -53,7 +53,9 @@ class Assembly:
         IAssemblies object.
         """
         # VARIANT Assemblies;
-        raise NotImplementedError
+        dotnet_mock_mc_assemblies = self._assembly.Assemblies
+        return [Assembly(dotnet_mock_mc_assemblies.Item(mock_index))
+                for mock_index in range(0, dotnet_mock_mc_assemblies.Count)]
 
     @property
     def components(self) -> object:     # IComponent

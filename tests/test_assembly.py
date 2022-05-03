@@ -6,7 +6,7 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockAssembly
+from Phoenix.Mock import MockAssemblies, MockAssembly
 
 wrapped_mock_comp: MockAssembly = None
 
@@ -35,10 +35,19 @@ def test_groups() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_assemblies() -> None:
-    """Testing of assemblies property"""
-    raise NotImplementedError
+    mock_assemblies = MockAssemblies()
+    mock_assemblies.AddAssembly(MockAssembly("mock assembly 1"))
+    mock_assemblies.AddAssembly(MockAssembly("mock assembly 2"))
+    mock_assemblies.AddAssembly(MockAssembly("mock assembly 3"))
+
+    wrapped_mock_comp.Assemblies = mock_assemblies
+
+    result = sut_instance.assemblies
+
+    assert all([isinstance(each_assembly, mcapi.Assembly) for each_assembly in result])
+    assert [assembly.get_name() for assembly in result] == [
+        "mock assembly 1", "mock assembly 2", "mock assembly 3"]
 
 
 @pytest.mark.skip(reason="Not implemented.")
