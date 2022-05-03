@@ -1,19 +1,19 @@
 """Definition of Engine and associated classes."""
 from enum import Enum
 from string import Template
-from typing import Union
+from typing import Any, Union
 
 import clr
 from numpy import float64, int64
 from overrides import overrides
 
 from .data_explorer import DataExplorer
+from .format import Format
 from .i18n import i18n
-from .iformat import IFormat
 from .workflow import Workflow
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockFormatter, MockModelCenter
+from Phoenix.Mock import MockModelCenter
 
 
 class WorkflowType(Enum):
@@ -109,7 +109,7 @@ class Engine:
             raise Exception(msg)
         else:
             self._instance.newModel(workflow_type.value)
-            self._workflow = Workflow(self._instance)
+            self._workflow = Workflow(self._instance, self)
             return self._workflow
 
     def load_workflow(self, file_name: str,
@@ -134,15 +134,20 @@ class Engine:
             raise Exception(msg)
         else:
             self._instance.loadModel(file_name, on_connect_error.value)
-            self._workflow = Workflow(self._instance)
+            self._workflow = Workflow(self._instance, self)
             return self._workflow
 
-    def get_formatter(self, fmt: str) -> IFormat:
+    def _notify_close_workflow(self, calling_workflow: Any):
+        """Notify this engine that a workflow has been closed."""
+        if calling_workflow is self._workflow:
+            self._workflow = None
+
+    def get_formatter(self, fmt: str) -> Format:
         """
         Create an instance of a formatter that can be used to format \
         numbers to and from a particular string style.
 
-        See documentation on IFormat.set_format for more information on
+        See documentation on Format.format for more information on
         available styles.
 
         Parameters
@@ -152,52 +157,10 @@ class Engine:
 
         Returns
         -------
-        An IFormat object that formats in the given style.
+        A Format object that formats in the given style.
         """
 
-        class MockFormatWrapper(IFormat):
-
-            def __init__(self, instance: MockFormatter):
-                """Initialize."""
-                self._instance = instance
-
-            @overrides
-            def get_format(self) -> str:
-                return self._instance.getFormat()
-
-            @overrides
-            def set_format(self, fmt: str) -> None:
-                raise NotImplementedError
-
-            @overrides
-            def string_to_integer(self, string: str) -> int64:
-                raise NotImplementedError
-
-            @overrides
-            def string_to_real(self, string: str) -> float64:
-                raise NotImplementedError
-
-            @overrides
-            def integer_to_string(self, integer: int64) -> str:
-                raise NotImplementedError
-
-            @overrides
-            def real_to_string(self, real: float64) -> str:
-                raise NotImplementedError
-
-            @overrides
-            def string_to_string(self, string: str) -> str:
-                raise NotImplementedError
-
-            @overrides
-            def integer_to_editable_string(self, integer: int64) -> str:
-                raise NotImplementedError
-
-            @overrides
-            def real_to_editable_string(self, real: float64) -> str:
-                raise NotImplementedError
-
-        formatter: IFormat = MockFormatWrapper(self._instance.getFormatter(fmt))
+        formatter: Format = Format(self._instance.getFormatter(fmt))
         return formatter
 
     def set_user_name(self, user_name: str) -> None:

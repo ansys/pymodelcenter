@@ -1,43 +1,43 @@
-from typing import Any, List, Optional, Tuple, Union
-
-import ansys.common.variableinterop as acvi
 import clr
+
+from typing import Any, List, Optional, Tuple, TYPE_CHECKING, Union
+
+import Phoenix.Mock as phxmock
+import ansys.common.variableinterop as acvi
 from overrides import overrides
 
 from . import DataExplorer
-from .i18n import i18n
 from .icomponent import IComponent
-from .idatamonitor import IDataMonitor
+from .datamonitor import DataMonitor
 
+if TYPE_CHECKING:
+    from .engine import Engine
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
+
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 
+from .i18n import i18n
 
-class MockDataMonitorWrapper(IDataMonitor):
-    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
 
-    def __init__(self, monitor: phxmock.MockDataMonitor):
+class WorkflowVariable:
+    # LTTODO: Fleshing this out is part of another PBI.
+
+    def __init__(self, variable: Any):
         """
-        Initialize.
-
+        Create a new instance
         Parameters
         ----------
-        monitor: phxmock.MockDataMonitor
-            The COM DataMonitor to wrap.
+        variable: Any
+            the actual ModelCenter variable to wrap.
         """
-        self._instance = monitor
-
-    @property  # type: ignore
-    @overrides
-    def title(self) -> str:
-        return self._instance.getTitle()
+        self._variable = variable
 
 
 class Workflow:
-    """Represents a Workflow or Model in  ModelCenter."""
+    """Represents a Workflow or Model in ModelCenter."""
 
-    def __init__(self, instance: Any):
+    def __init__(self, instance: phxmock.MockModelCenter, engine: 'Engine'):
         """
         Initialize a new Workflow instance.
 
@@ -46,8 +46,11 @@ class Workflow:
         instance : object
             The raw interface object to use to make direct calls to
             ModelCenter.
+        engine : Engine
+            The engine that created this instance.
         """
         self._instance = instance
+        self._engine = engine
 
     @staticmethod
     def value_to_variable_value(value: Any) -> acvi.IVariableValue:
@@ -141,33 +144,49 @@ class Workflow:
     def create_component(
             self,
             server_path: str,
+            name: str,
             parent: str,
-            x_pos: object = None,
-            y_pos: object = None) -> None:
+            x_pos: Optional[object] = None,
+            y_pos: Optional[object] = None) -> None:
         pass
+
+        # LTTODO: The mock expects System.Reflection.Missing.Value for x_pos and y_pos to indicate
+        # that no value was passed, but it's not feasible to actually pass that, since pythonnet
+        # seems to get tripped up while it's using reflection to find a method to actually call
+        # (Missing.Value has a special meaning there, it seems.)
+        # This is something the actual GRPC API will probably have to solve.
+
+        self._instance.createComponent(
+            server_path,
+            name,
+            parent,
+            x_pos,
+            y_pos
+        )
 
     # void createLink(BSTR variable, BSTR equation);
     def create_link(self, variable: str, equation: str) -> None:
-        pass
+        self._instance.createLink(variable, equation)
 
     # void saveModel();
     def save_workflow(self) -> None:
-        pass
+        self._instance.saveModel()
 
     # void saveModelAs(BSTR fileName);
     def save_workflow_as(self, file_name: str) -> None:
-        pass
+        self._instance.saveModelAs(file_name)
 
     # void closeModel();
     def close_workflow(self) -> None:
-        pass
+        self._instance.closeModel()
+        self._engine._notify_close_workflow(self)
 
     # IDispatch* getVariable(BSTR name);
     #   IDoubleVariable IDoubleArray IBooleanVariable IIntegerVariable IReferenceVariable
     #   IObjectVariable IFileVariable IStringVariable IBooleanArray IIntegerArray IReferenceArray
     #   IFileArray IStringArray IGeometryVariable:
     def get_variable(self, name: str) -> object:
-        pass
+        return WorkflowVariable(self._instance.getVariable(name))
 
     def get_component(self, name: str) -> IComponent:   # IComponent, IIfComponent, IScriptComponent
         """
@@ -503,7 +522,7 @@ class Workflow:
         """
         self._instance.run(variable_array or "")
 
-    def get_data_monitor(self, component: str, index: int) -> IDataMonitor:
+    def get_data_monitor(self, component: str, index: int) -> DataMonitor:
         """
         Get the DataMonitor at the given index for the given component.
 
@@ -520,7 +539,7 @@ class Workflow:
         """
 
         dm_object: phxmock.MockDataMonitor = self._instance.getDataMonitor(component, index)
-        return MockDataMonitorWrapper(dm_object)
+        return DataMonitor(dm_object)
 
     def create_data_monitor(self, component: str, name: str, x: int, y: int) -> object:
         """
@@ -543,7 +562,7 @@ class Workflow:
         """
 
         dm_object: phxmock.MockDataMonitor = self._instance.createDataMonitor(component, name, x, y)
-        return MockDataMonitorWrapper(dm_object)
+        return DataMonitor(dm_object)
 
     def remove_data_monitor(self, component: str, index: int) -> bool:
         """

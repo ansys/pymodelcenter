@@ -1,23 +1,31 @@
 """Tests for Workflow."""
-import clr
-import pytest
 from typing import Any, List, Optional, Type
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockModelCenter, MockDoubleVariable, MockIntegerVariable,\
-    MockBooleanVariable, MockStringVariable, MockBooleanArray, MockIntegerArray, MockDoubleArray,\
-    MockStringArray
+import clr
+import pytest
 
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import (
+    MockBooleanArray,
+    MockBooleanVariable,
+    MockDoubleArray,
+    MockDoubleVariable,
+    MockIntegerArray,
+    MockIntegerVariable,
+    MockModelCenter,
+    MockStringArray,
+    MockStringVariable,
+)
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
 from System import Object as DotNetObject
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
-
 import ansys.common.variableinterop as acvi
-import ansys.modelcenter.workflow.api as mcapi
 import pytest
+
+import ansys.modelcenter.workflow.api as mcapi
 
 mock_mc: Optional[Any] = None
 """
@@ -155,6 +163,128 @@ def test_trade_study_end():
 
     # Verification
     assert mock_mc.getCallCount("tradeStudyEnd") == 1
+
+
+def test_workflow_close():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+
+    # Check pre-reqs.
+    with pytest.raises(Exception) as except_info:
+        sut_engine.new_workflow()
+
+    # Execute
+    sut_workflow.close_workflow()
+
+    # Verify
+    assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "\
+        "Close the current Workflow before loading or creating a new one."
+    next_workflow = sut_engine.new_workflow()
+    assert isinstance(next_workflow, mcapi.Workflow)
+    assert sut_engine._instance.getCallCount("closeModel") == 1
+
+
+def test_save_workflow():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("saveModel") == 0
+
+    # Execute
+    sut_workflow.save_workflow()
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("saveModel") == 1
+
+
+def test_save_workflow_as():
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("saveModelAs") == 0
+
+    # Execute
+    sut_workflow.save_workflow_as(r"C:\Temp\workflow.pxcz")
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("saveModelAs") == 1
+    argument = sut_workflow._instance.getArgumentRecord("saveModelAs", 0)[0]
+    assert argument == r"C:\Temp\workflow.pxcz"
+
+
+@pytest.mark.parametrize(
+    'server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos',
+    [
+        pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, 42,
+                     47, 42, id="fully specified position"),
+        # It's difficult to test these cases, because the mock expects Missing.Value,
+        # and that really screws with the reflection-based method matching in pythonnet,
+        # since it seems Missing.Value has special meaning in that case.
+        # Passing None doesn't work and neither does leaving the method off.
+        # This is probably something that the real GRPC api will have to solve.
+        # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', None, 42,
+        #             Missing.Value, 42, id="missing x value"),
+        # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, None,
+        #             47, Missing.Value, id="missing y value")
+    ]
+)
+def test_create_component(
+        server_path: str,
+        name: str,
+        parent: str,
+        x_pos: Optional[object],
+        y_pos: Optional[object],
+        expected_passed_x_pos,
+        expected_passed_y_pos
+) -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("createComponent") == 0
+
+    # Execute
+    sut_workflow.create_component(server_path, name, parent, x_pos, y_pos)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("createComponent") == 1
+    assert sut_workflow._instance.getArgumentRecord("createComponent", 0) == [
+        server_path, name, parent, expected_passed_x_pos, expected_passed_y_pos]
+
+
+def test_create_link() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("createLink") == 0
+    test_var_name = "inputs.var1"
+    test_eqn = "Workflow.comp.output4"
+
+    # Execute
+    sut_workflow.create_link(test_var_name, test_eqn)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("createLink") == 1
+    assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [
+        test_var_name, test_eqn
+    ]
+
+
+def test_get_variable() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    test_var_name = "test_assembly_var"
+    sut_workflow._instance.createAssemblyVariable(test_var_name, "Input", "Model")
+    assert sut_workflow._instance.getCallCount("getVariable") == 0
+
+    # Execute
+    result = sut_workflow.get_variable("Model.test_assembly_var")
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("getVariable") == 1
+    assert sut_workflow._instance.getArgumentRecord("getVariable", 0) == ["Model.test_assembly_var"]
+    assert result._variable.getFullName() == "Model.test_assembly_var"
 
 
 def test_workflow_directory() -> None:

@@ -1,31 +1,38 @@
-"""Definition of IFormat."""
-from abc import ABC, abstractmethod
-
+"""Definition of Format."""
+import clr
 from numpy import float64, int64
 
+clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
+from Phoenix.Mock import MockFormatter
 
-class IFormat(ABC):
-    """
-    Interface that defines operations for formatting values in various
-    string formats (percentage, currency, etc.).
-    """
 
-    @abstractmethod
-    def set_format(self, fmt: str) -> None:
+class Format:
+    """Class for formatting values in various string formats \
+    (percentage, currency, etc.)."""
+
+    def __init__(self, instance: MockFormatter):
+        """Initialize."""
+        self._instance = instance
+
+    @property
+    def format(self) -> str:
         """
-        Set the format string to use in this object.
+        Style to use for formatting.
 
-        You may pass in the empty string to mean "General".
+        When setting, you may pass in the empty string to mean "General".
         TODO: Documentation on valid formats, MCD docs not great.
 
-        Parameters
-        ----------
-        fmt: str
-            The format string to use.
+        Returns
+        -------
+        The format string used to format values.
         """
-        raise NotImplementedError
+        return self._instance.getFormat()
 
-    @abstractmethod
+    @format.setter
+    def format(self, fmt: str) -> None:
+        """Setter for format property."""
+        self._instance.setFormat(fmt)
+
     def string_to_integer(self, string: str) -> int64:
         """
         Convert a formatted string to an integer.
@@ -42,9 +49,8 @@ class IFormat(ABC):
         -------
         The value of the string.
         """
-        raise NotImplementedError
+        return self._instance.stringToLong(string)
 
-    @abstractmethod
     def string_to_real(self, string: str) -> float64:
         """
         Convert a formatted string to a real.
@@ -61,9 +67,8 @@ class IFormat(ABC):
         -------
         The value of the string.
         """
-        raise NotImplementedError
+        return self._instance.stringToDouble(string)
 
-    @abstractmethod
     def integer_to_string(self, integer: int64) -> str:
         """
         Convert an integer to a formatted string.
@@ -77,9 +82,8 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError
+        return self._instance.longToString(integer)
 
-    @abstractmethod
     def real_to_string(self, real: float64) -> str:
         """
         Convert a real to a formatted string.
@@ -93,20 +97,8 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError
+        return self._instance.doubleToString(real)
 
-    @abstractmethod
-    def get_format(self) -> str:
-        """
-        Get the current format style.
-
-        Returns
-        -------
-        The format string used to format values.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
     def string_to_string(self, string: str) -> str:
         """
         Convert an unformatted string into a formatted string.
@@ -120,9 +112,8 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError
+        return self._instance.stringToString(string)
 
-    @abstractmethod
     def integer_to_editable_string(self, integer: int64) -> str:
         """
         Convert an integer to its formatted string representation, but \
@@ -137,9 +128,8 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError
+        return self._instance.longToEditableString(integer)
 
-    @abstractmethod
     def real_to_editable_string(self, real: float64) -> str:
         """
         Convert a real to its formatted string representation, but \
@@ -154,4 +144,4 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError
+        return self._instance.doubleToEditableString(real)

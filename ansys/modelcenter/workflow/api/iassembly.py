@@ -1,6 +1,18 @@
 class IAssembly:
     """COM Instance."""
 
+    def __init__(self, instance: object):
+        """
+        Initialize a new instance.
+
+        Parameters
+        ----------
+        instance : object
+            The raw IAssembly interface object ot use to make direct
+            call to ModelCenter.
+        """
+        self._instance = instance
+
     @property
     def variables(self) -> object:  # IVariables:
         """
