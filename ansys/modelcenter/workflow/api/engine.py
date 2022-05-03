@@ -1,7 +1,7 @@
 """Definition of Engine and associated classes."""
 from enum import Enum
 from string import Template
-from typing import Any, Union
+from typing import Union
 
 import clr
 
@@ -149,7 +149,6 @@ class Engine:
         -------
         A Format object that formats in the given style.
         """
-
         formatter: Format = Format(self._instance.getFormatter(fmt))
         return formatter
 

@@ -1,6 +1,5 @@
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
-import Phoenix.Mock as phxmock
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -9,8 +8,6 @@ from . import DataExplorer
 from .datamonitor import DataMonitor
 from .icomponent import IComponent
 
-if TYPE_CHECKING:
-    from .engine import Engine
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
