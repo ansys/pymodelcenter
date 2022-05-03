@@ -1,14 +1,13 @@
-import clr
-
-from typing import Any, List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
 
 import Phoenix.Mock as phxmock
 import ansys.common.variableinterop as acvi
+import clr
 from overrides import overrides
 
 from . import DataExplorer
-from .icomponent import IComponent
 from .datamonitor import DataMonitor
+from .icomponent import IComponent
 
 if TYPE_CHECKING:
     from .engine import Engine
