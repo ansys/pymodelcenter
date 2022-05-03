@@ -12,4 +12,5 @@ from .iref_array_prop import IRefArrayProp
 from .iref_prop import IRefProp
 from .ireference_array import IReferenceArray
 from .ireference_variable import IReferenceVariable
+from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .workflow import Workflow

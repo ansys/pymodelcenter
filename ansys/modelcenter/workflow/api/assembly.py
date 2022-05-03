@@ -1,4 +1,7 @@
-from typing import Optional
+from typing import Optional, Union
+
+from .i18n import i18n
+from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 
 
 class Assembly:
@@ -227,7 +230,12 @@ class Assembly:
     def delete_variable(self, name: str) -> None:
         self._assembly.deleteVariable(name)
 
-    def set_metadata(self, name: str, type_, value, access, archive) -> None:
+    def set_metadata(self,
+                     name: str,
+                     value: Union[str, int, float, bool],
+                     access: ComponentMetadataAccess,
+                     archive: bool,
+                     value_is_xml: bool = False) -> None:
         """
         Sets the meta data value of the given meta data key name.
 
@@ -235,15 +243,32 @@ class Assembly:
         ----------
         name :
             Metadata specifier used to store the data.
-        type_ :
         value :
+            The value of the metadata item.
         access :
+            The level of access allowed to the metadata.
         archive :
+            Whether or not the metadata should be considered archived.
+        value_is_xml :
+            Whether the metadata value is XML. This should be used
+            only when passing a string containing XML that should be interpreted as such.
         """
-        # void setMetadata(
-        #       BSTR name, MetadataType type, VARIANT value,
-        #       MetadataAccess access, boolean archive);
-        raise NotImplementedError
+        meta_type: ComponentMetadataType = ComponentMetadataType.STRING
+        if isinstance(value, str):
+            meta_type = ComponentMetadataType.STRING
+            if value_is_xml:
+                meta_type = ComponentMetadataType.XML
+        elif isinstance(value, float):
+            meta_type = ComponentMetadataType.DOUBLE
+        elif isinstance(value, bool):
+            # It's important that this comes before int, as python bool is a subclass of int.
+            meta_type = ComponentMetadataType.BOOLEAN
+        elif isinstance(value, int):
+            meta_type = ComponentMetadataType.LONG
+        else:
+            raise TypeError(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+
+        return self._assembly.setMetadata(name, meta_type.value, value, access.value, archive)
 
     def get_metadata(self, name: str) -> object:    # Metadata
         """
@@ -259,4 +284,4 @@ class Assembly:
         Metadata value.
         """
         # VARIANT getMetadata(BSTR name);
-        raise NotImplementedError
+        return self._assembly.getMetadata(name)
