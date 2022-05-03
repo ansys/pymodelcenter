@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from .iarray import IArray
+from ansys.modelcenter.workflow.api.iarray import IArray
 
 
 class IBooleanArray(IArray, ABC):
@@ -12,9 +12,10 @@ class IBooleanArray(IArray, ABC):
     """
 
     @abstractmethod
-    def value(self, d1: object, d2: Optional[object], d3: Optional[object], d4: Optional[object],
-              d5: Optional[object], d6: Optional[object], d7: Optional[object],
-              d8: Optional[object], d9: Optional[object], d10: Optional[object]) -> bool:
+    def get_value(self, d1: object, d2: Optional[object], d3: Optional[object],
+                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
+                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
+                  d10: Optional[object]) -> bool:
         """
         Get the value of an array element.
 
@@ -49,7 +50,7 @@ class IBooleanArray(IArray, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def value(self, d1: object, d2: Optional[object], d3: Optional[object], d4: Optional[object],
+    def set_value(self, d1: object, d2: Optional[object], d3: Optional[object], d4: Optional[object],
               d5: Optional[object], d6: Optional[object], d7: Optional[object],
               d8: Optional[object], d9: Optional[object], d10: Optional[object],
               new_value: bool) -> None:
@@ -80,79 +81,6 @@ class IBooleanArray(IArray, ABC):
             Index in the 10th dimension (0-based index).
         new_value
             The new value.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_value(self, d1: object, d2: Optional[object], d3: Optional[object],
-                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                  d10: Optional[object]) -> bool:
-        """
-        Gets the value of an array element.
-
-        Parameters
-        ----------
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-
-        Returns
-        -------
-        bool
-            The value.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def set_value(self, value: bool, d1: object, d2: Optional[object], d3: Optional[object],
-                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                  d10: Optional[object]) -> None:
-        """
-        Sets the value of an array element.
-
-        Parameters
-        ----------
-        value
-            The new value.
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
         """
         raise NotImplementedError
 
