@@ -29,7 +29,7 @@ test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4
 [package.source]
 type = "git"
 url = "https://github.com/pyansys/ansys-common-variableinterop.git"
-reference = "71a177e0c75e31a2709208cfa4027dd9c7098f0b"
+reference = "71a177e"
 resolved_reference = "71a177e0c75e31a2709208cfa4027dd9c7098f0b"
 
 [[package]]
@@ -374,8 +374,8 @@ pythonnet = "^2.5.2"
 [package.source]
 type = "git"
 url = "https://github.com/Phoenix-Integration-Inc/phx-mocks.git"
-reference = "48807210861c50d667b00bfd72b984ef560f88cc"
-resolved_reference = "48807210861c50d667b00bfd72b984ef560f88cc"
+reference = "9cb47d4"
+resolved_reference = "9cb47d405c6767677102c76fbcf6ef553a3c1a2e"
 
 [[package]]
 name = "platformdirs"
@@ -815,7 +815,7 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "8c694d737a469719ea79c1c655616c041da2527722dc9178acef8e0bb53e60f4"
+content-hash = "8643691f9fcdffd1e7bd540d28f058f6de2e670c33bebddaeb87a868624a38be"
 
 [metadata.files]
 alabaster = [

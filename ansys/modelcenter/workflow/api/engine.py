@@ -138,6 +138,7 @@ class Engine:
             return self._workflow
 
     def _notify_close_workflow(self, calling_workflow: Any):
+        """Notify this engine that a workflow has been closed."""
         if calling_workflow is self._workflow:
             self._workflow = None
 
