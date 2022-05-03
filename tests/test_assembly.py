@@ -6,7 +6,7 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockAssemblies, MockAssembly
+from Phoenix.Mock import MockAssemblies, MockAssembly, MockGroup, MockGroups
 
 wrapped_mock_comp: MockAssembly = None
 
@@ -29,10 +29,24 @@ def test_variables() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_groups() -> None:
     """Testing of groups property."""
-    raise NotImplementedError
+    mock_groups = MockGroups()
+    mock_groups.addItem(MockGroup())
+    mock_groups.addItem(MockGroup())
+    mock_groups.addItem(MockGroup())
+    mock_groups.Item(0).setName("mock group 1")
+    mock_groups.Item(1).setName("mock group 2")
+    mock_groups.Item(2).setName("mock group 3")
+
+    wrapped_mock_comp.Groups = mock_groups
+
+    result = sut_instance.groups
+
+    assert all([isinstance(each_group, mcapi.IGroup) for each_group in result])
+    assert [each_group.get_name() for each_group in result] == [
+        "mock group 1", "mock group 2", "mock group 3"
+    ]
 
 
 def test_assemblies() -> None:

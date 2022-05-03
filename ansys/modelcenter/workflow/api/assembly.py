@@ -2,6 +2,8 @@ from typing import Optional, Sequence, Union
 
 from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .i18n import i18n
+from .igroup import IGroup
+from .igroups import IGroups
 
 
 class Assembly:
@@ -32,16 +34,15 @@ class Assembly:
         raise NotImplementedError
 
     @property
-    def groups(self) -> object:     # IGroups
+    def groups(self) -> Sequence[IGroup]:
         """
-        Pointer to the Groups in the Assembly.
+        Get a list of variable groups in the Assembly.
 
         Returns
         -------
-        IGroups object.
+        A list of variable groups in the assembly.
         """
-        # VARIANT Groups;
-        raise NotImplementedError
+        return IGroups(self._assembly.Groups)
 
     @property
     def assemblies(self) -> Sequence['Assembly']:
