@@ -36,9 +36,9 @@ class IRefArrayProp:
         return self._instance.title
 
     @title.setter
-    def title(self, title_: str) -> None:
+    def title(self, value: str) -> None:
         """Title of the reference array property."""
-        self._instance.title = title_
+        self._instance.title = value
 
     @property
     def description(self) -> str:
