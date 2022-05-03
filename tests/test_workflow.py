@@ -505,9 +505,9 @@ def test_remove_component():
 @pytest.mark.parametrize(
     "name,get_model_call_count,get_assembly_call_count,result_type",
     [
-        pytest.param(None,           1, 0, mcapi.IAssembly,  id="root"),
-        pytest.param("root.aName",   0, 1, mcapi.IAssembly,  id="named"),
-        pytest.param("root.noExist", 0, 1, None,       id="missing")
+        pytest.param(None,           2, 0, mcapi.IAssembly,  id="root"),
+        pytest.param("root.aName",   1, 1, mcapi.IAssembly,  id="named"),
+        pytest.param("root.noExist", 1, 1, None,       id="missing")
     ]
 )
 def test_get_assembly(
