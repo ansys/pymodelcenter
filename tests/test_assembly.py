@@ -209,10 +209,13 @@ def test_add_variable() -> None:
         var_name, var_type]
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_rename() -> None:
     """Testing of the rename method."""
-    raise NotImplementedError
+    new_name = "test_assembly_renamed"
+
+    sut_instance.rename(new_name)
+
+    assert sut_instance.get_name() == new_name
 
 
 def test_delete_variable() -> None:

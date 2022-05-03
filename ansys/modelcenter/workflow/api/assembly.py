@@ -222,7 +222,7 @@ class Assembly:
             New name of the Assembly.
         """
         # void rename(BSTR name);
-        raise NotImplementedError
+        self._assembly.rename(name)
 
     def delete_variable(self, name: str) -> None:
         self._assembly.deleteVariable(name)
