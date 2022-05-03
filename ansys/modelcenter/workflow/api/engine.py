@@ -4,8 +4,6 @@ from string import Template
 from typing import Any, Union
 
 import clr
-from numpy import float64, int64
-from overrides import overrides
 
 from .data_explorer import DataExplorer
 from .format import Format
