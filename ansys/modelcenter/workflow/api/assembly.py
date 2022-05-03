@@ -4,10 +4,15 @@ from typing import Optional
 class Assembly:
     """COM Instance."""
 
-    def __init__(self, assembly):
+    def __init__(self, assembly: object):
         """
-        Construct a new instance.
-        Parameters:
+        Initialize a new instance.
+
+        Parameters
+        ----------
+        assembly : object
+            The raw IAssembly interface object to use to make direct
+            call to ModelCenter.
         """
         self._assembly = assembly
 
