@@ -1,5 +1,5 @@
 """Testing of IComponent."""
-from typing import Any, Optional, Type
+from typing import Any, Type
 
 import clr
 import pytest
@@ -140,7 +140,7 @@ def test_user_data(value: Any) -> None:
         pytest.param(["one string", "two string"], id="[str]"),
     ]
 )
-def test_associated_files(value: any) -> None:
+def test_associated_files(value: Any) -> None:
     """Testing of the associated_files property."""
     global component
 

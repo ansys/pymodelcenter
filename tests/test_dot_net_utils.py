@@ -89,4 +89,3 @@ def test_i_variable_converter_from_dot_net(source_type, expected_type):
 
     # Verify
     assert isinstance(result, expected_type)
-
