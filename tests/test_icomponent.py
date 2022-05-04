@@ -92,14 +92,13 @@ user_data_tests = [
     pytest.param(True, id="bool"),
     pytest.param(None, id="None"),
     pytest.param(2 + 1j, id="complex"),
-
-    # Expected these to work
-    pytest.param(["one", "two"], id="[str]", marks=pytest.mark.xfail),
-    pytest.param([42, 86], id="[int]", marks=pytest.mark.xfail),
-    pytest.param([1.414, 0.717], id="[float]", marks=pytest.mark.xfail),
-    pytest.param([True, False], id="[bool]", marks=pytest.mark.xfail),
+    pytest.param(["one", "two"], id="[str]"),
+    pytest.param([42, 86], id="[int]"),
+    pytest.param([1.414, 0.717], id="[float]"),
+    pytest.param([True, False], id="[bool]"),
 
     # Did not expect these to work
+    pytest.param(["str", 42, 1.414, True], id="[mixed]"),
     pytest.param({"one", "two"}, id="{str}"),
     pytest.param({42, 86}, id="{int}"),
     pytest.param({1.414, 0.717}, id="{float}"),

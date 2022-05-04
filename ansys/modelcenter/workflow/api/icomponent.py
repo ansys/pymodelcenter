@@ -1,8 +1,9 @@
 """Definition of IComponent."""
 from typing import Any, List, Union
 
-from System import String as DotNetString
 import clr
+from System import Object as DotNetObject
+from System import String as DotNetString
 
 from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
@@ -48,13 +49,17 @@ class IComponent:
         return self._instance.userData
 
     @user_data.setter
-    def user_data(self, value: Any) -> None:
+    def user_data(self, source: Any) -> None:
         """Arbitrary object which is not used internally, but can \
         store data for programmatic purposes.
 
         The value is not stored across save/load operations.
         """
-        self._instance.userData = value
+        if isinstance(source, list):
+            dot_net_source = DotNetListConverter.to_dot_net(source, DotNetObject)
+        else:
+            dot_net_source = source
+        self._instance.userData = dot_net_source
 
     @property
     def associated_files(self) -> Union[str, List[str]]:
