@@ -5,8 +5,8 @@ import clr
 from overrides import overrides
 
 from . import DataExplorer
+from .datamonitor import DataMonitor
 from .icomponent import IComponent
-from .idatamonitor import IDataMonitor
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -14,26 +14,6 @@ clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
-
-
-class MockDataMonitorWrapper(IDataMonitor):
-    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
-
-    def __init__(self, monitor: phxmock.MockDataMonitor):
-        """
-        Initialize.
-
-        Parameters
-        ----------
-        monitor: phxmock.MockDataMonitor
-            The COM DataMonitor to wrap.
-        """
-        self._instance = monitor
-
-    @property  # type: ignore
-    @overrides
-    def title(self) -> str:
-        return self._instance.getTitle()
 
 from .i18n import i18n
 
@@ -540,7 +520,7 @@ class Workflow:
         """
         self._instance.run(variable_array or "")
 
-    def get_data_monitor(self, component: str, index: int) -> IDataMonitor:
+    def get_data_monitor(self, component: str, index: int) -> DataMonitor:
         """
         Get the DataMonitor at the given index for the given component.
 
@@ -557,7 +537,7 @@ class Workflow:
         """
 
         dm_object: phxmock.MockDataMonitor = self._instance.getDataMonitor(component, index)
-        return MockDataMonitorWrapper(dm_object)
+        return DataMonitor(dm_object)
 
     def create_data_monitor(self, component: str, name: str, x: int, y: int) -> object:
         """
@@ -580,7 +560,7 @@ class Workflow:
         """
 
         dm_object: phxmock.MockDataMonitor = self._instance.createDataMonitor(component, name, x, y)
-        return MockDataMonitorWrapper(dm_object)
+        return DataMonitor(dm_object)
 
     def remove_data_monitor(self, component: str, index: int) -> bool:
         """
