@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
 
-import Phoenix.Mock as phxmock
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
