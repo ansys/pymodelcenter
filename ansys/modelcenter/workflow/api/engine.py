@@ -88,12 +88,14 @@ class Engine:
     def process_id(self) -> int:
         return int(self._instance.ProcessID)
 
-    def new_workflow(self, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
+    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         """
         Create a new workflow.
 
         Parameters
         ----------
+        name: str
+            A filename or path where the new workflow will be made.
         workflow_type: WorkflowType
             The type of workflow to create. Defaults to a data workflow.
 
@@ -106,6 +108,7 @@ class Engine:
             raise Exception(msg)
         else:
             self._instance.newModel(workflow_type.value)
+            self._instance.saveModelAs(name)
             return Workflow(self._instance)
 
     def load_workflow(self, file_name: str,
