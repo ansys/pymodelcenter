@@ -9,27 +9,25 @@ from Phoenix.Mock import MockBooleanVariable
 
 
 class IBooleanVariable(ScalarVariable[MockBooleanVariable]):
-    """
-    Represents a boolean variable on the workflow.
-    """
+    """Represents a boolean variable on the workflow."""
 
+    @property  # type: ignore
     @overrides
-    @property
     def value(self) -> acvi.BooleanValue:
-        raise NotImplementedError
+        return acvi.BooleanValue(self._wrapped.value)
 
+    @value.setter  # type: ignore
     @overrides
-    @value.setter
     def value(self, new_value: acvi.IVariableValue):
-        raise NotImplementedError
+        self._wrapped.fromString(new_value.to_api_string())
 
+    @property  # type: ignore
     @overrides
-    @property
     def value_absolute(self) -> acvi.BooleanValue:
-        raise NotImplementedError
+        return acvi.BooleanValue(self._wrapped.valueAbsolute)
 
+    @property  # type: ignore
     @overrides
-    @property
     def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> acvi.BooleanMetadata:
         raise NotImplementedError
 

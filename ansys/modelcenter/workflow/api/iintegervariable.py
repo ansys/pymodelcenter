@@ -13,23 +13,23 @@ class IIntegerVariable(ScalarVariable[MockIntegerVariable]):
     Represents an integer variable on the workflow.
     """
 
+    @property  # type: ignore
     @overrides
-    @property
     def value(self) -> acvi.IntegerValue:
-        raise NotImplementedError
+        return acvi.IntegerValue(self._wrapped.value)
 
+    @value.setter  # type: ignore
     @overrides
-    @value.setter
     def value(self, new_value: acvi.IVariableValue):
-        raise NotImplementedError
+        self._wrapped.fromString(new_value.to_api_string())
 
+    @property  # type: ignore
     @overrides
-    @property
     def value_absolute(self) -> acvi.IntegerValue:
-        raise NotImplementedError
+        return acvi.IntegerValue(self._wrapped.valueAbsolute)
 
+    @property  # type: ignore
     @overrides
-    @property
     def standard_metadata(self) -> acvi.IntegerMetadata:
         raise NotImplementedError
 

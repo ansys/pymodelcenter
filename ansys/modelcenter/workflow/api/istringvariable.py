@@ -13,23 +13,23 @@ class IStringVariable(ScalarVariable[MockStringVariable]):
     Represents a string variable on the workflow.
     """
 
+    @property  # type: ignore
     @overrides
-    @property
     def value(self) -> acvi.StringValue:
-        raise NotImplementedError
+        return acvi.StringValue(self._wrapped.value)
 
+    @value.setter  # type: ignore
     @overrides
-    @value.setter
     def value(self, new_value: acvi.IVariableValue):
-        raise NotImplementedError
+        self._wrapped.fromString(new_value.to_api_string())
 
+    @property  # type: ignore
     @overrides
-    @property
     def value_absolute(self) -> acvi.StringValue:
-        raise NotImplementedError
+        return acvi.StringValue(self._wrapped.valueAbsolute)
 
+    @property  # type: ignore
     @overrides
-    @property
     def standard_metadata(self) -> acvi.StringMetadata:
         raise NotImplementedError
 
