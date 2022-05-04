@@ -8,7 +8,7 @@ class IVariable:
 
     def __init__(self, instance) -> None:
         """
-        Initializer.
+        Initialize variable object.
 
         Parameters
         ----------
@@ -16,7 +16,7 @@ class IVariable:
             ModelCenter API IVariable interface object.
         """
         self._instance = instance
-    
+
     @property
     def has_changed(self) -> bool:
         """
@@ -66,7 +66,7 @@ class IVariable:
 
     def get_name(self) -> str:
         """
-        Gets the name of the variable.
+        Get the name of the variable.
 
         Returns
         -------

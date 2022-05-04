@@ -1,9 +1,9 @@
 """Definition of IComponent."""
 from typing import Any, List, Union
 
-import clr
 from System import Object as DotNetObject
 from System import String as DotNetString
+import clr
 
 from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
@@ -19,7 +19,7 @@ class IComponent:
 
     def __init__(self, instance: mcapiIComponent):
         """
-        Initializer.
+        Initialize component object.
 
         Parameters
         ----------
@@ -229,22 +229,22 @@ class IComponent:
 
     def get_position_x(self) -> int:
         """
-        "Gets the X position of the component in the Analysis View.
+        Get the X position of the component in the Analysis View.
 
         Returns
         -------
-        The X position."
+        The X position.
         """
         # int getPositionX();
         raise NotImplementedError
 
     def get_position_y(self) -> int:
         """
-        "Gets the Y position of the component in the Analysis View.
+        Get the Y position of the component in the Analysis View.
 
         Returns
         -------
-        The Y position."
+        The Y position.
         """
         # int getPositionY();
         raise NotImplementedError

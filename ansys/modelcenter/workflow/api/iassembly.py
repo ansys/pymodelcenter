@@ -14,7 +14,7 @@ class IAssembly:
         Parameters
         ----------
         instance : object
-            The raw IAssembly interface object ot use to make direct
+            The raw IAssembly interface object to use to make direct
             call to ModelCenter.
         """
         self._instance: mcapiIComponent = instance

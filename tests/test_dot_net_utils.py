@@ -2,7 +2,6 @@ from typing import List
 
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
-import pytest
 
 from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
 

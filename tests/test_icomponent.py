@@ -1,5 +1,5 @@
 """Testing of IComponent."""
-from typing import Optional
+from typing import Optional, Any
 
 import clr
 import pytest
@@ -31,7 +31,7 @@ Component object under test.
 
 def setup_function(_):
     """
-    Setup called befor each test funciton in this module.
+    Setup called before each test function in this module.
 
     Parameters
     ----------
@@ -119,7 +119,7 @@ user_data_tests = [
 @pytest.mark.parametrize(
     "value", user_data_tests
 )
-def test_user_data(value: any) -> None:
+def test_user_data(value: Any) -> None:
     """Testing of the user_data property."""
     global component
 

@@ -1,3 +1,5 @@
+"""Implementation of IVariables class."""
+
 from .arrayish import Arrayish
 from .ivariable import IVariable
 
