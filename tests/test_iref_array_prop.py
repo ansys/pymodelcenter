@@ -1,5 +1,3 @@
-import pytest
-
 import ansys.modelcenter.workflow.api as mcapi
 
 
