@@ -47,7 +47,7 @@ mypy = {version="^0.940", optional=true}
 
 # TODO: temporarily disabling until PyAnsys build boxes have credentials for these.
 # ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "8edb51a07ca74e42bd59e183db119bf11eb85d30"}
-phoenix-mocks = {git = "https://github.com/Phoenix-Integration-Inc/phx-mocks.git", rev = "9cb47d4"}
+phoenix-mocks = {git = "https://github.com/Phoenix-Integration-Inc/phx-mocks.git", rev = "9642fa5"}
 ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "71a177e"}
 
 [tool.poetry.extras]
