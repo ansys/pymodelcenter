@@ -1,6 +1,9 @@
 class IGroup:
     """COM Instance."""
 
+    def __init__(self, instance):
+        self._instance = instance
+
     def variables(self) -> object:
         """The variables in the Group."""
         # VARIANT Variables;
@@ -18,8 +21,7 @@ class IGroup:
 
     def get_name(self) -> str:
         """Gets the name of the Group."""
-        # BSTR getName();
-        raise NotImplementedError
+        return self._instance.getName()
 
     def get_full_name(self) -> str:
         """Gets the full %ModelCenter path of the Group."""

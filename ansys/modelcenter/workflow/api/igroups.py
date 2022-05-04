@@ -3,7 +3,8 @@ from .igroup import IGroup
 
 
 class IGroups(Arrayish[IGroup]):
-    """A collection of IGroups, accessible by name or integer ID."""
+    """A collection of IGroup objects, accessible by name or integer
+    ID."""
 
     def __init__(self, instance) -> None:
         """

@@ -1,10 +1,10 @@
-from typing import Sequence, Type, TypeVar, Union
+from typing import Mapping, Sequence, Type, TypeVar, Union, overload
 
 VT = TypeVar('VT')
 """A generic value type."""
 
 
-class Arrayish(Sequence[VT]):
+class Arrayish(Sequence[VT], Mapping[str, VT]):
     """
     A generic wrapper around an arrayish ModelCenter interface type.
 
@@ -29,7 +29,38 @@ class Arrayish(Sequence[VT]):
         self._instance = instance
         self._value_type: Type = value_type
 
-    def __getitem__(self, id_: Union[int, str]) -> VT:
+    @overload
+    def __getitem__(self, id_: slice) -> Sequence[VT]:
+        """
+        Get the object specified.
+
+        Parameters
+        ----------
+        id_ : slice
+            slice of the objects to fetch.
+
+        Returns
+        -------
+        Sequence of Objects specified.
+        """
+        raise NotImplementedError
+
+    def __getitem__(self, id_: int) -> VT:
+        """
+        Get the object specified.
+
+        Parameters
+        ----------
+        id_ : int
+            index of the object to fetch.
+
+        Returns
+        -------
+        Object specified.
+        """
+        return self._value_type(self._instance.Item(id_))
+
+    def get_item(self, id_: Union[int, str]) -> VT:
         """
         Get the object specified.
 

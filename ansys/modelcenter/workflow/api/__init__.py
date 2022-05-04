@@ -15,4 +15,6 @@ from .iref_prop import IRefProp
 from .ireference_array import IReferenceArray
 from .ireference_variable import IReferenceVariable
 from .iscript_component import IScriptComponent
+from .ivariable import IVariable
+from .ivariables import IVariables
 from .workflow import Workflow

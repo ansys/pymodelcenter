@@ -1,7 +1,13 @@
+import clr
+
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IComponent as mcapiIComponent
+
+
 class IAssembly:
     """COM Instance."""
 
-    def __init__(self, instance: object):
+    def __init__(self, instance: mcapiIComponent):
         """
         Initialize a new instance.
 
@@ -11,7 +17,7 @@ class IAssembly:
             The raw IAssembly interface object ot use to make direct
             call to ModelCenter.
         """
-        self._instance = instance
+        self._instance: mcapiIComponent = instance
 
     @property
     def variables(self) -> object:  # IVariables:
@@ -110,7 +116,7 @@ class IAssembly:
     def get_name(self) -> str:
         """Get the name of the Assembly."""
         # BSTR getName();
-        raise NotImplementedError
+        return self._instance.getName()
 
     def get_full_name(self) -> str:
         """Get the Full ModelCenter path of the Assembly."""
