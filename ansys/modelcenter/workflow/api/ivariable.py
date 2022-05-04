@@ -1,11 +1,63 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Generic, Optional, Sequence, TypeVar
+
+import ansys.common.variableinterop as acvi
+
+WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
 
 
-class IVariable(ABC):
+class IVariable(ABC, Generic[WRAPPED_TYPE]):
     """
-    COM instance.
+    Represents a variable in the workflow.
     """
+    def __init__(self, wrapped: WRAPPED_TYPE):
+        self._wrapped = wrapped
+
+    @property
+    @abstractmethod
+    def value(self) -> acvi.IVariableValue:
+        """
+        Get or set the value of the variable.
+        If the variable is invalid, the workflow will run to the extent necessary to
+        validate the variable.
+        """
+        raise NotImplementedError
+
+    @value.setter
+    @abstractmethod
+    def value(self, new_value: acvi.IVariableValue) -> None:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def value_absolute(self) -> acvi.IVariableValue:
+        """
+        Get the value of the variable without attempting to validate it.
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def standard_metadata(self) -> acvi.CommonVariableMetadata:
+        """
+        Get the standard metadata for this variable.
+        """
+        raise NotImplementedError
+
+    @standard_metadata.setter
+    @abstractmethod
+    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
+        """
+        Get the standard metadata for this variable.
+        """
+        raise NotImplementedError
+
+    @property
+    def format(self) -> str:
+        """
+        Format for rendering the variable as a string.
+        """
+        raise NotImplementedError
 
     @property
     def has_changed(self) -> bool:
@@ -15,6 +67,11 @@ class IVariable(ABC):
         by different Plug-Ins , macros, or tools). Set the value to false and it will
         automatically flip to true any time the value changes.
         """
+        raise NotImplementedError
+
+    @has_changed.setter
+    def has_changed(self, value) -> bool:
+        # TODO: I'm not certain if this is better or if we should just have a reset_has_changed().
         raise NotImplementedError
 
     @property
@@ -37,7 +94,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def is_valid(self) -> bool:
         """
         Returns whether or not the variable is valid.
@@ -47,16 +103,15 @@ class IVariable(ABC):
         bool
             True if variable is valid. False if the variable is not valid.
         """
+        # TODO: Should this be a property?
         raise NotImplementedError
 
-    @abstractmethod
     def validate(self) -> None:
         """
         Validates the variable by running the component if needed.
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_name(self) -> str:
         """
         Gets the name of the variable.
@@ -68,7 +123,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_full_name(self) -> str:
         """
         Gets the full %ModelCenter path of the variable.
@@ -80,8 +134,7 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def get_type(self) -> str:
+    def get_type(self) -> acvi.VariableType:
         """
         Gets the type of the variable.
 
@@ -92,7 +145,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def is_input(self) -> bool:
         """
         Finds out whether or not the variable is an input with respect to the model.  Returnszs
@@ -100,43 +152,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def to_string(self) -> str:
-        """
-        Converts the variable value to a string, validating the variable if necessary.
-
-        Returns
-        -------
-        str
-            The value of the variable as a string.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def from_string(self, value: str) -> None:
-        """
-        Sets the value of the variable from the specified string.
-
-        Parameters
-        ----------
-        value
-            New value.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def to_string_absolute(self) -> str:
-        """
-        Converts the value of the variable to a string.
-
-        Returns
-        -------
-        str
-            The value of the variable as a string.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
     def invalidate(self) -> None:
         """
         Marks the variable as invalid (needs to be computed).
@@ -144,9 +159,8 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def direct_precedents(self, follow_suspended: Optional[object],
-                          reserved: Optional[object]) -> object:
+    def direct_precedents(self, follow_suspended: bool = False,
+                          reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of variables that are immediate precedents to the value of this variable.
         This function returns all variables that influence this variable and are directly
@@ -167,9 +181,8 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def direct_dependents(self, follow_suspended: Optional[object],
-                          reserved: Optional[object]) -> object:
+    def direct_dependents(self, follow_suspended: bool = False,
+                          reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of variables that are immediate dependents of the value of this variable.
         This function returns all variables that are influenced by this variable and are
@@ -190,8 +203,7 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def precedent_links(self, reserved: Optional[object]) -> object:
+    def precedent_links(self, reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of links that are immediate precedents to the value of this variable.
         All the returned links will have this variable as the LHS of the equation. Except
@@ -209,8 +221,7 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def dependent_links(self, reserved: Optional[object]) -> object:
+    def dependent_links(self, reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of links that immediately depend on the value of this variable.
         All the returned links will have this variable as part of a RHS equation.
@@ -227,8 +238,9 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def precedents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
+    def precedents(self,
+                   follow_suspended: bool = False,
+                   reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of variables that are precedents to the value of this variable. This
         function returns all variables that influence this variable, not just directly connected
@@ -249,8 +261,9 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def dependents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
+    def dependents(self,
+                   follow_suspended: bool = False,
+                   reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of variables that are dependent upon the value of this variable.
         This function returns all variables that are influenced by this variable,
@@ -271,7 +284,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def is_input_to_component(self) -> bool:
         """
         Checks whether or not the variable is an input.
@@ -280,15 +292,13 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def is_input_to_model(self) -> bool:
         """
         Checks whether or not the variable is an input. A linked input returns false (Output).
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def set_metadata(self, name: str, type: object, value: object, access: object,
+    def set_custom_metadata(self, name: str, type: object, value: object, access: object,
                      archive: bool) -> None:  # type = MetadataType, access = MetadataAccess
         """
         Sets the meta data value of the given meta data key name.
@@ -304,8 +314,7 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def get_metadata(self, name: str) -> object:
+    def get_custom_metadata(self, name: str) -> object:
         """
         Gets the meta data value of the given meta data key name.
 
@@ -318,5 +327,17 @@ class IVariable(ABC):
         -------
         object
             Metadata value.
+        """
+        raise NotImplementedError
+
+
+class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
+    """
+    Base class with methods common to scalar variables.
+    """
+
+    def set_initial_value(self, value: acvi.IVariableValue) -> None:
+        """
+        Set the initial value for the variable.
         """
         raise NotImplementedError

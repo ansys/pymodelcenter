@@ -1,58 +1,41 @@
-from abc import ABC, abstractmethod
+import ansys.common.variableinterop as acvi
+import clr
+from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import IVariable
+from ansys.modelcenter.workflow.api.ivariable import ScalarVariable
+
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockStringVariable
 
 
-class IStringVariable(IVariable, ABC):
+class IStringVariable(ScalarVariable[MockStringVariable]):
     """
-    COM instance.
-
-    Implements IVariable.
+    Represents a string variable on the workflow.
     """
 
+    @overrides
     @property
-    def value(self) -> str:
-        """
-        Value of the variable.
-        """
+    def value(self) -> acvi.StringValue:
         raise NotImplementedError
 
-    @property
-    def value_absolute(self) -> str:
-        """
-        The value of the variable. (Fetched without attempting to validate)
-        """
+    @overrides
+    @value.setter
+    def value(self, new_value: acvi.IVariableValue):
         raise NotImplementedError
 
+    @overrides
     @property
-    def description(self) -> str:
-        """
-        Description of the variable.
-        """
+    def value_absolute(self) -> acvi.StringValue:
         raise NotImplementedError
 
+    @overrides
     @property
-    def enum_values(self) -> str:
-        """
-        Enumerated values of the variable.
-        """
+    def standard_metadata(self) -> acvi.StringMetadata:
         raise NotImplementedError
 
-    @property
-    def enum_aliases(self) -> str:
+    @standard_metadata.setter
+    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         """
-        Enumerated aliases of the variable.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def set_initial_value(self, value: str) -> None:
-        """
-        Sets the initial value of the variable.
-
-        Parameters
-        ----------
-        value
-            Initial value.
+        Get the standard metadata for this variable.
         """
         raise NotImplementedError

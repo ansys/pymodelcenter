@@ -1,23 +1,41 @@
-from abc import ABC, abstractmethod
+import ansys.common.variableinterop as acvi
+import clr
+from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import IVariable
+from ansys.modelcenter.workflow.api.ivariable import ScalarVariable
+
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockBooleanVariable
 
 
-class IBooleanVariable(IVariable, ABC):
+class IBooleanVariable(ScalarVariable[MockBooleanVariable]):
     """
-    COM instance.
-
-    Implements IVariable.
+    Represents a boolean variable on the workflow.
     """
 
-    @abstractmethod
-    def set_initial_value(self, value: bool) -> None:
+    @overrides
+    @property
+    def value(self) -> acvi.BooleanValue:
+        raise NotImplementedError
+
+    @overrides
+    @value.setter
+    def value(self, new_value: acvi.IVariableValue):
+        raise NotImplementedError
+
+    @overrides
+    @property
+    def value_absolute(self) -> acvi.BooleanValue:
+        raise NotImplementedError
+
+    @overrides
+    @property
+    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> acvi.BooleanMetadata:
+        raise NotImplementedError
+
+    @standard_metadata.setter
+    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         """
-        Sets the initial value of the variable.
-
-        Parameters
-        ----------
-        value
-            The initial value.
+        Get the standard metadata for this variable.
         """
         raise NotImplementedError

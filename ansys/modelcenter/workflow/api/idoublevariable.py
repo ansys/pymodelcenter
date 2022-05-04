@@ -1,160 +1,41 @@
-from abc import abstractmethod, ABC
+import ansys.common.variableinterop as acvi
+import clr
+from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import IVariable
+from ansys.modelcenter.workflow.api.ivariable import ScalarVariable
+
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockDoubleVariable
 
 
-class IDoubleVariable(IVariable, ABC):
+class IDoubleVariable(ScalarVariable[MockDoubleVariable]):
     """
-    COM instance.
-
-    Implements IVariable.
+    Represents a double / real variable on the workflow.
     """
 
+    @overrides
     @property
-    def value(self) -> float:
-        """
-        Value of the variable.
-        """
+    def value(self) -> acvi.RealValue:
         raise NotImplementedError
 
+    @overrides
+    @value.setter
+    def value(self, new_value: acvi.IVariableValue):
+        raise NotImplementedError
+
+    @overrides
     @property
-    def value_absolute(self) -> float:
-        """
-        The value of the variable. (Fetched without attempting to validate)
-        """
+    def value_absolute(self) -> acvi.RealValue:
         raise NotImplementedError
 
+    @overrides
     @property
-    def lower_bound(self) -> float:
-        """
-        Lower bound of the variable.
-        """
+    def standard_metadata(self) -> acvi.RealMetadata:
         raise NotImplementedError
 
-    @property
-    def upper_bound(self) -> float:
+    @standard_metadata.setter
+    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         """
-        Upper bound of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def units(self) -> str:
-        """
-        Units of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def description(self) -> str:
-        """
-        Description of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def enum_values(self) -> str:
-        """
-        Enumerated values of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def enum_aliases(self) -> str:
-        """
-        Enumerated aliases of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def format(self) -> str:
-        """
-        Format of the variable.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def set_initial_value(self, value: float) -> None:
-        """
-        Sets the initial value of the variable.
-
-        Parameters
-        ----------
-        value
-            The initial value.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def has_lower_bound(self) -> bool:
-        """
-        Finds out whether or not the variable has an lower bound.
-
-        Returns
-        -------
-        bool
-            yes(TRUE) or no(FALSE).
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def has_upper_bound(self) -> bool:
-        """
-        Finds out whether or not the variable has an upper bound.
-
-        Returns
-        -------
-        bool
-            yes(TRUE) or no(FALSE).
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def to_formatted_string(self) -> str:
-        """
-        Converts the value to a formatted string, validating the variable if necessary.
-
-        Returns
-        -------
-        str
-            A formatted string.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def from_formatted_string(self, value: str) -> None:
-        """
-        Sets the value from a formatted string.
-
-        Parameters
-        ----------
-        value
-            Formatted value to load.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def to_formatted_string_absolute(self) -> str:
-        """
-        Converts the value to an absolute formatted string.
-
-        Returns
-        -------
-        str
-            An absolute formatted string.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def clear_upper_bound(self) -> None:
-        """
-        Clears the upper bound property of the variable if it has previously been set.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def clear_lower_bound(self) -> None:
-        """
-        Clears the lower bound property of the variable if it has previously been set.
+        Get the standard metadata for this variable.
         """
         raise NotImplementedError
