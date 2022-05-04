@@ -15,9 +15,9 @@ from .ifilevariable import IFileVariable
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup
 from .igroups import IGroups
+from .iif_component import IIfComponent
 from .iintegerarray import IIntegerArray
 from .iintegervariable import IIntegerVariable
-from .iif_component import IIfComponent
 from .iref_array_prop import IRefArrayProp
 from .iref_prop import IRefProp
 from .ireference_array import IReferenceArray

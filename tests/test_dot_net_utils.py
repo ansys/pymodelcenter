@@ -1,28 +1,29 @@
-import clr
-import pytest
 from typing import List
 
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
+import clr
+import pytest
 
-from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
-from ansys.modelcenter.workflow.api.dot_net_utils import IVariableConverter
 import ansys.modelcenter.workflow.api as mcapi
+from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter, IVariableConverter
+
 clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (
-    MockBooleanVariable,
-    MockDoubleVariable,
-    MockFileVariable,
-    MockIntegerVariable,
-    MockReferenceVariable,
-    MockStringVariable,
     MockBooleanArray,
+    MockBooleanVariable,
     MockDoubleArray,
+    MockDoubleVariable,
     MockFileArray,
+    MockFileVariable,
     MockIntegerArray,
+    MockIntegerVariable,
     MockReferenceArray,
+    MockReferenceVariable,
     MockStringArray,
+    MockStringVariable,
 )
+
 
 def test_list_to_dot_net():
     """Testing of the DotNetListConverter.to_dot_net static method."""

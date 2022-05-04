@@ -1,8 +1,6 @@
 """Collection of utility classes and functions to aid in converting \
 between Dot-Net and Python types."""
 
-import clr
-
 from typing import Generic, Iterable, List, Type, TypeVar
 
 from System import Boolean as DotNetBoolean
@@ -10,24 +8,24 @@ from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
+import clr
 
-from .idoublevariable import IDoubleVariable
-from .idoublearray import IDoubleArray
-from .iintegervariable import IIntegerVariable
-from .iintegerarray import IIntegerArray
-from .istringvariable import IStringVariable
-from .istringarray import IStringArray
-from .ibooleanvariable import IBooleanVariable
 from .ibooleanarray import IBooleanArray
-from .ifilevariable import IFileVariable
+from .ibooleanvariable import IBooleanVariable
+from .idoublearray import IDoubleArray
+from .idoublevariable import IDoubleVariable
 from .ifilearray import IFileArray
-from .ireference_variable import IReferenceVariable
+from .ifilevariable import IFileVariable
+from .iintegerarray import IIntegerArray
+from .iintegervariable import IIntegerVariable
 from .ireference_array import IReferenceArray
+from .ireference_variable import IReferenceVariable
+from .istringarray import IStringArray
+from .istringvariable import IStringVariable
 from .ivariable import IVariable
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
-
 
 N = TypeVar('N', DotNetBoolean, DotNetDouble, DotNetInt64, DotNetString)
 """

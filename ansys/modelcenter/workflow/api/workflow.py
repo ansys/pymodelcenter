@@ -16,8 +16,10 @@ import Phoenix.Mock as phxmock
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 
 from .i18n import i18n
+
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
+
 
 class WorkflowVariable:
     # LTTODO: Fleshing this out is part of another PBI.

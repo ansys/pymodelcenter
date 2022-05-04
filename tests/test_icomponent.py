@@ -1,5 +1,5 @@
 """Testing of IComponent."""
-from typing import Optional, Any, Type
+from typing import Any, Optional, Type
 
 import clr
 import pytest
@@ -12,9 +12,9 @@ from Phoenix.Mock import (
     MockAssembly,
     MockComponent,
     MockDoubleVariable,
-    MockIntegerVariable,
     MockGroup,
     MockGroups,
+    MockIntegerVariable,
     MockVariable,
     MockVariables,
 )

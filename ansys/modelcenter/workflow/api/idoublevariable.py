@@ -1,5 +1,6 @@
-from ansys.modelcenter.workflow.api.ivariable import IVariable
 import ansys.common.variableinterop as acvi
+
+from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 
 class IDoubleVariable(IVariable):
