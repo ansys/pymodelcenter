@@ -1,10 +1,9 @@
-from abc import ABC, abstractmethod
 from typing import Optional
 
 from .ivariable import IVariable
 
 
-class IArray(IVariable, ABC):
+class IArray(IVariable):
     """
     Base class for all array types.  Has common functionality for getting/setting array
     sizes and getting/setting values as strings.
@@ -49,7 +48,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_string_ex(self, index: int) -> str:
         """
         Converts the value of an array element to a string, validating the array if necessary.
@@ -66,7 +64,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def from_string_ex(self, value: str, index: int) -> None:
         """
         Sets the value of an array element from a specified string.
@@ -80,7 +77,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_string_absolute_ex(self, index: int) -> str:
         """
         Converts the value of an array element to a string.
@@ -97,7 +93,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_length(self, dim: Optional[object]) -> int:
         """
         Get the length of the n'th dimension of the array.
@@ -115,7 +110,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_length(self, length: int, dim: Optional[object]) -> None:
         """
         Sets the length of the n'th dimension of the array
@@ -130,7 +124,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_dimensions(self, d1: int, d2: Optional[object], d3: Optional[object],
                        d4: Optional[object], d5: Optional[object], d6: Optional[object],
                        d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -166,7 +159,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_size(self, dim: Optional[object]) -> int:
         """
         Alias for the getLength() call
@@ -183,7 +175,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_size(self, length: int, dim: Optional[object]) -> None:
         """
         Alias for the setLength() call
@@ -197,7 +188,6 @@ class IArray(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_dimensions(self) -> object:
         """
         Gets the dimensions of the array.

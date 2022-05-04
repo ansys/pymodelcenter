@@ -1,10 +1,9 @@
-from abc import ABC, abstractmethod
 from typing import Optional
 
 from ansys.modelcenter.workflow.api.iarray import IArray
 
 
-class IDoubleArray(IArray, ABC):
+class IDoubleArray(IArray):
     """
     An array of double (real) values.
 
@@ -60,7 +59,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def has_lower_bound(self) -> bool:
         """
         Finds out whether or not the array has a lower bound.
@@ -72,7 +70,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def has_upper_bound(self) -> bool:
         """
         Finds out whether or not the array has an upper bound.
@@ -84,7 +81,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_value(self, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -122,7 +118,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_value(self, value: float, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -157,7 +152,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_array(self) -> object:
         """
         Gets the whole array as a single primitive array object in the language's native array
@@ -170,7 +164,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_array(self, array: object) -> None:
         """
         Sets the whole array at once using a single primitive array object in the language's
@@ -184,7 +177,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_formatted_string_ex(self, index: int) -> str:
         """
         Converts the value to a formatted string.
@@ -201,7 +193,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def from_formatted_string_ex(self, value: str, index: int) -> None:
         """
         Loads a formatted string.
@@ -215,7 +206,6 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_formatted_string_absolute_ex(self, index: int) -> str:
         """
         Converts the value to an absolute formatted string.
@@ -232,21 +222,18 @@ class IDoubleArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def clear_upper_bound(self) -> None:
         """
         Clears the upper bound property of the array if it has previously been set.
         """
         raise NotImplementedError
 
-    @abstractmethod
     def clear_lower_bound(self) -> None:
         """
         Clears the lower bound property of the array if it has previously been set.
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_value_absolute(self, d1: object, d2: Optional[object], d3: Optional[object],
                            d4: Optional[object], d5: Optional[object], d6: Optional[object],
                            d7: Optional[object], d8: Optional[object], d9: Optional[object],

@@ -1,10 +1,28 @@
+import clr
+import pytest
 from typing import List
 
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
 
 from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
-
+from ansys.modelcenter.workflow.api.dot_net_utils import IVariableConverter
+import ansys.modelcenter.workflow.api as mcapi
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import (
+    MockBooleanVariable,
+    MockDoubleVariable,
+    MockFileVariable,
+    MockIntegerVariable,
+    MockReferenceVariable,
+    MockStringVariable,
+    MockBooleanArray,
+    MockDoubleArray,
+    MockFileArray,
+    MockIntegerArray,
+    MockReferenceArray,
+    MockStringArray,
+)
 
 def test_list_to_dot_net():
     """Testing of the DotNetListConverter.to_dot_net static method."""
@@ -43,3 +61,31 @@ def test_list_from_dot_net():
     i = result[2]
     assert isinstance(i, str)
     assert i == "three"
+
+
+i_variable_converter_from_dot_net_tests = [
+    pytest.param(MockBooleanVariable, mcapi.IBooleanVariable, id="boolean"),
+    pytest.param(MockDoubleVariable, mcapi.IDoubleVariable, id="double"),
+    pytest.param(MockFileVariable, mcapi.IFileVariable, id="file"),
+    pytest.param(MockIntegerVariable, mcapi.IIntegerVariable, id="integer"),
+    pytest.param(MockReferenceVariable, mcapi.IReferenceVariable, id="reference"),
+    pytest.param(MockStringVariable, mcapi.IStringVariable, id="string"),
+    pytest.param(MockBooleanArray, mcapi.IBooleanArray, id="boolean[]"),
+    pytest.param(MockDoubleArray, mcapi.IDoubleArray, id="double[]"),
+    pytest.param(MockFileArray, mcapi.IFileArray, id="file[]"),
+    pytest.param(MockIntegerArray, mcapi.IIntegerArray, id="integer[]"),
+    pytest.param(MockReferenceArray, mcapi.IReferenceArray, id="reference[]"),
+    pytest.param(MockStringArray, mcapi.IStringArray, id="string[]"),
+]
+
+
+@pytest.mark.parametrize("source_type,expected_type", i_variable_converter_from_dot_net_tests)
+def test_i_variable_converter_from_dot_net(source_type, expected_type):
+    source = source_type("name", 0)
+
+    # SUT
+    result = IVariableConverter.from_dot_net(source)
+
+    # Verify
+    assert isinstance(result, expected_type)
+

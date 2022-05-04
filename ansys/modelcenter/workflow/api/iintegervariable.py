@@ -1,9 +1,8 @@
-from abc import ABC, abstractmethod
-
 from ansys.modelcenter.workflow.api.ivariable import IVariable
+import ansys.common.variableinterop as acvi
 
 
-class IIntegerVariable(IVariable, ABC):
+class IIntegerVariable(IVariable):
     """
     COM instance.
 
@@ -11,11 +10,15 @@ class IIntegerVariable(IVariable, ABC):
     """
 
     @property
-    def value(self) -> int:
+    def value(self) -> acvi.IntegerValue:
         """
         Value of the variable.
         """
-        raise NotImplementedError
+        return acvi.IntegerValue(self._instance.value)
+
+    @value.setter
+    def value(self, value: int):
+        self._instance.value = value
 
     @property
     def value_absolute(self) -> int:
@@ -73,7 +76,6 @@ class IIntegerVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_initial_value(self, value: int) -> None:
         """
         Sets the initial value of the variable.
@@ -85,7 +87,6 @@ class IIntegerVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def has_lower_bound(self) -> bool:
         """
         Whether or not the variable has an lower bound.
@@ -97,7 +98,6 @@ class IIntegerVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def has_upper_bound(self) -> bool:
         """
         Whether or not the variable has an upper bound.
@@ -109,7 +109,6 @@ class IIntegerVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_formatted_string(self) -> str:
         """
         Converts the value to a formatted string.
@@ -121,7 +120,6 @@ class IIntegerVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def from_formatted_string(self, value: str) -> None:
         """
         Sets the value from a formatted string.
@@ -133,7 +131,6 @@ class IIntegerVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_formatted_string_absolute(self) -> str:
         """
         Converts the value to a formatted string without validating.
@@ -145,14 +142,12 @@ class IIntegerVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def clear_upper_bound(self) -> None:
         """
         Clears the lower bound property of the variable if it has previously been set.
         """
         raise NotImplementedError
 
-    @abstractmethod
     def clear_lower_bound(self) -> None:
         """
         Clears the upper bound property of the variable if it has previously been set.

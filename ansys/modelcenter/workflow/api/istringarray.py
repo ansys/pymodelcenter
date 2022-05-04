@@ -1,10 +1,9 @@
-from abc import abstractmethod, ABC
 from typing import Optional
 
 from ansys.modelcenter.workflow.api.iarray import IArray
 
 
-class IStringArray(IArray, ABC):
+class IStringArray(IArray):
     """
     COM instance.
 
@@ -32,7 +31,6 @@ class IStringArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_value(self, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -70,7 +68,6 @@ class IStringArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_value(self, value: str, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -105,7 +102,6 @@ class IStringArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_array(self) -> object:
         """
         Gets the COM array.
@@ -117,7 +113,6 @@ class IStringArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_array(self, array: object) -> None:
         """
         Sets the COM array.
@@ -129,7 +124,6 @@ class IStringArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_value_absolute(self, d1: object, d2: Optional[object], d3: Optional[object],
                            d4: Optional[object], d5: Optional[object], d6: Optional[object],
                            d7: Optional[object], d8: Optional[object], d9: Optional[object],

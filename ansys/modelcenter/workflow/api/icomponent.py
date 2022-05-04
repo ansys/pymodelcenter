@@ -5,9 +5,10 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
+from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter, IVariableConverter
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 from ansys.modelcenter.workflow.api.igroups import IGroups
+from ansys.modelcenter.workflow.api.ivariable import IVariable
 from ansys.modelcenter.workflow.api.ivariables import IVariables
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
@@ -96,7 +97,7 @@ class IComponent:
         -------
         The name of the component.
         """
-        raise NotImplementedError
+        return self._instance.getName()
 
     def get_full_name(self) -> str:
         """
@@ -106,7 +107,7 @@ class IComponent:
         -------
         The full path of the component.
         """
-        raise NotImplementedError
+        return self._instance.getFullName()
 
     def get_source(self) -> str:
         """
@@ -116,9 +117,9 @@ class IComponent:
         -------
         The source of the component.
         """
-        raise NotImplementedError
+        return self._instance.getSource()
 
-    def get_variable(self, name: str) -> object:  # IVariable
+    def get_variable(self, name: str) -> IVariable:
         """
         Get a variable in this component by name.
 
@@ -132,7 +133,8 @@ class IComponent:
         -------
         The variable object.
         """
-        raise NotImplementedError
+        mcapi_variable = self._instance.getVariable(name)
+        return IVariableConverter.from_dot_net(mcapi_variable)
 
     def get_type(self) -> str:
         """
@@ -151,7 +153,7 @@ class IComponent:
         -------
         The type of the component.
         """
-        raise NotImplementedError
+        return self._instance.getType()
 
     def get_metadata(self, name: str) -> object:  # VARIANT
         """

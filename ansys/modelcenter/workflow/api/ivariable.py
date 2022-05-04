@@ -95,7 +95,7 @@ class IVariable:
         str
             The type of the variable as a string.
         """
-        raise NotImplementedError
+        return self._instance.getType()
 
     def is_input(self) -> bool:
         """

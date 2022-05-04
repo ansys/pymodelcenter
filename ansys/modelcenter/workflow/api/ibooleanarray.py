@@ -1,17 +1,15 @@
-from abc import ABC, abstractmethod
 from typing import Optional
 
 from ansys.modelcenter.workflow.api.iarray import IArray
 
 
-class IBooleanArray(IArray, ABC):
+class IBooleanArray(IArray):
     """
     COM instance.
 
     Implements IArray.
     """
 
-    @abstractmethod
     def get_value(self, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -49,7 +47,6 @@ class IBooleanArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_value(self, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -84,7 +81,6 @@ class IBooleanArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_array(self) -> object:
         """
         Get the COM array.
@@ -96,7 +92,6 @@ class IBooleanArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_array(self, array: object) -> None:
         """
         Sets the COM array.
@@ -108,7 +103,6 @@ class IBooleanArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_value_absolute(self, d1: object, d2: Optional[object], d3: Optional[object],
                            d4: Optional[object], d5: Optional[object], d6: Optional[object],
                            d7: Optional[object], d8: Optional[object], d9: Optional[object],

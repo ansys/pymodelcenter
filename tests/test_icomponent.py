@@ -1,5 +1,5 @@
 """Testing of IComponent."""
-from typing import Optional, Any
+from typing import Optional, Any, Type
 
 import clr
 import pytest
@@ -11,19 +11,21 @@ clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (
     MockAssembly,
     MockComponent,
+    MockDoubleVariable,
+    MockIntegerVariable,
     MockGroup,
     MockGroups,
     MockVariable,
     MockVariables,
 )
 
-mock_component: Optional[MockComponent] = None
+mock_component: MockComponent
 """
 Mock ModelCenter object.
 
 Used to simulate ModelCenter's response to different API calls."""
 
-component: Optional[mcapi.IComponent] = None
+component: mcapi.IComponent
 """
 Component object under test.
 """
@@ -39,7 +41,7 @@ def setup_function(_):
         The function about to test.
     """
     global mock_component, component
-    mock_component = MockComponent("ComponentName")
+    mock_component = MockComponent("some.path.ComponentName")
     component = mcapi.IComponent(mock_component)
 
 
@@ -175,34 +177,69 @@ def test_parent_assembly() -> None:
     assert result.get_name() == "Assembly Name"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_name() -> None:
     """Testing of the get_name method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_name()
+
+    # Verify
+    assert result == "ComponentName"
+    assert isinstance(result, str)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_full_name() -> None:
     """Testing of the get_full_name method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_full_name()
+
+    # Verify
+    assert result == "some.path.ComponentName"
+    assert isinstance(result, str)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_source() -> None:
     """Testing of the get_source method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_source()
+
+    # Verify
+    assert result == "有りのままの姿見せるのよ"     # Value comes from MockComponent.getSource()
+    assert isinstance(result, str)
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_variable() -> None:
+@pytest.mark.parametrize(
+    "name,type_,value",
+    [
+        pytest.param("i", mcapi.IIntegerVariable, 42, id="int"),
+        pytest.param("d", mcapi.IDoubleVariable, 1.414, id="double"),
+    ]
+)
+def test_get_variable(name: str, type_: Type, value) -> None:
     """Testing of the get_variable method."""
-    raise NotImplementedError
+    mock_variables = MockVariables()
+    mock_variable = MockIntegerVariable("a.i", 0)
+    mock_variable.value = 42
+    mock_variables.addItem(mock_variable)
+    mock_variable = MockDoubleVariable("a.d", 0)
+    mock_variable.value = 1.414
+    mock_variables.addItem(mock_variable)
+    mock_component.Variables = mock_variables
+
+    # SUT
+    result = component.get_variable(name)
+
+    # Verify
+    assert isinstance(result, mcapi.IVariable)
+    assert isinstance(result, type_)
+    assert result.value == value
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_type() -> None:
-    """Testing of the get_type method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_type()
+
+    # Verify
+    assert result == "それは早いぞ"       # Value came from MockComponents.MockComponent(string)
 
 
 @pytest.mark.skip(reason="Not implemented.")

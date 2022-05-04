@@ -1,8 +1,9 @@
-from ansys.modelcenter.workflow.api import IRefProp
+from .iref_prop import IRefProp
+from .ivariable import IVariable
 
 
 # TODO: inherit from IVariable when available.
-class IReferenceVariable:   # (IVariable):
+class IReferenceVariable(IVariable):
     """COM Instance.
     @implements IVariable"""
 

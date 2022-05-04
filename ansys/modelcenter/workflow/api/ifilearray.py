@@ -1,10 +1,9 @@
-from abc import abstractmethod, ABC
 from typing import Optional
 
 from ansys.modelcenter.workflow.api.iarray import IArray
 
 
-class IFileArray(IArray, ABC):
+class IFileArray(IArray):
     """
     COM instance.
 
@@ -36,7 +35,6 @@ class IFileArray(IArray, ABC):
     def direct_transfer(self) -> bool:
         raise NotImplementedError
 
-    @abstractmethod
     def get_value(self, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -74,7 +72,6 @@ class IFileArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_value(self, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -109,7 +106,6 @@ class IFileArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_file_extension(self, d1: object, d2: Optional[object], d3: Optional[object],
                            d4: Optional[object], d5: Optional[object], d6: Optional[object],
                            d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -147,7 +143,6 @@ class IFileArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_file_extension(self, value: str, d1: object, d2: Optional[object], d3: Optional[object],
                            d4: Optional[object], d5: Optional[object], d6: Optional[object],
                            d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -182,7 +177,6 @@ class IFileArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_file(self, file_name: str, encoding: object, d1: object, d2: Optional[object],
                 d3: Optional[object], d4: Optional[object], d5: Optional[object],
                 d6: Optional[object], d7: Optional[object], d8: Optional[object],
@@ -219,7 +213,6 @@ class IFileArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def from_file(self, file_name: str, d1: object, d2: Optional[object], d3: Optional[object],
                   d4: Optional[object], d5: Optional[object], d6: Optional[object],
                   d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -254,7 +247,6 @@ class IFileArray(IArray, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_file_absolute(self, file_name: str, encoding: object, d1: object, d2: Optional[object],
                          d3: Optional[object], d4: Optional[object], d5: Optional[object],
                          d6: Optional[object], d7: Optional[object], d8: Optional[object],
