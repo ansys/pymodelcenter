@@ -5,7 +5,7 @@ import clr
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
-from ansys.modelcenter.workflow.api import IAssembly
+from ansys.modelcenter.workflow.api import Assembly
 
 clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (
@@ -19,13 +19,13 @@ from Phoenix.Mock import (
     MockVariables,
 )
 
-mock_component: Optional[MockComponent] = None
+mock_component: MockComponent
 """
 Mock ModelCenter object.
 
 Used to simulate ModelCenter's response to different API calls."""
 
-component: Optional[mcapi.IComponent] = None
+component: mcapi.IComponent
 """
 Component object under test.
 """
@@ -41,7 +41,7 @@ def setup_function(_):
         The function about to test.
     """
     global mock_component, component
-    mock_component = MockComponent("ComponentName")
+    mock_component = MockComponent("some.path.ComponentName")
     component = mcapi.IComponent(mock_component)
 
 
