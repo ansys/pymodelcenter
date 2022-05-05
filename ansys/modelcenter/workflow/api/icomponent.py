@@ -5,8 +5,8 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter, IVariableConverter
 from ansys.modelcenter.workflow.api.assembly import Assembly
+from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter, IVariableConverter
 from ansys.modelcenter.workflow.api.igroups import IGroups
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 from ansys.modelcenter.workflow.api.ivariables import IVariables
@@ -14,8 +14,7 @@ from ansys.modelcenter.workflow.api.metadata_owner import MetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
-from ModelCenter import MetadataAccess
-from ModelCenter import MetadataType
+from ModelCenter import MetadataAccess, MetadataType
 
 
 class IComponent(MetadataOwner):
@@ -198,7 +197,6 @@ class IComponent(MetadataOwner):
         else:
             dot_net_value = value
         self._instance.setMetadata(name, type_, dot_net_value, access)
-
 
     def run(self) -> None:
         """Run the component."""

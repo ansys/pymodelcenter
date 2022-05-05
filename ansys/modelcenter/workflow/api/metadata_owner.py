@@ -1,16 +1,18 @@
 from typing import Union
 
+import clr
+
 from ansys.modelcenter.workflow.api.component_metadata import (
     ComponentMetadataAccess,
-    ComponentMetadataType
+    ComponentMetadataType,
 )
 from ansys.modelcenter.workflow.api.i18n import i18n
-import clr
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly
 from ModelCenter import IComponent as mcapiIComponent
 from ModelCenter import IVariable as mcapiIVariable
+
 
 class MetadataOwner:
 

@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import Sequence, List
+
+from typing import List, Sequence
 
 import clr
+
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockGroup, MockGroups, MockVariables
+from Phoenix.Mock import MockGroup, MockVariables
 
 
 class IGroup:

@@ -1,9 +1,12 @@
 from typing import Optional
 
+import clr
+
 from ansys.modelcenter.workflow.api.metadata_owner import MetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
+
 
 class IVariable(MetadataOwner):
     """
@@ -19,7 +22,7 @@ class IVariable(MetadataOwner):
         instance :
             ModelCenter API IVariable interface object.
         """
-        super().__init__(self, instance)
+        super().__init__(instance)
 
     @property
     def has_changed(self) -> bool:
