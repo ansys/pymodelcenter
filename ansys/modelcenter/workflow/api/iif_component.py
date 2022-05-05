@@ -60,7 +60,7 @@ class IIfComponent(IComponent):
 
         Parameters
         ----------
-        value: bool
+        value : bool
             The new value.
         """
         self._instance.runLastBranchByDefault = value
@@ -72,15 +72,16 @@ class IIfComponent(IComponent):
 
     def get_branch_condition(self, index: int) -> str:
         """
-        Gets the branch condition.
+        Get the branch condition.
 
         Parameters
         ----------
-        index: int
+        index : int
             Index of the branch.
 
         Returns
         -------
+   str :
         The branch condition.
         """
         return self._instance.getBranchCondition(index)
@@ -91,9 +92,9 @@ class IIfComponent(IComponent):
 
         Parameters
         ----------
-        index: int
+        index : int
             Index of the branch.
-        condition: str
+        condition : str
             The new condition.
         """
         self._instance.setBranchCondition(index, condition)
@@ -104,7 +105,7 @@ class IIfComponent(IComponent):
 
         Parameters
         ----------
-        index: int
+        index : int
             Index of the branch.
 
         Returns
@@ -119,9 +120,9 @@ class IIfComponent(IComponent):
 
         Parameters
         ----------
-        index: int
+        index : int
             Index of the branch.
-        name: str
+        name : str
             New name of the branch.
         """
         return self._instance.renameBranch(index, name)
