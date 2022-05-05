@@ -1,5 +1,5 @@
 """Defines classes and functions for working with VariableLinks."""
-from typing import Iterable
+from typing import Sequence
 
 
 class VariableLink:
@@ -66,7 +66,7 @@ class VariableLink:
         self._link.RHS = rhs
 
 
-def dotnet_links_to_iterable(dotnet_links) -> Iterable[VariableLink]:
+def dotnet_links_to_iterable(dotnet_links) -> Sequence[VariableLink]:
     """
     Convert a list of mock links to a Python iterable.
 
