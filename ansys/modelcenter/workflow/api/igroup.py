@@ -21,13 +21,11 @@ class IGroup:
             result.append(variables.Item(i))  # TODO: wrap in Variable
         return result
 
-    def groups(self) -> object:     # IGroup
+    @property
+    def groups(self) -> 'IGroups':
         """The Groups this Group is a member of."""
-        result: List[IGroup] = []
-        groups: MockGroups = self._instance.Groups
-        for i in range(groups.Count):
-            result.append(IGroup(groups.Item(i)))
-        return result
+        from .igroups import IGroups
+        return IGroups(self._instance.Groups)
 
     @property
     def icon_id(self) -> int:

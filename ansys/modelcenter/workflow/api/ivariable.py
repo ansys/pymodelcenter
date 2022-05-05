@@ -1,12 +1,16 @@
 from typing import Optional
 
+from ansys.modelcenter.workflow.api.metadata_owner import MetadataOwner
 
-class IVariable:
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IVariable as mcapiIVariable
+
+class IVariable(MetadataOwner):
     """
     COM instance.
     """
 
-    def __init__(self, instance) -> None:
+    def __init__(self, instance: mcapiIVariable) -> None:
         """
         Initialize variable object.
 
@@ -15,7 +19,7 @@ class IVariable:
         instance :
             ModelCenter API IVariable interface object.
         """
-        self._instance = instance
+        super().__init__(self, instance)
 
     @property
     def has_changed(self) -> bool:

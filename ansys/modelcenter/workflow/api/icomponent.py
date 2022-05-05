@@ -10,6 +10,7 @@ from ansys.modelcenter.workflow.api.assembly import Assembly
 from ansys.modelcenter.workflow.api.igroups import IGroups
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 from ansys.modelcenter.workflow.api.ivariables import IVariables
+from ansys.modelcenter.workflow.api.metadata_owner import MetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -17,7 +18,7 @@ from ModelCenter import MetadataAccess
 from ModelCenter import MetadataType
 
 
-class IComponent:
+class IComponent(MetadataOwner):
     """A component in a Workflow."""
 
     def __init__(self, instance: mcapiIComponent):
@@ -29,7 +30,7 @@ class IComponent:
         instance :
             Raw ModelCenter API object to wrap.
         """
-        self._instance: mcapiIComponent = instance
+        super().__init__(instance)
 
     @property
     def variables(self) -> IVariables:

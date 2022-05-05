@@ -1,19 +1,18 @@
 import clr
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence
 
-from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
-from .i18n import i18n
 from .igroup import IGroup
 from .igroups import IGroups
+from .metadata_owner import MetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IComponent as mcapiIComponent
+from ModelCenter import IAssembly as mcapiIAssembly
 
 
-class Assembly:
+class Assembly(MetadataOwner):
     """COM Instance."""
 
-    def __init__(self, assembly: mcapiIComponent):
+    def __init__(self, assembly: mcapiIAssembly):
         """
         Initialize a new instance.
 
@@ -23,7 +22,7 @@ class Assembly:
             The raw IAssembly interface object to use to make direct
             call to ModelCenter.
         """
-        self._assembly: mcapiIComponent = assembly
+        super().__init__(assembly)
 
     @property
     def variables(self) -> object:  # IVariables:
@@ -236,59 +235,3 @@ class Assembly:
 
     def delete_variable(self, name: str) -> None:
         self._assembly.deleteVariable(name)
-
-    def set_metadata(self,
-                     name: str,
-                     value: Union[str, int, float, bool],
-                     access: ComponentMetadataAccess,
-                     archive: bool,
-                     value_is_xml: bool = False) -> None:
-        """
-        Sets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name :
-            Metadata specifier used to store the data.
-        value :
-            The value of the metadata item.
-        access :
-            The level of access allowed to the metadata.
-        archive :
-            Whether or not the metadata should be considered archived.
-        value_is_xml :
-            Whether the metadata value is XML. This should be used
-            only when passing a string containing XML that should be interpreted as such.
-        """
-        meta_type: ComponentMetadataType = ComponentMetadataType.STRING
-        if isinstance(value, str):
-            meta_type = ComponentMetadataType.STRING
-            if value_is_xml:
-                meta_type = ComponentMetadataType.XML
-        elif isinstance(value, float):
-            meta_type = ComponentMetadataType.DOUBLE
-        elif isinstance(value, bool):
-            # It's important that this comes before int, as python bool is a subclass of int.
-            meta_type = ComponentMetadataType.BOOLEAN
-        elif isinstance(value, int):
-            meta_type = ComponentMetadataType.LONG
-        else:
-            raise TypeError(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
-
-        return self._assembly.setMetadata(name, meta_type.value, value, access.value, archive)
-
-    def get_metadata(self, name: str) -> object:    # Metadata
-        """
-        Gets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name :
-            Metadata key name.
-
-        Returns
-        -------
-        Metadata value.
-        """
-        # VARIANT getMetadata(BSTR name);
-        return self._assembly.getMetadata(name)
