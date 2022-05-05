@@ -6,7 +6,7 @@ from System import String as DotNetString
 import clr
 
 from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
-from ansys.modelcenter.workflow.api.iassembly import IAssembly
+from ansys.modelcenter.workflow.api.assembly import Assembly
 from ansys.modelcenter.workflow.api.igroups import IGroups
 from ansys.modelcenter.workflow.api.ivariables import IVariables
 
@@ -83,10 +83,10 @@ class IComponent:
         return self._instance.IndexInParent
 
     @property
-    def parent_assembly(self) -> IAssembly:
+    def parent_assembly(self) -> Assembly:
         """Parent assembly of this component."""
         assembly = self._instance.ParentAssembly
-        return IAssembly(assembly)
+        return Assembly(assembly)
 
     def get_name(self) -> str:
         """
