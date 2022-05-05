@@ -13,23 +13,23 @@ class IDoubleArray(IArray[MockDoubleArray]):
     Represents a double array variable on the workflow.
     """
 
+    @property  # type: ignore
     @overrides
-    @property
     def value(self) -> acvi.RealArrayValue:
-        raise NotImplementedError
+        return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
 
+    @value.setter  # type: ignore
     @overrides
-    @value.setter
     def value(self, new_value: acvi.IVariableValue):
-        raise NotImplementedError
+        self._wrapped.fromString(new_value.to_api_string())
 
+    @property  # type: ignore
     @overrides
-    @property
     def value_absolute(self) -> acvi.RealArrayValue:
-        raise NotImplementedError
+        return acvi.RealArrayValue.from_api_string(self._wrapped.toStringAbsolute())
 
+    @property  # type: ignore
     @overrides
-    @property
     def standard_metadata(self) -> acvi.RealArrayMetadata:
         raise NotImplementedError
 

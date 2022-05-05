@@ -46,3 +46,4 @@ test-output.xml
 # PyCharm user config & storage
 .idea
 
+/phoenix-mocks/

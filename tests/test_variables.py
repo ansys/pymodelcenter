@@ -9,9 +9,13 @@ import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import (
+    MockBooleanArray,
     MockBooleanVariable,
+    MockDoubleArray,
     MockDoubleVariable,
+    MockIntegerArray,
     MockIntegerVariable,
+    MockStringArray,
     MockStringVariable,
     MockVariable,
 )
@@ -25,6 +29,14 @@ value_test_cases = [
                  acvi.IntegerValue(8), id="Integer"),
     pytest.param("$", MockStringVariable("var1", 0), mcapi.IStringVariable,
                  acvi.StringValue("$"), id="String"),
+    pytest.param([True, False, True], MockBooleanArray("var1", 0), mcapi.IBooleanArray,
+                 acvi.BooleanArrayValue(3, [True, False, True]), id="BoolArray"),
+    pytest.param([1, 2, 3], MockIntegerArray("var1", 0), mcapi.IIntegerArray,
+                 acvi.IntegerArrayValue(3, [1, 2, 3]), id="IntegerArray"),
+    pytest.param([1.1, 2.2, 3.3], MockDoubleArray("var1", 0), mcapi.IDoubleArray,
+                 acvi.RealArrayValue(3, [1.1, 2.2, 3.3]), id="RealArray"),
+    pytest.param(["a", "b", "c"], MockStringArray("var1", 0), mcapi.IStringArray,
+                 acvi.StringArrayValue(3, ["a", "b", "c"]), id="StringArray"),
 ]
 """
 Test cases that can be shared across all value tests.
@@ -46,6 +58,8 @@ def test_get_value(value: object, mock: MockVariable, sut_type: Type,
     expected The expected result.
     """
     mock.value = value
+    mock.MockSetStringValue(str(value).replace('[', '').replace(']', '').replace('\'', ''))
+    # TODO: looks like I need to change to setting value via MockSetStringValue to support arrays
     sut: mcapi.IVariable = sut_type(mock)
 
     result: acvi.IVariableValue = sut.value
@@ -67,6 +81,7 @@ def test_get_value_absolute(value: object, mock: MockVariable, sut_type: Type,
     expected The expected result.
     """
     mock.valueAbsolute = value
+    mock.MockSetStringValue(str(value).replace('[', '').replace(']', '').replace('\'', ''))
     sut: mcapi.IVariable = sut_type(mock)
 
     result: acvi.IVariableValue = sut.value_absolute

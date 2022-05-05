@@ -3,7 +3,8 @@ from typing import Generic, TypeVar
 
 from .ivariable import IVariable
 
-WRAPPED_TYPE = TypeVar["WRAPPED_TYPE"]
+WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
+
 
 class IArray(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
     """

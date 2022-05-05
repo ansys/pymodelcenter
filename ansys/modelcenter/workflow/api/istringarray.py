@@ -13,23 +13,23 @@ class IStringArray(IArray[MockStringArray]):
     Represents a boolean variable on the workflow.
     """
 
+    @property  # type: ignore
     @overrides
-    @property
     def value(self) -> acvi.StringArrayValue:
-        raise NotImplementedError
+        return acvi.StringArrayValue.from_api_string(self._wrapped.toString())
 
+    @value.setter  # type: ignore
     @overrides
-    @value.setter
     def value(self, new_value: acvi.IVariableValue):
-        raise NotImplementedError
+        self._wrapped.fromString(new_value.to_api_string())
 
+    @property  # type: ignore
     @overrides
-    @property
     def value_absolute(self) -> acvi.StringArrayValue:
-        raise NotImplementedError
+        return acvi.StringArrayValue.from_api_string(self._wrapped.toStringAbsolute())
 
+    @property  # type: ignore
     @overrides
-    @property
     def standard_metadata(self) -> acvi.StringArrayMetadata:
         raise NotImplementedError
 
