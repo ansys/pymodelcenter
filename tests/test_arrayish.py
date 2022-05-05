@@ -60,7 +60,10 @@ class MockAPIInstance(MockAccess):
         """
         self.record_call("Item", id_)
         if isinstance(id_, int):
-            return self._list[id_]
+            try:
+                return self._list[id_]
+            except IndexError:
+                raise Exception("Something other than an index error.")
         elif isinstance(id_, str):
             return self._dict[id_]
         else:

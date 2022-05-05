@@ -5,8 +5,8 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter, IVariableConverter
-from ansys.modelcenter.workflow.api.iassembly import IAssembly
+from ansys.modelcenter.workflow.api.assembly import Assembly
+from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
 from ansys.modelcenter.workflow.api.igroups import IGroups
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 from ansys.modelcenter.workflow.api.ivariables import IVariables
@@ -24,7 +24,7 @@ class IComponent:
 
         Parameters
         ----------
-        instance :
+        instance : mcapiIComponent
             Raw ModelCenter API object to wrap.
         """
         self._instance: mcapiIComponent = instance
@@ -84,10 +84,10 @@ class IComponent:
         return self._instance.IndexInParent
 
     @property
-    def parent_assembly(self) -> IAssembly:
+    def parent_assembly(self) -> Assembly:
         """Parent assembly of this component."""
         assembly = self._instance.ParentAssembly
-        return IAssembly(assembly)
+        return Assembly(assembly)
 
     def get_name(self) -> str:
         """
@@ -119,7 +119,7 @@ class IComponent:
         """
         return self._instance.getSource()
 
-    def get_variable(self, name: str) -> IVariable:
+    def get_variable(self, name: str) -> object:  # IVariable
         """
         Get a variable in this component by name.
 

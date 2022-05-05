@@ -19,13 +19,13 @@ from Phoenix.Mock import (
     MockVariables,
 )
 
-mock_component: MockComponent
+mock_component: Optional[MockComponent] = None
 """
 Mock ModelCenter object.
 
 Used to simulate ModelCenter's response to different API calls."""
 
-component: mcapi.IComponent
+component: Optional[mcapi.IComponent] = None
 """
 Component object under test.
 """
@@ -41,7 +41,7 @@ def setup_function(_):
         The function about to test.
     """
     global mock_component, component
-    mock_component = MockComponent("some.path.ComponentName")
+    mock_component = MockComponent("ComponentName")
     component = mcapi.IComponent(mock_component)
 
 
@@ -140,7 +140,7 @@ def test_user_data(value: Any) -> None:
         pytest.param(["one string", "two string"], id="[str]"),
     ]
 )
-def test_associated_files(value: Any) -> None:
+def test_associated_files(value: any) -> None:
     """Testing of the associated_files property."""
     global component
 
@@ -173,7 +173,7 @@ def test_parent_assembly() -> None:
     result = component.parent_assembly
 
     # Verify
-    assert type(result) == IAssembly
+    assert type(result) == Assembly
     assert result.get_name() == "Assembly Name"
 
 

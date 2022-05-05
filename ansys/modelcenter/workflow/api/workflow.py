@@ -5,6 +5,7 @@ import clr
 
 from . import DataExplorer
 from .datamonitor import DataMonitor
+from .i18n import i18n
 from .icomponent import IComponent
 
 if TYPE_CHECKING:
@@ -12,9 +13,16 @@ if TYPE_CHECKING:
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
-from ansys.modelcenter.workflow.api.iassembly import IAssembly
+from ansys.modelcenter.workflow.api.assembly import Assembly
 
-from .i18n import i18n
+
+class MockDataMonitorWrapper(DataMonitor):
+    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
+
+    def __init__(self, monitor: phxmock.MockDataMonitor):
+        """
+        Initialize.
+        """
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -537,7 +545,7 @@ class Workflow:
             assembly = self._instance.getAssembly(name)
         if assembly is None:
             return None
-        return IAssembly(assembly)
+        return Assembly(assembly)
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,
