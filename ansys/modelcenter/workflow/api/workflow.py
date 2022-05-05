@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, Union
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -16,6 +16,7 @@ import Phoenix.Mock as phxmock
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 
 from .i18n import i18n
+from .variable_links import VariableLink, dotnet_links_to_iterable
 
 
 class WorkflowVariable:
@@ -361,7 +362,7 @@ class Workflow:
 
     # void breakLink(BSTR variable);
     def break_link(self, variable: str) -> None:
-        pass
+        self._instance.breakLink(variable)
 
     # VARIANT runMacro(BSTR macro, [optional]VARIANT useMCObject);
     def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
@@ -383,8 +384,8 @@ class Workflow:
         return self._instance.runMacro(macro_name, use_mc_object)
 
     # IDispatch* createAssembly(BSTR name, BSTR parent, [optional]VARIANT assemblyType);
-    def create_assembly(self, name: str, parent: str, assembly_type: object = None):
-        pass
+    def create_assembly(self, name: str, parent: str, assembly_type: Optional[str] = None):
+        return self._instance.createAssembly(name, parent, assembly_type)
 
     # IDispatch* createAssemblyVariable(BSTR name, BSTR type, BSTR parent);
     def create_assembly_variable(self, name: str, type_: str, parent: str) ->\
@@ -493,19 +494,19 @@ class Workflow:
 
     # void autoLink(BSTR srcComp, BSTR destComp);
     def auto_link(self, src_comp: str, dest_comp: str) -> None:
-        pass
+        self._instance.autoLink(src_comp, dest_comp)
 
     # LPDISPATCH getLinks([optional]VARIANT reserved);
-    def get_links(self, reserved: object = None):
-        pass
+    def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
+        return dotnet_links_to_iterable(self._instance.getLinks(reserved))
 
     # BSTR getModelUUID();
     def get_workflow_uuid(self) -> str:
-        pass
+        return self._instance.getModelUUID()
 
     # void halt();
     def halt(self) -> None:
-        pass
+        self._instance.halt()
 
     def run(self, variable_array: Optional[str]) -> None:
         """

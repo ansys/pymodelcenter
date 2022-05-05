@@ -24,4 +24,5 @@ from .iscript_component import IScriptComponent
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
 from .ivariable import IVariable
+from .variable_links import VariableLink
 from .workflow import Workflow
