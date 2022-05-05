@@ -374,8 +374,8 @@ pythonnet = "^2.5.2"
 [package.source]
 type = "git"
 url = "https://github.com/Phoenix-Integration-Inc/phx-mocks.git"
-reference = "9642fa51448a33e1dd90461e696de140c6a77b52"
-resolved_reference = "9642fa51448a33e1dd90461e696de140c6a77b52"
+reference = "07c5b63"
+resolved_reference = "07c5b6397f268a0fc6440b1bbcb0643896ba252f"
 
 [[package]]
 name = "platformdirs"
@@ -815,7 +815,7 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "87f4e7cbd5e9d80acefe592a1ecdd957d2356a482a205099fd8b81b8c090820b"
+content-hash = "f66f2b47b594422a39bf46bbe00d29a3f0f1487d404da426f4abdccf52ff98fb"
 
 [metadata.files]
 alabaster = [

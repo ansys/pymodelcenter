@@ -10,6 +10,7 @@ class IGroup:
     """COM Instance."""
 
     def __init__(self, group: MockGroup):
+        """Initialize."""
         self._instance = group
 
     @property
