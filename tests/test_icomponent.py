@@ -5,7 +5,7 @@ import clr
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
-from ansys.modelcenter.workflow.api import IAssembly
+from ansys.modelcenter.workflow.api import Assembly
 
 clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (
@@ -173,7 +173,7 @@ def test_parent_assembly() -> None:
     result = component.parent_assembly
 
     # Verify
-    assert type(result) == IAssembly
+    assert type(result) == Assembly
     assert result.get_name() == "Assembly Name"
 
 

@@ -5,8 +5,6 @@ from .data_explorer import DataExplorer
 from .datamonitor import DataMonitor
 from .engine import Engine, EngineInfo, OnConnectionErrorMode, WorkflowType
 from .format import Format
-from .iassemblies import IAssemblies
-from .iassembly import IAssembly
 from .ibooleanarray import IBooleanArray
 from .ibooleanvariable import IBooleanVariable
 from .icomponent import IComponent
