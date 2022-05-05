@@ -110,7 +110,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         """
         Validates the variable by running the component if needed.
         """
-        raise NotImplementedError
+        self._wrapped.validate()
 
     def get_name(self) -> str:
         """
@@ -150,7 +150,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         Marks the variable as invalid (needs to be computed).
         This will set all dependent variables invalid also.
         """
-        raise NotImplementedError
+        self._wrapped.invalidate()
 
     def direct_precedents(self, follow_suspended: bool = False,
                           reserved: Optional[object] = None) -> Sequence['IVariable']:

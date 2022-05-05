@@ -6,6 +6,11 @@ import ansys.modelcenter.workflow.api as mcapi
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockDoubleVariable
 
+__instance_only_tests = [
+    pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
+                 id = "double")
+]
+
 
 @pytest.mark.parametrize('sut,expected_result', [
     pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
@@ -73,3 +78,33 @@ def test_is_input_to_component(sut: mcapi.IVariable, expected_value: bool) -> No
 
     # Verify
     assert result == expected_value
+
+
+@pytest.mark.parametrize('sut', __instance_only_tests)
+def test_validate(sut: mcapi.IVariable) -> None:
+    """
+    Verify that validate calls through to the mock.
+    """
+    # Setup / sanity check
+    assert sut._wrapped.getCallCount('validate') == 0
+
+    # Execute
+    sut.validate()
+
+    # Verify
+    assert sut._wrapped.getCallCount('validate') == 1
+
+
+@pytest.mark.parametrize('sut', __instance_only_tests)
+def test_invalidate(sut: mcapi.IVariable) -> None:
+    """
+    Verify that invalidate calls through to the mock.
+    """
+    # Setup / sanity check
+    assert sut._wrapped.getCallCount('invalidate') == 0
+
+    # Execute
+    sut.invalidate()
+
+    # Verify
+    assert sut._wrapped.getCallCount('invalidate') == 1
