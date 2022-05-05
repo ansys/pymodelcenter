@@ -1,3 +1,4 @@
+import clr
 from typing import Optional, Sequence, Union
 
 from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
@@ -5,11 +6,14 @@ from .i18n import i18n
 from .igroup import IGroup
 from .igroups import IGroups
 
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IComponent as mcapiIComponent
+
 
 class Assembly:
     """COM Instance."""
 
-    def __init__(self, assembly: object):
+    def __init__(self, assembly: mcapiIComponent):
         """
         Initialize a new instance.
 
@@ -19,7 +23,7 @@ class Assembly:
             The raw IAssembly interface object to use to make direct
             call to ModelCenter.
         """
-        self._assembly = assembly
+        self._assembly: mcapiIComponent = assembly
 
     @property
     def variables(self) -> object:  # IVariables:
