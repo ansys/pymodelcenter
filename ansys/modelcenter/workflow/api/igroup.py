@@ -1,23 +1,43 @@
+from __future__ import annotations
+from typing import Sequence, List
+
+import clr
+clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
+from Phoenix.Mock import MockGroup, MockGroups, MockVariables
+
+
 class IGroup:
     """COM Instance."""
 
-    def __init__(self, instance):
-        self._instance = instance
+    def __init__(self, group: MockGroup):
+        self._instance = group
 
-    def variables(self) -> object:
+    @property
+    def variables(self) -> Sequence[object]:
         """The variables in the Group."""
-        # VARIANT Variables;
-        raise NotImplementedError
+        result: List[object] = []  # TODO: Variable
+        variables: MockVariables = self._instance.Variables
+        for i in range(variables.Count):
+            result.append(variables.Item(i))  # TODO: wrap in Variable
+        return result
 
     def groups(self) -> object:     # IGroup
         """The Groups this Group is a member of."""
-        # VARIANT Groups;
-        raise NotImplementedError
+        result: List[IGroup] = []
+        groups: MockGroups = self._instance.Groups
+        for i in range(groups.Count):
+            result.append(IGroup(groups.Item(i)))
+        return result
 
+    @property
     def icon_id(self) -> int:
         """The ID number of the icon to use for the Group."""
-        # int iconID;
-        raise NotImplementedError
+        return self._instance.iconId
+
+    @icon_id.setter
+    def icon_id(self, id: int) -> None:
+        """The ID number of the icon to use for the Group."""
+        self._instance.iconId = id
 
     def get_name(self) -> str:
         """Gets the name of the Group."""
@@ -25,5 +45,4 @@ class IGroup:
 
     def get_full_name(self) -> str:
         """Gets the full %ModelCenter path of the Group."""
-        # BSTR getFullName();
-        raise NotImplementedError
+        return self._instance.getFullName()

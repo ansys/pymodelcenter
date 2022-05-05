@@ -1,4 +1,6 @@
 from .arrayish import Arrayish
+from .assembly import Assembly
+from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .data_explorer import DataExplorer
 from .datamonitor import DataMonitor
 from .engine import Engine, EngineInfo, OnConnectionErrorMode, WorkflowType

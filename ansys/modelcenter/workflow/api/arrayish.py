@@ -73,6 +73,11 @@ class Arrayish(Sequence[VT]):
         -------
         Object specified.
         """
+        # This check is actually important when attempting to use this type in python idioms
+        # (list comprehensions, for-each, etc)
+        # Python just keeps calling __getitem__ until it gets an IndexError specifically.
+        if isinstance(id_, int) and id_ >= len(self):
+            raise IndexError
         return self._value_type(self._instance.Item(id_))
 
     def __len__(self) -> int:
