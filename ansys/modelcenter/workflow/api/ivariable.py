@@ -121,7 +121,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         str
             The name of the variable.
         """
-        raise NotImplementedError
+        return self._wrapped.getName()
 
     def get_full_name(self) -> str:
         """
@@ -132,7 +132,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         str
             The full %ModelCenter path of the variable.
         """
-        raise NotImplementedError
+        return self._wrapped.getFullName()
 
     def get_type(self) -> acvi.VariableType:
         """
