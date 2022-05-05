@@ -6,9 +6,8 @@ from System import String as DotNetString
 import clr
 
 from ansys.modelcenter.workflow.api.assembly import Assembly
-from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter, IVariableConverter
+from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
 from ansys.modelcenter.workflow.api.igroups import IGroups
-from ansys.modelcenter.workflow.api.ivariable import IVariable
 from ansys.modelcenter.workflow.api.ivariables import IVariables
 from ansys.modelcenter.workflow.api.metadata_owner import MetadataOwner
 
@@ -26,7 +25,7 @@ class IComponent(MetadataOwner):
 
         Parameters
         ----------
-        instance :
+        instance : mcapiIComponent
             Raw ModelCenter API object to wrap.
         """
         super().__init__(instance)
@@ -59,7 +58,7 @@ class IComponent(MetadataOwner):
         The value is not stored across save/load operations.
         """
         if isinstance(source, list):
-            dot_net_source = DotNetListConverter.to_dot_net(source, DotNetObject)
+            dot_net_source = to_dot_net_list(source, DotNetObject)
         else:
             dot_net_source = source
         self._instance.userData = dot_net_source
@@ -76,7 +75,7 @@ class IComponent(MetadataOwner):
         if isinstance(source, str):
             dot_net_value = source
         else:
-            dot_net_value = DotNetListConverter.to_dot_net(source, DotNetString)
+            dot_net_value = to_dot_net_list(source, DotNetString)
 
         self._instance.AssociatedFiles = dot_net_value
 
@@ -136,7 +135,7 @@ class IComponent(MetadataOwner):
         The variable object.
         """
         mcapi_variable = self._instance.getVariable(name)
-        return IVariableConverter.from_dot_net(mcapi_variable)
+        return from_dot_net_to_ivariable(mcapi_variable)
 
     def get_type(self) -> str:
         """

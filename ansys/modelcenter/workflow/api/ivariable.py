@@ -2,8 +2,6 @@ from typing import Optional
 
 import clr
 
-from ansys.modelcenter.workflow.api.metadata_owner import MetadataOwner
-
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
 
@@ -19,7 +17,7 @@ class IVariable(MetadataOwner):
 
         Parameters
         ----------
-        instance :
+        instance : mcapiIVariable
             ModelCenter API IVariable interface object.
         """
         super().__init__(instance)

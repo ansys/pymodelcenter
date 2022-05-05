@@ -5,17 +5,18 @@ from typing import List, Sequence
 import clr
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockGroup, MockVariables
+from Phoenix.Mock import MockGroup, MockGroups, MockVariables
 
 
 class IGroup:
     """COM Instance."""
 
     def __init__(self, group: MockGroup):
+        """Initialize."""
         self._instance = group
 
     @property
-    def variables(self) -> Sequence[object]:
+    def variables(self) -> Sequence[object]:  # TODO: Variable
         """The variables in the Group."""
         result: List[object] = []  # TODO: Variable
         variables: MockVariables = self._instance.Variables

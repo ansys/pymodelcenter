@@ -6,7 +6,11 @@ import clr
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
-from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter, IVariableConverter
+from ansys.modelcenter.workflow.api.dot_net_utils import (
+    from_dot_net_list,
+    from_dot_net_to_ivariable,
+    to_dot_net_list,
+)
 
 clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (
@@ -30,7 +34,7 @@ def test_list_to_dot_net():
     source = ["one", "two", "three"]
 
     # SUT
-    result = DotNetListConverter.to_dot_net(source, DotNetString)
+    result = to_dot_net_list(source, DotNetString)
 
     # Verify
     assert isinstance(result, DotNetList[DotNetString])
@@ -48,7 +52,7 @@ def test_list_from_dot_net():
         source.Add(s)
 
     # SUT
-    result: List[str] = DotNetListConverter.from_dot_net(source, str)
+    result: List[str] = from_dot_net_list(source, str)
 
     # Verify
     assert isinstance(result, list)
@@ -85,7 +89,7 @@ def test_i_variable_converter_from_dot_net(source_type, expected_type):
     source = source_type("name", 0)
 
     # SUT
-    result = IVariableConverter.from_dot_net(source)
+    result = from_dot_net_to_ivariable(source)
 
     # Verify
     assert isinstance(result, expected_type)
