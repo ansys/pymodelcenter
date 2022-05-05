@@ -35,3 +35,41 @@ def test_get_full_name(sut: mcapi.IVariable, expected_result: str) -> None:
     result = sut.get_full_name()
 
     assert result == expected_result
+
+
+__is_input_tests = [
+    pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
+                 True, id="double input"),
+    pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
+                 True, id="double output")
+]
+
+
+@pytest.mark.parametrize('sut,expected_value', __is_input_tests)
+def test_is_input_to_model(sut: mcapi.IVariable, expected_value: bool) -> None:
+    """
+    Verify that is_input_to_model works for different IVariable implementations.
+    """
+    # Setup
+    sut._wrapped.InputToModel = expected_value
+
+    # Execute
+    result = sut.is_input_to_model()
+
+    # Verify
+    assert result == expected_value
+
+
+@pytest.mark.parametrize('sut,expected_value', __is_input_tests)
+def test_is_input_to_component(sut: mcapi.IVariable, expected_value: bool) -> None:
+    """
+    Verify that is_input_to_component works for different IVariable implementations.
+    """
+    # Setup
+    sut._wrapped.InputToComponent = expected_value
+
+    # Execute
+    result = sut.is_input_to_component()
+
+    # Verify
+    assert result == expected_value

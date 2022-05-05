@@ -145,13 +145,6 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         """
         raise NotImplementedError
 
-    def is_input(self) -> bool:
-        """
-        Finds out whether or not the variable is an input with respect to the model.  Returnszs
-        the same value as \ref isInputToModel.
-        """
-        raise NotImplementedError
-
     def invalidate(self) -> None:
         """
         Marks the variable as invalid (needs to be computed).
@@ -290,13 +283,13 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         Returns true if the variable was originally added as an input, ignoring the
         current state that can change based off of links.
         """
-        raise NotImplementedError
+        return self._wrapped.isInputToComponent()
 
     def is_input_to_model(self) -> bool:
         """
         Checks whether or not the variable is an input. A linked input returns false (Output).
         """
-        raise NotImplementedError
+        return self._wrapped.isInputToModel()
 
     def set_custom_metadata(self, name: str, type: object, value: object, access: object,
                      archive: bool) -> None:  # type = MetadataType, access = MetadataAccess
