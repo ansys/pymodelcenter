@@ -28,6 +28,10 @@ class IIntegerVariable(ScalarVariable[MockIntegerVariable]):
     def value_absolute(self) -> acvi.IntegerValue:
         return acvi.IntegerValue(self._wrapped.valueAbsolute)
 
+    @overrides
+    def set_initial_value(self, value: acvi.IVariableValue) -> None:
+        self._wrapped.setInitialValue(int(acvi.to_integer_value(value)))
+
     @property  # type: ignore
     @overrides
     def standard_metadata(self) -> acvi.IntegerMetadata:

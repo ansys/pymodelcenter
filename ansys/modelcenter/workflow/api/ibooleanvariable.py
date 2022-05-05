@@ -26,6 +26,10 @@ class IBooleanVariable(ScalarVariable[MockBooleanVariable]):
     def value_absolute(self) -> acvi.BooleanValue:
         return acvi.BooleanValue(self._wrapped.valueAbsolute)
 
+    @overrides
+    def set_initial_value(self, value: acvi.IVariableValue) -> None:
+        self._wrapped.setInitialValue(bool(acvi.to_boolean_value(value)))
+
     @property  # type: ignore
     @overrides
     def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> acvi.BooleanMetadata:

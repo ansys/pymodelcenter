@@ -28,6 +28,10 @@ class IDoubleVariable(ScalarVariable[MockDoubleVariable]):
     def value_absolute(self) -> acvi.RealValue:
         return acvi.RealValue(self._wrapped.valueAbsolute)
 
+    @overrides
+    def set_initial_value(self, value: acvi.IVariableValue) -> None:
+        self._wrapped.setInitialValue(float(acvi.to_real_value(value)))
+
     @property  # type: ignore
     @overrides
     def standard_metadata(self) -> acvi.RealMetadata:

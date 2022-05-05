@@ -329,8 +329,14 @@ class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
     Base class with methods common to scalar variables.
     """
 
+    @abstractmethod
     def set_initial_value(self, value: acvi.IVariableValue) -> None:
         """
         Set the initial value for the variable.
+
+        Parameters
+        ----------
+        value : acvi.IVariableValue
+            The new initial value. Should be coercible to the appropriate type.
         """
         raise NotImplementedError

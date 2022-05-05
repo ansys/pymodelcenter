@@ -28,6 +28,10 @@ class IStringVariable(ScalarVariable[MockStringVariable]):
     def value_absolute(self) -> acvi.StringValue:
         return acvi.StringValue(self._wrapped.valueAbsolute)
 
+    @overrides
+    def set_initial_value(self, value: acvi.IVariableValue) -> None:
+        self._wrapped.setInitialValue(str(acvi.to_string_value(value)))
+
     @property  # type: ignore
     @overrides
     def standard_metadata(self) -> acvi.StringMetadata:

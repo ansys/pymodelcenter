@@ -29,6 +29,13 @@ value_test_cases = [
                  acvi.IntegerValue(8), id="Integer"),
     pytest.param("$", MockStringVariable("var1", 0), mcapi.IStringVariable,
                  acvi.StringValue("$"), id="String"),
+]
+"""
+Test cases that can be shared across all value tests.
+Note that each test might not use all arguments, but still defines them.
+"""
+
+value_array_cases = [
     pytest.param([True, False, True], MockBooleanArray("var1", 0), mcapi.IBooleanArray,
                  acvi.BooleanArrayValue(3, [True, False, True]), id="BoolArray"),
     pytest.param([1, 2, 3], MockIntegerArray("var1", 0), mcapi.IIntegerArray,
@@ -38,13 +45,9 @@ value_test_cases = [
     pytest.param(["a", "b", "c"], MockStringArray("var1", 0), mcapi.IStringArray,
                  acvi.StringArrayValue(3, ["a", "b", "c"]), id="StringArray"),
 ]
-"""
-Test cases that can be shared across all value tests.
-Note that each test might not use all arguments, but still defines them.
-"""
 
 
-@pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases)
+@pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases + value_array_cases)
 def test_get_value(value: object, mock: MockVariable, sut_type: Type,
                    expected: acvi.IVariableValue) -> None:
     """
@@ -67,7 +70,7 @@ def test_get_value(value: object, mock: MockVariable, sut_type: Type,
     assert result == expected
 
 
-@pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases)
+@pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases + value_array_cases)
 def test_get_value_absolute(value: object, mock: MockVariable, sut_type: Type,
                             expected: acvi.IVariableValue) -> None:
     """
@@ -89,7 +92,7 @@ def test_get_value_absolute(value: object, mock: MockVariable, sut_type: Type,
     assert result == expected
 
 
-@pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases)
+@pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases + value_array_cases)
 def test_set_value(value: object, mock: MockVariable, sut_type: Type,
                    expected: acvi.IVariableValue) -> None:
     """
@@ -108,3 +111,23 @@ def test_set_value(value: object, mock: MockVariable, sut_type: Type,
 
     result: acvi.IVariableValue = sut.value
     assert result == expected
+
+
+@pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases)
+def test_set_initial_value(value: object, mock: MockVariable, sut_type: Type,
+                           expected: acvi.IVariableValue) -> None:
+    """
+    Verifies setting the initial value for all ScalarVariable descendants.
+
+    Parameters
+    ----------
+    value Not used.
+    mock The native variable.
+    sut_type The type of mcapi.IVariable to create.
+    expected The expected result.
+    """
+    sut: mcapi.IVariable = sut_type(mock)
+
+    sut.set_initial_value(expected)
+
+    assert mock.getArgumentRecord("setInitialValue", 0)[0] == expected
