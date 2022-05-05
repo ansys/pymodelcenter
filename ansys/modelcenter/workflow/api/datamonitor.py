@@ -3,14 +3,14 @@ from typing import Tuple
 
 import clr
 
-clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-import Phoenix.Mock as phxmock
+clr.AddReference(r"phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IDataMonitor as mcIDataMonitor
 
 
 class DataMonitor:
     """Maps a COM MockDataMonitor to the IDataMonitor interface."""
 
-    def __init__(self, monitor: phxmock.MockDataMonitor):
+    def __init__(self, monitor: mcIDataMonitor):
         """
         Initialize.
 
@@ -19,7 +19,7 @@ class DataMonitor:
         monitor: phxmock.MockDataMonitor
             The COM DataMonitor to wrap.
         """
-        self._instance = monitor
+        self._instance: mcIDataMonitor = monitor
 
     def get_name(self, row: int) -> str:
         """

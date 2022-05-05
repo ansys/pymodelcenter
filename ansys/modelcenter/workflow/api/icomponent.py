@@ -1,43 +1,92 @@
 """Definition of IComponent."""
-from typing import List, Union
+from typing import Any, List, Union
+
+from System import Object as DotNetObject
+from System import String as DotNetString
+import clr
+
+from ansys.modelcenter.workflow.api.assembly import Assembly
+from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
+from ansys.modelcenter.workflow.api.igroups import IGroups
+from ansys.modelcenter.workflow.api.ivariables import IVariables
+
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IComponent as mcapiIComponent
 
 
 class IComponent:
     """A component in a Workflow."""
 
+    def __init__(self, instance: mcapiIComponent):
+        """
+        Initialize component object.
+
+        Parameters
+        ----------
+        instance : mcapiIComponent
+            Raw ModelCenter API object to wrap.
+        """
+        self._instance: mcapiIComponent = instance
+
     @property
-    def variables(self) -> object:  # IVariables
+    def variables(self) -> IVariables:
         """Variables in the component."""
-        raise NotImplementedError
+        variables = self._instance.Variables
+        return IVariables(variables)
 
     @property
-    def groups(self) -> object:  # IGroups
+    def groups(self) -> IGroups:
         """All groups in the component."""
-        raise NotImplementedError
+        return IGroups(self._instance.Groups)
 
     @property
-    def user_data(self) -> object:  # VARIANT
+    def user_data(self) -> Any:
         """Arbitrary object which is not used internally, but can \
         store data for programmatic purposes.
 
         The value is not stored across save/load operations.
         """
-        raise NotImplementedError
+        return self._instance.userData
+
+    @user_data.setter
+    def user_data(self, source: Any) -> None:
+        """Arbitrary object which is not used internally, but can \
+        store data for programmatic purposes.
+
+        The value is not stored across save/load operations.
+        """
+        if isinstance(source, list):
+            dot_net_source = to_dot_net_list(source, DotNetObject)
+        else:
+            dot_net_source = source
+        self._instance.userData = dot_net_source
 
     @property
     def associated_files(self) -> Union[str, List[str]]:
         """Set of files associated with the component."""
-        raise NotImplementedError
+        ret = self._instance.AssociatedFiles
+        return ret
+
+    @associated_files.setter
+    def associated_files(self, source: Union[str, List[str]]):
+        """Set of files associated with the component."""
+        if isinstance(source, str):
+            dot_net_value = source
+        else:
+            dot_net_value = to_dot_net_list(source, DotNetString)
+
+        self._instance.AssociatedFiles = dot_net_value
 
     @property
     def index_in_parent(self) -> int:
         """Position of this component in its parent assembly."""
-        raise NotImplementedError
+        return self._instance.IndexInParent
 
     @property
-    def parent_assembly(self) -> object:    # IAssembly
+    def parent_assembly(self) -> Assembly:
         """Parent assembly of this component."""
-        raise NotImplementedError
+        assembly = self._instance.ParentAssembly
+        return Assembly(assembly)
 
     def get_name(self) -> str:
         """
@@ -47,7 +96,7 @@ class IComponent:
         -------
         The name of the component.
         """
-        raise NotImplementedError
+        return self._instance.getName()
 
     def get_full_name(self) -> str:
         """
@@ -57,7 +106,7 @@ class IComponent:
         -------
         The full path of the component.
         """
-        raise NotImplementedError
+        return self._instance.getFullName()
 
     def get_source(self) -> str:
         """
@@ -67,7 +116,7 @@ class IComponent:
         -------
         The source of the component.
         """
-        raise NotImplementedError
+        return self._instance.getSource()
 
     def get_variable(self, name: str) -> object:  # IVariable
         """
@@ -83,7 +132,8 @@ class IComponent:
         -------
         The variable object.
         """
-        raise NotImplementedError
+        mcapi_variable = self._instance.getVariable(name)
+        return from_dot_net_to_ivariable(mcapi_variable)
 
     def get_type(self) -> str:
         """
@@ -102,7 +152,7 @@ class IComponent:
         -------
         The type of the component.
         """
-        raise NotImplementedError
+        return self._instance.getType()
 
     def get_metadata(self, name: str) -> object:  # VARIANT
         """
@@ -180,22 +230,22 @@ class IComponent:
 
     def get_position_x(self) -> int:
         """
-        "Gets the X position of the component in the Analysis View.
+        Get the X position of the component in the Analysis View.
 
         Returns
         -------
-        The X position."
+        The X position.
         """
         # int getPositionX();
         raise NotImplementedError
 
     def get_position_y(self) -> int:
         """
-        "Gets the Y position of the component in the Analysis View.
+        Get the Y position of the component in the Analysis View.
 
         Returns
         -------
-        The Y position."
+        The Y position.
         """
         # int getPositionY();
         raise NotImplementedError

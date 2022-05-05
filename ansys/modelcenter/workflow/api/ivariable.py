@@ -116,7 +116,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
 
     def get_name(self) -> str:
         """
-        Gets the name of the variable.
+        Get the name of the variable.
 
         Returns
         -------
@@ -136,7 +136,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         """
         return self._wrapped.getFullName()
 
-    def get_type(self) -> acvi.VariableType:
+    def get_type(self) -> str:
         """
         Gets the type of the variable.
 
@@ -145,7 +145,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         str
             The type of the variable as a string.
         """
-        raise NotImplementedError
+        return self._instance.getType()
 
     def invalidate(self) -> None:
         """

@@ -1,4 +1,4 @@
-from typing import Sequence, Type, TypeVar, Union
+from typing import Sequence, Type, TypeVar, Union, overload
 
 VT = TypeVar('VT')
 """A generic value type."""
@@ -29,7 +29,43 @@ class Arrayish(Sequence[VT]):
         self._instance = instance
         self._value_type: Type = value_type
 
-    def __getitem__(self, id_: Union[int, str]) -> VT:
+    @overload
+    def __getitem__(self, id_: slice) -> Sequence[VT]:
+        """
+        Get the object specified.
+
+        Parameters
+        ----------
+        id_ : slice
+            slice of the objects to fetch.
+
+        Returns
+        -------
+        Sequence of Objects specified.
+        """
+        raise NotImplementedError
+
+    def __getitem__(self, id_: int) -> VT:
+        """
+        Get the object specified.
+
+        Parameters
+        ----------
+        id_ : int
+            index of the object to fetch.
+
+        Returns
+        -------
+        Object specified.
+        """
+        # This check is actually important when attempting to use this type in python idioms
+        # (list comprehensions, for-each, etc)
+        # Python just keeps calling __getitem__ until it gets an IndexError specifically.
+        if isinstance(id_, int) and id_ >= len(self):
+            raise IndexError
+        return self._value_type(self._instance.Item(id_))
+
+    def get_item(self, id_: Union[int, str]) -> VT:
         """
         Get the object specified.
 
