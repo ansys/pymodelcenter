@@ -1,7 +1,7 @@
 from typing import Optional
 
 import clr
-
+from .metadata_owner import MetadataOwner
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
 
