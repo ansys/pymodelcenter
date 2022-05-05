@@ -1,10 +1,10 @@
 from .arrayish import Arrayish
+from .assembly import Assembly
+from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .data_explorer import DataExplorer
 from .datamonitor import DataMonitor
 from .engine import Engine, EngineInfo, OnConnectionErrorMode, WorkflowType
 from .format import Format
-from .iassemblies import IAssemblies
-from .iassembly import IAssembly
 from .icomponent import IComponent
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup
