@@ -1,7 +1,10 @@
 from typing import Optional
+
 import clr
+
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
+
 
 class IVariable:
     """

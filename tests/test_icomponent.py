@@ -1,5 +1,5 @@
 """Testing of IComponent."""
-from typing import Optional, Any
+from typing import Any, Optional
 
 import clr
 import pytest
