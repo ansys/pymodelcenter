@@ -6,7 +6,12 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockDoubleVariable, MockVariableLink
+from Phoenix.Mock import (
+    MockBooleanVariable,
+    MockDoubleVariable,
+    MockIntegerVariable,
+    MockVariableLink,
+)
 
 __instance_only_tests = [
     pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
@@ -152,3 +157,43 @@ def test_precedent_links(sut: mcapi.IVariable) -> None:
 
     assert all([isinstance(each_result_item, mcapi.VariableLink) for each_result_item in result])
     assert [each_result_item._link for each_result_item in result] == mock_links
+
+
+__dependent_precedent_tests = [
+    pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
+                 True, id="double follow suspended"),
+    pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
+                 True, id="double do not follow suspended")
+]
+
+
+@pytest.mark.parametrize('sut,follow_suspend', __dependent_precedent_tests)
+def test_direct_dependents(sut: mcapi.IVariable, follow_suspend: bool) -> None:
+    mock_vars = [MockDoubleVariable("mockvar", 0),
+                 MockIntegerVariable("mockVar2", 0),
+                 MockBooleanVariable("mockVar3", 0)]
+    for mock_var in mock_vars:
+        sut._wrapped.DirectDependentsStorage.addItem(mock_var)
+
+    result: Sequence[mcapi.IVariable] = sut.direct_dependents(follow_suspend)
+
+    assert isinstance(result[0], mcapi.IDoubleVariable)
+    assert isinstance(result[1], mcapi.IIntegerVariable)
+    assert isinstance(result[2], mcapi.IBooleanVariable)
+    assert [each_result_item._wrapped for each_result_item in result] == mock_vars
+
+
+@pytest.mark.parametrize('sut,follow_suspend', __dependent_precedent_tests)
+def test_direct_precedents(sut: mcapi.IVariable, follow_suspend: bool) -> None:
+    mock_vars = [MockDoubleVariable("mockvar", 1),
+                 MockIntegerVariable("mockVar2", 1),
+                 MockBooleanVariable("mockVar3", 1)]
+    for mock_var in mock_vars:
+        sut._wrapped.DirectPrecedentsStorage.addItem(mock_var)
+
+    result: Sequence[mcapi.IVariable] = sut.direct_precedents(follow_suspend)
+
+    assert isinstance(result[0], mcapi.IDoubleVariable)
+    assert isinstance(result[1], mcapi.IIntegerVariable)
+    assert isinstance(result[2], mcapi.IBooleanVariable)
+    assert [each_result_item._wrapped for each_result_item in result] == mock_vars

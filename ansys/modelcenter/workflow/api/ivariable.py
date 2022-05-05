@@ -3,6 +3,8 @@ from typing import Generic, Optional, Sequence, TypeVar
 
 import ansys.common.variableinterop as acvi
 
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
@@ -174,7 +176,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return utils.create_dot_net_variable_sequence(self._wrapped.directPrecedents(follow_suspended))
 
     def direct_dependents(self, follow_suspended: bool = False,
                           reserved: Optional[object] = None) -> Sequence['IVariable']:
@@ -196,7 +198,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return utils.create_dot_net_variable_sequence(self._wrapped.directDependents(follow_suspended))
 
     def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
