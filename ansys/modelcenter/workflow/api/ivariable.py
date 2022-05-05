@@ -3,6 +3,8 @@ from typing import Generic, Optional, Sequence, TypeVar
 
 import ansys.common.variableinterop as acvi
 
+from .variable_links import VariableLink, dotnet_links_to_iterable
+
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
 
 
@@ -196,7 +198,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         """
         raise NotImplementedError
 
-    def precedent_links(self, reserved: Optional[object] = None) -> Sequence['IVariable']:
+    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
         Returns a list of links that are immediate precedents to the value of this variable.
         All the returned links will have this variable as the LHS of the equation. Except
@@ -212,9 +214,9 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariableLinks object.
         """
-        raise NotImplementedError
+        return dotnet_links_to_iterable(self._wrapped.precedentLinks(reserved))
 
-    def dependent_links(self, reserved: Optional[object] = None) -> Sequence['IVariable']:
+    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
         Returns a list of links that immediately depend on the value of this variable.
         All the returned links will have this variable as part of a RHS equation.
@@ -229,7 +231,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariableLinks object.
         """
-        raise NotImplementedError
+        return dotnet_links_to_iterable(self._wrapped.dependentLinks(reserved))
 
     def precedents(self,
                    follow_suspended: bool = False,

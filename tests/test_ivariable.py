@@ -1,10 +1,12 @@
+from typing import Sequence
+
 import clr
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockDoubleVariable
+from Phoenix.Mock import MockDoubleVariable, MockVariableLink
 
 __instance_only_tests = [
     pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
@@ -108,3 +110,45 @@ def test_invalidate(sut: mcapi.IVariable) -> None:
 
     # Verify
     assert sut._wrapped.getCallCount('invalidate') == 1
+
+
+@pytest.mark.parametrize('sut', __instance_only_tests)
+def test_dependent_links(sut: mcapi.IVariable) -> None:
+    """
+    Verify that dependent_links works correctly.
+    """
+    mock_links = [MockVariableLink(), MockVariableLink(), MockVariableLink()]
+    mock_links[0].LHS = "link_lhs_0"
+    mock_links[0].RHS = "link_rhs_0"
+    mock_links[1].LHS = "link_lhs_1"
+    mock_links[1].RHS = "link_rhs_1"
+    mock_links[1].LHS = "link_lhs_2"
+    mock_links[1].RHS = "link_rhs_2"
+    for mock_link in mock_links:
+        sut._wrapped.DependentLinksStorage.AddItem(mock_link)
+
+    result: Sequence[mcapi.VariableLink] = sut.dependent_links()
+
+    assert all([isinstance(each_result_item, mcapi.VariableLink) for each_result_item in result])
+    assert [each_result_item._link for each_result_item in result] == mock_links
+
+
+@pytest.mark.parametrize('sut', __instance_only_tests)
+def test_precedent_links(sut: mcapi.IVariable) -> None:
+    """
+    Verify that precedent_links works correctly.
+    """
+    mock_links = [MockVariableLink(), MockVariableLink(), MockVariableLink()]
+    mock_links[0].LHS = "link_lhs_0"
+    mock_links[0].RHS = "link_rhs_0"
+    mock_links[1].LHS = "link_lhs_1"
+    mock_links[1].RHS = "link_rhs_1"
+    mock_links[1].LHS = "link_lhs_2"
+    mock_links[1].RHS = "link_rhs_2"
+    for mock_link in mock_links:
+        sut._wrapped.PrecedentLinksStorage.AddItem(mock_link)
+
+    result: Sequence[mcapi.VariableLink] = sut.precedent_links()
+
+    assert all([isinstance(each_result_item, mcapi.VariableLink) for each_result_item in result])
+    assert [each_result_item._link for each_result_item in result] == mock_links
