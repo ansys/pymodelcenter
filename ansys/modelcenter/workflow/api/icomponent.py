@@ -23,7 +23,7 @@ class IComponent:
 
         Parameters
         ----------
-        instance :
+        instance : mcapiIComponent
             Raw ModelCenter API object to wrap.
         """
         self._instance: mcapiIComponent = instance
