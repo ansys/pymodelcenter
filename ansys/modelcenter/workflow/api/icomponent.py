@@ -13,6 +13,8 @@ from ansys.modelcenter.workflow.api.ivariables import IVariables
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
+from ModelCenter import MetadataAccess
+from ModelCenter import MetadataType
 
 
 class IComponent:
@@ -155,7 +157,7 @@ class IComponent:
         """
         return self._instance.getType()
 
-    def get_metadata(self, name: str) -> object:  # VARIANT
+    def get_metadata(self, name: str) -> IVariable:
         """
         Get the metadata value of the given metadata key name.
 
@@ -168,10 +170,12 @@ class IComponent:
         -------
         The value of the metadata key.
         """
-        raise NotImplementedError
+        return IVariableConverter.from_dot_net(self._instance.getMetadata(name))
 
-    def set_metadata(self, name: str, type_: object, value: object, access: object,
-                     archive: bool) -> None:  # MetadataType, VARIANT, MetadataAccess
+    def set_metadata(
+            self, name: str, type_: MetadataType, value: Any,
+            access: MetadataAccess, archive: bool
+    ) -> None:  # MetadataType, VARIANT, MetadataAccess
         """
         Set the metadata value of a given key.
 
@@ -188,11 +192,16 @@ class IComponent:
         archive: bool
             Whether this property should be archived.
         """
-        raise NotImplementedError
+        if isinstance(value, list):
+            dot_net_value = DotNetListConverter.to_dot_net(value, DotNetObject)
+        else:
+            dot_net_value = value
+        self._instance.setMetadata(name, type_, dot_net_value, access)
+
 
     def run(self) -> None:
         """Run the component."""
-        raise NotImplementedError
+        self._instance.Run()
 
     def invoke_method(self, method: str) -> None:
         """
@@ -203,7 +212,7 @@ class IComponent:
         method: str
             The name of the method to invoke.
         """
-        raise NotImplementedError
+        self._instance.InvokeMethod(method)
 
     def invalidate(self) -> None:
         """Invalidate the component and all of its variables."""
@@ -211,12 +220,12 @@ class IComponent:
 
     def reconnect(self) -> None:
         """Reload this component from its source."""
-        raise NotImplementedError
+        self._instance.Reconnect()
 
     def download_values(self) -> None:
         """Download the component's variable values from the server if\
         it is a ModelCenter Remote Execution component."""
-        raise NotImplementedError
+        self._instance.DownloadValues()
 
     def rename(self, name: str) -> None:
         """
@@ -227,7 +236,7 @@ class IComponent:
         name: str
             The new name of the component.
         """
-        raise NotImplementedError
+        self._instance.Rename(name)
 
     def get_position_x(self) -> int:
         """
@@ -238,7 +247,7 @@ class IComponent:
         The X position.
         """
         # int getPositionX();
-        raise NotImplementedError
+        return self._instance.getPositionX()
 
     def get_position_y(self) -> int:
         """
@@ -249,8 +258,8 @@ class IComponent:
         The Y position.
         """
         # int getPositionY();
-        raise NotImplementedError
+        return self._instance.getPositionY()
 
     def show(self) -> None:
         """Show the component's GUI, if it has one."""
-        raise NotImplementedError
+        self._instance.Show()
