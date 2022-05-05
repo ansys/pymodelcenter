@@ -1,18 +1,20 @@
 from typing import Optional
-
+import clr
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IVariable as mcapiIVariable
 
 class IVariable:
     """
     COM instance.
     """
 
-    def __init__(self, instance) -> None:
+    def __init__(self, instance: mcapiIVariable) -> None:
         """
         Initialize variable object.
 
         Parameters
         ----------
-        instance :
+        instance : mcapiIVariable
             ModelCenter API IVariable interface object.
         """
         self._instance = instance
