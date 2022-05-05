@@ -13,6 +13,11 @@ class IIntegerArray(IArray[MockIntegerArray]):
     Represents an integer array variable on the workflow.
     """
 
+    @overrides
+    def __init__(self, wrapped: MockIntegerArray):
+        super().__init__(wrapped)
+        self._standard_metadata: acvi.CommonVariableMetadata = acvi.IntegerArrayMetadata()
+
     @property  # type: ignore
     @overrides
     def value(self) -> acvi.IntegerArrayValue:
@@ -31,11 +36,15 @@ class IIntegerArray(IArray[MockIntegerArray]):
     @property  # type: ignore
     @overrides
     def standard_metadata(self) -> acvi.IntegerArrayMetadata:
-        raise NotImplementedError
+        return self._standard_metadata
 
-    @standard_metadata.setter
-    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        """
-        Get the standard metadata for this variable.
-        """
-        raise NotImplementedError
+    @standard_metadata.setter  # type: ignore
+    @overrides
+    def standard_metadata(self, new_metadata: acvi.IntegerArrayMetadata) -> None:
+        if not isinstance(new_metadata, acvi.IntegerArrayMetadata):
+            raise acvi.exceptions.IncompatibleTypesException(
+                new_metadata.variable_type.name,
+                self._standard_metadata.variable_type.name)
+        else:
+            self._standard_metadata = new_metadata
+

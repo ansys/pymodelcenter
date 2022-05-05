@@ -13,6 +13,11 @@ class IDoubleArray(IArray[MockDoubleArray]):
     Represents a double array variable on the workflow.
     """
 
+    @overrides
+    def __init__(self, wrapped: MockDoubleArray):
+        super().__init__(wrapped)
+        self._standard_metadata: acvi.CommonVariableMetadata = acvi.RealArrayMetadata()
+
     @property  # type: ignore
     @overrides
     def value(self) -> acvi.RealArrayValue:
@@ -31,11 +36,15 @@ class IDoubleArray(IArray[MockDoubleArray]):
     @property  # type: ignore
     @overrides
     def standard_metadata(self) -> acvi.RealArrayMetadata:
-        raise NotImplementedError
+        return self._standard_metadata
 
-    @standard_metadata.setter
-    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        """
-        Get the standard metadata for this variable.
-        """
-        raise NotImplementedError
+    @standard_metadata.setter  # type: ignore
+    @overrides
+    def standard_metadata(self, new_metadata: acvi.RealArrayMetadata) -> None:
+        if not isinstance(new_metadata, acvi.RealArrayMetadata):
+            raise acvi.exceptions.IncompatibleTypesException(
+                new_metadata.variable_type.name,
+                self._standard_metadata.variable_type.name)
+        else:
+            self._standard_metadata = new_metadata
+
