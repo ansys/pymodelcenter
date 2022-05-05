@@ -13,6 +13,11 @@ class IStringVariable(ScalarVariable[MockStringVariable]):
     Represents a string variable on the workflow.
     """
 
+    @overrides
+    def __init__(self, wrapped: MockStringVariable):
+        super().__init__(wrapped)
+        self._standard_metadata: acvi.CommonVariableMetadata = acvi.StringMetadata()
+
     @property  # type: ignore
     @overrides
     def value(self) -> acvi.StringValue:
@@ -35,11 +40,15 @@ class IStringVariable(ScalarVariable[MockStringVariable]):
     @property  # type: ignore
     @overrides
     def standard_metadata(self) -> acvi.StringMetadata:
-        raise NotImplementedError
+        return self._standard_metadata
 
-    @standard_metadata.setter
-    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        """
-        Get the standard metadata for this variable.
-        """
-        raise NotImplementedError
+    @standard_metadata.setter  # type: ignore
+    @overrides
+    def standard_metadata(self, new_metadata: acvi.StringMetadata) -> None:
+        if not isinstance(new_metadata, acvi.StringMetadata):
+            raise acvi.exceptions.IncompatibleTypesException(
+                new_metadata.variable_type.name,
+                self._standard_metadata.variable_type.name)
+        else:
+            self._standard_metadata = new_metadata
+

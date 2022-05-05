@@ -46,6 +46,17 @@ value_array_cases = [
                  acvi.StringArrayValue(3, ["a", "b", "c"]), id="StringArray"),
 ]
 
+metadata_test_cases = [
+    pytest.param(MockBooleanVariable("var1", 0), mcapi.IBooleanVariable, acvi.BooleanMetadata()),
+    pytest.param(MockDoubleVariable("var1", 0), mcapi.IDoubleVariable, acvi.RealMetadata()),
+    pytest.param(MockIntegerVariable("var1", 0), mcapi.IIntegerVariable, acvi.IntegerMetadata()),
+    pytest.param(MockStringVariable("var1", 0), mcapi.IStringVariable, acvi.StringMetadata()),
+    pytest.param(MockBooleanArray("var1", 0), mcapi.IBooleanArray, acvi.BooleanArrayMetadata()),
+    pytest.param(MockDoubleArray("var1", 0), mcapi.IDoubleArray, acvi.RealArrayMetadata()),
+    pytest.param(MockIntegerArray("var1", 0), mcapi.IIntegerArray, acvi.IntegerArrayMetadata()),
+    pytest.param(MockStringArray("var1", 0), mcapi.IStringArray, acvi.StringArrayMetadata()),
+]
+
 
 @pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases + value_array_cases)
 def test_get_value(value: object, mock: MockVariable, sut_type: Type,
@@ -131,3 +142,25 @@ def test_set_initial_value(value: object, mock: MockVariable, sut_type: Type,
     sut.set_initial_value(expected)
 
     assert mock.getArgumentRecord("setInitialValue", 0)[0] == expected
+
+
+@pytest.mark.parametrize("mock,sut_type,expected", metadata_test_cases)
+def test_get_metadata(mock: MockVariable, sut_type: Type, expected: acvi.CommonVariableMetadata) \
+        -> None:
+    sut: mcapi.IVariable = sut_type(mock)
+
+    result: acvi.CommonVariableMetadata = sut.standard_metadata
+
+    assert result == expected
+
+
+@pytest.mark.parametrize("mock,sut_type,value", metadata_test_cases)
+def test_set_metadata(mock: MockVariable, sut_type: Type, value: acvi.CommonVariableMetadata) \
+        -> None:
+    sut: mcapi.IVariable = sut_type(mock)
+    assert sut.standard_metadata is not value
+
+    sut.standard_metadata = value
+
+    result: acvi.CommonVariableMetadata = sut.standard_metadata
+    assert result is value

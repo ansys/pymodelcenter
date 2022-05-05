@@ -11,6 +11,11 @@ from Phoenix.Mock import MockBooleanVariable
 class IBooleanVariable(ScalarVariable[MockBooleanVariable]):
     """Represents a boolean variable on the workflow."""
 
+    @overrides
+    def __init__(self, wrapped: MockBooleanVariable):
+        super().__init__(wrapped)
+        self._standard_metadata: acvi.CommonVariableMetadata = acvi.BooleanMetadata()
+
     @property  # type: ignore
     @overrides
     def value(self) -> acvi.BooleanValue:
@@ -32,12 +37,15 @@ class IBooleanVariable(ScalarVariable[MockBooleanVariable]):
 
     @property  # type: ignore
     @overrides
-    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> acvi.BooleanMetadata:
-        raise NotImplementedError
+    def standard_metadata(self) -> acvi.BooleanMetadata:
+        return self._standard_metadata
 
-    @standard_metadata.setter
-    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        """
-        Get the standard metadata for this variable.
-        """
-        raise NotImplementedError
+    @standard_metadata.setter  # type: ignore
+    @overrides
+    def standard_metadata(self, new_metadata: acvi.BooleanMetadata) -> None:
+        if not isinstance(new_metadata, acvi.BooleanMetadata):
+            raise acvi.exceptions.IncompatibleTypesException(
+                new_metadata.variable_type.name,
+                self._standard_metadata.variable_type.name)
+        else:
+            self._standard_metadata = new_metadata
