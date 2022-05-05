@@ -1,9 +1,9 @@
 from typing import Sequence
 
+import clr
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
-import clr
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 from Phoenix.Mock import MockGroup

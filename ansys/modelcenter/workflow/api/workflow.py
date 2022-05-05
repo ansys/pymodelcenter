@@ -1,23 +1,29 @@
-import clr
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
 
-from typing import Any, List, Optional, Tuple, TYPE_CHECKING, Union
-
-import Phoenix.Mock as phxmock
 import ansys.common.variableinterop as acvi
+import clr
 from overrides import overrides
 
 from . import DataExplorer
-from .icomponent import IComponent
 from .datamonitor import DataMonitor
+from .i18n import i18n
+from .icomponent import IComponent
 
 if TYPE_CHECKING:
     from .engine import Engine
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
-from ansys.modelcenter.workflow.api.iassembly import IAssembly
+from ansys.modelcenter.workflow.api.assembly import Assembly
 
-from .i18n import i18n
+
+class MockDataMonitorWrapper(DataMonitor):
+    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
+
+    def __init__(self, monitor: phxmock.MockDataMonitor):
+        """
+        Initialize.
+        """
 
 
 class WorkflowVariable:
@@ -630,7 +636,7 @@ class Workflow:
             assembly = self._instance.getAssembly(name)
         if assembly is None:
             return None
-        return IAssembly(assembly)
+        return Assembly(assembly)
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,
