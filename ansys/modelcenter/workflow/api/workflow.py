@@ -6,14 +6,22 @@ from overrides import overrides
 
 from . import DataExplorer
 from .datamonitor import DataMonitor
+from .i18n import i18n
 from .icomponent import IComponent
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
-from ansys.modelcenter.workflow.api.iassembly import IAssembly
+from ansys.modelcenter.workflow.api.assembly import Assembly
 
-from .i18n import i18n
+
+class MockDataMonitorWrapper(DataMonitor):
+    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
+
+    def __init__(self, monitor: phxmock.MockDataMonitor):
+        """
+        Initialize.
+        """
 
 
 class WorkflowVariable:
@@ -622,7 +630,7 @@ class Workflow:
             assembly = self._instance.getAssembly(name)
         if assembly is None:
             return None
-        return IAssembly(assembly)
+        return Assembly(assembly)
 
     # IDispatch* createAndInitComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,
