@@ -176,7 +176,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.directPrecedents(follow_suspended))
+        return utils.create_dot_net_variable_sequence(self._wrapped.directPrecedents(
+            follow_suspended))
 
     def direct_dependents(self, follow_suspended: bool = False,
                           reserved: Optional[object] = None) -> Sequence['IVariable']:
@@ -198,7 +199,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.directDependents(follow_suspended))
+        return utils.create_dot_net_variable_sequence(self._wrapped.directDependents(
+            follow_suspended))
 
     def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
@@ -256,7 +258,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return utils.create_dot_net_variable_sequence(self._wrapped.precedents(follow_suspended))
 
     def dependents(self,
                    follow_suspended: bool = False,
@@ -279,7 +281,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return utils.create_dot_net_variable_sequence(self._wrapped.dependents(follow_suspended))
 
     def is_input_to_component(self) -> bool:
         """

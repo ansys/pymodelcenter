@@ -197,3 +197,35 @@ def test_direct_precedents(sut: mcapi.IVariable, follow_suspend: bool) -> None:
     assert isinstance(result[1], mcapi.IIntegerVariable)
     assert isinstance(result[2], mcapi.IBooleanVariable)
     assert [each_result_item._wrapped for each_result_item in result] == mock_vars
+
+
+@pytest.mark.parametrize('sut,follow_suspend', __dependent_precedent_tests)
+def test_dependents(sut: mcapi.IVariable, follow_suspend: bool) -> None:
+    mock_vars = [MockDoubleVariable("mockvar", 0),
+                 MockIntegerVariable("mockVar2", 0),
+                 MockBooleanVariable("mockVar3", 0)]
+    for mock_var in mock_vars:
+        sut._wrapped.DependentsStorage.addItem(mock_var)
+
+    result: Sequence[mcapi.IVariable] = sut.dependents(follow_suspend)
+
+    assert isinstance(result[0], mcapi.IDoubleVariable)
+    assert isinstance(result[1], mcapi.IIntegerVariable)
+    assert isinstance(result[2], mcapi.IBooleanVariable)
+    assert [each_result_item._wrapped for each_result_item in result] == mock_vars
+
+
+@pytest.mark.parametrize('sut,follow_suspend', __dependent_precedent_tests)
+def test_precedents(sut: mcapi.IVariable, follow_suspend: bool) -> None:
+    mock_vars = [MockDoubleVariable("mockvar", 1),
+                 MockIntegerVariable("mockVar2", 1),
+                 MockBooleanVariable("mockVar3", 1)]
+    for mock_var in mock_vars:
+        sut._wrapped.PrecedentsStorage.addItem(mock_var)
+
+    result: Sequence[mcapi.IVariable] = sut.precedents(follow_suspend)
+
+    assert isinstance(result[0], mcapi.IDoubleVariable)
+    assert isinstance(result[1], mcapi.IIntegerVariable)
+    assert isinstance(result[2], mcapi.IBooleanVariable)
+    assert [each_result_item._wrapped for each_result_item in result] == mock_vars
