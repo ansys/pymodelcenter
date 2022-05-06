@@ -14,7 +14,6 @@ from .ifilearray import IFileArray
 from .ifilevariable import IFileVariable
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup
-from .igroups import IGroups
 from .iif_component import IIfComponent
 from .iintegerarray import IIntegerArray
 from .iintegervariable import IIntegerVariable
@@ -26,5 +25,5 @@ from .iscript_component import IScriptComponent
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
 from .ivariable import IVariable
-from .ivariables import IVariables
+from .variable_links import VariableLink
 from .workflow import Workflow

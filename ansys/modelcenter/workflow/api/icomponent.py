@@ -1,16 +1,16 @@
 """Definition of IComponent."""
-from typing import Any, List, Union
+from typing import Any, List, Sequence, Union
 
 from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
+from .arrayish import Arrayish
 from .assembly import Assembly
 from .custom_metadata_owner import CustomMetadataOwner
 from .dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
-from .igroups import IGroups
+from .igroup import IGroup
 from .ivariable import IVariable
-from .ivariables import IVariables
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -31,15 +31,15 @@ class IComponent(CustomMetadataOwner):
         super().__init__(instance)
 
     @property
-    def variables(self) -> IVariables:
+    def variables(self) -> Sequence[IVariable]:
         """Variables in the component."""
         variables = self._instance.Variables
-        return IVariables(variables)
+        return Arrayish(variables, from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> IGroups:
+    def groups(self) -> Sequence[IGroup]:
         """All groups in the component."""
-        return IGroups(self._instance.Groups)
+        return Arrayish(self._instance.Groups, IGroup)
 
     @property
     def user_data(self) -> Any:
