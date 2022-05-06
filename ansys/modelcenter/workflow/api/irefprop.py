@@ -4,7 +4,10 @@ from Phoenix.Mock import MockRefArrayProp
 
 
 class IRefArrayProp:
-    """Array variable that references other variables without creating a full link relationship."""
+    """
+    Array variable that references other variables without creating a \
+    full link relationship.
+    """
 
     def __init__(self, name: str, type_: str):
         """
@@ -85,7 +88,8 @@ class IRefArrayProp:
 
 class IRefProp(IRefArrayProp):
     """
-    Variable that references other variables without creating a full link relationship.
+    Variable that references other variables without creating a full \
+    link relationship.
 
     Implements IRefArrayProp.
     """
