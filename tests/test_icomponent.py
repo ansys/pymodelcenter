@@ -59,7 +59,8 @@ def test_variables() -> None:
     result = component.variables
 
     # Verify
-    assert isinstance(result, mcapi.IVariables)
+    assert isinstance(result, mcapi.Arrayish)
+    assert result._value_type is mcapi.IVariable
     assert len(result) == 2
     assert result[0].get_name() == "One"
     assert result[1].get_name() == "Two"
@@ -81,7 +82,8 @@ def test_groups() -> None:
     result = component.groups
 
     # Verify
-    assert isinstance(result, mcapi.IGroups)
+    assert isinstance(result, mcapi.Arrayish)
+    assert result._value_type is mcapi.IGroup
     assert len(result) == 2
     assert result[0].get_name() == "One"
     assert result[1].get_name() == "Two"

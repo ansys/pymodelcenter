@@ -2,13 +2,14 @@ from typing import Optional, Sequence, Union
 
 import clr
 
+from . import Arrayish
+
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly
 
 from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .i18n import i18n
 from .igroup import IGroup
-from .igroups import IGroups
 
 
 class Assembly:
@@ -47,7 +48,7 @@ class Assembly:
         -------
         A list of variable groups in the assembly.
         """
-        return IGroups(self._assembly.Groups)
+        return Arrayish(self._assembly.Groups, IGroup)
 
     @property
     def assemblies(self) -> Sequence['Assembly']:
