@@ -28,6 +28,8 @@ class IReferenceVariable(IVariable):
         """
         self._instance = Mocks.MockReferenceVariable(name, state)
 
+####################################################################################################
+# region Inherited from IVariable
     @property
     @overrides
     def has_changed(self) -> bool:
@@ -133,6 +135,9 @@ class IReferenceVariable(IVariable):
     @overrides
     def get_metadata(self, name: str) -> object:
         return self._instance.getMetadata(name)
+
+# endregion
+####################################################################################################
 
     @property
     def value(self) -> float:
