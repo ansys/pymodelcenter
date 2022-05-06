@@ -1,5 +1,5 @@
 """Implementation of Arrayish wrapper class."""
-from typing import Generic, Sequence, Type, TypeVar, Union, overload
+from typing import Sequence, Type, TypeVar, Union, overload
 
 VT = TypeVar('VT')
 """A generic value type."""
