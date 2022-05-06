@@ -1,6 +1,6 @@
 from typing import MutableSequence
 
-from .iref_array_prop import IRefArrayProp
+from .irefprop import IRefArrayProp
 
 
 # TODO: inherit from IArray when available.
