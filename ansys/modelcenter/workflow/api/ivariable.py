@@ -324,6 +324,8 @@ class IVariable(ABC):
 
 
 class VarType(Enum):
+    """Basic set of variable types."""
+
     INPUT = 0
     """This is an input."""
 

@@ -226,7 +226,10 @@ class IReferenceArray(IArray):
 
     @property
     def auto_grow(self) -> bool:
-        """Whether or not the reference array is set to automatically grow."""
+        """
+        Whether or not the reference array is set to automatically \
+        grow.
+        """
         return self._instance.autoGrow
 
     @auto_grow.setter
@@ -285,7 +288,8 @@ class IReferenceArray(IArray):
 
     def get_ref_prop_value(self, name: str, index: int) -> object:
         """
-        Gets the value of a specified reference property for an element in the array.
+        Gets the value of a specified reference property for an element \
+        in the array.
 
         Parameters
         ----------
@@ -318,8 +322,8 @@ class IReferenceArray(IArray):
 
     def get_ref_prop_value_absolute(self, name: str, index: int) -> object:
         """
-        Gets the value of a specified reference property for an element in the array without
-        running to validate.
+        Gets the value of a specified reference property for an element \
+        in the array without running to validate.
 
         Parameters
         ----------
