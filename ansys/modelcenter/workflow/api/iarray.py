@@ -1,12 +1,12 @@
 from abc import ABC
 from typing import Generic, TypeVar
 
-from .ivariable import IVariable
+import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
 
 
-class IArray(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
+class IArray(ivariable.IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
     """
     Base class for all array types.  Has common functionality for getting/setting array
     sizes and getting/setting values as strings.

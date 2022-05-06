@@ -5,10 +5,12 @@ import clr
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly
 
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.igroup as igroup
+import ansys.modelcenter.workflow.api.igroups as igroups
+
 from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .i18n import i18n
-from .igroup import IGroup
-from .igroups import IGroups
 
 
 class Assembly:
@@ -27,7 +29,7 @@ class Assembly:
         self._assembly = assembly
 
     @property
-    def variables(self) -> object:  # IVariables:
+    def variables(self) -> Sequence['ivariable.IVariable']:
         """
         Pointer to the variables in the Assembly.
 
@@ -35,11 +37,10 @@ class Assembly:
         -------
         IVariables object.
         """
-        # VARIANT Variables;
-        raise NotImplementedError
+        return utils.create_dot_net_variable_sequence(self._assembly.Variables)
 
     @property
-    def groups(self) -> Sequence[IGroup]:
+    def groups(self) -> Sequence['igroup.IGroup']:
         """
         Get a list of variable groups in the Assembly.
 
@@ -47,7 +48,7 @@ class Assembly:
         -------
         A list of variable groups in the assembly.
         """
-        return IGroups(self._assembly.Groups)
+        return igroups.IGroups(self._assembly.Groups)
 
     @property
     def assemblies(self) -> Sequence['Assembly']:

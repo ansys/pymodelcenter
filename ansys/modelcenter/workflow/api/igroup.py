@@ -4,6 +4,9 @@ from typing import List, Sequence
 
 import clr
 
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.ivariable as ivariable
+
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 from Phoenix.Mock import MockGroup, MockGroups, MockVariables
 
@@ -16,13 +19,9 @@ class IGroup:
         self._instance = group
 
     @property
-    def variables(self) -> Sequence[object]:  # TODO: Variable
+    def variables(self) -> Sequence[ivariable.IVariable]:  # TODO: Variable
         """The variables in the Group."""
-        result: List[object] = []  # TODO: Variable
-        variables: MockVariables = self._instance.Variables
-        for i in range(variables.Count):
-            result.append(variables.Item(i))  # TODO: wrap in Variable
-        return result
+        return utils.create_dot_net_variable_sequence(self._instance.Variables)
 
     @property
     def groups(self) -> Sequence[IGroup]:

@@ -5,10 +5,10 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-from ansys.modelcenter.workflow.api.assembly import Assembly
+import ansys.modelcenter.workflow.api.assembly as assembly
 from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
-from ansys.modelcenter.workflow.api.igroups import IGroups
-from ansys.modelcenter.workflow.api.ivariables import IVariables
+import ansys.modelcenter.workflow.api.igroups as igroups
+import ansys.modelcenter.workflow.api.ivariables as ivariables
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -29,15 +29,15 @@ class IComponent:
         self._instance: mcapiIComponent = instance
 
     @property
-    def variables(self) -> IVariables:
+    def variables(self) -> ivariables.IVariables:
         """Variables in the component."""
         variables = self._instance.Variables
-        return IVariables(variables)
+        return ivariables.IVariables(variables)
 
     @property
-    def groups(self) -> IGroups:
+    def groups(self) -> igroups.IGroups:
         """All groups in the component."""
-        return IGroups(self._instance.Groups)
+        return igroups.IGroups(self._instance.Groups)
 
     @property
     def user_data(self) -> Any:
@@ -83,10 +83,10 @@ class IComponent:
         return self._instance.IndexInParent
 
     @property
-    def parent_assembly(self) -> Assembly:
+    def parent_assembly(self) -> 'assembly.Assembly':
         """Parent assembly of this component."""
-        assembly = self._instance.ParentAssembly
-        return Assembly(assembly)
+        parent_assembly = self._instance.ParentAssembly
+        return assembly.Assembly(parent_assembly)
 
     def get_name(self) -> str:
         """

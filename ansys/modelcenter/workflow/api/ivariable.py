@@ -4,6 +4,7 @@ from typing import Generic, Optional, Sequence, TypeVar
 import ansys.common.variableinterop as acvi
 
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
