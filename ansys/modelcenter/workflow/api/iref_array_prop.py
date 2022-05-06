@@ -7,6 +7,16 @@ class IRefArrayProp:
     """COM Instance."""
 
     def __init__(self, name: str, type_: str):
+        """
+        Initialize.
+        
+        Parameters
+        ----------
+        name : str
+            The name of the variable.
+        type_ : str
+            The type of the variable.
+        """
         self._instance = MockRefArrayProp(name, type_)
 
     @property
