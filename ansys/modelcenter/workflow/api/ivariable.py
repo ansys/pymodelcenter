@@ -100,15 +100,14 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
 
     def is_valid(self) -> bool:
         """
-        Returns whether or not the variable is valid.
+        Return whether or not the variable is valid.
 
         Returns
         -------
         bool
             True if variable is valid. False if the variable is not valid.
         """
-        # TODO: Should this be a property?
-        raise NotImplementedError
+        return self._wrapped.isValid()
 
     def validate(self) -> None:
         """
