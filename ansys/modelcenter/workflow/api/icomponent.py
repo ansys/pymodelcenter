@@ -1,14 +1,15 @@
 """Definition of IComponent."""
-from typing import Any, List, Union
+from typing import Any, List, Union, Sequence
 
 from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
+from ansys.modelcenter.workflow.api.arrayish import Arrayish
 from ansys.modelcenter.workflow.api.assembly import Assembly
 from ansys.modelcenter.workflow.api.dot_net_utils import DotNetListConverter
-from ansys.modelcenter.workflow.api.igroups import IGroups
-from ansys.modelcenter.workflow.api.ivariables import IVariables
+from ansys.modelcenter.workflow.api.igroup import IGroup
+from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -29,15 +30,15 @@ class IComponent:
         self._instance: mcapiIComponent = instance
 
     @property
-    def variables(self) -> IVariables:
+    def variables(self) -> Sequence[IVariable]:
         """Variables in the component."""
         variables = self._instance.Variables
-        return IVariables(variables)
+        return Arrayish(variables, IVariable)
 
     @property
-    def groups(self) -> IGroups:
+    def groups(self) -> Sequence[IGroup]:
         """All groups in the component."""
-        return IGroups(self._instance.Groups)
+        return Arrayish(self._instance.Groups, IGroup)
 
     @property
     def user_data(self) -> Any:
