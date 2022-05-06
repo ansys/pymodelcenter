@@ -4,7 +4,8 @@ from Phoenix.Mock import MockRefArrayProp
 
 
 class IRefArrayProp:
-    """COM Instance."""
+    """Array variable that references other variables without creating a \
+    full link relationship."""
 
     def __init__(self, name: str, type_: str):
         """
