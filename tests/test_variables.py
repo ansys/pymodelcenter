@@ -231,3 +231,33 @@ def test_set_metadata(mock: MockVariable, sut_type: Type, value: acvi.CommonVari
 
     result: acvi.CommonVariableMetadata = sut.standard_metadata
     assert result is value
+
+
+auto_size_cases = []
+for i in range(4):
+    is_valid_cases.append(
+        pytest.param(mock_arrays[i], array_types[i], True, id=array_names[i] + " True")
+    )
+    is_valid_cases.append(
+        pytest.param(mock_arrays[i], array_types[i], False, id=array_names[i] + " False")
+    )
+
+
+@pytest.mark.parametrize("mock,sut_type,value", auto_size_cases)
+def test_auto_size(mock: MockVariable, sut_type: Type, value: bool) -> None:
+    """
+    Verifies auto_size for all array variables.
+
+    Parameters
+    ----------
+    mock The native variable.
+    sut_type The type of mcapi.IVariable to create.
+    value The value auto_size should return.
+    """
+    mock.autoSize = not value
+    sut: mcapi.IVariable = sut_type(mock)
+
+    sut.auto_size = value
+    result: bool = sut.auto_size
+
+    assert result == value

@@ -20,8 +20,13 @@ class IArray(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
     @property
     def auto_size(self) -> bool:
         """
-        Whether or not the array is set to automatically size itself.  If false and the
-        array is linked from upstream, the upstream array must be exactly the same size
-        or an error ensues.  If true, the array will resize itself when the link is validated.
+        Whether or not the array is set to automatically size itself.
+        If false and the array is linked from upstream, the upstream
+        array must be exactly the same size or an error ensues.
+        If true, the array will resize itself when the link is validated.
         """
-        raise NotImplementedError
+        return self._wrapped.autoSize
+
+    @auto_size.setter
+    def auto_size(self, value: bool) -> None:
+        self._wrapped.autoSize = value
