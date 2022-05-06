@@ -1,5 +1,5 @@
 """Definition of IComponent."""
-from typing import Any, List, Union, Sequence
+from typing import Any, List, Sequence, Union
 
 from System import Object as DotNetObject
 from System import String as DotNetString
@@ -33,7 +33,7 @@ class IComponent:
     def variables(self) -> Sequence[IVariable]:
         """Variables in the component."""
         variables = self._instance.Variables
-        return Arrayish(variables, IVariable)
+        return Arrayish(variables, from_dot_net_to_ivariable)
 
     @property
     def groups(self) -> Sequence[IGroup]:
@@ -119,7 +119,7 @@ class IComponent:
         """
         return self._instance.getSource()
 
-    def get_variable(self, name: str) -> object:  # IVariable
+    def get_variable(self, name: str) -> IVariable:
         """
         Get a variable in this component by name.
 
