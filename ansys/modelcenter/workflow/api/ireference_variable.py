@@ -1,7 +1,7 @@
 from typing import Optional
 from overrides import overrides
 
-from .iref_array_prop import IRefProp
+from .iref_prop import IRefProp
 from .ivariable import IVariable, VarType
 import clr
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')

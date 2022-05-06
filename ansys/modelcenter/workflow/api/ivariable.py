@@ -289,7 +289,7 @@ class IVariable(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def set_metadata(self, name: str, type: object, value: object, access: object,
+    def set_metadata(self, name: str, type_: object, value: object, access: object,
                      archive: bool) -> None:  # type = MetadataType, access = MetadataAccess
         """
         Sets the meta data value of the given meta data key name.
@@ -298,7 +298,7 @@ class IVariable(ABC):
         ----------
         name
             Metadata specifier used to store the data.
-        type
+        type_
         value
         access
         archive
