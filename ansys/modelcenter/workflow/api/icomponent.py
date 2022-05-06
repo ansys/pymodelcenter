@@ -1,5 +1,5 @@
 """Definition of IComponent."""
-from typing import Any, List, Union, Sequence
+from typing import Any, List, Sequence, Union
 
 from System import Object as DotNetObject
 from System import String as DotNetString
