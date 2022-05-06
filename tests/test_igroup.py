@@ -1,7 +1,6 @@
 from typing import Sequence
 
 import clr
-import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 
