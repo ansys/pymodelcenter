@@ -3,12 +3,13 @@ import clr
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api.iarray import IArray
+from ansys.modelcenter.workflow.api.ivariable import FormattableVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockDoubleArray
 
 
-class IDoubleArray(IArray[MockDoubleArray]):
+class IDoubleArray(IArray[MockDoubleArray], FormattableVariable[MockDoubleArray]):
     """
     Represents a double array variable on the workflow.
     """
@@ -47,4 +48,3 @@ class IDoubleArray(IArray[MockDoubleArray]):
                 self._standard_metadata.variable_type.name)
         else:
             self._standard_metadata = new_metadata
-

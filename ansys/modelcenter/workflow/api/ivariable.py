@@ -4,7 +4,6 @@ from typing import Generic, Optional, Sequence, TypeVar
 import ansys.common.variableinterop as acvi
 
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
-import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
@@ -346,3 +345,23 @@ class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
             The new initial value. Should be coercible to the appropriate type.
         """
         raise NotImplementedError
+
+
+class FormattableVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
+    """
+    Base class for variables which accept a format.
+    """
+
+    @property
+    def format(self) -> str:
+        """
+        Get a format string for displaying the variable to the user.
+        """
+        return self._wrapped.format
+
+    @format.setter
+    def format(self, value: str) -> str:
+        """
+        Set the format string for displaying the variable to the user.
+        """
+        self._wrapped.format = value

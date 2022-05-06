@@ -2,13 +2,14 @@ import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import ScalarVariable
+from ansys.modelcenter.workflow.api.ivariable import FormattableVariable, ScalarVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockIntegerVariable
 
 
-class IIntegerVariable(ScalarVariable[MockIntegerVariable]):
+class IIntegerVariable(ScalarVariable[MockIntegerVariable],
+                       FormattableVariable[MockIntegerVariable]):
     """
     Represents an integer variable on the workflow.
     """
@@ -51,4 +52,3 @@ class IIntegerVariable(ScalarVariable[MockIntegerVariable]):
                 self._standard_metadata.variable_type.name)
         else:
             self._standard_metadata = new_metadata
-
