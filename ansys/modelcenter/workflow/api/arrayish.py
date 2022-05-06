@@ -1,10 +1,12 @@
-from typing import Sequence, Type, TypeVar, Union, overload
+"""Implementation of Arrayish wrapper class."""
+from typing import Generic, Sequence, Type, TypeVar, Union, overload
 
 VT = TypeVar('VT')
 """A generic value type."""
 
 
 class Arrayish(Sequence[VT]):
+    # TODO: Rename to something like LazyLoadList
     """
     A generic wrapper around an arrayish ModelCenter interface type.
 
@@ -30,60 +32,49 @@ class Arrayish(Sequence[VT]):
         self._value_type: Type = value_type
 
     @overload
-    def __getitem__(self, id_: slice) -> Sequence[VT]:
+    def __getitem__(self, i: int) -> VT: ...
+
+    @overload
+    def __getitem__(self, s: slice) -> Sequence[VT]: ...
+
+    @overload
+    def __getitem__(self, s: str) -> VT: ...
+
+    def __getitem__(self, index: Union[int, slice, str]) -> Union[Sequence[VT], VT]:
         """
-        Get the object specified.
+        Get the object or objects specified.
 
         Parameters
         ----------
-        id_ : slice
-            slice of the objects to fetch.
+        index : int, slice or str
+            index or name of the object to fetch, or slice of objects
+            to fetch.
 
         Returns
         -------
-        Sequence of Objects specified.
+        Object specified or sequence of objects specified.
         """
-        raise NotImplementedError
-
-    def __getitem__(self, id_: int) -> VT:
-        """
-        Get the object specified.
-
-        Parameters
-        ----------
-        id_ : int
-            index of the object to fetch.
-
-        Returns
-        -------
-        Object specified.
-        """
-        # This check is actually important when attempting to use this type in python idioms
-        # (list comprehensions, for-each, etc)
-        # Python just keeps calling __getitem__ until it gets an IndexError specifically.
-        if isinstance(id_, int) and id_ >= len(self):
-            raise IndexError
-        return self._value_type(self._instance.Item(id_))
-
-    def get_item(self, id_: Union[int, str]) -> VT:
-        """
-        Get the object specified.
-
-        Parameters
-        ----------
-        id_ : int or str
-            index or name of the object to fetch.
-
-        Returns
-        -------
-        Object specified.
-        """
-        # This check is actually important when attempting to use this type in python idioms
-        # (list comprehensions, for-each, etc)
-        # Python just keeps calling __getitem__ until it gets an IndexError specifically.
-        if isinstance(id_, int) and id_ >= len(self):
-            raise IndexError
-        return self._value_type(self._instance.Item(id_))
+        if isinstance(index, int):
+            # This check is actually important when attempting to use this type in python idioms
+            # (list comprehensions, for-each, etc)
+            # Python just keeps calling __getitem__ until it gets an IndexError specifically.
+            if index < len(self):
+                return self._value_type(self._instance.Item(index))
+            else:
+                raise IndexError
+        elif isinstance(index, str):
+            return self._value_type(self._instance.Item(index))
+        elif isinstance(index, slice):
+            # TODO: Return an efficient list instead of pulling all the items in the range
+            ret = []
+            len_ = len(self)
+            for i in range(index.stop)[index]:
+                if i < len_:
+                    val = self._value_type(self._instance.Item(i))
+                    ret.append(val)
+            return ret
+        else:
+            raise TypeError
 
     def __len__(self) -> int:
         """
