@@ -17,4 +17,5 @@ from .ireference_variable import IReferenceVariable
 from .iscript_component import IScriptComponent
 from .ivariable import IVariable
 from .ivariables import IVariables
+from .variable_links import VariableLink
 from .workflow import Workflow
