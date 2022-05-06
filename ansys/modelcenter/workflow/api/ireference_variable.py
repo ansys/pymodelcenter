@@ -1,8 +1,8 @@
 from typing import Optional
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import IRefProp
-from ansys.modelcenter.workflow.api.ivariable import IVariable, VarType
+from .iref_array_prop import IRefProp
+from .ivariable import IVariable, VarType
 import clr
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 import Phoenix.Mock as Mocks

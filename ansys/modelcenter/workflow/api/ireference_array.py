@@ -1,14 +1,14 @@
-from typing import MutableSequence, Optional
+from typing import Optional
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import IArray, IReferenceVariable, IRefArrayProp
+from .iarray import IArray
+from .iref_array_prop import IRefArrayProp
 from .ivariable import VarType
 import clr
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 import Phoenix.Mock as Mocks
 
 
-# TODO: inherit from IArray when available.
 class IReferenceArray(IArray):
     """
     Hold a reference to an array.
