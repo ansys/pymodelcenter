@@ -5,10 +5,10 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-from ansys.modelcenter.workflow.api.assembly import Assembly
-from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
-from ansys.modelcenter.workflow.api.igroups import IGroups
-from ansys.modelcenter.workflow.api.ivariables import IVariables
+from .dot_net_utils import to_dot_net_list
+from .assembly import Assembly
+from .igroups import IGroups
+from .ivariables import IVariables
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -23,7 +23,7 @@ class IComponent:
 
         Parameters
         ----------
-        instance : mcapiIComponent
+        instance :
             Raw ModelCenter API object to wrap.
         """
         self._instance: mcapiIComponent = instance
@@ -56,7 +56,7 @@ class IComponent:
         The value is not stored across save/load operations.
         """
         if isinstance(source, list):
-            dot_net_source = to_dot_net_list(source, DotNetObject)
+            dot_net_source = to_dot_net_list.to_dot_net(source, DotNetObject)
         else:
             dot_net_source = source
         self._instance.userData = dot_net_source
@@ -73,7 +73,7 @@ class IComponent:
         if isinstance(source, str):
             dot_net_value = source
         else:
-            dot_net_value = to_dot_net_list(source, DotNetString)
+            dot_net_value = to_dot_net_list.to_dot_net(source, DotNetString)
 
         self._instance.AssociatedFiles = dot_net_value
 
@@ -94,7 +94,8 @@ class IComponent:
 
         Returns
         -------
-        The name of the component.
+        str :
+            The name of the component.
         """
         return self._instance.getName()
 
@@ -106,7 +107,7 @@ class IComponent:
         -------
         The full path of the component.
         """
-        return self._instance.getFullName()
+        raise NotImplementedError
 
     def get_source(self) -> str:
         """
@@ -116,7 +117,7 @@ class IComponent:
         -------
         The source of the component.
         """
-        return self._instance.getSource()
+        raise NotImplementedError
 
     def get_variable(self, name: str) -> object:  # IVariable
         """
@@ -132,8 +133,7 @@ class IComponent:
         -------
         The variable object.
         """
-        mcapi_variable = self._instance.getVariable(name)
-        return from_dot_net_to_ivariable(mcapi_variable)
+        raise NotImplementedError
 
     def get_type(self) -> str:
         """
@@ -152,7 +152,7 @@ class IComponent:
         -------
         The type of the component.
         """
-        return self._instance.getType()
+        raise NotImplementedError
 
     def get_metadata(self, name: str) -> object:  # VARIANT
         """

@@ -11,6 +11,7 @@ from Phoenix.Mock import (
     MockDoubleVariable,
     MockIntegerVariable,
     MockVariableLink,
+    MockComponent,
 )
 
 __instance_only_tests = [
@@ -47,6 +48,59 @@ def test_get_full_name(sut: mcapi.IVariable, expected_result: str) -> None:
     result = sut.get_full_name()
 
     assert result == expected_result
+
+
+@pytest.mark.parametrize('sut', [
+    pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
+                 id="double")
+])
+def test_has_changed(sut: mcapi.IVariable) -> None:
+    """
+    Verify that `has_changed` property works for different IVariable implementations.
+    """
+    assert sut.has_changed is False
+
+    # Execute
+    sut.has_changed = True  # eventually change to sut.value = ...
+
+    # Verify
+    assert sut.has_changed is True
+
+
+@pytest.mark.parametrize('sut', [
+    pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
+                 id="double")
+])
+def test_hide(sut: mcapi.IVariable) -> None:
+    """
+    Verify that `hide` property works for different IVariable implementations.
+    """
+    assert sut.hide is False
+
+    # Execute
+    sut.hide = True
+
+    # Verify
+    assert sut.hide is True
+
+
+@pytest.mark.parametrize('sut', [
+    pytest.param(mcapi.IDoubleVariable(MockDoubleVariable('Workflow.Assembly.doubleVar', 0)),
+                 id="double")
+])
+def test_owning_component(sut: mcapi.IVariable) -> None:
+    """
+    Verify that `owning_component` property works for different IVariable implementations.
+    """
+    assert sut.owning_component is None
+    mock_component = mcapi.IComponent(MockComponent('Assembly23'))
+
+    # Execute
+    sut.owning_component = mock_component
+    component: mcapi.IComponent = sut.owning_component
+
+    # Verify
+    assert component.get_name() == mock_component.get_name()
 
 
 __is_input_tests = [

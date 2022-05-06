@@ -1,14 +1,17 @@
 """Collection of utility functions to aid in converting \
 between Dot-Net and Python types."""
 
-from typing import Iterable, List, Sequence, Type, TypeVar
+from typing import Iterable, List, Sequence, Type, TypeVar, TYPE_CHECKING
 
+import clr
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
-import clr
+
+if TYPE_CHECKING:
+    from .ivariable import IVariable
 
 from .ibooleanarray import IBooleanArray
 from .ibooleanvariable import IBooleanVariable
@@ -22,7 +25,6 @@ from .ireference_array import IReferenceArray
 from .ireference_variable import IReferenceVariable
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
-from .ivariable import IVariable
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
@@ -105,7 +107,7 @@ IVariable descendant type.
 """
 
 
-def from_dot_net_to_ivariable(source: mcapiIVariable) -> IVariable:
+def from_dot_net_to_ivariable(source: mcapiIVariable) -> 'IVariable':
     """
     Construct the appropriate IVariable type wrapping the given \
     MCAP IVariable value.
@@ -125,6 +127,6 @@ def from_dot_net_to_ivariable(source: mcapiIVariable) -> IVariable:
     return class_(source)
 
 
-def create_dot_net_variable_sequence(source: mcapiVariableSequence) -> Sequence[IVariable]:
+def create_dot_net_variable_sequence(source: mcapiVariableSequence) -> 'Sequence[IVariable]':
     return [from_dot_net_to_ivariable(source.Item(var_index))
             for var_index in range(0, source.Count)]
