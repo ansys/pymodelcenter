@@ -6,18 +6,17 @@ from System import String as DotNetString
 import clr
 
 from .assembly import Assembly
+from .custom_metadata_owner import CustomMetadataOwner
 from .dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
 from .igroups import IGroups
 from .ivariable import IVariable
 from .ivariables import IVariables
-from .metadata_owner import MetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
-from ModelCenter import MetadataAccess, MetadataType
 
 
-class IComponent(MetadataOwner):
+class IComponent(CustomMetadataOwner):
     """A component in a Workflow."""
 
     def __init__(self, instance: mcapiIComponent):
@@ -73,6 +72,7 @@ class IComponent(MetadataOwner):
     @associated_files.setter
     def associated_files(self, source: Union[str, List[str]]):
         """Set of files associated with the component."""
+        dot_net_value: Union[str, List[str]]
         if isinstance(source, str):
             dot_net_value = source
         else:
@@ -156,47 +156,6 @@ class IComponent(MetadataOwner):
         The type of the component.
         """
         return self._instance.getType()
-
-    def get_metadata(self, name: str) -> IVariable:
-        """
-        Get the metadata value of the given metadata key name.
-
-        Parameters
-        ----------
-        name: str
-            The key name of the metadata to retrieve.
-
-        Returns
-        -------
-        The value of the metadata key.
-        """
-        return IVariableConverter.from_dot_net(self._instance.getMetadata(name))
-
-    def set_metadata(
-            self, name: str, type_: MetadataType, value: Any,
-            access: MetadataAccess, archive: bool
-    ) -> None:  # MetadataType, VARIANT, MetadataAccess
-        """
-        Set the metadata value of a given key.
-
-        Parameters
-        ----------
-        name: str
-            The key name of the metadata to set.
-        type_: object
-            The type of metadata to set.
-        value: object
-            The metadata value to set.
-        access: object
-            The access permissions of the metadata.
-        archive: bool
-            Whether this property should be archived.
-        """
-        if isinstance(value, list):
-            dot_net_value = DotNetListConverter.to_dot_net(value, DotNetObject)
-        else:
-            dot_net_value = value
-        self._instance.setMetadata(name, type_, dot_net_value, access)
 
     def run(self) -> None:
         """Run the component."""

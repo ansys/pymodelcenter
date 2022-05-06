@@ -1,28 +1,23 @@
 from __future__ import annotations
 
-from typing import List, Sequence
-
 import clr
 
-clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockGroup, MockGroups, MockVariables
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IGroup as mcapiIGroup
 
 
 class IGroup:
     """COM Instance."""
 
-    def __init__(self, group: MockGroup):
+    def __init__(self, group: mcapiIGroup):
         """Initialize."""
         self._instance = group
 
     @property
-    def variables(self) -> Sequence[object]:  # TODO: Variable
+    def variables(self) -> 'IVariables':
         """The variables in the Group."""
-        result: List[object] = []  # TODO: Variable
-        variables: MockVariables = self._instance.Variables
-        for i in range(variables.Count):
-            result.append(variables.Item(i))  # TODO: wrap in Variable
-        return result
+        from .ivariables import IVariables
+        return IVariables(self._instance.Variables)
 
     @property
     def groups(self) -> 'IGroups':

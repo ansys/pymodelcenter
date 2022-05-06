@@ -1,16 +1,16 @@
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence
 
 import clr
 
+from .custom_metadata_owner import CustomMetadataOwner
 from .igroup import IGroup
 from .igroups import IGroups
-from .metadata_owner import MetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly
 
 
-class Assembly(MetadataOwner):
+class Assembly(CustomMetadataOwner):
     """COM Instance."""
 
     def __init__(self, assembly: mcapiIAssembly):

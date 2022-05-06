@@ -1,4 +1,9 @@
+"""Definition of common base for any type which uses custom metadata."""
+
 from typing import Union
+from xml.etree import ElementTree
+from xml.etree.ElementTree import Element as XMLElement
+from xml.etree.ElementTree import ParseError as XMLParseError
 
 import clr
 
@@ -14,48 +19,46 @@ from ModelCenter import IComponent as mcapiIComponent
 from ModelCenter import IVariable as mcapiIVariable
 
 
-class MetadataOwner:
+class CustomMetadataOwner:
+    """Common base for any class which uses custom metadata."""
 
-    def __init__(self, instance: Union[mcapiIAssembly, mcapiIComponent, mcapiIVariable]):
+    InstanceType = Union[mcapiIAssembly, mcapiIComponent, mcapiIVariable]
+    """Possible types which CustomMetadataOwner can currently wrap."""
+
+    def __init__(self, instance: InstanceType):
         """
         Initialize a new instance.
 
         Parameters
         ----------
         instance : mcapiIAssembly, mcapiIComponent, or mcapiIVariable
-            The raw MCAPI interface object ot use to make direct calls
+            The raw MCAPI interface object to use to make direct calls
             to ModelCenter.
         """
         self._instance = instance
 
-    def set_metadata(self,
-                     name: str,
-                     value: Union[str, int, float, bool],
-                     access: ComponentMetadataAccess,
-                     archive: bool,
-                     value_is_xml: bool = False) -> None:
+    def set_custom_metadata(self,
+                            name: str,
+                            value: Union[str, int, float, bool, XMLElement],
+                            access: ComponentMetadataAccess,
+                            archive: bool) -> None:
         """
-        Sets the metadata value of the given metadata key name.
+        Set metadata value of the given named metadata.
 
         Parameters
         ----------
         name :
             Metadata specifier used to store the data.
-        value :
+        value : Union[str, float, bool, int, XMLElement]
             The value of the metadata item.
-        access :
+        access : ComponentMetadataAccess
             The level of access allowed to the metadata.
-        archive :
+        archive : bool
             Whether the metadata should be considered archived.
-        value_is_xml :
-            Whether the metadata value is XML. This should be used
-            only when passing a string containing XML that should be interpreted as such.
         """
-        meta_type: ComponentMetadataType = ComponentMetadataType.STRING
+        meta_type: ComponentMetadataType
         if isinstance(value, str):
             meta_type = ComponentMetadataType.STRING
-            if value_is_xml:
-                meta_type = ComponentMetadataType.XML
         elif isinstance(value, float):
             meta_type = ComponentMetadataType.DOUBLE
         elif isinstance(value, bool):
@@ -63,14 +66,17 @@ class MetadataOwner:
             meta_type = ComponentMetadataType.BOOLEAN
         elif isinstance(value, int):
             meta_type = ComponentMetadataType.LONG
+        elif isinstance(value, XMLElement):
+            meta_type = ComponentMetadataType.XML
+            value = ElementTree.tostring(value).decode("utf-8")
         else:
             raise TypeError(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
 
         return self._instance.setMetadata(name, meta_type.value, value, access.value, archive)
 
-    def get_metadata(self, name: str) -> object:    # Metadata
+    def get_custom_metadata(self, name: str) -> Union[str, int, float, bool, XMLElement]:
         """
-        Gets the meta data value of the given meta data key name.
+        Get the named metadata.
 
         Parameters
         ----------
@@ -81,5 +87,14 @@ class MetadataOwner:
         -------
         Metadata value.
         """
-        # VARIANT getMetadata(BSTR name);
-        return self._instance.getMetadata(name)
+        ret = self._instance.getMetadata(name)
+        if isinstance(ret, str):
+            ret_len = len(ret)
+            # if it looks like it might be XML
+            if ret_len > 2 and ret[0] == '<' and ret[ret_len-1] == '>':
+                try:
+                    xml = ElementTree.fromstring(ret)
+                    ret = xml
+                except XMLParseError:
+                    pass
+        return ret

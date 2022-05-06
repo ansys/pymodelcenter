@@ -140,7 +140,7 @@ def test_user_data(value: Any) -> None:
         pytest.param(["one string", "two string"], id="[str]"),
     ]
 )
-def test_associated_files(value: any) -> None:
+def test_associated_files(value: Any) -> None:
     """Testing of the associated_files property."""
     global component
 

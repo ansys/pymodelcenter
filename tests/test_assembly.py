@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 
 import clr
 import pytest
@@ -251,71 +251,3 @@ def test_delete_variable() -> None:
 
     assert wrapped_mock_comp.getCallCount("deleteVariable") == 1
     assert wrapped_mock_comp.getArgumentRecord("deleteVariable", 0) == [delete_var_name]
-
-
-@pytest.mark.parametrize(
-    'name,value,access,archive,value_is_xml,expected_type',
-    [
-        pytest.param("str_metadata", "some string data",
-                     mcapi.ComponentMetadataAccess.PUBLIC,
-                     True, False, mcapi.ComponentMetadataType.STRING),
-        pytest.param("xml_metadata", "<metadata />",
-                     mcapi.ComponentMetadataAccess.READONLY,
-                     False, True, mcapi.ComponentMetadataType.XML),
-        pytest.param("long_metadata", 47,
-                     mcapi.ComponentMetadataAccess.READONLY,
-                     False, False, mcapi.ComponentMetadataType.LONG),
-        pytest.param("double_metadata", 9000.1,
-                     mcapi.ComponentMetadataAccess.PRIVATE,
-                     False, False, mcapi.ComponentMetadataType.DOUBLE),
-        pytest.param("boolean_metadata", True,
-                     mcapi.ComponentMetadataAccess.PRIVATE,
-                     False, False, mcapi.ComponentMetadataType.BOOLEAN),
-        pytest.param("boolean_metadata", False,
-                     mcapi.ComponentMetadataAccess.PRIVATE,
-                     False, False, mcapi.ComponentMetadataType.BOOLEAN),
-    ]
-)
-def test_set_metadata(
-        name: str, value: Union[str, int, float, bool],
-        access: mcapi.ComponentMetadataAccess,
-        archive: bool, value_is_xml: bool, expected_type: mcapi.ComponentMetadataType) -> None:
-    """Testing of the set_metadata method."""
-    assert wrapped_mock_comp.getCallCount("setMetadata") == 0
-
-    sut_instance.set_metadata(name, value, access, archive, value_is_xml)
-
-    assert wrapped_mock_comp.getCallCount("setMetadata") == 1
-    assert wrapped_mock_comp.getArgumentRecord("setMetadata", 0) == [
-        name, expected_type.value, value, access.value, archive]
-
-
-@pytest.mark.parametrize(
-    'name,value,access,archive,value_is_xml',
-    [
-        pytest.param("none_metadata", None,
-                     mcapi.ComponentMetadataAccess.PUBLIC,
-                     True, False),
-        pytest.param("list_metadata", [0, 1, 2],
-                     mcapi.ComponentMetadataAccess.PUBLIC,
-                     True, False)
-    ]
-)
-def test_set_metadata_invalid(
-        name: str, value: Union[str, int, float, bool],
-        access: mcapi.ComponentMetadataAccess,
-        archive: bool, value_is_xml: bool) -> None:
-    """Testing of the set_metadata method."""
-    with pytest.raises(TypeError, match="Assembly or component metadata"):
-        sut_instance.set_metadata(name, value, access, archive, value_is_xml)
-    assert wrapped_mock_comp.getCallCount("setMetadata") == 0
-
-
-def test_get_metadata() -> None:
-    sut_instance.set_metadata("string_meta", "string metadata value",
-                              mcapi.ComponentMetadataAccess.PUBLIC,
-                              False, False)
-
-    result = sut_instance.get_metadata("string_meta")
-
-    assert result == "string metadata value"
