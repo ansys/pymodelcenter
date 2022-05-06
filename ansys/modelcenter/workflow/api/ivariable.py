@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import Optional
 
 
@@ -320,3 +321,14 @@ class IVariable(ABC):
             Metadata value.
         """
         raise NotImplementedError
+
+
+class VarType(Enum):
+    INPUT = 0
+    """This is an input."""
+
+    OUTPUT = 1
+    """This in an output."""
+
+    GROUP = 2
+    """This is a group."""
