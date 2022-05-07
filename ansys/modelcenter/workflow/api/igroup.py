@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import clr
 
+from ansys.modelcenter.workflow.api.arrayish import Arrayish
+from ansys.modelcenter.workflow.api.ivariable import IVariable
+
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IGroup as mcapiIGroup
 
@@ -14,16 +17,14 @@ class IGroup:
         self._instance = group
 
     @property
-    def variables(self) -> 'IVariables':
+    def variables(self) -> Sequencial[IVariable]:
         """The variables in the Group."""
-        from .ivariables import IVariables
-        return IVariables(self._instance.Variables)
+        return Arrayish(self._instance.Variables, IVariable)
 
     @property
-    def groups(self) -> 'IGroups':
+    def groups(self) -> Sequencial[IGroup]:
         """The Groups this Group is a member of."""
-        from .igroups import IGroups
-        return IGroups(self._instance.Groups)
+        return Arrayish(self._instance.Groups, IGroup)
 
     @property
     def icon_id(self) -> int:

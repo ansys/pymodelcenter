@@ -49,7 +49,7 @@ class Assembly(CustomMetadataOwner):
         -------
         A list of variable groups in the assembly.
         """
-        return Arrayish(self._assembly.Groups, IGroup)
+        return Arrayish(self._instance.Groups, IGroup)
 
     @property
     def assemblies(self) -> Sequence['Assembly']:
