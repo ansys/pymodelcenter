@@ -159,7 +159,7 @@ class IComponent(CustomMetadataOwner):
 
     def run(self) -> None:
         """Run the component."""
-        self._instance.Run()
+        self._instance.run()
 
     def invoke_method(self, method: str) -> None:
         """
@@ -170,20 +170,20 @@ class IComponent(CustomMetadataOwner):
         method: str
             The name of the method to invoke.
         """
-        self._instance.InvokeMethod(method)
+        self._instance.invokeMethod(method)
 
     def invalidate(self) -> None:
         """Invalidate the component and all of its variables."""
-        raise NotImplementedError
+        self._instance.invalidate()
 
     def reconnect(self) -> None:
         """Reload this component from its source."""
-        self._instance.Reconnect()
+        self._instance.reconnect()
 
     def download_values(self) -> None:
         """Download the component's variable values from the server if\
         it is a ModelCenter Remote Execution component."""
-        self._instance.DownloadValues()
+        self._instance.downloadValues()
 
     def rename(self, name: str) -> None:
         """
@@ -194,7 +194,7 @@ class IComponent(CustomMetadataOwner):
         name: str
             The new name of the component.
         """
-        self._instance.Rename(name)
+        self._instance.rename(name)
 
     def get_position_x(self) -> int:
         """
@@ -220,4 +220,4 @@ class IComponent(CustomMetadataOwner):
 
     def show(self) -> None:
         """Show the component's GUI, if it has one."""
-        self._instance.Show()
+        self._instance.show()

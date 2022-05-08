@@ -2,16 +2,15 @@ from typing import Optional, Sequence
 
 import clr
 
+from .arrayish import Arrayish
 from .custom_metadata_owner import CustomMetadataOwner
-from .import Arrayish
 from .igroup import IGroup
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly
 
-from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
-from .i18n import i18n
 from .igroup import IGroup
+
 
 class Assembly(CustomMetadataOwner):
     """COM Instance."""
