@@ -14,6 +14,7 @@ from .ifilearray import IFileArray
 from .ifilevariable import IFileVariable
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup
+from .irefprop import IRefArrayProp, IRefProp
 from .iif_component import IIfComponent
 from .iintegerarray import IIntegerArray
 from .iintegervariable import IIntegerVariable
