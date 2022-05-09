@@ -1,8 +1,7 @@
 """Tests for Workflow."""
-from typing import Any, List, Optional, Type
+from typing import Any, Iterable, List, Optional, Type
 
 import clr
-import pytest
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import (
@@ -821,6 +820,111 @@ def test_get_macro_timeout() -> None:
     # Verification
     assert mock_mc.getCallCount("getMacroTimeout") == 1
     assert timeout == 25.0  # arbitrary value from MockModelCenter
+
+
+def test_break_link() -> None:
+    """
+    Verify that breaking a link works correctly.
+    """
+
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    link_var_name: str = "Component.dont.link.me"
+    assert sut_workflow._instance.getCallCount("breakLink") == 0
+
+    # Execute
+    sut_workflow.break_link(link_var_name)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("breakLink") == 1
+    assert sut_workflow._instance.getArgumentRecord("breakLink", 0) == [link_var_name]
+
+
+@pytest.mark.parametrize(
+    "link_lhs_values",
+    [
+        pytest.param([], id="empty"),
+        pytest.param(['linkTarget1', 'linkTarget2', 'linkTarget3'], id="some links")
+    ]
+)
+def test_get_links(link_lhs_values: Iterable[str]) -> None:
+    """
+    Verify that get_links works when there are no links.
+    """
+
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    for link_lhs in link_lhs_values:
+        sut_workflow.create_link(link_lhs, "LINKSOURCE")
+
+    # Execute
+    links: Iterable[mcapi.VariableLink] = sut_workflow.get_links()
+
+    # Verify
+    assert [link.lhs for link in links] == link_lhs_values
+
+
+def test_halt() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("halt") == 0
+
+    # Execute
+    sut_workflow.halt()
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("halt") == 1
+
+
+def test_get_uuid() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    sut_workflow._instance.setModelUUID("15B9E8D5-602F-44D9-AF58-9CF0E6C27F9E")
+
+    # Execute
+    result: str = sut_workflow.get_workflow_uuid()
+
+    # Verify
+    assert result == "15B9E8D5-602F-44D9-AF58-9CF0E6C27F9E"
+
+
+def test_auto_link() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("autoLink") == 0
+
+    # Execute
+    sut_workflow.auto_link("Workflow.source_comp", "Workflow.dest_comp")
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("autoLink") == 1
+    assert sut_workflow._instance.getArgumentRecord("autoLink", 0) == [
+        "Workflow.source_comp", "Workflow.dest_comp"
+    ]
+
+
+def test_create_assembly() -> None:
+    # Setup
+    sut_engine = mcapi.Engine()
+    sut_workflow = sut_engine.new_workflow()
+    assert sut_workflow._instance.getCallCount("createAssembly") == 0
+    test_assembly_name = "test_assembly"
+    test_assembly_parent = "Workflow"
+    test_assembly_type = "DataAssembly"
+
+    # Execute
+    sut_workflow.create_assembly(test_assembly_name, test_assembly_parent, test_assembly_type)
+
+    # Verify
+    assert sut_workflow._instance.getCallCount("createAssembly") == 1
+    assert sut_workflow._instance.getArgumentRecord("createAssembly", 0) == [
+        test_assembly_name, test_assembly_parent, test_assembly_type
+    ]
 
 
 def test_workflow_close():
