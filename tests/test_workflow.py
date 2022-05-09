@@ -356,14 +356,14 @@ def test_set_value(src: Any, expected: str):
 
 
 get_value_tests = [
-    pytest.param("root.b", acvi.BooleanValue(False), id="bool"),
-    pytest.param("root.i", acvi.IntegerValue(42), id="int"),
-    pytest.param("root.r", acvi.RealValue(3.14), id="real"),
-    pytest.param("root.s", acvi.StringValue("sVal"), id="str"),
-    pytest.param("root.ba", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
-    pytest.param("root.ia", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
-    pytest.param("root.ra", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
-    pytest.param("root.sa", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
+    pytest.param('root.b', acvi.BooleanValue(False), id="bool"),
+    pytest.param('root.i', acvi.IntegerValue(42), id="int"),
+    pytest.param('root.r', acvi.RealValue(3.14), id="real"),
+    pytest.param('root.s', acvi.StringValue("sVal"), id="str"),
+    pytest.param('root.ba', acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
+    pytest.param('root.ia', acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
+    pytest.param('root.ra', acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
+    pytest.param('root.sa', acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
 ]
 """Collection of tests for get_value, used in test_get_value."""
 
@@ -439,10 +439,10 @@ Reusing the tests for get_values, but then adding some additional tests
 below."""
 
 value_absolute_tests.extend([
-    pytest.param("root.ba[1]", acvi.BooleanValue(False), id="bool array indexed"),
-    pytest.param("root.ia[2]", acvi.IntegerValue(1), id="int array indexed"),
-    pytest.param("root.ra[0]", acvi.RealValue(1.414), id="real array indexed"),
-    pytest.param("root.sa[1]", acvi.StringValue("two"), id="str array indexed"),
+    pytest.param('root.ba[1]', acvi.BooleanValue(False), id="bool array indexed"),
+    pytest.param('root.ia[2]', acvi.IntegerValue(1), id="int array indexed"),
+    pytest.param('root.ra[0]', acvi.RealValue(1.414), id="real array indexed"),
+    pytest.param('root.sa[1]', acvi.StringValue("two"), id="str array indexed"),
 ])
 
 
@@ -829,7 +829,7 @@ def test_break_link() -> None:
 
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflowName")
     link_var_name: str = "Component.dont.link.me"
     assert sut_workflow._instance.getCallCount("breakLink") == 0
 
@@ -855,7 +855,7 @@ def test_get_links(link_lhs_values: Iterable[str]) -> None:
 
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     for link_lhs in link_lhs_values:
         sut_workflow.create_link(link_lhs, "LINKSOURCE")
 
@@ -869,7 +869,7 @@ def test_get_links(link_lhs_values: Iterable[str]) -> None:
 def test_halt() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     assert sut_workflow._instance.getCallCount("halt") == 0
 
     # Execute
@@ -882,7 +882,7 @@ def test_halt() -> None:
 def test_get_uuid() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     sut_workflow._instance.setModelUUID("15B9E8D5-602F-44D9-AF58-9CF0E6C27F9E")
 
     # Execute
@@ -895,7 +895,7 @@ def test_get_uuid() -> None:
 def test_auto_link() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     assert sut_workflow._instance.getCallCount("autoLink") == 0
 
     # Execute
@@ -911,7 +911,7 @@ def test_auto_link() -> None:
 def test_create_assembly() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     assert sut_workflow._instance.getCallCount("createAssembly") == 0
     test_assembly_name = "test_assembly"
     test_assembly_parent = "Workflow"

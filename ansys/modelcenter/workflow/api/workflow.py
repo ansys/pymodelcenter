@@ -1,8 +1,7 @@
-from typing import Any, Iterable, List, Optional, Tuple, Union
+from typing import Any, Iterable, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
 import clr
-from overrides import overrides
 
 from . import DataExplorer
 from .datamonitor import DataMonitor
@@ -23,6 +22,9 @@ class MockDataMonitorWrapper(DataMonitor):
         """
         Initialize.
         """
+
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IComponent as mcapiIComponent
 
 
 class WorkflowVariable:
@@ -202,104 +204,11 @@ class Workflow:
         -------
         The component.
         """
-
-        class MockComponentWrapper(IComponent):
-            @property  # type: ignore
-            @overrides
-            def variables(self) -> object:
-                pass
-
-            @property  # type: ignore
-            @overrides
-            def groups(self) -> object:
-                pass
-
-            @property  # type: ignore
-            @overrides
-            def user_data(self) -> object:
-                pass
-
-            @property  # type: ignore
-            @overrides
-            def associated_files(self) -> Union[str, List[str]]:
-                pass
-
-            @property  # type: ignore
-            @overrides
-            def index_in_parent(self) -> int:
-                pass
-
-            @property  # type: ignore
-            @overrides
-            def parent_assembly(self) -> object:
-                pass
-
-            @overrides
-            def get_name(self) -> str:
-                return self._instance.getName()
-
-            @overrides
-            def get_full_name(self) -> str:
-                pass
-
-            @overrides
-            def get_source(self) -> str:
-                pass
-
-            @overrides
-            def get_variable(self, name: str) -> object:
-                pass
-
-            @overrides
-            def get_type(self) -> str:
-                pass
-
-            @overrides
-            def get_metadata(self, name: str) -> object:
-                pass
-
-            @overrides
-            def set_metadata(self, name: str, type_: object, value: object, access: object,
-                             archive: bool) -> None:
-                pass
-
-            @overrides
-            def run(self) -> None:
-                pass
-
-            @overrides
-            def invoke_method(self, method: str) -> None:
-                pass
-
-            @overrides
-            def invalidate(self) -> None:
-                pass
-
-            @overrides
-            def reconnect(self) -> None:
-                pass
-
-            @overrides
-            def download_values(self) -> None:
-                pass
-
-            @overrides
-            def rename(self, name: str) -> None:
-                pass
-
-            @overrides
-            def show(self) -> None:
-                pass
-
-            def __init__(self, instance: phxmock.MockComponent):
-                self._instance = instance
-
-        mock: phxmock.MockComponent = self._instance.getComponent(name)
-        if mock is None:
+        mc_i_component: mcapiIComponent = self._instance.getComponent(name)
+        if mc_i_component is None:
             msg: str = i18n("Exceptions", "ERROR_COMPONENT_NOT_FOUND")
             raise Exception(msg)
-        comp: IComponent = MockComponentWrapper(mock)
-        return comp
+        return IComponent(mc_i_component)
 
     def trade_study_end(self) -> None:
         self._instance.tradeStudyEnd()

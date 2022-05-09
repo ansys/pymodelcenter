@@ -1,5 +1,5 @@
 """Testing of IComponent."""
-from typing import Any, Optional
+from typing import Any, Type
 
 import clr
 import pytest
@@ -11,19 +11,20 @@ clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (
     MockAssembly,
     MockComponent,
+    MockDoubleVariable,
     MockGroup,
     MockGroups,
-    MockVariable,
+    MockIntegerVariable,
     MockVariables,
 )
 
-mock_component: Optional[MockComponent] = None
+mock_component: MockComponent
 """
 Mock ModelCenter object.
 
 Used to simulate ModelCenter's response to different API calls."""
 
-component: Optional[mcapi.IComponent] = None
+component: mcapi.IComponent
 """
 Component object under test.
 """
@@ -39,7 +40,7 @@ def setup_function(_):
         The function about to test.
     """
     global mock_component, component
-    mock_component = MockComponent("ComponentName")
+    mock_component = MockComponent("some.path.ComponentName")
     component = mcapi.IComponent(mock_component)
 
 
@@ -47,9 +48,9 @@ def test_variables() -> None:
     """Testing of the variables-property."""
     global mock_component, component
     mock_variables = MockVariables()
-    mock_variable = MockVariable("One", 0, 1)
+    mock_variable = MockIntegerVariable("One", 0)
     mock_variables.addItem(mock_variable)
-    mock_variable = MockVariable("Two", 0, 1)
+    mock_variable = MockDoubleVariable("Two", 0)
     mock_variables.addItem(mock_variable)
     mock_component.Variables = mock_variables
 
@@ -58,10 +59,11 @@ def test_variables() -> None:
 
     # Verify
     assert isinstance(result, mcapi.Arrayish)
-    assert result._value_type is mcapi.IVariable
     assert len(result) == 2
     assert result[0].get_name() == "One"
+    assert isinstance(result[0], mcapi.IIntegerVariable)
     assert result[1].get_name() == "Two"
+    assert isinstance(result[1], mcapi.IDoubleVariable)
 
 
 def test_groups() -> None:
@@ -81,7 +83,7 @@ def test_groups() -> None:
 
     # Verify
     assert isinstance(result, mcapi.Arrayish)
-    assert result._value_type is mcapi.IGroup
+    assert result._converter is mcapi.IGroup
     assert len(result) == 2
     assert result[0].get_name() == "One"
     assert result[1].get_name() == "Two"
@@ -140,7 +142,7 @@ def test_user_data(value: Any) -> None:
         pytest.param(["one string", "two string"], id="[str]"),
     ]
 )
-def test_associated_files(value: any) -> None:
+def test_associated_files(value: Any) -> None:
     """Testing of the associated_files property."""
     global component
 
@@ -177,34 +179,72 @@ def test_parent_assembly() -> None:
     assert result.get_name() == "Assembly Name"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_name() -> None:
     """Testing of the get_name method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_name()
+
+    # Verify
+    assert result == "ComponentName"
+    assert isinstance(result, str)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_full_name() -> None:
     """Testing of the get_full_name method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_full_name()
+
+    # Verify
+    assert result == "some.path.ComponentName"
+    assert isinstance(result, str)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_source() -> None:
     """Testing of the get_source method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_source()
+
+    # Verify
+    assert result == "有りのままの姿見せるのよ"     # Value comes from MockComponent.getSource()
+    assert isinstance(result, str)
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_variable() -> None:
+@pytest.mark.parametrize(
+    "name,type_,value",
+    [
+        pytest.param("i", mcapi.IIntegerVariable, 42, id="int"),
+        pytest.param("d", mcapi.IDoubleVariable, 1.414, id="double"),
+    ]
+)
+def test_get_variable(name: str, type_: Type, value) -> None:
     """Testing of the get_variable method."""
-    raise NotImplementedError
+    mock_variables = MockVariables()
+    mock_variable = MockIntegerVariable("a.i", 0)
+    mock_variable.value = 42
+    mock_variables.addItem(mock_variable)
+    mock_variable = MockDoubleVariable("a.d", 0)
+    mock_variable.value = 1.414
+    mock_variables.addItem(mock_variable)
+    mock_component.Variables = mock_variables
+
+    # SUT
+    result = component.get_variable(name)
+
+    # Verify
+    assert isinstance(result, mcapi.IVariable)
+    assert isinstance(result, type_)
+    if isinstance(result, mcapi.IIntegerVariable) or isinstance(result, mcapi.IDoubleVariable):
+        assert result.value == value
+    else:
+        TypeError("Unsupported type in test")
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_type() -> None:
-    """Testing of the get_type method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_type()
+
+    # Verify
+    assert result == "それは早いぞ"       # Value came from MockComponents.MockComponent(string)
 
 
 @pytest.mark.skip(reason="Not implemented.")

@@ -1,10 +1,12 @@
 from typing import MutableSequence
 
+from .iarray import IArray
+# from .iref_array_prop import IRefArrayProp
 from .irefprop import IRefArrayProp
 
 
 # TODO: inherit from IArray when available.
-class IReferenceArray:      # (IArray):
+class IReferenceArray(IArray):
     """
     COM Instance.
     @implements IArray

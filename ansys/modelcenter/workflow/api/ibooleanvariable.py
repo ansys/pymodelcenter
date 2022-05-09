@@ -1,16 +1,13 @@
-from abc import ABC, abstractmethod
-
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 
-class IBooleanVariable(IVariable, ABC):
+class IBooleanVariable(IVariable):
     """
     COM instance.
 
     Implements IVariable.
     """
 
-    @abstractmethod
     def set_initial_value(self, value: bool) -> None:
         """
         Sets the initial value of the variable.
