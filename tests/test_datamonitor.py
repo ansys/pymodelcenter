@@ -28,7 +28,7 @@ def setup_function(_):
     # engine = mcapi.Engine(mock_mc)
     engine = mcapi.Engine()
     mock_mc = engine._instance
-    workflow = engine.new_workflow()
+    workflow = engine.new_workflow("workflow.pxcz")
 
 
 def test_get_name_of_invalid_row() -> None:
