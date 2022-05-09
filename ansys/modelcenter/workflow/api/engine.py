@@ -1,7 +1,7 @@
 """Definition of Engine and associated classes."""
 from enum import Enum
 from string import Template
-from typing import Any, Union
+from typing import Union
 
 import clr
 
@@ -76,7 +76,6 @@ class Engine:
     def __init__(self):
         """Initialize a new Engine instance."""
         self._instance = MockModelCenter()
-        self._workflow: Union[Workflow, None] = None
 
     # BOOL IsInteractive;
     @property
@@ -89,12 +88,14 @@ class Engine:
     def process_id(self) -> int:
         return int(self._instance.ProcessID)
 
-    def new_workflow(self, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
+    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         """
         Create a new workflow.
 
         Parameters
         ----------
+        name: str
+            A filename or path where the new workflow will be made.
         workflow_type: WorkflowType
             The type of workflow to create. Defaults to a data workflow.
 
@@ -102,13 +103,13 @@ class Engine:
         -------
         A new Workflow instance.
         """
-        if self._workflow is not None:
+        if self._instance.getModel() is not None:
             msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
             raise Exception(msg)
         else:
             self._instance.newModel(workflow_type.value)
-            self._workflow = Workflow(self._instance, self)
-            return self._workflow
+            self._instance.saveModelAs(name)
+            return Workflow(self._instance)
 
     def load_workflow(self, file_name: str,
                       on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR) \
@@ -127,18 +128,12 @@ class Engine:
         -------
         A new Workflow instance.
         """
-        if self._workflow is not None:
+        if self._instance.getModel() is not None:
             msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
             raise Exception(msg)
         else:
             self._instance.loadModel(file_name, on_connect_error.value)
-            self._workflow = Workflow(self._instance, self)
-            return self._workflow
-
-    def _notify_close_workflow(self, calling_workflow: Any):
-        """Notify this engine that a workflow has been closed."""
-        if calling_workflow is self._workflow:
-            self._workflow = None
+            return Workflow(self._instance)
 
     def get_formatter(self, fmt: str) -> Format:
         """
@@ -157,7 +152,6 @@ class Engine:
         -------
         A Format object that formats in the given style.
         """
-
         formatter: Format = Format(self._instance.getFormatter(fmt))
         return formatter
 

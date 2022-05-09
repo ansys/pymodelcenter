@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, Union
+from typing import Any, Iterable, List, Optional, Tuple, Union
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -10,8 +10,6 @@ from .i18n import i18n
 from .icomponent import IComponent
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
-if TYPE_CHECKING:
-    from .engine import Engine
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
@@ -44,7 +42,7 @@ class WorkflowVariable:
 class Workflow:
     """Represents a Workflow or Model in ModelCenter."""
 
-    def __init__(self, instance: phxmock.MockModelCenter, engine: 'Engine'):
+    def __init__(self, instance: phxmock.MockModelCenter):
         """
         Initialize a new Workflow instance.
 
@@ -53,11 +51,8 @@ class Workflow:
         instance : object
             The raw interface object to use to make direct calls to
             ModelCenter.
-        engine : Engine
-            The engine that created this instance.
         """
         self._instance = instance
-        self._engine = engine
 
     @staticmethod
     def value_to_variable_value(value: Any) -> acvi.IVariableValue:
@@ -186,7 +181,6 @@ class Workflow:
     # void closeModel();
     def close_workflow(self) -> None:
         self._instance.closeModel()
-        self._engine._notify_close_workflow(self)
 
     # IDispatch* getVariable(BSTR name);
     #   IDoubleVariable IDoubleArray IBooleanVariable IIntegerVariable IReferenceVariable
