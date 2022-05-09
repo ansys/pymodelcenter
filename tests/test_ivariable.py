@@ -96,14 +96,14 @@ def test_owning_component(sut: mcapi.IVariable) -> None:
     Verify that `owning_component` property works for different IVariable implementations.
     """
     assert sut.owning_component is None
-    mock_component = mcapi.IComponent(MockComponent('Assembly23'))
+    mock_component = MockComponent('Assembly23')
 
     # Execute
-    sut.owning_component = mock_component
+    sut._wrapped.OwningComponent = mock_component
     component: mcapi.IComponent = sut.owning_component
 
     # Verify
-    assert component.get_name() == mock_component.get_name()
+    assert component.get_name() == mock_component.getName()
 
 
 __is_input_tests = [

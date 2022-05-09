@@ -1,13 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Generic, Optional, Sequence, TypeVar, TYPE_CHECKING
-
+from typing import Generic, Optional, Sequence, TypeVar
 
 import ansys.common.variableinterop as acvi
 
-from . import dot_net_utils as utils
-
-if TYPE_CHECKING:
-    from .icomponent import IComponent
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
@@ -134,22 +131,9 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         """
         component: object = self._wrapped.OwningComponent
         if component is not None:
-            from .icomponent import IComponent
-            return IComponent(component)
+            return icomponent.IComponent(component)
         else:
             return None
-
-    @owning_component.setter
-    def owning_component(self, value: 'IComponent') -> None:
-        """
-        Set the component that owns this variable.
-
-        Parameters
-        ----------
-        value : IComponent
-            New owner component object.
-        """
-        self._wrapped.OwningComponent = value._instance
 
     def is_valid(self) -> bool:
         """
