@@ -1,11 +1,26 @@
-from abc import ABC, abstractmethod
 from typing import Optional
 
+import clr
 
-class IVariable(ABC):
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IVariable as mcapiIVariable
+
+
+class IVariable:
     """
     COM instance.
     """
+
+    def __init__(self, instance: mcapiIVariable) -> None:
+        """
+        Initialize variable object.
+
+        Parameters
+        ----------
+        instance : mcapiIVariable
+            ModelCenter API IVariable interface object.
+        """
+        self._instance = instance
 
     @property
     def has_changed(self) -> bool:
@@ -37,7 +52,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def is_valid(self) -> bool:
         """
         Returns whether or not the variable is valid.
@@ -49,26 +63,23 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def validate(self) -> None:
         """
         Validates the variable by running the component if needed.
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_name(self) -> str:
         """
-        Gets the name of the variable.
+        Get the name of the variable.
 
         Returns
         -------
         str
             The name of the variable.
         """
-        raise NotImplementedError
+        return self._instance.getName()
 
-    @abstractmethod
     def get_full_name(self) -> str:
         """
         Gets the full %ModelCenter path of the variable.
@@ -80,7 +91,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_type(self) -> str:
         """
         Gets the type of the variable.
@@ -92,7 +102,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def is_input(self) -> bool:
         """
         Finds out whether or not the variable is an input with respect to the model.  Returnszs
@@ -100,7 +109,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_string(self) -> str:
         """
         Converts the variable value to a string, validating the variable if necessary.
@@ -112,7 +120,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def from_string(self, value: str) -> None:
         """
         Sets the value of the variable from the specified string.
@@ -124,7 +131,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_string_absolute(self) -> str:
         """
         Converts the value of the variable to a string.
@@ -136,7 +142,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def invalidate(self) -> None:
         """
         Marks the variable as invalid (needs to be computed).
@@ -144,7 +149,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def direct_precedents(self, follow_suspended: Optional[object],
                           reserved: Optional[object]) -> object:
         """
@@ -167,7 +171,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def direct_dependents(self, follow_suspended: Optional[object],
                           reserved: Optional[object]) -> object:
         """
@@ -190,7 +193,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def precedent_links(self, reserved: Optional[object]) -> object:
         """
         Returns a list of links that are immediate precedents to the value of this variable.
@@ -209,7 +211,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def dependent_links(self, reserved: Optional[object]) -> object:
         """
         Returns a list of links that immediately depend on the value of this variable.
@@ -227,7 +228,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def precedents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
         """
         Returns a list of variables that are precedents to the value of this variable. This
@@ -249,7 +249,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def dependents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
         """
         Returns a list of variables that are dependent upon the value of this variable.
@@ -271,7 +270,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def is_input_to_component(self) -> bool:
         """
         Checks whether or not the variable is an input.
@@ -280,14 +278,12 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def is_input_to_model(self) -> bool:
         """
         Checks whether or not the variable is an input. A linked input returns false (Output).
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_metadata(self, name: str, type: object, value: object, access: object,
                      archive: bool) -> None:  # type = MetadataType, access = MetadataAccess
         """
@@ -304,7 +300,6 @@ class IVariable(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def get_metadata(self, name: str) -> object:
         """
         Gets the meta data value of the given meta data key name.

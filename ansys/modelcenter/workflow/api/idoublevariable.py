@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 
