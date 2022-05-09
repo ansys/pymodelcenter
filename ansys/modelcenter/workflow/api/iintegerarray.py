@@ -3,12 +3,13 @@ import clr
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api.iarray import IArray
+from ansys.modelcenter.workflow.api.ivariable import FormattableVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockIntegerArray
 
 
-class IIntegerArray(IArray[MockIntegerArray]):
+class IIntegerArray(IArray[MockIntegerArray], FormattableVariable[MockIntegerArray]):
     """
     Represents an integer array variable on the workflow.
     """
@@ -47,4 +48,3 @@ class IIntegerArray(IArray[MockIntegerArray]):
                 self._standard_metadata.variable_type.name)
         else:
             self._standard_metadata = new_metadata
-

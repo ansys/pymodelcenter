@@ -1,10 +1,11 @@
 """Implementation of IVariables class."""
 
+import ansys.modelcenter.workflow.api.ivariable as ivariable
+
 from .arrayish import Arrayish
-from .ivariable import IVariable
 
 
-class IVariables(Arrayish[IVariable]):
+class IVariables(Arrayish['ivariable.IVariable']):
     """A collection of IVariable objects, accessible by name or \
     integer ID."""
 
@@ -17,4 +18,4 @@ class IVariables(Arrayish[IVariable]):
         instance :
             ModelCenter API IVariables interface object.
         """
-        Arrayish.__init__(self, instance, IVariable)
+        Arrayish.__init__(self, instance, ivariable.IVariable)

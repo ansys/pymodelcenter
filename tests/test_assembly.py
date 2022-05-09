@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Sequence, Union
 
 import clr
 import pytest
@@ -6,7 +6,15 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockAssemblies, MockAssembly, MockGroup, MockGroups
+from Phoenix.Mock import (
+    MockAssemblies,
+    MockAssembly,
+    MockBooleanVariable,
+    MockDoubleVariable,
+    MockGroup,
+    MockGroups,
+    MockIntegerVariable,
+)
 
 wrapped_mock_comp: MockAssembly = None
 
@@ -23,10 +31,21 @@ def setup_function(test_func):
     sut_instance = mcapi.Assembly(wrapped_mock_comp)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_variables() -> None:
     """Testing of variables property."""
-    raise NotImplementedError
+    """Testing of the variables property."""
+    mock_vars = [MockDoubleVariable("mockvar", 0),
+                 MockIntegerVariable("mockVar2", 0),
+                 MockBooleanVariable("mockVar3", 0)]
+    for mock_var in mock_vars:
+        wrapped_mock_comp.Variables.addItem(mock_var)
+
+    result: Sequence[mcapi.IVariable] = sut_instance.variables
+
+    assert isinstance(result[0], mcapi.IDoubleVariable)
+    assert isinstance(result[1], mcapi.IIntegerVariable)
+    assert isinstance(result[2], mcapi.IBooleanVariable)
+    assert [each_result_item._wrapped for each_result_item in result] == mock_vars
 
 
 def test_groups() -> None:

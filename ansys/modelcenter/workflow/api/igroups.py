@@ -1,8 +1,8 @@
-from .arrayish import Arrayish
-from .igroup import IGroup
+import ansys.modelcenter.workflow.api.arrayish as arrayish
+import ansys.modelcenter.workflow.api.igroup as igroup
 
 
-class IGroups(Arrayish[IGroup]):
+class IGroups(arrayish.Arrayish['igroup.IGroup']):
     """A collection of IGroup objects, accessible by name or integer
     ID."""
 
@@ -15,4 +15,4 @@ class IGroups(Arrayish[IGroup]):
         instance :
             ModelCenter API IGroups interface object.
         """
-        Arrayish.__init__(self, instance, IGroup)
+        arrayish.Arrayish.__init__(self, instance, igroup.IGroup)

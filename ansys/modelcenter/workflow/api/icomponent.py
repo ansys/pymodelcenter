@@ -5,10 +5,10 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-from .dot_net_utils import to_dot_net_list
-from .assembly import Assembly
-from .igroups import IGroups
-from .ivariables import IVariables
+import ansys.modelcenter.workflow.api.assembly as assembly
+from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
+import ansys.modelcenter.workflow.api.igroups as igroups
+import ansys.modelcenter.workflow.api.ivariables as ivariables
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -23,21 +23,21 @@ class IComponent:
 
         Parameters
         ----------
-        instance :
+        instance : mcapiIComponent
             Raw ModelCenter API object to wrap.
         """
         self._instance: mcapiIComponent = instance
 
     @property
-    def variables(self) -> IVariables:
+    def variables(self) -> ivariables.IVariables:
         """Variables in the component."""
         variables = self._instance.Variables
-        return IVariables(variables)
+        return ivariables.IVariables(variables)
 
     @property
-    def groups(self) -> IGroups:
+    def groups(self) -> igroups.IGroups:
         """All groups in the component."""
-        return IGroups(self._instance.Groups)
+        return igroups.IGroups(self._instance.Groups)
 
     @property
     def user_data(self) -> Any:
@@ -56,7 +56,7 @@ class IComponent:
         The value is not stored across save/load operations.
         """
         if isinstance(source, list):
-            dot_net_source = to_dot_net_list.to_dot_net(source, DotNetObject)
+            dot_net_source = to_dot_net_list(source, DotNetObject)
         else:
             dot_net_source = source
         self._instance.userData = dot_net_source
@@ -73,7 +73,7 @@ class IComponent:
         if isinstance(source, str):
             dot_net_value = source
         else:
-            dot_net_value = to_dot_net_list.to_dot_net(source, DotNetString)
+            dot_net_value = to_dot_net_list(source, DotNetString)
 
         self._instance.AssociatedFiles = dot_net_value
 
@@ -83,10 +83,10 @@ class IComponent:
         return self._instance.IndexInParent
 
     @property
-    def parent_assembly(self) -> Assembly:
+    def parent_assembly(self) -> 'assembly.Assembly':
         """Parent assembly of this component."""
-        assembly = self._instance.ParentAssembly
-        return Assembly(assembly)
+        parent_assembly = self._instance.ParentAssembly
+        return assembly.Assembly(parent_assembly)
 
     def get_name(self) -> str:
         """
@@ -94,8 +94,7 @@ class IComponent:
 
         Returns
         -------
-        str :
-            The name of the component.
+        The name of the component.
         """
         return self._instance.getName()
 
@@ -107,7 +106,7 @@ class IComponent:
         -------
         The full path of the component.
         """
-        raise NotImplementedError
+        return self._instance.getFullName()
 
     def get_source(self) -> str:
         """
@@ -117,7 +116,7 @@ class IComponent:
         -------
         The source of the component.
         """
-        raise NotImplementedError
+        return self._instance.getSource()
 
     def get_variable(self, name: str) -> object:  # IVariable
         """
@@ -133,7 +132,8 @@ class IComponent:
         -------
         The variable object.
         """
-        raise NotImplementedError
+        mcapi_variable = self._instance.getVariable(name)
+        return from_dot_net_to_ivariable(mcapi_variable)
 
     def get_type(self) -> str:
         """
@@ -152,7 +152,7 @@ class IComponent:
         -------
         The type of the component.
         """
-        raise NotImplementedError
+        return self._instance.getType()
 
     def get_metadata(self, name: str) -> object:  # VARIANT
         """

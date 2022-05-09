@@ -2,13 +2,13 @@ import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import ScalarVariable
+from ansys.modelcenter.workflow.api.ivariable import FormattableVariable, ScalarVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockDoubleVariable
 
 
-class IDoubleVariable(ScalarVariable[MockDoubleVariable]):
+class IDoubleVariable(ScalarVariable[MockDoubleVariable], FormattableVariable):
     """
     Represents a double / real variable on the workflow.
     """
@@ -51,4 +51,3 @@ class IDoubleVariable(ScalarVariable[MockDoubleVariable]):
                 self._standard_metadata.variable_type.name)
         else:
             self._standard_metadata = new_metadata
-

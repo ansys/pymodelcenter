@@ -2,13 +2,13 @@ import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.iarray import IArray
+import ansys.modelcenter.workflow.api.iarray as iarray
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockBooleanArray
 
 
-class IBooleanArray(IArray[MockBooleanArray]):
+class IBooleanArray(iarray.IArray[MockBooleanArray]):
     """
     Represents a boolean array variable on the workflow.
     """

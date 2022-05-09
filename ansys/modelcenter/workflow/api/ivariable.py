@@ -153,15 +153,14 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
 
     def is_valid(self) -> bool:
         """
-        Returns whether or not the variable is valid.
+        Return whether or not the variable is valid.
 
         Returns
         -------
         bool
             True if variable is valid. False if the variable is not valid.
         """
-        # TODO: Should this be a property?
-        raise NotImplementedError
+        return self._wrapped.isValid()
 
     def validate(self) -> None:
         """
@@ -229,7 +228,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.directPrecedents(follow_suspended))
+        return utils.create_dot_net_variable_sequence(self._wrapped.directPrecedents(
+            follow_suspended))
 
     def direct_dependents(self, follow_suspended: bool = False,
                           reserved: Optional[object] = None) -> Sequence['IVariable']:
@@ -251,7 +251,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.directDependents(follow_suspended))
+        return utils.create_dot_net_variable_sequence(self._wrapped.directDependents(
+            follow_suspended))
 
     def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
@@ -309,7 +310,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return utils.create_dot_net_variable_sequence(self._wrapped.precedents(follow_suspended))
 
     def dependents(self,
                    follow_suspended: bool = False,
@@ -332,7 +333,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return utils.create_dot_net_variable_sequence(self._wrapped.dependents(follow_suspended))
 
     def is_input_to_component(self) -> bool:
         """
@@ -397,3 +398,23 @@ class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
             The new initial value. Should be coercible to the appropriate type.
         """
         raise NotImplementedError
+
+
+class FormattableVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
+    """
+    Base class for variables which accept a format.
+    """
+
+    @property
+    def format(self) -> str:
+        """
+        Get a format string for displaying the variable to the user.
+        """
+        return self._wrapped.format
+
+    @format.setter
+    def format(self, value: str) -> str:
+        """
+        Set the format string for displaying the variable to the user.
+        """
+        self._wrapped.format = value
