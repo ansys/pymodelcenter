@@ -4,6 +4,7 @@ from typing import Generic, Optional, Sequence, TypeVar
 import ansys.common.variableinterop as acvi
 
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
@@ -66,37 +67,73 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
     @property
     def has_changed(self) -> bool:
         """
-        Boolean which indicates if the variable has changed since the last time the boolean was
-        reset. Typically used only by Plug-Ins for their own variables (to avoid conflicting use
-        by different Plug-Ins , macros, or tools). Set the value to false and it will
-        automatically flip to true any time the value changes.
+        Indicates if the variable has changed since the last time it was reset.
+
+        Typically, used only by Plug-Ins for their own variables (to avoid conflicting use
+        by different Plug-Ins, macros, or tools). Set the value to `False`, and it will
+        automatically flip to `True` any time the variable value changes.
+
+        Returns
+        -------
+        bool :
+            `True` if the variable has changed since the last time the property was reset.
         """
-        raise NotImplementedError
+        return self._wrapped.hasChanged
 
     @has_changed.setter
-    def has_changed(self, value) -> bool:
-        # TODO: I'm not certain if this is better or if we should just have a reset_has_changed().
-        raise NotImplementedError
+    def has_changed(self, value: bool) -> None:
+        """
+        Reset the value to `False`, and it will automatically flip to `True` any time the variable
+        value changes.
+
+        Parameters
+        ----------
+        value : bool
+            Set the value to `False` to reset the property.
+        """
+        self._wrapped.hasChanged = value
 
     @property
     def hide(self) -> bool:
         """
-        Hides the variable from the User Interface.
+        Hide the variable from the User Interface.
         Variable will not be visible in Component Tree, Data Explorer, or Data Monitors.
-        """
-        raise NotImplementedError
-
-    @property
-    def owning_component(self) -> object:
-        """
-        Gets the component that owns this variable.
 
         Returns
         -------
-        object
-            IDispatch* to an IComponent object.
+        bool :
+            `True` if the variable is hidden.
         """
-        raise NotImplementedError
+        return self._wrapped.hide
+
+    @hide.setter
+    def hide(self, value: bool) -> None:
+        """
+        Hide the variable from the User Interface.
+        Variable will not be visible in Component Tree, Data Explorer, or Data Monitors.
+
+        Parameters
+        ----------
+        value : bool
+            Set the value to `True` to hide the variable.
+        """
+        self._wrapped.hide = value
+
+    @property
+    def owning_component(self) -> 'IComponent':
+        """
+        The component that owns this variable.
+
+        Returns
+        -------
+        IComponent :
+            Owning IComponent object.
+        """
+        component: object = self._wrapped.OwningComponent
+        if component is not None:
+            return icomponent.IComponent(component)
+        else:
+            return None
 
     def is_valid(self) -> bool:
         """
