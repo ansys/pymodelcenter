@@ -8,6 +8,7 @@ from .format import Format
 from .icomponent import IComponent
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup
+from .irefprop import IRefArrayProp, IRefProp
 from .iif_component import IIfComponent
 from .iref_array_prop import IRefArrayProp
 from .iref_prop import IRefProp
