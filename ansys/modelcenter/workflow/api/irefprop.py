@@ -12,7 +12,7 @@ class IRefArrayProp:
     def __init__(self, name: str, type_: str):
         """
         Initialize.
-        
+
         Parameters
         ----------
         name : str
