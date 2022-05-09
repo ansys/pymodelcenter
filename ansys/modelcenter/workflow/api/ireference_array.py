@@ -1,7 +1,7 @@
 from typing import MutableSequence
 
 from .iarray import IArray
-from .iref_array_prop import IRefArrayProp
+# from .iref_array_prop import IRefArrayProp
 from .irefprop import IRefArrayProp
 
 

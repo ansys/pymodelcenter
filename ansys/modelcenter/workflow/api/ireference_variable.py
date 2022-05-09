@@ -1,4 +1,4 @@
-from .iref_prop import IRefProp
+from .irefprop import IRefProp
 from .ivariable import IVariable
 
 
