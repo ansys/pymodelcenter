@@ -1,61 +1,100 @@
-import pytest
+import clr
+
+import ansys.modelcenter.workflow.api as mcapi
+
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockScriptComponent
+
+mock: MockScriptComponent
+sut: mcapi.IScriptComponent
 
 
-@pytest.mark.skip(reason="Not implemented.")
+def setup_function(_):
+    """
+    Setup called before each test function in this module.
+
+    Parameters
+    ----------
+    _ :
+        The function about to test.
+    """
+    global mock, sut
+    mock = MockScriptComponent("Mock Script Component")
+    sut = mcapi.IScriptComponent(mock)
+
+
 def test_language() -> None:
     """Testing of the language property."""
-    raise NotImplementedError
+    assert sut.language != 'JavaScript'
+
+    sut.language = 'JavaScript'
+
+    assert sut.language == 'JavaScript'
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_timeout() -> None:
     """Testing of the timeout property."""
-    raise NotImplementedError
+    assert sut.timeout != 5.0
+
+    sut.timeout = 5.0
+
+    assert sut.timeout == 5.0
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_forward_schedule() -> None:
     """Testing of the forward_schedule property."""
-    raise NotImplementedError
+    assert sut.forward_schedule is not True
+
+    sut.forward_schedule = True
+
+    assert sut.forward_schedule is True
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_pre_validate() -> None:
     """Testing of the pre_validate property."""
-    raise NotImplementedError
+    assert sut.pre_validate is not True
+
+    sut.pre_validate = True
+
+    assert sut.pre_validate is True
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_set_source_from_string() -> None:
-    """Testing of the set_source_from_string method."""
-    raise NotImplementedError
+def test_source() -> None:
+    """Testing of the source property."""
+    assert sut.source_script == ''
+
+    sut.source_script = 'a script source'
+
+    assert sut.source_script == 'a script source'
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_source_from_file() -> None:
     """Testing of the set_source_from_file method."""
-    raise NotImplementedError
+    sut.set_source_from_file("/path/to/a/file.js")
+
+    assert mock.getCallCount("setSourceFromString") == 1
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_add_variable() -> None:
     """Testing of the add_variable method."""
-    raise NotImplementedError
+    variable = sut.add_variable('boolean_var', 'bool', 'input')
+
+    assert variable is not None
+    assert mock.getCallCount("addVariable") == 1
+    assert mock.Variables.Count == 1
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_remove_variable() -> None:
     """Testing of the remove_variable method."""
-    raise NotImplementedError
+    sut.remove_variable('boolean_var')
+
+    assert mock.getCallCount("removeVariable") == 1
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_set_variables() -> None:
     """Testing of the set_variables method."""
-    raise NotImplementedError
+    sut.set_variables('bool b, int i, double r, string s',
+                      'bool[] ba, int[] ia, double[] ra, string[] sa')
 
-
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_source_script() -> None:
-    """Testing of the get_source_script method."""
-    raise NotImplementedError
+    assert mock.getCallCount("setVariables") == 1
+    assert mock.Variables.Count == 8
