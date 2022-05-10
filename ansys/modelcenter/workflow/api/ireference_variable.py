@@ -49,10 +49,6 @@ class IReferenceVariable(IVariable):
     def owning_component(self) -> object:
         return self._instance.OwningComponent
 
-    @owning_component.setter
-    def owning_component(self, value: object):
-        self._instance.OwningComponent = value
-
     @overrides
     def is_valid(self) -> bool:
         return self._instance.isValid()

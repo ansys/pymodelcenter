@@ -51,10 +51,6 @@ class IReferenceArray(IArray):
     def owning_component(self) -> object:
         return self._instance.OwningComponent
 
-    @owning_component.setter
-    def owning_component(self, value: object):
-        self._instance.OwningComponent = value
-
     @overrides
     def is_valid(self) -> bool:
         return self._instance.isValid()
@@ -266,7 +262,7 @@ class IReferenceArray(IArray):
         -------
 
         """
-        self._instance.setValue(value, index)
+        return self._instance.setValue(value, index)
 
     def create_ref_prop(self, name: str, type_: str) -> IRefArrayProp:
         """
@@ -284,7 +280,7 @@ class IReferenceArray(IArray):
         -------
         IRefArrayProp object.
         """
-        return self._instance.createRefProp(name, type_)
+        return IRefArrayProp('', '', self._instance.createRefProp(name, type_))
 
     def get_ref_prop_value(self, name: str, index: int) -> object:
         """

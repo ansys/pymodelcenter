@@ -9,7 +9,7 @@ class IRefArrayProp:
     full link relationship.
     """
 
-    def __init__(self, name: str, type_: str):
+    def __init__(self, name: str, type_: str, instance: MockRefArrayProp = None):
         """
         Initialize.
 
@@ -20,7 +20,10 @@ class IRefArrayProp:
         type_ : str
             The type of the variable.
         """
-        self._instance = MockRefArrayProp(name, type_)
+        if instance:
+            self._instance = instance
+        else:
+            self._instance = MockRefArrayProp(name, type_)
 
     @property
     def enum_values(self) -> str:
