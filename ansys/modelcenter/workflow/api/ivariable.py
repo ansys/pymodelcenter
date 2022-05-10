@@ -6,16 +6,18 @@ import ansys.common.variableinterop as acvi
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.icomponent as icomponent
 
+from .custom_metadata_owner import CustomMetadataOwner
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
 
 
-class IVariable(ABC, Generic[WRAPPED_TYPE]):
+class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
     """
     Represents a variable in the workflow.
     """
     def __init__(self, wrapped: WRAPPED_TYPE):
+        super().__init__(wrapped)
         self._wrapped = wrapped
 
     @property
@@ -332,39 +334,6 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         Checks whether or not the variable is an input. A linked input returns false (Output).
         """
         return self._wrapped.isInputToModel()
-
-    def set_custom_metadata(self, name: str, type: object, value: object, access: object,
-                     archive: bool) -> None:  # type = MetadataType, access = MetadataAccess
-        """
-        Sets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name
-            Metadata specifier used to store the data.
-        type
-        value
-        access
-        archive
-        """
-        raise NotImplementedError
-
-    def get_custom_metadata(self, name: str) -> object:
-        """
-        Gets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name
-            Metadata key name.
-
-        Returns
-        -------
-        object
-            Metadata value.
-        """
-        raise NotImplementedError
-
 
 class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
     """
