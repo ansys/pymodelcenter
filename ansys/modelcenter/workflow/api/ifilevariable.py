@@ -35,6 +35,7 @@ class IFileVariable(IVariable[MockFileVariable]):
         if not self._wrapped.isBinary:
             mime: str = acvi.FileValue.TEXT_MIMETYPE
             encoding: str = 'utf-8'
+        raise NotImplementedError  # TODO: Implement FileScope.read_from_string()
         return acvi.FileScope.read_from_string(contents, mime, encoding)
 
     @value.setter
@@ -86,14 +87,6 @@ class IFileVariable(IVariable[MockFileVariable]):
             If the extension is not known, '.tmp' is returned.
         """
         return self._wrapped.fileExtension
-
-    # Description should come from metadata.
-    # @property
-    # def description(self) -> str:
-    #     """
-    #     The description of the variable.
-    #     """
-    #     raise NotImplementedError
 
     @property
     def save_with_model(self) -> bool:
