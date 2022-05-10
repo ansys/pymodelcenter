@@ -61,13 +61,6 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         raise NotImplementedError
 
     @property
-    def format(self) -> str:
-        """
-        Format for rendering the variable as a string.
-        """
-        raise NotImplementedError
-
-    @property
     def has_changed(self) -> bool:
         """
         Indicates if the variable has changed since the last time it was reset.
