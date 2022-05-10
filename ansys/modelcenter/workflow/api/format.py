@@ -19,8 +19,93 @@ class Format:
         """
         Style to use for formatting.
 
-        When setting, you may pass in the empty string to mean "General".
-        TODO: Documentation on valid formats, MCD docs not great.
+        There are 6 broad categories of formats:
+        1. General:
+        The General format indicates no specific number format.
+        Specified by 'General', or an empty string.
+
+        2. Number:
+        Number formats are used for specifying how numeric values will
+        be displayed. See Currency for specialized handling of monetary
+        values.
+
+        Specification:
+        -Zero decimal places indicated by '0'.
+        -1 to 30 decimal places indicated by '0.0' with an extra
+        trailing zero for each decimal place.
+        -Use of 1000's separator indicated by leading '#,##'.
+        -Negative sign can be switched to surrounding braces by
+        surrounding entire expression with braces.
+
+        Examples:
+        -0.00 : 2 decimal places
+        -(#,##0.00000) : Negative braces, 1000's separator, 5 decimal places
+
+        3. Currency:
+        Currency formats are for general monetary values.
+
+        Specification:
+        -Follows Number format for specifying digits, but starts with a
+        '$' symbol. If negative braces are specified, the symbol should
+        be within them.
+        -The 1000's separator mark notation is required. If missing will
+        be added automatically.
+
+        Examples:
+        -$#,##0.00 : 2 decimal places
+        -($#,##0.00000) : Negative braces, 5 decimal places
+
+        3. Percentage:
+        Percentage formats multiply the variable value by 100 and
+        display the result with a percent sign.
+
+        Specification:
+        -Follows Number format for specifying number of digits, but ends
+        with a '%' symbol.
+        -No 1000 Separator or Negative braces allowed.
+
+        Examples:
+        -0.00% : 2 decimal places
+        -0.00000% : 5 decimal places
+
+        4. Fraction:
+        Fraction formats show the value as a fraction.
+
+        Specification:
+        -Only certain arbitrary combinations are allowed. See examples.
+
+        Examples:
+        -# ?/? : Up to one digit
+        -# ??/?? : Up to two digits
+        -# ???/??? : Up to three digits
+        -# ?/2 : As halves
+        -# ?/4 : As quarters
+        -# ?/8 : As eighths
+        -# ??/16 : As sixteenths
+        -# ?/10 : As tenths
+        -# ??/100 : As hundredths
+
+        5. Scientific:
+        Scientific formats show the value in scientific notation.
+
+        Specification:
+        -Follows Number format for specifying digits, but ends with the
+        string: 'E+00'.
+
+        Examples:
+        -0.00E+00 : 2 decimal places
+        -0.00000E+00 : 5 decimal places
+
+        6. Date:
+        Date formats show the value as a date.
+
+        Specification:
+        -Specified by 'EpSec', 'YYYY/MM/DD', or 'UTCG' strings.
+
+        Examples:
+        -EpSec produces a string formatted as: 0
+        -YYYY/MM/DD produces a string formatted as: 1971/12/31 00:00:00.000
+        -UTCG produces a string formatted as: 31 Dec 1971 00:00:00.000
 
         Returns
         -------
