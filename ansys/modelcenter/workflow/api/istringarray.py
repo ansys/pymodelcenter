@@ -47,4 +47,3 @@ class IStringArray(IArray[MockStringArray]):
                 self._standard_metadata.variable_type.name)
         else:
             self._standard_metadata = new_metadata
-

@@ -6,7 +6,6 @@ IRefProp is a pure descendant, so it does not need tests.
 
 import ansys.modelcenter.workflow.api as mcapi
 
-
 ####################################################################################################
 # Setup for every test
 ####################################################################################################

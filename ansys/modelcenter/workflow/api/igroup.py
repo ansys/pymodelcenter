@@ -8,7 +8,7 @@ import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockGroup, MockGroups, MockVariables
+from Phoenix.Mock import MockGroup, MockGroups
 
 
 class IGroup:

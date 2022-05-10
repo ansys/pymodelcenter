@@ -8,10 +8,10 @@ import ansys.modelcenter.workflow.api as mcapi
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import (
     MockBooleanVariable,
+    MockComponent,
     MockDoubleVariable,
     MockIntegerVariable,
     MockVariableLink,
-    MockComponent,
 )
 
 clr.AddReference('System.Reflection')

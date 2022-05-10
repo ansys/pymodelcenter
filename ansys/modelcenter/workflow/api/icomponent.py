@@ -5,11 +5,10 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-import ansys.modelcenter.workflow.api.assembly as assembly
-import ansys.modelcenter.workflow.api.igroup as igroup
-import ansys.modelcenter.workflow.api.ivariable as ivariable
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
+import ansys.modelcenter.workflow.api.assembly as assembly
 from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
+import ansys.modelcenter.workflow.api.igroup as igroup
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent

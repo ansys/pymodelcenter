@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Iterable, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
 import clr
