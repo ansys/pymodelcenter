@@ -247,67 +247,86 @@ def test_get_type() -> None:
     assert result == "それは早いぞ"       # Value came from MockComponents.MockComponent(string)
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_metadata() -> None:
-    """Testing of the get_metadata method."""
-    raise NotImplementedError
-
-
-@pytest.mark.skip(reason="Not implemented.")
-def test_set_metadata() -> None:
-    """Testing of the set_metadata method."""
-    raise NotImplementedError
-
-
-@pytest.mark.skip(reason="Not implemented.")
 def test_run() -> None:
     """Testing of the run method."""
-    raise NotImplementedError
+    # SUT
+    component.run()
+
+    # Verify
+    assert mock_component.getCallCount("run") == 1
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_invoke_method() -> None:
     """Testing of the invoke_method method."""
-    raise NotImplementedError
+    # SUT
+    component.invoke_method("method_name")
+
+    # Verify
+    assert mock_component.getCallCount("invokeMethod") == 1
+    args = mock_component.getArgumentRecord("invokeMethod", 0)
+    assert args[0] == "method_name"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_invalidate() -> None:
     """Testing of the invalidate method."""
-    raise NotImplementedError
+    # SUT
+    component.invalidate()
+
+    # Verify
+    assert mock_component.getCallCount("invalidate")
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_reconnect() -> None:
     """Testing of the reconnect method."""
-    raise NotImplementedError
+    # SUT
+    component.reconnect()
+
+    # Verify
+    assert mock_component.getCallCount("reconnect")
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_download_values() -> None:
     """Testing of the download_values method."""
-    raise NotImplementedError
+    # SUT
+    component.download_values()
+
+    # Verify
+    assert mock_component.getCallCount("downloadValues")
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_rename() -> None:
     """Testing of the rename method."""
-    raise NotImplementedError
+    # SUT
+    component.rename("the.new.name")
+
+    # Verify
+    assert mock_component.getCallCount("rename")
+    assert component.get_full_name() == "the.new.name"
+    assert component.get_name() == "name"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_position_x() -> None:
     """Testing of the get_position_x method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_position_x()
+
+    # Verify
+    assert result == 24     # value from MockComponent(string name)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_position_y() -> None:
     """Testing of the get_position_y method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_position_y()
+
+    # Verify
+    assert result == 31     # value from MockComponent(string name)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_show() -> None:
     """Testing of the show method."""
-    raise NotImplementedError
+    # SUT
+    component.show()
+
+    # Verify
+    assert mock_component.getCallCount("show") == 1

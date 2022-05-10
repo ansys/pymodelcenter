@@ -2,11 +2,13 @@ from typing import Optional
 
 import clr
 
+from .custom_metadata_owner import CustomMetadataOwner
+
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
 
 
-class IVariable:
+class IVariable(CustomMetadataOwner):
     """
     COM instance.
     """
@@ -20,7 +22,7 @@ class IVariable:
         instance : mcapiIVariable
             ModelCenter API IVariable interface object.
         """
-        self._instance = instance
+        super().__init__(instance)
 
     @property
     def has_changed(self) -> bool:
@@ -281,37 +283,5 @@ class IVariable:
     def is_input_to_model(self) -> bool:
         """
         Checks whether or not the variable is an input. A linked input returns false (Output).
-        """
-        raise NotImplementedError
-
-    def set_metadata(self, name: str, type: object, value: object, access: object,
-                     archive: bool) -> None:  # type = MetadataType, access = MetadataAccess
-        """
-        Sets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name
-            Metadata specifier used to store the data.
-        type
-        value
-        access
-        archive
-        """
-        raise NotImplementedError
-
-    def get_metadata(self, name: str) -> object:
-        """
-        Gets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name
-            Metadata key name.
-
-        Returns
-        -------
-        object
-            Metadata value.
         """
         raise NotImplementedError

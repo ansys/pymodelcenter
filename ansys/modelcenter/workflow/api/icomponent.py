@@ -5,17 +5,18 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-from ansys.modelcenter.workflow.api.arrayish import Arrayish
-from ansys.modelcenter.workflow.api.assembly import Assembly
-from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
-from ansys.modelcenter.workflow.api.igroup import IGroup
-from ansys.modelcenter.workflow.api.ivariable import IVariable
+from .arrayish import Arrayish
+from .assembly import Assembly
+from .custom_metadata_owner import CustomMetadataOwner
+from .dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
+from .igroup import IGroup
+from .ivariable import IVariable
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
 
 
-class IComponent:
+class IComponent(CustomMetadataOwner):
     """A component in a Workflow."""
 
     def __init__(self, instance: mcapiIComponent):
@@ -27,7 +28,7 @@ class IComponent:
         instance : mcapiIComponent
             Raw ModelCenter API object to wrap.
         """
-        self._instance: mcapiIComponent = instance
+        super().__init__(instance)
 
     @property
     def variables(self) -> Sequence[IVariable]:
@@ -71,6 +72,7 @@ class IComponent:
     @associated_files.setter
     def associated_files(self, source: Union[str, List[str]]):
         """Set of files associated with the component."""
+        dot_net_value: Union[str, List[str]]
         if isinstance(source, str):
             dot_net_value = source
         else:
@@ -155,44 +157,9 @@ class IComponent:
         """
         return self._instance.getType()
 
-    def get_metadata(self, name: str) -> object:  # VARIANT
-        """
-        Get the metadata value of the given metadata key name.
-
-        Parameters
-        ----------
-        name: str
-            The key name of the metadata to retrieve.
-
-        Returns
-        -------
-        The value of the metadata key.
-        """
-        raise NotImplementedError
-
-    def set_metadata(self, name: str, type_: object, value: object, access: object,
-                     archive: bool) -> None:  # MetadataType, VARIANT, MetadataAccess
-        """
-        Set the metadata value of a given key.
-
-        Parameters
-        ----------
-        name: str
-            The key name of the metadata to set.
-        type_: object
-            The type of metadata to set.
-        value: object
-            The metadata value to set.
-        access: object
-            The access permissions of the metadata.
-        archive: bool
-            Whether this property should be archived.
-        """
-        raise NotImplementedError
-
     def run(self) -> None:
         """Run the component."""
-        raise NotImplementedError
+        self._instance.run()
 
     def invoke_method(self, method: str) -> None:
         """
@@ -203,20 +170,20 @@ class IComponent:
         method: str
             The name of the method to invoke.
         """
-        raise NotImplementedError
+        self._instance.invokeMethod(method)
 
     def invalidate(self) -> None:
         """Invalidate the component and all of its variables."""
-        raise NotImplementedError
+        self._instance.invalidate()
 
     def reconnect(self) -> None:
         """Reload this component from its source."""
-        raise NotImplementedError
+        self._instance.reconnect()
 
     def download_values(self) -> None:
         """Download the component's variable values from the server if\
         it is a ModelCenter Remote Execution component."""
-        raise NotImplementedError
+        self._instance.downloadValues()
 
     def rename(self, name: str) -> None:
         """
@@ -227,7 +194,7 @@ class IComponent:
         name: str
             The new name of the component.
         """
-        raise NotImplementedError
+        self._instance.rename(name)
 
     def get_position_x(self) -> int:
         """
@@ -238,7 +205,7 @@ class IComponent:
         The X position.
         """
         # int getPositionX();
-        raise NotImplementedError
+        return self._instance.getPositionX()
 
     def get_position_y(self) -> int:
         """
@@ -249,8 +216,8 @@ class IComponent:
         The Y position.
         """
         # int getPositionY();
-        raise NotImplementedError
+        return self._instance.getPositionY()
 
     def show(self) -> None:
         """Show the component's GUI, if it has one."""
-        raise NotImplementedError
+        self._instance.show()
