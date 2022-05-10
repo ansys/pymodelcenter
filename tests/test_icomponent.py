@@ -15,7 +15,6 @@ from Phoenix.Mock import (
     MockGroup,
     MockGroups,
     MockIntegerVariable,
-    MockVariable,
     MockVariables,
 )
 
@@ -49,9 +48,9 @@ def test_variables() -> None:
     """Testing of the variables-property."""
     global mock_component, component
     mock_variables = MockVariables()
-    mock_variable = MockVariable("One", 0, 1)
+    mock_variable = MockIntegerVariable("One", 0)
     mock_variables.addItem(mock_variable)
-    mock_variable = MockVariable("Two", 0, 1)
+    mock_variable = MockDoubleVariable("Two", 0)
     mock_variables.addItem(mock_variable)
     mock_component.Variables = mock_variables
 
@@ -59,10 +58,12 @@ def test_variables() -> None:
     result = component.variables
 
     # Verify
-    assert isinstance(result, mcapi.IVariables)
+    assert isinstance(result, mcapi.Arrayish)
     assert len(result) == 2
     assert result[0].get_name() == "One"
+    assert isinstance(result[0], mcapi.IIntegerVariable)
     assert result[1].get_name() == "Two"
+    assert isinstance(result[1], mcapi.IDoubleVariable)
 
 
 def test_groups() -> None:
@@ -81,7 +82,8 @@ def test_groups() -> None:
     result = component.groups
 
     # Verify
-    assert isinstance(result, mcapi.IGroups)
+    assert isinstance(result, mcapi.Arrayish)
+    assert result._converter is mcapi.IGroup
     assert len(result) == 2
     assert result[0].get_name() == "One"
     assert result[1].get_name() == "Two"
@@ -140,7 +142,7 @@ def test_user_data(value: Any) -> None:
         pytest.param(["one string", "two string"], id="[str]"),
     ]
 )
-def test_associated_files(value: any) -> None:
+def test_associated_files(value: Any) -> None:
     """Testing of the associated_files property."""
     global component
 
@@ -231,7 +233,10 @@ def test_get_variable(name: str, type_: Type, value) -> None:
     # Verify
     assert isinstance(result, mcapi.IVariable)
     assert isinstance(result, type_)
-    assert result.value == value
+    if isinstance(result, mcapi.IIntegerVariable) or isinstance(result, mcapi.IDoubleVariable):
+        assert result.value == value
+    else:
+        TypeError("Unsupported type in test")
 
 
 def test_get_type() -> None:

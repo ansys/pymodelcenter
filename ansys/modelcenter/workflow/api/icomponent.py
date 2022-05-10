@@ -1,14 +1,15 @@
 """Definition of IComponent."""
-from typing import Any, List, Union
+from typing import Any, List, Sequence, Union
 
 from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
 import ansys.modelcenter.workflow.api.assembly as assembly
+import ansys.modelcenter.workflow.api.igroup as igroup
+import ansys.modelcenter.workflow.api.ivariable as ivariable
+from ansys.modelcenter.workflow.api.arrayish import Arrayish
 from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
-import ansys.modelcenter.workflow.api.igroups as igroups
-import ansys.modelcenter.workflow.api.ivariables as ivariables
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -29,15 +30,15 @@ class IComponent:
         self._instance: mcapiIComponent = instance
 
     @property
-    def variables(self) -> ivariables.IVariables:
+    def variables(self) -> 'Sequence[IVariable]':
         """Variables in the component."""
         variables = self._instance.Variables
-        return ivariables.IVariables(variables)
+        return Arrayish(variables, from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> igroups.IGroups:
+    def groups(self) -> 'Sequence[igroup.IGroup]':
         """All groups in the component."""
-        return igroups.IGroups(self._instance.Groups)
+        return Arrayish(self._instance.Groups, igroup.IGroup)
 
     @property
     def user_data(self) -> Any:
@@ -118,7 +119,7 @@ class IComponent:
         """
         return self._instance.getSource()
 
-    def get_variable(self, name: str) -> object:  # IVariable
+    def get_variable(self, name: str) -> 'IVariable':
         """
         Get a variable in this component by name.
 
