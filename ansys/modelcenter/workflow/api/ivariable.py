@@ -3,6 +3,7 @@ from typing import Generic, Optional, Sequence, TypeVar
 
 import ansys.common.variableinterop as acvi
 
+import ansys.modelcenter.workflow.api.arrayish as arrayish
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.icomponent as icomponent
 
@@ -214,8 +215,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.directPrecedents(
-            follow_suspended))
+        return arrayish.Arrayish(self._wrapped.directPrecedents(
+            follow_suspended), utils.from_dot_net_to_ivariable)
 
     def direct_dependents(self, follow_suspended: bool = False,
                           reserved: Optional[object] = None) -> Sequence['IVariable']:
@@ -237,8 +238,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.directDependents(
-            follow_suspended))
+        return arrayish.Arrayish(self._wrapped.directDependents(
+            follow_suspended), utils.from_dot_net_to_ivariable)
 
     def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
@@ -296,7 +297,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.precedents(follow_suspended))
+        return arrayish.Arrayish(self._wrapped.precedents(follow_suspended),
+                                 utils.from_dot_net_to_ivariable)
 
     def dependents(self,
                    follow_suspended: bool = False,
@@ -319,7 +321,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.dependents(follow_suspended))
+        return arrayish.Arrayish(self._wrapped.dependents(follow_suspended),
+                                 utils.from_dot_net_to_ivariable)
 
     def is_input_to_component(self) -> bool:
         """

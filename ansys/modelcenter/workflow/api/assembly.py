@@ -36,7 +36,7 @@ class Assembly(CustomMetadataOwner):
         -------
         IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._instance.Variables)
+        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     @property
     def groups(self) -> Sequence['igroup.IGroup']:
