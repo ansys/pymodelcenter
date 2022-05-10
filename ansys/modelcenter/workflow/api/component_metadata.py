@@ -1,6 +1,6 @@
 """
-Defines mirrors of component-metadata-related ModelCenter enums for working with the
-ModelCenter mocks.
+Defines mirrors of component-metadata-related ModelCenter enums for working with the ModelCenter \
+mocks.
 
 This should probably be re-visited once we are no longer using the mock as a backend.
 """

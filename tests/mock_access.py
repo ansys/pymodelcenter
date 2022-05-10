@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class MockAccess:
@@ -25,7 +25,7 @@ class MockAccess:
         arguments :
             List of argument values given to the method call.
         """
-        call_records: List[List[str]] = self._calls.get(method_name)
+        call_records: Optional[List[List[str]]] = self._calls.get(method_name)
         if call_records is None:
             call_records = []
             self._calls[method_name] = call_records
@@ -77,7 +77,7 @@ class MockAccess:
         IndexError : There is no call record for the given number of
             calls, the named method was not called enough times.
         """
-        call_records: List[List[str]] = self._calls.get(method_name)
+        call_records: Optional[List[List[str]]] = self._calls.get(method_name)
         if call_records is None:
             raise IndexError
         return call_records[call_num]

@@ -1,10 +1,9 @@
-from abc import abstractmethod, ABC
 from typing import Optional
 
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 
-class IFileVariable(IVariable, ABC):
+class IFileVariable(IVariable):
     """
     COM instance.
 
@@ -53,7 +52,6 @@ class IFileVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_file(self, file_name: str, encoding: Optional[object]) -> None:
         """
         Writes the value of the variable to a file.
@@ -67,7 +65,6 @@ class IFileVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def from_file(self, file_name: str) -> None:
         """
         Sets the value of the variable from a specified file.
@@ -79,7 +76,6 @@ class IFileVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def write_file(self, file_name: str) -> None:
         """
         Writes the value of the variable to a file.
@@ -91,7 +87,6 @@ class IFileVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def read_file(self, file_name: str) -> None:
         """
         Sets the value of the variable from a specified file.
@@ -103,7 +98,6 @@ class IFileVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_file_absolute(self, file_name: str, encoding: Optional[object]) -> None:
         """
         Writes the absolute value of the variable to a file. Optional parameter to specify the
@@ -121,7 +115,6 @@ class IFileVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def write_file_absolute(self, file_name: str) -> None:
         """
         Writes the absolute value of the variable to a file.

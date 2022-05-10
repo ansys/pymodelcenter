@@ -125,24 +125,60 @@ def test_iterable():
     assert results == ["zero", "one", "two", "three", "four"]
 
 
-def test_random_access():
-    """Test that Arrayish is randomly accessible without being \
-    inefficient in its calls to the wrapper arrayish API instance."""
+def test_random_access_int():
+    """Test that Arrayish is randomly accessible from an int without \
+    being inefficient in its calls to the wrapper arrayish API \
+    instance."""
     instance = MockAPIInstance()
     test_arrayish = TestArrayish(instance)
 
     # SUT
-    result3 = test_arrayish[3]
-    result1 = test_arrayish["one"]
+    result = test_arrayish[3]
 
     # Verify
 
-    assert result3.name == "three", "returned value for 4th item"
-    assert result1.name == "one", "returned value for 2nd item"
-    assert instance.get_call_count("Item") == 2, "Item[] only called twice"
+    assert result.name == "three", "returned value for 4th item"
+    assert instance.get_call_count("Item") == 1, "Item[] only called once"
     args: List[str] = instance.get_argument_record("Item", 0)
     assert len(args) == 1
     assert args[0] == "3"
-    args: List[str] = instance.get_argument_record("Item", 1)
+
+
+def test_random_access_str():
+    """Test that Arrayish is randomly accessible from a string without \
+    being inefficient in its calls to the wrapper arrayish API \
+    instance."""
+    instance = MockAPIInstance()
+    test_arrayish = TestArrayish(instance)
+
+    # SUT
+    result = test_arrayish["one"]
+
+    # Verify
+    assert result.name == "one", "returned value for 2nd item"
+    assert instance.get_call_count("Item") == 1, "Item[] only called once"
+    args: List[str] = instance.get_argument_record("Item", 0)
     assert len(args) == 1
     assert args[0] == "one"
+
+
+def test_random_access_slice():
+    """Test that Arrayish is randomly accessible from a slice. \
+     Currently, no guarantee on efficiency."""
+    instance = MockAPIInstance()
+    test_arrayish = TestArrayish(instance)
+
+    # SUT
+    result = test_arrayish[1:3]
+
+    # Verify
+    assert len(result) == 2, "have two results"
+    assert result[0].name == "one", "returned value for 2nd item"
+    assert result[1].name == "two", "returned value for 3rd item"
+    assert instance.get_call_count("Item") == 2, "Item[] called twice"
+    args: List[str] = instance.get_argument_record("Item", 0)
+    assert len(args) == 1
+    assert args[0] == "1"
+    args: List[str] = instance.get_argument_record("Item", 1)
+    assert len(args) == 1
+    assert args[0] == "2"

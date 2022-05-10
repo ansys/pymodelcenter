@@ -1,9 +1,9 @@
-from abc import abstractmethod, ABC
+import ansys.common.variableinterop as acvi
 
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 
-class IDoubleVariable(IVariable, ABC):
+class IDoubleVariable(IVariable):
     """
     COM instance.
 
@@ -11,11 +11,15 @@ class IDoubleVariable(IVariable, ABC):
     """
 
     @property
-    def value(self) -> float:
+    def value(self) -> acvi.RealValue:
         """
         Value of the variable.
         """
-        raise NotImplementedError
+        return acvi.RealValue(self._instance.value)
+
+    @value.setter
+    def value(self, value: float):
+        self._instance.value = value
 
     @property
     def value_absolute(self) -> float:
@@ -73,7 +77,6 @@ class IDoubleVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_initial_value(self, value: float) -> None:
         """
         Sets the initial value of the variable.
@@ -85,7 +88,6 @@ class IDoubleVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def has_lower_bound(self) -> bool:
         """
         Finds out whether or not the variable has an lower bound.
@@ -97,7 +99,6 @@ class IDoubleVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def has_upper_bound(self) -> bool:
         """
         Finds out whether or not the variable has an upper bound.
@@ -109,7 +110,6 @@ class IDoubleVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_formatted_string(self) -> str:
         """
         Converts the value to a formatted string, validating the variable if necessary.
@@ -121,7 +121,6 @@ class IDoubleVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def from_formatted_string(self, value: str) -> None:
         """
         Sets the value from a formatted string.
@@ -133,7 +132,6 @@ class IDoubleVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def to_formatted_string_absolute(self) -> str:
         """
         Converts the value to an absolute formatted string.
@@ -145,14 +143,12 @@ class IDoubleVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def clear_upper_bound(self) -> None:
         """
         Clears the upper bound property of the variable if it has previously been set.
         """
         raise NotImplementedError
 
-    @abstractmethod
     def clear_lower_bound(self) -> None:
         """
         Clears the lower bound property of the variable if it has previously been set.

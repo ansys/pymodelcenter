@@ -186,7 +186,7 @@ def test_new_workflow(workflow_type: mcapi.WorkflowType) -> None:
     engine = mcapi.Engine()
 
     # SUT
-    result: mcapi.Workflow = engine.new_workflow(workflow_type)
+    result: mcapi.Workflow = engine.new_workflow("workflow.pxcz", workflow_type)
 
     # Verification
     assert isinstance(result, mcapi.Workflow)
@@ -201,11 +201,11 @@ def test_new_workflow_with_existing() -> None:
 
     # Setup
     engine = mcapi.Engine()
-    result: mcapi.Workflow = engine.new_workflow()
+    result: mcapi.Workflow = engine.new_workflow("workflow.pxcz")
 
     # SUT
     with pytest.raises(Exception) as except_info:
-        engine.new_workflow()
+        engine.new_workflow("workflow2.pxcz")
 
     # Verification
     assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "\
@@ -251,7 +251,7 @@ def test_load_workflow_existing() -> None:
 
     # Setup
     engine = mcapi.Engine()
-    result: mcapi.Workflow = engine.new_workflow()
+    result: mcapi.Workflow = engine.new_workflow("workflow.pxcz")
 
     # SUT
     with pytest.raises(Exception) as except_info:

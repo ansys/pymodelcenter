@@ -1,9 +1,7 @@
-from abc import ABC, abstractmethod
-
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 
-class IStringVariable(IVariable, ABC):
+class IStringVariable(IVariable):
     """
     COM instance.
 
@@ -45,7 +43,6 @@ class IStringVariable(IVariable, ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def set_initial_value(self, value: str) -> None:
         """
         Sets the initial value of the variable.
