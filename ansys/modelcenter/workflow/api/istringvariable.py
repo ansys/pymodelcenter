@@ -1,55 +1,53 @@
-from ansys.modelcenter.workflow.api.ivariable import IVariable
+import ansys.common.variableinterop as acvi
+import clr
+from overrides import overrides
+
+from ansys.modelcenter.workflow.api.ivariable import ScalarVariable
+
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockStringVariable
 
 
-class IStringVariable(IVariable):
+class IStringVariable(ScalarVariable[MockStringVariable]):
     """
-    COM instance.
-
-    Implements IVariable.
+    Represents a string variable on the workflow.
     """
 
-    @property
-    def value(self) -> str:
-        """
-        Value of the variable.
-        """
-        raise NotImplementedError
+    @overrides
+    def __init__(self, wrapped: MockStringVariable):
+        super().__init__(wrapped)
+        self._standard_metadata: acvi.CommonVariableMetadata = acvi.StringMetadata()
 
-    @property
-    def value_absolute(self) -> str:
-        """
-        The value of the variable. (Fetched without attempting to validate)
-        """
-        raise NotImplementedError
+    @property  # type: ignore
+    @overrides
+    def value(self) -> acvi.StringValue:
+        return acvi.StringValue(self._wrapped.value)
 
-    @property
-    def description(self) -> str:
-        """
-        Description of the variable.
-        """
-        raise NotImplementedError
+    @value.setter  # type: ignore
+    @overrides
+    def value(self, new_value: acvi.IVariableValue):
+        self._wrapped.fromString(new_value.to_api_string())
 
-    @property
-    def enum_values(self) -> str:
-        """
-        Enumerated values of the variable.
-        """
-        raise NotImplementedError
+    @property  # type: ignore
+    @overrides
+    def value_absolute(self) -> acvi.StringValue:
+        return acvi.StringValue(self._wrapped.valueAbsolute)
 
-    @property
-    def enum_aliases(self) -> str:
-        """
-        Enumerated aliases of the variable.
-        """
-        raise NotImplementedError
+    @overrides
+    def set_initial_value(self, value: acvi.IVariableValue) -> None:
+        self._wrapped.setInitialValue(str(acvi.to_string_value(value)))
 
-    def set_initial_value(self, value: str) -> None:
-        """
-        Sets the initial value of the variable.
+    @property  # type: ignore
+    @overrides
+    def standard_metadata(self) -> acvi.StringMetadata:
+        return self._standard_metadata
 
-        Parameters
-        ----------
-        value
-            Initial value.
-        """
-        raise NotImplementedError
+    @standard_metadata.setter  # type: ignore
+    @overrides
+    def standard_metadata(self, new_metadata: acvi.StringMetadata) -> None:
+        if not isinstance(new_metadata, acvi.StringMetadata):
+            raise acvi.exceptions.IncompatibleTypesException(
+                new_metadata.variable_type.name,
+                self._standard_metadata.variable_type.name)
+        else:
+            self._standard_metadata = new_metadata

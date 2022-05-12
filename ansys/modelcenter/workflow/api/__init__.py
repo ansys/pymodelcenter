@@ -14,17 +14,17 @@ from .ifilearray import IFileArray
 from .ifilevariable import IFileVariable
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup
-from .irefprop import IRefArrayProp, IRefProp
 from .iif_component import IIfComponent
 from .iintegerarray import IIntegerArray
 from .iintegervariable import IIntegerVariable
-# from .iref_array_prop import IRefArrayProp
-from .irefprop import IRefProp
 from .ireference_array import IReferenceArray
 from .ireference_variable import IReferenceVariable
+
+# from .iref_array_prop import IRefArrayProp
+from .irefprop import IRefArrayProp, IRefProp
 from .iscript_component import IScriptComponent
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
-from .ivariable import IVariable
+from .ivariable import FormattableVariable, IVariable
 from .variable_links import VariableLink
 from .workflow import Workflow

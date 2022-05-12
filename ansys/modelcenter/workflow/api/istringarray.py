@@ -1,162 +1,49 @@
-from typing import Optional
+import ansys.common.variableinterop as acvi
+import clr
+from overrides import overrides
 
 from ansys.modelcenter.workflow.api.iarray import IArray
 
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockStringArray
 
-class IStringArray(IArray):
+
+class IStringArray(IArray[MockStringArray]):
     """
-    COM instance.
-
-    Implements IArray.
+    Represents a boolean variable on the workflow.
     """
 
-    @property
-    def description(self) -> str:
-        """
-        Description of the array.
-        """
-        raise NotImplementedError
+    @overrides
+    def __init__(self, wrapped: MockStringArray):
+        super().__init__(wrapped)
+        self._standard_metadata: acvi.CommonVariableMetadata = acvi.StringArrayMetadata()
 
-    @property
-    def enum_aliases(self) -> str:
-        """
-        Enumerated aliases of the array.
-        """
-        raise NotImplementedError
+    @property  # type: ignore
+    @overrides
+    def value(self) -> acvi.StringArrayValue:
+        return acvi.StringArrayValue.from_api_string(self._wrapped.toString())
 
-    @property
-    def enum_values(self) -> str:
-        """
-        Enumerated values of the array.
-        """
-        raise NotImplementedError
+    @value.setter  # type: ignore
+    @overrides
+    def value(self, new_value: acvi.IVariableValue):
+        self._wrapped.fromString(new_value.to_api_string())
 
-    def get_value(self, d1: object, d2: Optional[object], d3: Optional[object],
-                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                  d10: Optional[object]) -> str:
-        """
-        Gets the value of an array element.
+    @property  # type: ignore
+    @overrides
+    def value_absolute(self) -> acvi.StringArrayValue:
+        return acvi.StringArrayValue.from_api_string(self._wrapped.toStringAbsolute())
 
-        Parameters
-        ----------
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
+    @property  # type: ignore
+    @overrides
+    def standard_metadata(self) -> acvi.StringArrayMetadata:
+        return self._standard_metadata
 
-        Returns
-        -------
-        str
-            The value.
-        """
-        raise NotImplementedError
-
-    def set_value(self, value: str, d1: object, d2: Optional[object], d3: Optional[object],
-                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                  d10: Optional[object]) -> None:
-        """
-        Sets the value of an array element.
-
-        Parameters
-        ----------
-        value
-            New value.
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-        """
-        raise NotImplementedError
-
-    def get_array(self) -> object:
-        """
-        Gets the COM array.
-
-        Returns
-        -------
-        object
-            The COM array.
-        """
-        raise NotImplementedError
-
-    def set_array(self, array: object) -> None:
-        """
-        Sets the COM array.
-
-        Parameters
-        ----------
-        array
-            The COM array.
-        """
-        raise NotImplementedError
-
-    def get_value_absolute(self, d1: object, d2: Optional[object], d3: Optional[object],
-                           d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                           d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                           d10: Optional[object]) -> str:
-        """
-        Gets the value of an array element without validating.
-
-        Parameters
-        ----------
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-
-        Returns
-        -------
-        str
-            The value.
-        """
-        raise NotImplementedError
+    @standard_metadata.setter  # type: ignore
+    @overrides
+    def standard_metadata(self, new_metadata: acvi.StringArrayMetadata) -> None:
+        if not isinstance(new_metadata, acvi.StringArrayMetadata):
+            raise acvi.exceptions.IncompatibleTypesException(
+                new_metadata.variable_type.name,
+                self._standard_metadata.variable_type.name)
+        else:
+            self._standard_metadata = new_metadata

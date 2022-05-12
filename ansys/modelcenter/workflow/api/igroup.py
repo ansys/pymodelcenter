@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from typing import Sequence
+
 import clr
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
-from ansys.modelcenter.workflow.api.ivariable import IVariable
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IGroup as mcapiIGroup
@@ -17,12 +20,12 @@ class IGroup:
         self._instance = group
 
     @property
-    def variables(self) -> Sequencial[IVariable]:
+    def variables(self) -> 'Sequence[ivariable.IVariable]':
         """The variables in the Group."""
-        return Arrayish(self._instance.Variables, IVariable)
+        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> Sequencial[IGroup]:
+    def groups(self) -> 'Sequence[IGroup]':
         """The Groups this Group is a member of."""
         return Arrayish(self._instance.Groups, IGroup)
 

@@ -1,156 +1,53 @@
 import ansys.common.variableinterop as acvi
+import clr
+from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import IVariable
+from ansys.modelcenter.workflow.api.ivariable import FormattableVariable, ScalarVariable
+
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockDoubleVariable
 
 
-class IDoubleVariable(IVariable):
+class IDoubleVariable(ScalarVariable[MockDoubleVariable], FormattableVariable):
     """
-    COM instance.
-
-    Implements IVariable.
+    Represents a double / real variable on the workflow.
     """
 
-    @property
+    @overrides
+    def __init__(self, wrapped: MockDoubleVariable):
+        super().__init__(wrapped)
+        self._standard_metadata: acvi.CommonVariableMetadata = acvi.RealMetadata()
+
+    @property  # type: ignore
+    @overrides
     def value(self) -> acvi.RealValue:
-        """
-        Value of the variable.
-        """
-        return acvi.RealValue(self._instance.value)
+        return acvi.RealValue(self._wrapped.value)
 
-    @value.setter
-    def value(self, value: float):
-        self._instance.value = value
+    @value.setter  # type: ignore
+    @overrides
+    def value(self, new_value: acvi.IVariableValue):
+        self._wrapped.fromString(new_value.to_api_string())
 
-    @property
-    def value_absolute(self) -> float:
-        """
-        The value of the variable. (Fetched without attempting to validate)
-        """
-        raise NotImplementedError
+    @property  # type: ignore
+    @overrides
+    def value_absolute(self) -> acvi.RealValue:
+        return acvi.RealValue(self._wrapped.valueAbsolute)
 
-    @property
-    def lower_bound(self) -> float:
-        """
-        Lower bound of the variable.
-        """
-        raise NotImplementedError
+    @overrides
+    def set_initial_value(self, value: acvi.IVariableValue) -> None:
+        self._wrapped.setInitialValue(float(acvi.to_real_value(value)))
 
-    @property
-    def upper_bound(self) -> float:
-        """
-        Upper bound of the variable.
-        """
-        raise NotImplementedError
+    @property  # type: ignore
+    @overrides
+    def standard_metadata(self) -> acvi.RealMetadata:
+        return self._standard_metadata
 
-    @property
-    def units(self) -> str:
-        """
-        Units of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def description(self) -> str:
-        """
-        Description of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def enum_values(self) -> str:
-        """
-        Enumerated values of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def enum_aliases(self) -> str:
-        """
-        Enumerated aliases of the variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def format(self) -> str:
-        """
-        Format of the variable.
-        """
-        raise NotImplementedError
-
-    def set_initial_value(self, value: float) -> None:
-        """
-        Sets the initial value of the variable.
-
-        Parameters
-        ----------
-        value
-            The initial value.
-        """
-        raise NotImplementedError
-
-    def has_lower_bound(self) -> bool:
-        """
-        Finds out whether or not the variable has an lower bound.
-
-        Returns
-        -------
-        bool
-            yes(TRUE) or no(FALSE).
-        """
-        raise NotImplementedError
-
-    def has_upper_bound(self) -> bool:
-        """
-        Finds out whether or not the variable has an upper bound.
-
-        Returns
-        -------
-        bool
-            yes(TRUE) or no(FALSE).
-        """
-        raise NotImplementedError
-
-    def to_formatted_string(self) -> str:
-        """
-        Converts the value to a formatted string, validating the variable if necessary.
-
-        Returns
-        -------
-        str
-            A formatted string.
-        """
-        raise NotImplementedError
-
-    def from_formatted_string(self, value: str) -> None:
-        """
-        Sets the value from a formatted string.
-
-        Parameters
-        ----------
-        value
-            Formatted value to load.
-        """
-        raise NotImplementedError
-
-    def to_formatted_string_absolute(self) -> str:
-        """
-        Converts the value to an absolute formatted string.
-
-        Returns
-        -------
-        str
-            An absolute formatted string.
-        """
-        raise NotImplementedError
-
-    def clear_upper_bound(self) -> None:
-        """
-        Clears the upper bound property of the variable if it has previously been set.
-        """
-        raise NotImplementedError
-
-    def clear_lower_bound(self) -> None:
-        """
-        Clears the lower bound property of the variable if it has previously been set.
-        """
-        raise NotImplementedError
+    @standard_metadata.setter  # type: ignore
+    @overrides
+    def standard_metadata(self, new_metadata: acvi.RealMetadata) -> None:
+        if not isinstance(new_metadata, acvi.RealMetadata):
+            raise acvi.exceptions.IncompatibleTypesException(
+                new_metadata.variable_type.name,
+                self._standard_metadata.variable_type.name)
+        else:
+            self._standard_metadata = new_metadata

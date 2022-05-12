@@ -4,12 +4,12 @@ import clr
 
 from .arrayish import Arrayish
 from .custom_metadata_owner import CustomMetadataOwner
-from .igroup import IGroup
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly
 
-from .igroup import IGroup
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.igroup as igroup
 
 
 class Assembly(CustomMetadataOwner):
@@ -28,7 +28,7 @@ class Assembly(CustomMetadataOwner):
         super().__init__(assembly)
 
     @property
-    def variables(self) -> object:  # IVariables:
+    def variables(self) -> Sequence['ivariable.IVariable']:
         """
         Pointer to the variables in the Assembly.
 
@@ -36,11 +36,10 @@ class Assembly(CustomMetadataOwner):
         -------
         IVariables object.
         """
-        # VARIANT Variables;
-        raise NotImplementedError
+        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> Sequence[IGroup]:
+    def groups(self) -> Sequence['igroup.IGroup']:
         """
         Get a list of variable groups in the Assembly.
 
@@ -48,7 +47,7 @@ class Assembly(CustomMetadataOwner):
         -------
         A list of variable groups in the assembly.
         """
-        return Arrayish(self._instance.Groups, IGroup)
+        return Arrayish(self._instance.Groups, igroup.IGroup)
 
     @property
     def assemblies(self) -> Sequence['Assembly']:

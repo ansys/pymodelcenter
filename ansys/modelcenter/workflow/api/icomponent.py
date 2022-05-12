@@ -5,12 +5,13 @@ from System import Object as DotNetObject
 from System import String as DotNetString
 import clr
 
-from .arrayish import Arrayish
-from .assembly import Assembly
+from ansys.modelcenter.workflow.api.arrayish import Arrayish
+import ansys.modelcenter.workflow.api.assembly as assembly
+from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
+import ansys.modelcenter.workflow.api.igroup as igroup
+import ansys.modelcenter.workflow.api.ivariable as ivariable
+
 from .custom_metadata_owner import CustomMetadataOwner
-from .dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
-from .igroup import IGroup
-from .ivariable import IVariable
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent
@@ -31,15 +32,15 @@ class IComponent(CustomMetadataOwner):
         super().__init__(instance)
 
     @property
-    def variables(self) -> Sequence[IVariable]:
+    def variables(self) -> 'Sequence[ivariable.IVariable]':
         """Variables in the component."""
         variables = self._instance.Variables
         return Arrayish(variables, from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> Sequence[IGroup]:
+    def groups(self) -> 'Sequence[igroup.IGroup]':
         """All groups in the component."""
-        return Arrayish(self._instance.Groups, IGroup)
+        return Arrayish(self._instance.Groups, igroup.IGroup)
 
     @property
     def user_data(self) -> Any:
@@ -86,10 +87,10 @@ class IComponent(CustomMetadataOwner):
         return self._instance.IndexInParent
 
     @property
-    def parent_assembly(self) -> Assembly:
+    def parent_assembly(self) -> 'assembly.Assembly':
         """Parent assembly of this component."""
-        assembly = self._instance.ParentAssembly
-        return Assembly(assembly)
+        parent_assembly = self._instance.ParentAssembly
+        return assembly.Assembly(parent_assembly)
 
     def get_name(self) -> str:
         """
@@ -121,7 +122,7 @@ class IComponent(CustomMetadataOwner):
         """
         return self._instance.getSource()
 
-    def get_variable(self, name: str) -> IVariable:
+    def get_variable(self, name: str) -> 'IVariable':
         """
         Get a variable in this component by name.
 
