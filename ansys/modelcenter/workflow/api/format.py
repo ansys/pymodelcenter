@@ -100,12 +100,60 @@ class Format:
         Date formats show the value as a date.
 
         Specification:
-        * Specified by 'EpSec', 'YYYY/MM/DD', or 'UTCG' strings.
+        * Specified by certain strings, see Examples.
 
         Examples:
-        * EpSec produces a string formatted as: 0
-        * YYYY/MM/DD produces a string formatted as: 1971/12/31 00:00:00.000
-        * UTCG produces a string formatted as: 31 Dec 1971 00:00:00.000
+        This list shows each Date format and their example output.
+        * Epoch formats:
+
+            * EpSec : 0
+            * EpMin : 0.00000
+            * EpHr : 0.0000000
+            * EpDay : 0.00000000
+            * EpYr : 0.00000000000
+
+        * Standard display formats:
+
+            * DD/MM/YYY : 31/21/1971 00:00:00.000
+            * YYDDD : 71365.00000000
+            * YYYYDDD : 1971365.000000
+            * YYYYMMDD : 19711231.00000000
+            * YYYY/MM/DD : 1971/12/31 00:00:00.000
+            * YYYY:MM:DD : 1971:12:31:00:00:00.000
+
+        * Gregorian formats:
+
+            * GPSG : 30 Dec 1971 23:59:51.000
+            * LCLG : 30 Dec 1971 20:00:00.000
+            * TAIG : 31 Dec 1971 00:00:10.000
+            * TDBG : 31 Dec 1971 00:00:42.184
+            * TDTG : 31 Dec 1971 00:00:42.184
+            * UTCG : 31 Dec 1971 00:00:00.000
+
+        * Julian formats:
+
+            * JDate : 2441316.50000000
+            * JDTDB : 2441316.50048824
+            * (Ephemeris Date) JED : 2441316.50048824
+            * LCLJ : 364/71 20:00:00.000
+            * ModJDate : 41316.00000000
+            * TAIJ : 365/71 00:00:10.000
+            * UTCJ : 365/71 00:00:00.000
+            * UTCJFOUR : 365/1971 00:00:00.000
+
+        * ISO8601 UTC formats:
+
+            * ISO-YD : 1971-365T00:00:00.000
+            * ISO-YMD : 1971-12-31T00:00:00.000
+
+        * Other formats:
+
+            * (Earth Canonical Time) EarthEpTU : 0.000
+            * (GMT System) GMT : 365/00000 1971
+            * (GPS Time) GPS : -0418:172809.000
+            * (GPS Z Count) GPSZ : -168652806.000
+            * (Mission Elapsed) : MisElap : 0/00:00:00.000
+            * (Sun Canonical Time) SunEpTU : 0.000
 
         Returns
         -------
