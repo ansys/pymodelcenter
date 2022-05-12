@@ -15,7 +15,6 @@ from Phoenix.Mock import (
     MockGroup,
     MockGroups,
     MockIntegerVariable,
-    MockVariable,
     MockVariables,
 )
 
@@ -49,9 +48,9 @@ def test_variables() -> None:
     """Testing of the variables-property."""
     global mock_component, component
     mock_variables = MockVariables()
-    mock_variable = MockVariable("One", 0, 1)
+    mock_variable = MockIntegerVariable("One", 0)
     mock_variables.addItem(mock_variable)
-    mock_variable = MockVariable("Two", 0, 1)
+    mock_variable = MockDoubleVariable("Two", 0)
     mock_variables.addItem(mock_variable)
     mock_component.Variables = mock_variables
 
@@ -59,10 +58,12 @@ def test_variables() -> None:
     result = component.variables
 
     # Verify
-    assert isinstance(result, mcapi.IVariables)
+    assert isinstance(result, mcapi.Arrayish)
     assert len(result) == 2
     assert result[0].get_name() == "One"
+    assert isinstance(result[0], mcapi.IIntegerVariable)
     assert result[1].get_name() == "Two"
+    assert isinstance(result[1], mcapi.IDoubleVariable)
 
 
 def test_groups() -> None:
@@ -81,7 +82,8 @@ def test_groups() -> None:
     result = component.groups
 
     # Verify
-    assert isinstance(result, mcapi.IGroups)
+    assert isinstance(result, mcapi.Arrayish)
+    assert result._converter is mcapi.IGroup
     assert len(result) == 2
     assert result[0].get_name() == "One"
     assert result[1].get_name() == "Two"
@@ -140,7 +142,7 @@ def test_user_data(value: Any) -> None:
         pytest.param(["one string", "two string"], id="[str]"),
     ]
 )
-def test_associated_files(value: any) -> None:
+def test_associated_files(value: Any) -> None:
     """Testing of the associated_files property."""
     global component
 
@@ -231,7 +233,10 @@ def test_get_variable(name: str, type_: Type, value) -> None:
     # Verify
     assert isinstance(result, mcapi.IVariable)
     assert isinstance(result, type_)
-    assert result.value == value
+    if isinstance(result, mcapi.IIntegerVariable) or isinstance(result, mcapi.IDoubleVariable):
+        assert result.value == value
+    else:
+        TypeError("Unsupported type in test")
 
 
 def test_get_type() -> None:
@@ -242,67 +247,86 @@ def test_get_type() -> None:
     assert result == "それは早いぞ"       # Value came from MockComponents.MockComponent(string)
 
 
-@pytest.mark.skip(reason="Not implemented.")
-def test_get_metadata() -> None:
-    """Testing of the get_metadata method."""
-    raise NotImplementedError
-
-
-@pytest.mark.skip(reason="Not implemented.")
-def test_set_metadata() -> None:
-    """Testing of the set_metadata method."""
-    raise NotImplementedError
-
-
-@pytest.mark.skip(reason="Not implemented.")
 def test_run() -> None:
     """Testing of the run method."""
-    raise NotImplementedError
+    # SUT
+    component.run()
+
+    # Verify
+    assert mock_component.getCallCount("run") == 1
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_invoke_method() -> None:
     """Testing of the invoke_method method."""
-    raise NotImplementedError
+    # SUT
+    component.invoke_method("method_name")
+
+    # Verify
+    assert mock_component.getCallCount("invokeMethod") == 1
+    args = mock_component.getArgumentRecord("invokeMethod", 0)
+    assert args[0] == "method_name"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_invalidate() -> None:
     """Testing of the invalidate method."""
-    raise NotImplementedError
+    # SUT
+    component.invalidate()
+
+    # Verify
+    assert mock_component.getCallCount("invalidate")
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_reconnect() -> None:
     """Testing of the reconnect method."""
-    raise NotImplementedError
+    # SUT
+    component.reconnect()
+
+    # Verify
+    assert mock_component.getCallCount("reconnect")
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_download_values() -> None:
     """Testing of the download_values method."""
-    raise NotImplementedError
+    # SUT
+    component.download_values()
+
+    # Verify
+    assert mock_component.getCallCount("downloadValues")
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_rename() -> None:
     """Testing of the rename method."""
-    raise NotImplementedError
+    # SUT
+    component.rename("the.new.name")
+
+    # Verify
+    assert mock_component.getCallCount("rename")
+    assert component.get_full_name() == "the.new.name"
+    assert component.get_name() == "name"
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_position_x() -> None:
     """Testing of the get_position_x method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_position_x()
+
+    # Verify
+    assert result == 24     # value from MockComponent(string name)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_get_position_y() -> None:
     """Testing of the get_position_y method."""
-    raise NotImplementedError
+    # SUT
+    result = component.get_position_y()
+
+    # Verify
+    assert result == 31     # value from MockComponent(string name)
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_show() -> None:
     """Testing of the show method."""
-    raise NotImplementedError
+    # SUT
+    component.show()
+
+    # Verify
+    assert mock_component.getCallCount("show") == 1

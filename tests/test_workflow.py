@@ -54,7 +54,7 @@ def setup_function(_):
     # engine = mcapi.Engine(mock_mc)
     engine = mcapi.Engine()
     mock_mc = engine._instance
-    workflow = engine.new_workflow()
+    workflow = engine.new_workflow("workflow.pxcz")
 
 
 def py_list_to_net_list(src: List) -> DotNetList:
@@ -167,11 +167,11 @@ def test_trade_study_end():
 def test_workflow_close():
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
 
     # Check pre-reqs.
     with pytest.raises(Exception) as except_info:
-        sut_engine.new_workflow()
+        sut_engine.new_workflow("workflow2.pxcz")
 
     # Execute
     sut_workflow.close_workflow()
@@ -179,7 +179,7 @@ def test_workflow_close():
     # Verify
     assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "\
         "Close the current Workflow before loading or creating a new one."
-    next_workflow = sut_engine.new_workflow()
+    next_workflow = sut_engine.new_workflow("workflow.pxcz")
     assert isinstance(next_workflow, mcapi.Workflow)
     assert sut_engine._instance.getCallCount("closeModel") == 1
 
@@ -187,7 +187,7 @@ def test_workflow_close():
 def test_save_workflow():
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     assert sut_workflow._instance.getCallCount("saveModel") == 0
 
     # Execute
@@ -200,7 +200,7 @@ def test_save_workflow():
 def test_save_workflow_as():
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     assert sut_workflow._instance.getCallCount("saveModelAs") == 0
 
     # Execute
@@ -239,7 +239,7 @@ def test_create_component(
 ) -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     assert sut_workflow._instance.getCallCount("createComponent") == 0
 
     # Execute
@@ -254,7 +254,7 @@ def test_create_component(
 def test_create_link() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     assert sut_workflow._instance.getCallCount("createLink") == 0
     test_var_name = "inputs.var1"
     test_eqn = "Workflow.comp.output4"
@@ -272,7 +272,7 @@ def test_create_link() -> None:
 def test_get_variable() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     test_var_name = "test_assembly_var"
     sut_workflow._instance.createAssemblyVariable(test_var_name, "Input", "Model")
     assert sut_workflow._instance.getCallCount("getVariable") == 0
@@ -504,9 +504,9 @@ def test_remove_component():
 @pytest.mark.parametrize(
     "name,get_model_call_count,get_assembly_call_count,result_type",
     [
-        pytest.param(None,           1, 0, mcapi.Assembly,  id="root"),
-        pytest.param("root.aName",   0, 1, mcapi.Assembly,  id="named"),
-        pytest.param("root.noExist", 0, 1, None,       id="missing")
+        pytest.param(None,           2, 0, mcapi.Assembly,  id="root"),
+        pytest.param("root.aName",   1, 1, mcapi.Assembly,  id="named"),
+        pytest.param("root.noExist", 1, 1, None,       id="missing")
     ]
 )
 def test_get_assembly(
@@ -829,7 +829,7 @@ def test_break_link() -> None:
 
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflowName")
     link_var_name: str = "Component.dont.link.me"
     assert sut_workflow._instance.getCallCount("breakLink") == 0
 
@@ -855,7 +855,7 @@ def test_get_links(link_lhs_values: Iterable[str]) -> None:
 
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     for link_lhs in link_lhs_values:
         sut_workflow.create_link(link_lhs, "LINKSOURCE")
 
@@ -869,7 +869,7 @@ def test_get_links(link_lhs_values: Iterable[str]) -> None:
 def test_halt() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     assert sut_workflow._instance.getCallCount("halt") == 0
 
     # Execute
@@ -882,7 +882,7 @@ def test_halt() -> None:
 def test_get_uuid() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     sut_workflow._instance.setModelUUID("15B9E8D5-602F-44D9-AF58-9CF0E6C27F9E")
 
     # Execute
@@ -895,7 +895,7 @@ def test_get_uuid() -> None:
 def test_auto_link() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     assert sut_workflow._instance.getCallCount("autoLink") == 0
 
     # Execute
@@ -911,7 +911,7 @@ def test_auto_link() -> None:
 def test_create_assembly() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow = sut_engine.new_workflow()
+    sut_workflow = sut_engine.new_workflow("workflowName")
     assert sut_workflow._instance.getCallCount("createAssembly") == 0
     test_assembly_name = "test_assembly"
     test_assembly_parent = "Workflow"
@@ -930,11 +930,11 @@ def test_create_assembly() -> None:
 def test_workflow_close():
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
 
     # Check pre-reqs.
     try:
-        sut_engine.new_workflow()
+        sut_engine.new_workflow("workflow2.pxcz")
         assert False, "Should have failed by now."
     except Exception:
         pass
@@ -943,7 +943,7 @@ def test_workflow_close():
     sut_workflow.close_workflow()
 
     # Verify
-    next_workflow = sut_engine.new_workflow()
+    next_workflow = sut_engine.new_workflow("workflow.pxcz")
     assert isinstance(next_workflow, mcapi.Workflow)
     assert sut_engine._instance.getCallCount("closeModel") == 1
 
@@ -951,7 +951,7 @@ def test_workflow_close():
 def test_save_workflow():
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     assert sut_workflow._instance.getCallCount("saveModel") == 0
 
     # Execute
@@ -964,15 +964,15 @@ def test_save_workflow():
 def test_save_workflow_as():
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
-    assert sut_workflow._instance.getCallCount("saveModelAs") == 0
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
+    assert sut_workflow._instance.getCallCount("saveModelAs") == 1
 
     # Execute
     sut_workflow.save_workflow_as(r"C:\Temp\workflow.pxcz")
 
     # Verify
-    assert sut_workflow._instance.getCallCount("saveModelAs") == 1
-    argument = sut_workflow._instance.getArgumentRecord("saveModelAs", 0)[0]
+    assert sut_workflow._instance.getCallCount("saveModelAs") == 2
+    argument = sut_workflow._instance.getArgumentRecord("saveModelAs", 1)[0]
     assert argument == r"C:\Temp\workflow.pxcz"
 
 
@@ -1003,7 +1003,7 @@ def test_create_component(
 ) -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     assert sut_workflow._instance.getCallCount("createComponent") == 0
 
     # Execute
@@ -1018,7 +1018,7 @@ def test_create_component(
 def test_create_link() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     assert sut_workflow._instance.getCallCount("createLink") == 0
     test_var_name = "inputs.var1"
     test_eqn = "Workflow.comp.output4"
@@ -1036,7 +1036,7 @@ def test_create_link() -> None:
 def test_get_variable() -> None:
     # Setup
     sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow()
+    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
     test_var_name = "test_assembly_var"
     sut_workflow._instance.createAssemblyVariable(test_var_name, "Input", "Model")
     assert sut_workflow._instance.getCallCount("getVariable") == 0

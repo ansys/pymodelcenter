@@ -3,19 +3,22 @@ from typing import Generic, Optional, Sequence, TypeVar
 
 import ansys.common.variableinterop as acvi
 
+import ansys.modelcenter.workflow.api.arrayish as arrayish
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.icomponent as icomponent
 
+from .custom_metadata_owner import CustomMetadataOwner
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
 
 
-class IVariable(ABC, Generic[WRAPPED_TYPE]):
+class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
     """
     Represents a variable in the workflow.
     """
     def __init__(self, wrapped: WRAPPED_TYPE):
+        super().__init__(wrapped)
         self._wrapped = wrapped
 
     @property
@@ -54,13 +57,6 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
     def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         """
         Get the standard metadata for this variable.
-        """
-        raise NotImplementedError
-
-    @property
-    def format(self) -> str:
-        """
-        Format for rendering the variable as a string.
         """
         raise NotImplementedError
 
@@ -212,8 +208,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.directPrecedents(
-            follow_suspended))
+        return arrayish.Arrayish(self._wrapped.directPrecedents(
+            follow_suspended), utils.from_dot_net_to_ivariable)
 
     def direct_dependents(self, follow_suspended: bool = False,
                           reserved: Optional[object] = None) -> Sequence['IVariable']:
@@ -235,8 +231,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.directDependents(
-            follow_suspended))
+        return arrayish.Arrayish(self._wrapped.directDependents(
+            follow_suspended), utils.from_dot_net_to_ivariable)
 
     def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
@@ -294,7 +290,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.precedents(follow_suspended))
+        return arrayish.Arrayish(self._wrapped.precedents(follow_suspended),
+                                 utils.from_dot_net_to_ivariable)
 
     def dependents(self,
                    follow_suspended: bool = False,
@@ -317,7 +314,8 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return utils.create_dot_net_variable_sequence(self._wrapped.dependents(follow_suspended))
+        return arrayish.Arrayish(self._wrapped.dependents(follow_suspended),
+                                 utils.from_dot_net_to_ivariable)
 
     def is_input_to_component(self) -> bool:
         """
@@ -332,39 +330,6 @@ class IVariable(ABC, Generic[WRAPPED_TYPE]):
         Checks whether or not the variable is an input. A linked input returns false (Output).
         """
         return self._wrapped.isInputToModel()
-
-    def set_custom_metadata(self, name: str, type: object, value: object, access: object,
-                     archive: bool) -> None:  # type = MetadataType, access = MetadataAccess
-        """
-        Sets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name
-            Metadata specifier used to store the data.
-        type
-        value
-        access
-        archive
-        """
-        raise NotImplementedError
-
-    def get_custom_metadata(self, name: str) -> object:
-        """
-        Gets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name
-            Metadata key name.
-
-        Returns
-        -------
-        object
-            Metadata value.
-        """
-        raise NotImplementedError
-
 
 class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
     """

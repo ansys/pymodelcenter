@@ -1,7 +1,7 @@
 """Collection of utility functions to aid in converting \
 between Dot-Net and Python types."""
 
-from typing import TYPE_CHECKING, Iterable, List, Sequence, Type, TypeVar
+from typing import Iterable, List, Type, TypeVar
 
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
@@ -12,10 +12,6 @@ import clr
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
-from ModelCenter import IVariables as mcapiVariableSequence
-
-if TYPE_CHECKING:
-    import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 N = TypeVar('N', DotNetBoolean, DotNetDouble, DotNetInt64, DotNetString)
 """
@@ -87,7 +83,7 @@ def __str_type_to_class_map():
     from .istringvariable import IStringVariable
 
     if STR_TYPE_TO_CLASS is None:
-            STR_TYPE_TO_CLASS = {
+        STR_TYPE_TO_CLASS = {
             "double": IDoubleVariable,
             "integer": IIntegerVariable,
             "string": IStringVariable,
@@ -131,8 +127,3 @@ def from_dot_net_to_ivariable(source: mcapiIVariable) -> 'IVariable':
     str_type = source.getType()
     class_ = __str_type_to_class_map()[str_type]
     return class_(source)
-
-
-def create_dot_net_variable_sequence(source: mcapiVariableSequence) -> Sequence['IVariable']:
-    return [from_dot_net_to_ivariable(source.Item(var_index))
-            for var_index in range(0, source.Count)]
