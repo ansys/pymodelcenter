@@ -2,7 +2,6 @@ import ansys.common.variableinterop as acvi
 import clr
 
 from overrides import overrides
-from typing import Optional
 from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
@@ -35,58 +34,47 @@ class IFileVariable(IVariable[MockFileVariable]):
         if not self._wrapped.isBinary:
             mime: str = acvi.FileValue.TEXT_MIMETYPE
             encoding: str = 'utf-8'
-        raise NotImplementedError  # TODO: Implement FileScope.read_from_string()
-        return acvi.FileScope.read_from_string(contents, mime, encoding)
+        return None
+        # TODO: Implement acvi.FileValue.from_api_string().
+        # return acvi.FileValue.from_api_string(self._wrapped.toString())
+        # Or:
+        # TODO: Actual implementation might require async.
+        # This should not be a property then, according to PEP8:
+        #   Avoid using properties for computationally expensive operations;
+        #   the attribute notation makes the caller believe that access is (relatively) cheap.
+        # TODO: Implement FileScope.read_from_string()
+        # return acvi.FileScope.read_from_string(contents, mime, encoding)
 
     @value.setter
     @overrides
-    def value(self, value: acvi.FileValue) -> None:
+    def value(self, new_value: acvi.FileValue) -> None:
         """
-        Value of the variable.
+        Set value of the variable.
 
         Parameters
         ----------
-        value : FileValue
+        new_value : FileValue
             Value of the file variable.
         """
-        self._wrapped.value = value.get_contents()
+        if new_value is None:
+            self._wrapped.value = None
+        else:
+            # TODO: Get save context.
+            self._wrapped.fromString(new_value.to_api_string(None))
+        # Or:
+        # TODO: Actual implementation might require async.
+        # See notes for the get property.
+        # self._wrapped.value = await new_value.get_contents(new_value.file_encoding)
 
     @property
-    def is_binary(self) -> bool:
-        """
-        Whether the file is binary.
+    @overrides
+    def value_absolute(self) -> acvi.FileValue:
+        return self.value
 
-        Returns
-        -------
-        bool :
-            `True` if file is binary.
-        """
-        return self._wrapped.isBinary
-
-    @is_binary.setter
-    def is_binary(self, value: bool) -> None:
-        """
-        Whether the file is binary.
-
-        Parameters
-        ----------
-        value : bool
-            Set the value to `True` if file is binary.
-        """
-        self._wrapped.isBinary = value
-
-    @property
-    def file_extension(self) -> str:
-        """
-        File extension of the variable. Used when opening the file in ModelCenter.
-
-        Returns
-        -------
-        str :
-            Returns the extension of the file value held if known, including the period '.'.
-            If the extension is not known, '.tmp' is returned.
-        """
-        return self._wrapped.fileExtension
+    @value_absolute.setter
+    @overrides
+    def value_absolute(self, value: acvi.FileValue) -> None:
+        self.value = value
 
     @property
     def save_with_model(self) -> bool:
@@ -135,33 +123,6 @@ class IFileVariable(IVariable[MockFileVariable]):
             Set to `True` if direct file transfer is used for incoming link.
         """
         self._wrapped.directTransfer = value
-
-    def to_file(self, file_name: str, encoding: Optional[str]) -> None:
-        """
-        Writes the value of the variable to a file. Optional parameter to specify the
-        encoding as ASCII, UTF-8 or binary. If no encoding is specified, will default to ASCII
-        for text files and binary for binary files. Will throw an exception if binary encoding
-        is used on a text file or if ascii or utf-8 encoding is used on a binary file.
-
-        Parameters
-        ----------
-        file_name : str
-            Path of the file.
-        encoding
-            The desired encoding of the file. Can be: 'ascii', 'utf-8', or 'binary'.
-        """
-        self._wrapped.toFile(file_name, encoding)
-
-    def from_file(self, file_name: str) -> None:
-        """
-        Sets the value of the variable from a specified file.
-
-        Parameters
-        ----------
-        file_name : str
-            Path of the file.
-        """
-        self._wrapped.fromFile(file_name)
 
     @property  # type: ignore
     @overrides
