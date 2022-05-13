@@ -12,6 +12,9 @@ from .variable_links import VariableLink, dotnet_links_to_iterable
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock
 
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IComponent as mcapiIComponent
+
 from ansys.modelcenter.workflow.api.assembly import Assembly
 
 
@@ -22,9 +25,6 @@ class MockDataMonitorWrapper(DataMonitor):
         """
         Initialize.
         """
-
-clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IComponent as mcapiIComponent
 
 
 class WorkflowVariable:

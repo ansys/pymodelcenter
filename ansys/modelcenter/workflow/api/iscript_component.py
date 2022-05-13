@@ -1,8 +1,8 @@
 """Definition of ScriptComponent."""
 import clr
 
-from .ivariable import IVariable
 from .icomponent import IComponent
+from .ivariable import IVariable
 
 clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockScriptComponent

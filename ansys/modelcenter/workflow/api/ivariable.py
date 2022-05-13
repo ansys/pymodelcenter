@@ -1,73 +1,152 @@
-from typing import Optional
+from abc import ABC, abstractmethod
+from typing import Generic, Optional, Sequence, TypeVar
 
-import clr
+import ansys.common.variableinterop as acvi
 
-clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IVariable as mcapiIVariable
+import ansys.modelcenter.workflow.api.arrayish as arrayish
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.icomponent as icomponent
+
+from .custom_metadata_owner import CustomMetadataOwner
+from .variable_links import VariableLink, dotnet_links_to_iterable
+
+WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
 
 
-class IVariable:
+class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
     """
-    COM instance.
+    Represents a variable in the workflow.
     """
+    def __init__(self, wrapped: WRAPPED_TYPE):
+        super().__init__(wrapped)
+        self._wrapped = wrapped
 
-    def __init__(self, instance: mcapiIVariable) -> None:
+    @property
+    @abstractmethod
+    def value(self) -> acvi.IVariableValue:
         """
-        Initialize variable object.
+        Get or set the value of the variable.
+        If the variable is invalid, the workflow will run to the extent necessary to
+        validate the variable.
+        """
+        raise NotImplementedError
 
-        Parameters
-        ----------
-        instance : mcapiIVariable
-            ModelCenter API IVariable interface object.
+    @value.setter
+    @abstractmethod
+    def value(self, new_value: acvi.IVariableValue) -> None:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def value_absolute(self) -> acvi.IVariableValue:
         """
-        self._instance = instance
+        Get the value of the variable without attempting to validate it.
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def standard_metadata(self) -> acvi.CommonVariableMetadata:
+        """
+        Get the standard metadata for this variable.
+        """
+        raise NotImplementedError
+
+    @standard_metadata.setter
+    @abstractmethod
+    def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
+        """
+        Get the standard metadata for this variable.
+        """
+        raise NotImplementedError
 
     @property
     def has_changed(self) -> bool:
         """
-        Boolean which indicates if the variable has changed since the last time the boolean was
-        reset. Typically used only by Plug-Ins for their own variables (to avoid conflicting use
-        by different Plug-Ins , macros, or tools). Set the value to false and it will
-        automatically flip to true any time the value changes.
+        Indicates if the variable has changed since the last time it was reset.
+
+        Typically, used only by Plug-Ins for their own variables (to avoid conflicting use
+        by different Plug-Ins, macros, or tools). Set the value to `False`, and it will
+        automatically flip to `True` any time the variable value changes.
+
+        Returns
+        -------
+        bool :
+            `True` if the variable has changed since the last time the property was reset.
         """
-        raise NotImplementedError
+        return self._wrapped.hasChanged
+
+    @has_changed.setter
+    def has_changed(self, value: bool) -> None:
+        """
+        Reset the value to `False`, and it will automatically flip to `True` any time the variable
+        value changes.
+
+        Parameters
+        ----------
+        value : bool
+            Set the value to `False` to reset the property.
+        """
+        self._wrapped.hasChanged = value
 
     @property
     def hide(self) -> bool:
         """
-        Hides the variable from the User Interface.
+        Hide the variable from the User Interface.
         Variable will not be visible in Component Tree, Data Explorer, or Data Monitors.
-        """
-        raise NotImplementedError
-
-    @property
-    def owning_component(self) -> object:
-        """
-        Gets the component that owns this variable.
 
         Returns
         -------
-        object
-            IDispatch* to an IComponent object.
+        bool :
+            `True` if the variable is hidden.
         """
-        raise NotImplementedError
+        return self._wrapped.hide
+
+    @hide.setter
+    def hide(self, value: bool) -> None:
+        """
+        Hide the variable from the User Interface.
+        Variable will not be visible in Component Tree, Data Explorer, or Data Monitors.
+
+        Parameters
+        ----------
+        value : bool
+            Set the value to `True` to hide the variable.
+        """
+        self._wrapped.hide = value
+
+    @property
+    def owning_component(self) -> 'IComponent':
+        """
+        The component that owns this variable.
+
+        Returns
+        -------
+        IComponent :
+            Owning IComponent object.
+        """
+        component: object = self._wrapped.OwningComponent
+        if component is not None:
+            return icomponent.IComponent(component)
+        else:
+            return None
 
     def is_valid(self) -> bool:
         """
-        Returns whether or not the variable is valid.
+        Return whether or not the variable is valid.
 
         Returns
         -------
         bool
             True if variable is valid. False if the variable is not valid.
         """
-        raise NotImplementedError
+        return self._wrapped.isValid()
 
     def validate(self) -> None:
         """
         Validates the variable by running the component if needed.
         """
-        raise NotImplementedError
+        self._wrapped.validate()
 
     def get_name(self) -> str:
         """
@@ -78,7 +157,7 @@ class IVariable:
         str
             The name of the variable.
         """
-        return self._instance.getName()
+        return self._wrapped.getName()
 
     def get_full_name(self) -> str:
         """
@@ -89,7 +168,7 @@ class IVariable:
         str
             The full %ModelCenter path of the variable.
         """
-        raise NotImplementedError
+        return self._wrapped.getFullName()
 
     def get_type(self) -> str:
         """
@@ -102,55 +181,15 @@ class IVariable:
         """
         return self._instance.getType()
 
-    def is_input(self) -> bool:
-        """
-        Finds out whether or not the variable is an input with respect to the model.  Returnszs
-        the same value as \ref isInputToModel.
-        """
-        raise NotImplementedError
-
-    def to_string(self) -> str:
-        """
-        Converts the variable value to a string, validating the variable if necessary.
-
-        Returns
-        -------
-        str
-            The value of the variable as a string.
-        """
-        raise NotImplementedError
-
-    def from_string(self, value: str) -> None:
-        """
-        Sets the value of the variable from the specified string.
-
-        Parameters
-        ----------
-        value
-            New value.
-        """
-        raise NotImplementedError
-
-    def to_string_absolute(self) -> str:
-        """
-        Converts the value of the variable to a string.
-
-        Returns
-        -------
-        str
-            The value of the variable as a string.
-        """
-        raise NotImplementedError
-
     def invalidate(self) -> None:
         """
         Marks the variable as invalid (needs to be computed).
         This will set all dependent variables invalid also.
         """
-        raise NotImplementedError
+        self._wrapped.invalidate()
 
-    def direct_precedents(self, follow_suspended: Optional[object],
-                          reserved: Optional[object]) -> object:
+    def direct_precedents(self, follow_suspended: bool = False,
+                          reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of variables that are immediate precedents to the value of this variable.
         This function returns all variables that influence this variable and are directly
@@ -169,10 +208,11 @@ class IVariable:
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return arrayish.Arrayish(self._wrapped.directPrecedents(
+            follow_suspended), utils.from_dot_net_to_ivariable)
 
-    def direct_dependents(self, follow_suspended: Optional[object],
-                          reserved: Optional[object]) -> object:
+    def direct_dependents(self, follow_suspended: bool = False,
+                          reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of variables that are immediate dependents of the value of this variable.
         This function returns all variables that are influenced by this variable and are
@@ -191,9 +231,10 @@ class IVariable:
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return arrayish.Arrayish(self._wrapped.directDependents(
+            follow_suspended), utils.from_dot_net_to_ivariable)
 
-    def precedent_links(self, reserved: Optional[object]) -> object:
+    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
         Returns a list of links that are immediate precedents to the value of this variable.
         All the returned links will have this variable as the LHS of the equation. Except
@@ -209,9 +250,9 @@ class IVariable:
         object
             IDispatch* to an IVariableLinks object.
         """
-        raise NotImplementedError
+        return dotnet_links_to_iterable(self._wrapped.precedentLinks(reserved))
 
-    def dependent_links(self, reserved: Optional[object]) -> object:
+    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
         Returns a list of links that immediately depend on the value of this variable.
         All the returned links will have this variable as part of a RHS equation.
@@ -226,9 +267,11 @@ class IVariable:
         object
             IDispatch* to an IVariableLinks object.
         """
-        raise NotImplementedError
+        return dotnet_links_to_iterable(self._wrapped.dependentLinks(reserved))
 
-    def precedents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
+    def precedents(self,
+                   follow_suspended: bool = False,
+                   reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of variables that are precedents to the value of this variable. This
         function returns all variables that influence this variable, not just directly connected
@@ -247,9 +290,12 @@ class IVariable:
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return arrayish.Arrayish(self._wrapped.precedents(follow_suspended),
+                                 utils.from_dot_net_to_ivariable)
 
-    def dependents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
+    def dependents(self,
+                   follow_suspended: bool = False,
+                   reserved: Optional[object] = None) -> Sequence['IVariable']:
         """
         Returns a list of variables that are dependent upon the value of this variable.
         This function returns all variables that are influenced by this variable,
@@ -268,7 +314,8 @@ class IVariable:
         object
             IDispatch* to an IVariables object.
         """
-        raise NotImplementedError
+        return arrayish.Arrayish(self._wrapped.dependents(follow_suspended),
+                                 utils.from_dot_net_to_ivariable)
 
     def is_input_to_component(self) -> bool:
         """
@@ -276,55 +323,47 @@ class IVariable:
         Returns true if the variable was originally added as an input, ignoring the
         current state that can change based off of links.
         """
-        raise NotImplementedError
+        return self._wrapped.isInputToComponent()
 
     def is_input_to_model(self) -> bool:
         """
         Checks whether or not the variable is an input. A linked input returns false (Output).
         """
-        raise NotImplementedError
+        return self._wrapped.isInputToModel()
 
-    def set_metadata(self, name: str, type: object, value: object, access: object,
-                     archive: bool) -> None:  # type = MetadataType, access = MetadataAccess
+class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
+    """
+    Base class with methods common to scalar variables.
+    """
+
+    @abstractmethod
+    def set_initial_value(self, value: acvi.IVariableValue) -> None:
         """
-        Sets the meta data value of the given meta data key name.
+        Set the initial value for the variable.
 
         Parameters
         ----------
-        name
-            Metadata specifier used to store the data.
-        type_
-        value
-        access
-        archive
-        """
-        raise NotImplementedError
-
-    def get_metadata(self, name: str) -> object:
-        """
-        Gets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name
-            Metadata key name.
-
-        Returns
-        -------
-        object
-            Metadata value.
+        value : acvi.IVariableValue
+            The new initial value. Should be coercible to the appropriate type.
         """
         raise NotImplementedError
 
 
-class VarType(Enum):
-    """Basic set of variable types."""
+class FormattableVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
+    """
+    Base class for variables which accept a format.
+    """
 
-    INPUT = 0
-    """This is an input."""
+    @property
+    def format(self) -> str:
+        """
+        Get a format string for displaying the variable to the user.
+        """
+        return self._wrapped.format
 
-    OUTPUT = 1
-    """This in an output."""
-
-    GROUP = 2
-    """This is a group."""
+    @format.setter
+    def format(self, value: str) -> str:
+        """
+        Set the format string for displaying the variable to the user.
+        """
+        self._wrapped.format = value

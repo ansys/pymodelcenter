@@ -1,37 +1,33 @@
 from __future__ import annotations
 
-from typing import List, Sequence
+from typing import Sequence
 
 import clr
 
-clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockGroup, MockGroups, MockVariables
+from ansys.modelcenter.workflow.api.arrayish import Arrayish
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.ivariable as ivariable
+
+clr.AddReference("phoenix-mocks/Interop.ModelCenter")
+from ModelCenter import IGroup as mcapiIGroup
 
 
 class IGroup:
     """COM Instance."""
 
-    def __init__(self, group: MockGroup):
+    def __init__(self, group: mcapiIGroup):
         """Initialize."""
         self._instance = group
 
     @property
-    def variables(self) -> Sequence[object]:  # TODO: Variable
+    def variables(self) -> 'Sequence[ivariable.IVariable]':
         """The variables in the Group."""
-        result: List[object] = []  # TODO: Variable
-        variables: MockVariables = self._instance.Variables
-        for i in range(variables.Count):
-            result.append(variables.Item(i))  # TODO: wrap in Variable
-        return result
+        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> Sequence[IGroup]:
+    def groups(self) -> 'Sequence[IGroup]':
         """The Groups this Group is a member of."""
-        result: List[IGroup] = []
-        groups: MockGroups = self._instance.Groups
-        for i in range(groups.Count):
-            result.append(IGroup(groups.Item(i)))
-        return result
+        return Arrayish(self._instance.Groups, IGroup)
 
     @property
     def icon_id(self) -> int:

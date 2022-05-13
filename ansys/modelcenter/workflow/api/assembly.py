@@ -1,18 +1,18 @@
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence
 
 import clr
 
-from . import Arrayish
+from .arrayish import Arrayish
+from .custom_metadata_owner import CustomMetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly
 
-from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
-from .i18n import i18n
-from .igroup import IGroup
+import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.igroup as igroup
 
 
-class Assembly:
+class Assembly(CustomMetadataOwner):
     """COM Instance."""
 
     def __init__(self, assembly: mcapiIAssembly):
@@ -25,10 +25,10 @@ class Assembly:
             The raw IAssembly interface object to use to make direct
             call to ModelCenter.
         """
-        self._assembly = assembly
+        super().__init__(assembly)
 
     @property
-    def variables(self) -> object:  # IVariables:
+    def variables(self) -> Sequence['ivariable.IVariable']:
         """
         Pointer to the variables in the Assembly.
 
@@ -36,11 +36,10 @@ class Assembly:
         -------
         IVariables object.
         """
-        # VARIANT Variables;
-        raise NotImplementedError
+        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> Sequence[IGroup]:
+    def groups(self) -> Sequence['igroup.IGroup']:
         """
         Get a list of variable groups in the Assembly.
 
@@ -48,7 +47,7 @@ class Assembly:
         -------
         A list of variable groups in the assembly.
         """
-        return Arrayish(self._assembly.Groups, IGroup)
+        return Arrayish(self._instance.Groups, igroup.IGroup)
 
     @property
     def assemblies(self) -> Sequence['Assembly']:
@@ -60,7 +59,7 @@ class Assembly:
         IAssemblies object.
         """
         # VARIANT Assemblies;
-        dotnet_mock_mc_assemblies = self._assembly.Assemblies
+        dotnet_mock_mc_assemblies = self._instance.Assemblies
         return [Assembly(dotnet_mock_mc_assemblies.Item(mock_index))
                 for mock_index in range(0, dotnet_mock_mc_assemblies.Count)]
 
@@ -79,7 +78,7 @@ class Assembly:
     @property
     def icon_id(self) -> int:
         """The ID number of the icon to use for the Assembly."""
-        return self._assembly.iconID
+        return self._instance.iconID
 
     @icon_id.setter
     def icon_id(self, value: int) -> None:
@@ -91,12 +90,12 @@ class Assembly:
         value: int
             The new value.
         """
-        self._assembly.iconID = value
+        self._instance.iconID = value
 
     @property
     def index_in_parent(self) -> int:
         """Gets the position of the Assembly within the parent."""
-        return self._assembly.IndexInParent
+        return self._instance.IndexInParent
 
     @property
     def parent_assembly(self) -> Optional['Assembly']:    # IAssembly:
@@ -108,13 +107,13 @@ class Assembly:
         IAssembly object.
 
         """
-        to_wrap = self._assembly.ParentAssembly
+        to_wrap = self._instance.ParentAssembly
         return None if to_wrap is None else Assembly(to_wrap)
 
     @property
     def assembly_type(self) -> str:
         """Gets the type of the Assembly (Sequence, Assembly, etc)."""
-        return self._assembly.AssemblyType
+        return self._instance.AssemblyType
 
     @property
     def user_data(self) -> object:
@@ -124,7 +123,7 @@ class Assembly:
 
         Value is not stored across file save/load.
         """
-        return self._assembly.userData
+        return self._instance.userData
 
     @user_data.setter
     def user_data(self, value: any) -> object:
@@ -148,16 +147,16 @@ class Assembly:
         # end to decide whether it has other restrictions.
         # For now, we do nothing and just pass the unmodified value in, and let pythonnet
         # decide whether it can set it into the user data field.
-        self._assembly.userData = value
+        self._instance.userData = value
 
     def get_name(self) -> str:
         """Get the name of the Assembly."""
-        return self._assembly.getName()
+        return self._instance.getName()
 
     def get_full_name(self) -> str:
         """Get the Full ModelCenter path of the Assembly."""
         # BSTR getFullName();
-        return self._assembly.getFullName()
+        return self._instance.getFullName()
 
     def add_assembly(self,
                      name: str,
@@ -184,9 +183,9 @@ class Assembly:
         """
 
         if x_pos is not None and y_pos is not None:
-            return Assembly(self._assembly.addAssembly2(name, x_pos, y_pos, assembly_type))
+            return Assembly(self._instance.addAssembly2(name, x_pos, y_pos, assembly_type))
         else:
-            return Assembly(self._assembly.addAssembly(name, assembly_type))
+            return Assembly(self._instance.addAssembly(name, assembly_type))
 
     def add_variable(self, name: str, type_: str) -> object:    # IVariable
         # IDispatch* addVariable(BSTR name, BSTR type);
@@ -222,7 +221,7 @@ class Assembly:
         IVariable object.
         """
         # TODO: Wrap and return when variable wrappers are available
-        self._assembly.addVariable(name, type_)
+        self._instance.addVariable(name, type_)
 
     def rename(self, name: str) -> None:
         """
@@ -234,63 +233,7 @@ class Assembly:
             New name of the Assembly.
         """
         # void rename(BSTR name);
-        self._assembly.rename(name)
+        self._instance.rename(name)
 
     def delete_variable(self, name: str) -> None:
-        self._assembly.deleteVariable(name)
-
-    def set_metadata(self,
-                     name: str,
-                     value: Union[str, int, float, bool],
-                     access: ComponentMetadataAccess,
-                     archive: bool,
-                     value_is_xml: bool = False) -> None:
-        """
-        Sets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name :
-            Metadata specifier used to store the data.
-        value :
-            The value of the metadata item.
-        access :
-            The level of access allowed to the metadata.
-        archive :
-            Whether or not the metadata should be considered archived.
-        value_is_xml :
-            Whether the metadata value is XML. This should be used
-            only when passing a string containing XML that should be interpreted as such.
-        """
-        meta_type: ComponentMetadataType = ComponentMetadataType.STRING
-        if isinstance(value, str):
-            meta_type = ComponentMetadataType.STRING
-            if value_is_xml:
-                meta_type = ComponentMetadataType.XML
-        elif isinstance(value, float):
-            meta_type = ComponentMetadataType.DOUBLE
-        elif isinstance(value, bool):
-            # It's important that this comes before int, as python bool is a subclass of int.
-            meta_type = ComponentMetadataType.BOOLEAN
-        elif isinstance(value, int):
-            meta_type = ComponentMetadataType.LONG
-        else:
-            raise TypeError(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
-
-        return self._assembly.setMetadata(name, meta_type.value, value, access.value, archive)
-
-    def get_metadata(self, name: str) -> object:    # Metadata
-        """
-        Gets the meta data value of the given meta data key name.
-
-        Parameters
-        ----------
-        name :
-            Metadata key name.
-
-        Returns
-        -------
-        Metadata value.
-        """
-        # VARIANT getMetadata(BSTR name);
-        return self._assembly.getMetadata(name)
+        self._instance.deleteVariable(name)
