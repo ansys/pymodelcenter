@@ -19,10 +19,16 @@ class Format:
         """
         Style to use for formatting.
 
+        Formats, with the exception of Dates, mimic the formatting style
+        used in Microsoft Excel. They are not a one-to-one match though,
+        there are some differences.
         There are 6 broad categories of formats:
-        1. General:
-        The General format indicates no specific number format.
-        Specified by 'General', or an empty string.
+
+        1. No specific format:
+        Specified by 'General', or an empty string, this is the default
+        format intended to cover most non-specific cases. It shows a
+        limited number of significant figures, and auto-switches between
+        number and scientific formats based on the number's scale.
 
         2. Number:
         Number formats are used for specifying how numeric values will
