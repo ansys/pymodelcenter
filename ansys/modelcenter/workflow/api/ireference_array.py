@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Optional, Sequence
 from overrides import overrides
 
+import ansys.common.variableinterop as acvi
+from .variable_links import VariableLink
 from .iarray import IArray
 from .irefprop import IRefArrayProp
 from .ivariable import VarType
@@ -28,9 +30,35 @@ class IReferenceArray(IArray):
             The state of the variable.
         """
         self._instance = Mocks.MockReferenceArray(name, state)
+        self._standard_metadata = acvi.RealArrayMetadata()
 
 ####################################################################################################
 # region Inherited from IVariable
+
+    @property
+    @overrides
+    def value(self) -> acvi.IVariableValue:
+        return acvi.RealArrayValue.from_api_string(self._instance.toString())
+
+    @value.setter
+    @overrides
+    def value(self, new_value: acvi.IVariableValue):
+        self._instance.set_value(new_value)
+
+    @property
+    @overrides
+    def value_absolute(self) -> acvi.IVariableValue:
+        pass
+
+    @property
+    @overrides
+    def standard_metadata(self) -> acvi.CommonVariableMetadata:
+        return self._standard_metadata
+
+    @standard_metadata.setter
+    @overrides
+    def standard_metadata(self, value: acvi.CommonVariableMetadata):
+        self._standard_metadata = value
 
     @property
     @overrides
@@ -71,50 +99,47 @@ class IReferenceArray(IArray):
     def get_type(self) -> str:
         return self._instance.getType()
 
-    @overrides
     def is_input(self) -> bool:
         return self._instance.isInput()
 
-    @overrides
     def to_string(self) -> str:
         return self._instance.toString()
 
-    @overrides
     def from_string(self, value: str) -> None:
         self._instance.fromString(value)
 
-    @overrides
     def to_string_absolute(self) -> str:
         return self._instance.toStringAbsolute()
 
-    @overrides
     def invalidate(self) -> None:
         self._instance.invalidate()
 
     @overrides
-    def direct_precedents(self, follow_suspended: Optional[object],
-                          reserved: Optional[object]) -> object:
+    def direct_precedents(self, follow_suspended: bool = False,
+                          reserved: Optional[object] = False) -> Sequence['IVariable']:
         return self._instance.directPrecedents(follow_suspended, reserved)
 
     @overrides
-    def direct_dependents(self, follow_suspended: Optional[object],
-                          reserved: Optional[object]) -> object:
+    def direct_dependents(self, follow_suspended: bool = False,
+                          reserved: Optional[object] = None) -> Sequence['IVariable']:
         return self._instance.directDependents(follow_suspended, reserved)
 
     @overrides
-    def precedent_links(self, reserved: Optional[object]) -> object:
+    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         return self._instance.precedentLinks(reserved)
 
     @overrides
-    def dependent_links(self, reserved: Optional[object]) -> object:
+    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         return self._instance.dependentLinks(reserved)
 
     @overrides
-    def precedents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
+    def precedents(self, follow_suspended: bool = False,
+                   reserved: Optional[object] = None) -> Sequence['IVariable']:
         return self._instance.precedents(follow_suspended, reserved)
 
     @overrides
-    def dependents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
+    def dependents(self, follow_suspended: bool = False,
+                   reserved: Optional[object] = None) -> Sequence['IVariable']:
         return self._instance.dependents(follow_suspended, reserved)
 
     @overrides
@@ -125,12 +150,10 @@ class IReferenceArray(IArray):
     def is_input_to_model(self) -> bool:
         return self._instance.isInputToModel()
 
-    @overrides
     def set_metadata(self, name: str, type_: object, value: object, access: object,
                      archive: bool) -> None:
         self._instance.setMetadata(name, type_, value, access, archive)
 
-    @overrides
     def get_metadata(self, name: str) -> object:
         return self._instance.getMetadata(name)
 
@@ -141,7 +164,6 @@ class IReferenceArray(IArray):
 # region Inherited from IArray
 
     @property
-    @overrides
     def size(self) -> int:
         return self._instance.size
 
@@ -159,7 +181,6 @@ class IReferenceArray(IArray):
         self._instance.autoSize = value
 
     @property
-    @overrides
     def num_dimensions(self) -> int:
         return self._instance.numDimensions
 
@@ -168,7 +189,6 @@ class IReferenceArray(IArray):
         self._instance.numDimensions = value
 
     @property
-    @overrides
     def length(self) -> int:
         return self._instance.length
 
@@ -176,27 +196,21 @@ class IReferenceArray(IArray):
     def length(self, value):
         self._instance.length = value
 
-    @overrides
     def to_string_ex(self, index: int) -> str:
         return self._instance.toStringEx(index)
 
-    @overrides
     def from_string_ex(self, value: str, index: int) -> None:
         self._instance.fromStringEx(value, index)
 
-    @overrides
     def to_string_absolute_ex(self, index: int) -> str:
         pass
 
-    @overrides
     def get_length(self, dim: Optional[object]) -> int:
         pass
 
-    @overrides
     def set_length(self, length: int, dim: Optional[object]) -> None:
         pass
 
-    @overrides
     def set_dimensions(self, d1: int, d2: Optional[object], d3: Optional[object],
                        d4: Optional[object], d5: Optional[object], d6: Optional[object],
                        d7: Optional[object], d8: Optional[object], d9: Optional[object],
@@ -205,15 +219,12 @@ class IReferenceArray(IArray):
         args = locals().values()
         self._instance.setDimensions(*args)
 
-    @overrides
     def get_size(self, dim: Optional[object]) -> int:
         return self._instance.getSize(dim)
 
-    @overrides
     def set_size(self, length: int, dim: Optional[object]) -> None:
         self._instance.setSize(length, dim)
 
-    @overrides
     def get_dimensions(self) -> object:
         return self._instance.getDimensions()
 

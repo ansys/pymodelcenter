@@ -1,6 +1,9 @@
-from typing import Optional
+from typing import Optional, Sequence
+
+from ansys.common import variableinterop as acvi
 from overrides import overrides
 
+from .variable_links import VariableLink
 from .irefprop import IRefProp
 from .ivariable import IVariable, VarType
 import clr
@@ -30,6 +33,14 @@ class IReferenceVariable(IVariable):
 
 ####################################################################################################
 # region Inherited from IVariable
+    @property
+    def value_absolute(self) -> acvi.IVariableValue:
+        pass
+
+    @property
+    def standard_metadata(self) -> acvi.CommonVariableMetadata:
+        pass
+
     @property
     @overrides
     def has_changed(self) -> bool:
@@ -69,19 +80,15 @@ class IReferenceVariable(IVariable):
     def get_type(self) -> str:
         return self._instance.getType()
 
-    @overrides
     def is_input(self) -> bool:
         return self._instance.isInput()
 
-    @overrides
     def to_string(self) -> str:
         return self._instance.toString()
 
-    @overrides
     def from_string(self, value: str) -> None:
         self._instance.fromString(value)
 
-    @overrides
     def to_string_absolute(self) -> str:
         return self._instance.toStringAbsolute()
 
@@ -90,29 +97,31 @@ class IReferenceVariable(IVariable):
         self._instance.invalidate()
 
     @overrides
-    def direct_precedents(self, follow_suspended: Optional[object],
-                          reserved: Optional[object]) -> object:
+    def direct_precedents(self, follow_suspended: bool = False,
+                          reserved: Optional[object] = None) -> Sequence['IVariable']:
         return self._instance.directPrecedents(follow_suspended, reserved)
 
     @overrides
-    def direct_dependents(self, follow_suspended: Optional[object],
-                          reserved: Optional[object]) -> object:
+    def direct_dependents(self, follow_suspended: bool = False,
+                          reserved: Optional[object] = None) -> Sequence['IVariable']:
         return self._instance.directDependents(follow_suspended, reserved)
 
     @overrides
-    def precedent_links(self, reserved: Optional[object]) -> object:
+    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         return self._instance.precedentLinks(reserved)
 
     @overrides
-    def dependent_links(self, reserved: Optional[object]) -> object:
+    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         return self._instance.dependentLinks(reserved)
 
     @overrides
-    def precedents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
+    def precedents(self, follow_suspended: bool = False,
+                   reserved: Optional[object] = None) -> Sequence['IVariable']:
         return self._instance.precedents(follow_suspended, reserved)
 
     @overrides
-    def dependents(self, follow_suspended: Optional[object], reserved: Optional[object]) -> object:
+    def dependents(self, follow_suspended: bool = False,
+                   reserved: Optional[object] = None) -> Sequence['IVariable']:
         return self._instance.dependents(follow_suspended, reserved)
 
     @overrides
@@ -123,12 +132,10 @@ class IReferenceVariable(IVariable):
     def is_input_to_model(self) -> bool:
         return self._instance.isInputToModel()
 
-    @overrides
     def set_metadata(self, name: str, type_: object, value: object, access: object,
                      archive: bool) -> None:
         self._instance.setMetadata(name, type_, value, access, archive)
 
-    @overrides
     def get_metadata(self, name: str) -> object:
         return self._instance.getMetadata(name)
 
@@ -195,9 +202,7 @@ class IReferenceVariable(IVariable):
         -------
         IRefProp object.
         """
-        # TODO: replace when possible (mock is not implemented)
-        #  return IRefProp(self._instance.createRefProp(name, type_))
-        return IRefProp()
+        return IRefProp('', '', self._instance.createRefProp(name, type_))
 
     def get_ref_prop_value(self, name: str) -> object:
         """
