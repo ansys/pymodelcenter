@@ -1,284 +1,97 @@
-from typing import Optional
-
+import ansys.common.variableinterop as acvi
+import clr
+from overrides import overrides
 from ansys.modelcenter.workflow.api.iarray import IArray
 
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockFileArray
 
-class IFileArray(IArray):
-    """
-    COM instance.
 
-    Implements IArray.
-    """
+class IFileArray(IArray[MockFileArray]):
+    """Represents a file array variable in the workflow."""
 
-    @property
-    def is_binary(self) -> bool:
-        """
-        Whether or not the file is binary.
-        """
-        raise NotImplementedError
+    @overrides
+    def __init__(self, wrapped: MockFileArray):
+        super().__init__(wrapped)
+        self._standard_metadata: acvi.CommonVariableMetadata = acvi.FileArrayMetadata()
 
     @property
-    def description(self) -> str:
+    @overrides
+    def value(self) -> acvi.FileArrayValue:
         """
-        Description of the array.
+        Value of the variable.
+
+        Returns
+        -------
+        FileArrayValue :
+            Value of the file array variable.
         """
-        raise NotImplementedError
+        string: str = self._wrapped.toString()
+        return None
+        # TODO: Implement acvi.FileArrayValue.from_api_string().
+        # return acvi.FileArrayValue.from_api_string(string)
+
+    @value.setter
+    @overrides
+    def value(self, new_value: acvi.FileArrayValue):
+        """
+        Set value of the variable.
+
+        Parameters
+        ----------
+        new_value : FileArrayValue
+            Value of the file array variable.
+        """
+        if new_value is None:
+            self._wrapped.fromString(None)
+        else:
+            self._wrapped.fromString(new_value.to_api_string())
+
+    @property
+    @overrides
+    def value_absolute(self) -> acvi.FileArrayValue:
+        return self.value
+
+    @value_absolute.setter
+    @overrides
+    def value_absolute(self, value: acvi.FileArrayValue) -> None:
+        self.value = value
 
     @property
     def save_with_model(self) -> bool:
         """
         Flag to indicate whether the file content to be saved with the Model file.
-        """
-        raise NotImplementedError
-
-    @property
-    def direct_transfer(self) -> bool:
-        raise NotImplementedError
-
-    def get_value(self, d1: object, d2: Optional[object], d3: Optional[object],
-                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                  d10: Optional[object]) -> str:
-        """
-        Get the value of an array element.
-
-        Parameters
-        ----------
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
 
         Returns
         -------
-        str
-            The value.
+        bool :
+            `True` if the file content to be saved with the Model file.
         """
-        raise NotImplementedError
+        return self._wrapped.saveWithModel
 
-    def set_value(self, d1: object, d2: Optional[object], d3: Optional[object],
-                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                  d10: Optional[object], new_value: str) -> None:
+    @save_with_model.setter
+    def save_with_model(self, value: bool) -> None:
         """
-        Set the value of an array element.
+        Flag to indicate whether the file content to be saved with the Model file.
 
         Parameters
         ----------
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-        new_value
-            The new value.
+        value : bool
+            Set to `True` if the file content is to be saved with the Model file.
         """
-        raise NotImplementedError
+        self._wrapped.saveWithModel = value
 
-    def get_file_extension(self, d1: object, d2: Optional[object], d3: Optional[object],
-                           d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                           d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                           d10: Optional[object]) -> str:
-        """
-        Gets the extension used for the file (used to associate the file with an application).
+    @property  # type: ignore
+    @overrides
+    def standard_metadata(self) -> acvi.FileArrayMetadata:
+        return self._standard_metadata
 
-        Parameters
-        ----------
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-
-        Returns
-        -------
-        str
-            The file extension.
-        """
-        raise NotImplementedError
-
-    def set_file_extension(self, value: str, d1: object, d2: Optional[object], d3: Optional[object],
-                           d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                           d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                           d10: Optional[object]) -> None:
-        """
-        Sets the desired file extension for the file.
-
-        Parameters
-        ----------
-        value
-            The file extension.
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-        """
-        raise NotImplementedError
-
-    def to_file(self, file_name: str, encoding: object, d1: object, d2: Optional[object],
-                d3: Optional[object], d4: Optional[object], d5: Optional[object],
-                d6: Optional[object], d7: Optional[object], d8: Optional[object],
-                d9: Optional[object], d10: Optional[object]) -> None:
-        """
-        Writes out contents to a file.
-
-        Parameters
-        ----------
-        file_name
-            The file to write.
-        encoding
-            File encoding to be used (ascii, utf-8, binary).
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-        """
-        raise NotImplementedError
-
-    def from_file(self, file_name: str, d1: object, d2: Optional[object], d3: Optional[object],
-                  d4: Optional[object], d5: Optional[object], d6: Optional[object],
-                  d7: Optional[object], d8: Optional[object], d9: Optional[object],
-                  d10: Optional[object]) -> None:
-        """
-        Reads data from a file.
-
-        Parameters
-        ----------
-        file_name
-            The file to load.
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-        """
-        raise NotImplementedError
-
-    def to_file_absolute(self, file_name: str, encoding: object, d1: object, d2: Optional[object],
-                         d3: Optional[object], d4: Optional[object], d5: Optional[object],
-                         d6: Optional[object], d7: Optional[object], d8: Optional[object],
-                         d9: Optional[object], d10: Optional[object]) -> None:
-        """
-        Writes out contents to a file without validating the variable.
-
-        Parameters
-        ----------
-        file_name
-            The file to write.
-        encoding
-            File encoding to be used (ascii, utf-8, binary).
-        d1
-            Index in the 1st dimension (0-based index).
-        d2
-            Index in the 2nd dimension (0-based index).
-        d3
-            Index in the 3rd dimension (0-based index).
-        d4
-            Index in the 4th dimension (0-based index).
-        d5
-            Index in the 5th dimension (0-based index).
-        d6
-            Index in the 6th dimension (0-based index).
-        d7
-            Index in the 7th dimension (0-based index).
-        d8
-            Index in the 8th dimension (0-based index).
-        d9
-            Index in the 9th dimension (0-based index).
-        d10
-            Index in the 10th dimension (0-based index).
-        """
-        raise NotImplementedError
+    @standard_metadata.setter  # type: ignore
+    @overrides
+    def standard_metadata(self, new_metadata: acvi.FileArrayMetadata) -> None:
+        if not isinstance(new_metadata, acvi.FileArrayMetadata):
+            raise acvi.exceptions.IncompatibleTypesException(
+                new_metadata.variable_type.name,
+                self._standard_metadata.variable_type.name)
+        else:
+            self._standard_metadata = new_metadata
