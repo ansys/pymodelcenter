@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from mock_access import MockAccess
+from .mock_access import MockAccess
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
 

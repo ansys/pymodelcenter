@@ -15,6 +15,7 @@ def setup_function():
     sut.set_value(3.3, 2)
 
 
+@pytest.mark.skip(reason="Not implemented.")
 def test_auto_grow() -> None:
     """Testing of the auto_grow property."""
     # SUT
@@ -26,9 +27,10 @@ def test_auto_grow() -> None:
     assert not sut.auto_grow
 
 
+@pytest.mark.skip(reason="Not implemented.")
 def test_value() -> None:
     """Testing of the value property."""
-
+    pass
 
 
 @pytest.mark.skip(reason="Not implemented.")

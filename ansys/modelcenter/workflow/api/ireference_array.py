@@ -8,17 +8,17 @@ from .irefprop import IRefArrayProp
 from .ivariable import VarType
 import clr
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-import Phoenix.Mock as Mocks
+import Phoenix.Mock as mocks
 
 
-class IReferenceArray(IArray):
+class IReferenceArray(IArray[mocks.MockReferenceArray]):
     """
     Hold a reference to an array.
 
     Implements IVariable.
     """
 
-    def __init__(self, name: str, state: VarType):
+    def __init__(self, wrapped: mocks.MockReferenceArray):
         """
         Initialize.
 
@@ -29,7 +29,7 @@ class IReferenceArray(IArray):
         state : VarType
             The state of the variable.
         """
-        self._instance = Mocks.MockReferenceArray(name, state)
+        self._wrapped = wrapped
         self._standard_metadata = acvi.RealArrayMetadata()
 
 ####################################################################################################
@@ -38,12 +38,12 @@ class IReferenceArray(IArray):
     @property
     @overrides
     def value(self) -> acvi.IVariableValue:
-        return acvi.RealArrayValue.from_api_string(self._instance.toString())
+        return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
 
     @value.setter
     @overrides
     def value(self, new_value: acvi.IVariableValue):
-        self._instance.set_value(new_value)
+        self._wrapped.set_value(new_value)
 
     @property
     @overrides
@@ -63,99 +63,99 @@ class IReferenceArray(IArray):
     @property
     @overrides
     def has_changed(self) -> bool:
-        return self._instance.hasChanged
+        return self._wrapped.hasChanged
 
     @property
     @overrides
     def hide(self) -> bool:
-        return self._instance.hide
+        return self._wrapped.hide
 
     @hide.setter
     def hide(self, value: bool):
-        self._instance.hide = value
+        self._wrapped.hide = value
 
     @property
     @overrides
     def owning_component(self) -> object:
-        return self._instance.OwningComponent
+        return self._wrapped.OwningComponent
 
     @overrides
     def is_valid(self) -> bool:
-        return self._instance.isValid()
+        return self._wrapped.isValid()
 
     @overrides
     def validate(self) -> None:
-        self._instance.validate()
+        self._wrapped.validate()
 
     @overrides
     def get_name(self) -> str:
-        return self._instance.getName()
+        return self._wrapped.getName()
 
     @overrides
     def get_full_name(self) -> str:
-        return self._instance.getFullName()
+        return self._wrapped.getFullName()
 
     @overrides
     def get_type(self) -> str:
-        return self._instance.getType()
+        return self._wrapped.getType()
 
     def is_input(self) -> bool:
-        return self._instance.isInput()
+        return self._wrapped.isInput()
 
     def to_string(self) -> str:
-        return self._instance.toString()
+        return self._wrapped.toString()
 
     def from_string(self, value: str) -> None:
-        self._instance.fromString(value)
+        self._wrapped.fromString(value)
 
     def to_string_absolute(self) -> str:
-        return self._instance.toStringAbsolute()
+        return self._wrapped.toStringAbsolute()
 
     def invalidate(self) -> None:
-        self._instance.invalidate()
+        self._wrapped.invalidate()
 
     @overrides
     def direct_precedents(self, follow_suspended: bool = False,
                           reserved: Optional[object] = False) -> Sequence['IVariable']:
-        return self._instance.directPrecedents(follow_suspended, reserved)
+        return self._wrapped.directPrecedents(follow_suspended, reserved)
 
     @overrides
     def direct_dependents(self, follow_suspended: bool = False,
                           reserved: Optional[object] = None) -> Sequence['IVariable']:
-        return self._instance.directDependents(follow_suspended, reserved)
+        return self._wrapped.directDependents(follow_suspended, reserved)
 
     @overrides
     def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        return self._instance.precedentLinks(reserved)
+        return self._wrapped.precedentLinks(reserved)
 
     @overrides
     def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        return self._instance.dependentLinks(reserved)
+        return self._wrapped.dependentLinks(reserved)
 
     @overrides
     def precedents(self, follow_suspended: bool = False,
                    reserved: Optional[object] = None) -> Sequence['IVariable']:
-        return self._instance.precedents(follow_suspended, reserved)
+        return self._wrapped.precedents(follow_suspended, reserved)
 
     @overrides
     def dependents(self, follow_suspended: bool = False,
                    reserved: Optional[object] = None) -> Sequence['IVariable']:
-        return self._instance.dependents(follow_suspended, reserved)
+        return self._wrapped.dependents(follow_suspended, reserved)
 
     @overrides
     def is_input_to_component(self) -> bool:
-        return self._instance.isInputToComponent()
+        return self._wrapped.isInputToComponent()
 
     @overrides
     def is_input_to_model(self) -> bool:
-        return self._instance.isInputToModel()
+        return self._wrapped.isInputToModel()
 
     def set_metadata(self, name: str, type_: object, value: object, access: object,
                      archive: bool) -> None:
-        self._instance.setMetadata(name, type_, value, access, archive)
+        self._wrapped.setMetadata(name, type_, value, access, archive)
 
     def get_metadata(self, name: str) -> object:
-        return self._instance.getMetadata(name)
+        return self._wrapped.getMetadata(name)
 
 # endregion
 ####################################################################################################
@@ -165,42 +165,42 @@ class IReferenceArray(IArray):
 
     @property
     def size(self) -> int:
-        return self._instance.size
+        return self._wrapped.size
 
     @size.setter
     def size(self, value):
-        self._instance.size = value
+        self._wrapped.size = value
 
     @property
     @overrides
     def auto_size(self) -> bool:
-        return self._instance.autoSize
+        return self._wrapped.autoSize
 
     @auto_size.setter
     def auto_size(self, value):
-        self._instance.autoSize = value
+        self._wrapped.autoSize = value
 
     @property
     def num_dimensions(self) -> int:
-        return self._instance.numDimensions
+        return self._wrapped.numDimensions
 
     @num_dimensions.setter
     def num_dimensions(self, value):
-        self._instance.numDimensions = value
+        self._wrapped.numDimensions = value
 
     @property
     def length(self) -> int:
-        return self._instance.length
+        return self._wrapped.length
 
     @length.setter
     def length(self, value):
-        self._instance.length = value
+        self._wrapped.length = value
 
     def to_string_ex(self, index: int) -> str:
-        return self._instance.toStringEx(index)
+        return self._wrapped.toStringEx(index)
 
     def from_string_ex(self, value: str, index: int) -> None:
-        self._instance.fromStringEx(value, index)
+        self._wrapped.fromStringEx(value, index)
 
     def to_string_absolute_ex(self, index: int) -> str:
         pass
@@ -217,16 +217,16 @@ class IReferenceArray(IArray):
                        d10: Optional[object]) -> None:
         # 'args' needs to be the first method local variable declared for the wrapped call to work
         args = locals().values()
-        self._instance.setDimensions(*args)
+        self._wrapped.setDimensions(*args)
 
     def get_size(self, dim: Optional[object]) -> int:
-        return self._instance.getSize(dim)
+        return self._wrapped.getSize(dim)
 
     def set_size(self, length: int, dim: Optional[object]) -> None:
-        self._instance.setSize(length, dim)
+        self._wrapped.setSize(length, dim)
 
     def get_dimensions(self) -> object:
-        return self._instance.getDimensions()
+        return self._wrapped.getDimensions()
 
 # endregion
 ####################################################################################################
@@ -237,11 +237,11 @@ class IReferenceArray(IArray):
         Whether or not the reference array is set to automatically \
         grow.
         """
-        return self._instance.autoGrow
+        return self._wrapped.autoGrow
 
     @auto_grow.setter
     def auto_grow(self, value):
-        self._instance.autoGrow = value
+        self._wrapped.autoGrow = value
 
     def get_value(self, index: int) -> float:
         """
@@ -256,7 +256,7 @@ class IReferenceArray(IArray):
         -------
         The value.
         """
-        return self._instance.getValue(index)
+        return self._wrapped.getValue(index)
 
     def set_value(self, value: float, index: int) -> float:
         """
@@ -273,7 +273,7 @@ class IReferenceArray(IArray):
         -------
 
         """
-        return self._instance.setValue(value, index)
+        return self._wrapped.setValue(value, index)
 
     def create_ref_prop(self, name: str, type_: str) -> IRefArrayProp:
         """
@@ -291,7 +291,7 @@ class IReferenceArray(IArray):
         -------
         IRefArrayProp object.
         """
-        return IRefArrayProp('', '', self._instance.createRefProp(name, type_))
+        return IRefArrayProp('', '', self._wrapped.createRefProp(name, type_))
 
     def get_ref_prop_value(self, name: str, index: int) -> object:
         """
@@ -309,7 +309,7 @@ class IReferenceArray(IArray):
         -------
         The value as a variant.
         """
-        return self._instance.getRefPropValue(name, index)
+        return self._wrapped.getRefPropValue(name, index)
 
     def set_ref_prop_value(self, name: str, index: int, value: str) -> None:
         """
@@ -325,7 +325,7 @@ class IReferenceArray(IArray):
         value : str
             New value.
         """
-        self._instance.setRefPropValue(name, index, value)
+        self._wrapped.setRefPropValue(name, index, value)
 
     def get_ref_prop_value_absolute(self, name: str, index: int) -> object:
         """
@@ -343,7 +343,7 @@ class IReferenceArray(IArray):
         -------
         The value as a variant.
         """
-        return self._instance.getRefPropValueAbsolute(name, index)
+        return self._wrapped.getRefPropValueAbsolute(name, index)
 
     def referenced_variables(self, index: int) -> object:
         """
@@ -359,7 +359,7 @@ class IReferenceArray(IArray):
         The references variables of the element.
 
         """
-        return self._instance.get_referencedVariables(index)
+        return self._wrapped.get_referencedVariables(index)
 
     def referenced_variable(self, index: int) -> object:
         """
@@ -377,7 +377,7 @@ class IReferenceArray(IArray):
         -------
         The reference variable of the index element.
         """
-        return self._instance.get_referencedVariable(index)
+        return self._wrapped.get_referencedVariable(index)
 
     def get_value_absolute(self, index: int) -> float:
         """
@@ -393,4 +393,4 @@ class IReferenceArray(IArray):
         -------
         The reference value.
         """
-        return self._instance.getValueAbsolute(index)
+        return self._wrapped.getValueAbsolute(index)

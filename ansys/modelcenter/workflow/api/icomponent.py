@@ -34,13 +34,13 @@ class IComponent(CustomMetadataOwner):
     @property
     def variables(self) -> 'Sequence[ivariable.IVariable]':
         """Variables in the component."""
-        variables = self._instance.Variables
+        variables = self._wrapped.Variables
         return Arrayish(variables, from_dot_net_to_ivariable)
 
     @property
     def groups(self) -> 'Sequence[igroup.IGroup]':
         """All groups in the component."""
-        return Arrayish(self._instance.Groups, igroup.IGroup)
+        return Arrayish(self._wrapped.Groups, igroup.IGroup)
 
     @property
     def user_data(self) -> Any:
@@ -49,7 +49,7 @@ class IComponent(CustomMetadataOwner):
 
         The value is not stored across save/load operations.
         """
-        return self._instance.userData
+        return self._wrapped.userData
 
     @user_data.setter
     def user_data(self, source: Any) -> None:
@@ -62,12 +62,12 @@ class IComponent(CustomMetadataOwner):
             dot_net_source = to_dot_net_list(source, DotNetObject)
         else:
             dot_net_source = source
-        self._instance.userData = dot_net_source
+        self._wrapped.userData = dot_net_source
 
     @property
     def associated_files(self) -> Union[str, List[str]]:
         """Set of files associated with the component."""
-        ret = self._instance.AssociatedFiles
+        ret = self._wrapped.AssociatedFiles
         return ret
 
     @associated_files.setter
@@ -79,17 +79,17 @@ class IComponent(CustomMetadataOwner):
         else:
             dot_net_value = to_dot_net_list(source, DotNetString)
 
-        self._instance.AssociatedFiles = dot_net_value
+        self._wrapped.AssociatedFiles = dot_net_value
 
     @property
     def index_in_parent(self) -> int:
         """Position of this component in its parent assembly."""
-        return self._instance.IndexInParent
+        return self._wrapped.IndexInParent
 
     @property
     def parent_assembly(self) -> 'assembly.Assembly':
         """Parent assembly of this component."""
-        parent_assembly = self._instance.ParentAssembly
+        parent_assembly = self._wrapped.ParentAssembly
         return assembly.Assembly(parent_assembly)
 
     def get_name(self) -> str:
@@ -100,7 +100,7 @@ class IComponent(CustomMetadataOwner):
         -------
         The name of the component.
         """
-        return self._instance.getName()
+        return self._wrapped.getName()
 
     def get_full_name(self) -> str:
         """
@@ -110,7 +110,7 @@ class IComponent(CustomMetadataOwner):
         -------
         The full path of the component.
         """
-        return self._instance.getFullName()
+        return self._wrapped.getFullName()
 
     def get_source(self) -> str:
         """
@@ -120,7 +120,7 @@ class IComponent(CustomMetadataOwner):
         -------
         The source of the component.
         """
-        return self._instance.getSource()
+        return self._wrapped.getSource()
 
     def get_variable(self, name: str) -> 'IVariable':
         """
@@ -136,7 +136,7 @@ class IComponent(CustomMetadataOwner):
         -------
         The variable object.
         """
-        mcapi_variable = self._instance.getVariable(name)
+        mcapi_variable = self._wrapped.getVariable(name)
         return from_dot_net_to_ivariable(mcapi_variable)
 
     def get_type(self) -> str:
@@ -156,11 +156,11 @@ class IComponent(CustomMetadataOwner):
         -------
         The type of the component.
         """
-        return self._instance.getType()
+        return self._wrapped.getType()
 
     def run(self) -> None:
         """Run the component."""
-        self._instance.run()
+        self._wrapped.run()
 
     def invoke_method(self, method: str) -> None:
         """
@@ -171,20 +171,20 @@ class IComponent(CustomMetadataOwner):
         method: str
             The name of the method to invoke.
         """
-        self._instance.invokeMethod(method)
+        self._wrapped.invokeMethod(method)
 
     def invalidate(self) -> None:
         """Invalidate the component and all of its variables."""
-        self._instance.invalidate()
+        self._wrapped.invalidate()
 
     def reconnect(self) -> None:
         """Reload this component from its source."""
-        self._instance.reconnect()
+        self._wrapped.reconnect()
 
     def download_values(self) -> None:
         """Download the component's variable values from the server if\
         it is a ModelCenter Remote Execution component."""
-        self._instance.downloadValues()
+        self._wrapped.downloadValues()
 
     def rename(self, name: str) -> None:
         """
@@ -195,7 +195,7 @@ class IComponent(CustomMetadataOwner):
         name: str
             The new name of the component.
         """
-        self._instance.rename(name)
+        self._wrapped.rename(name)
 
     def get_position_x(self) -> int:
         """
@@ -206,7 +206,7 @@ class IComponent(CustomMetadataOwner):
         The X position.
         """
         # int getPositionX();
-        return self._instance.getPositionX()
+        return self._wrapped.getPositionX()
 
     def get_position_y(self) -> int:
         """
@@ -217,8 +217,8 @@ class IComponent(CustomMetadataOwner):
         The Y position.
         """
         # int getPositionY();
-        return self._instance.getPositionY()
+        return self._wrapped.getPositionY()
 
     def show(self) -> None:
         """Show the component's GUI, if it has one."""
-        self._instance.show()
+        self._wrapped.show()

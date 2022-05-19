@@ -36,7 +36,7 @@ class Assembly(CustomMetadataOwner):
         -------
         IVariables object.
         """
-        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
+        return Arrayish(self._wrapped.Variables, utils.from_dot_net_to_ivariable)
 
     @property
     def groups(self) -> Sequence['igroup.IGroup']:
@@ -47,7 +47,7 @@ class Assembly(CustomMetadataOwner):
         -------
         A list of variable groups in the assembly.
         """
-        return Arrayish(self._instance.Groups, igroup.IGroup)
+        return Arrayish(self._wrapped.Groups, igroup.IGroup)
 
     @property
     def assemblies(self) -> Sequence['Assembly']:
@@ -59,7 +59,7 @@ class Assembly(CustomMetadataOwner):
         IAssemblies object.
         """
         # VARIANT Assemblies;
-        dotnet_mock_mc_assemblies = self._instance.Assemblies
+        dotnet_mock_mc_assemblies = self._wrapped.Assemblies
         return [Assembly(dotnet_mock_mc_assemblies.Item(mock_index))
                 for mock_index in range(0, dotnet_mock_mc_assemblies.Count)]
 
@@ -78,7 +78,7 @@ class Assembly(CustomMetadataOwner):
     @property
     def icon_id(self) -> int:
         """The ID number of the icon to use for the Assembly."""
-        return self._instance.iconID
+        return self._wrapped.iconID
 
     @icon_id.setter
     def icon_id(self, value: int) -> None:
@@ -90,12 +90,12 @@ class Assembly(CustomMetadataOwner):
         value: int
             The new value.
         """
-        self._instance.iconID = value
+        self._wrapped.iconID = value
 
     @property
     def index_in_parent(self) -> int:
         """Gets the position of the Assembly within the parent."""
-        return self._instance.IndexInParent
+        return self._wrapped.IndexInParent
 
     @property
     def parent_assembly(self) -> Optional['Assembly']:    # IAssembly:
@@ -107,13 +107,13 @@ class Assembly(CustomMetadataOwner):
         IAssembly object.
 
         """
-        to_wrap = self._instance.ParentAssembly
+        to_wrap = self._wrapped.ParentAssembly
         return None if to_wrap is None else Assembly(to_wrap)
 
     @property
     def assembly_type(self) -> str:
         """Gets the type of the Assembly (Sequence, Assembly, etc)."""
-        return self._instance.AssemblyType
+        return self._wrapped.AssemblyType
 
     @property
     def user_data(self) -> object:
@@ -123,7 +123,7 @@ class Assembly(CustomMetadataOwner):
 
         Value is not stored across file save/load.
         """
-        return self._instance.userData
+        return self._wrapped.userData
 
     @user_data.setter
     def user_data(self, value: any) -> object:
@@ -147,16 +147,16 @@ class Assembly(CustomMetadataOwner):
         # end to decide whether it has other restrictions.
         # For now, we do nothing and just pass the unmodified value in, and let pythonnet
         # decide whether it can set it into the user data field.
-        self._instance.userData = value
+        self._wrapped.userData = value
 
     def get_name(self) -> str:
         """Get the name of the Assembly."""
-        return self._instance.getName()
+        return self._wrapped.getName()
 
     def get_full_name(self) -> str:
         """Get the Full ModelCenter path of the Assembly."""
         # BSTR getFullName();
-        return self._instance.getFullName()
+        return self._wrapped.getFullName()
 
     def add_assembly(self,
                      name: str,
@@ -183,9 +183,9 @@ class Assembly(CustomMetadataOwner):
         """
 
         if x_pos is not None and y_pos is not None:
-            return Assembly(self._instance.addAssembly2(name, x_pos, y_pos, assembly_type))
+            return Assembly(self._wrapped.addAssembly2(name, x_pos, y_pos, assembly_type))
         else:
-            return Assembly(self._instance.addAssembly(name, assembly_type))
+            return Assembly(self._wrapped.addAssembly(name, assembly_type))
 
     def add_variable(self, name: str, type_: str) -> object:    # IVariable
         # IDispatch* addVariable(BSTR name, BSTR type);
@@ -221,7 +221,7 @@ class Assembly(CustomMetadataOwner):
         IVariable object.
         """
         # TODO: Wrap and return when variable wrappers are available
-        self._instance.addVariable(name, type_)
+        self._wrapped.addVariable(name, type_)
 
     def rename(self, name: str) -> None:
         """
@@ -233,7 +233,7 @@ class Assembly(CustomMetadataOwner):
             New name of the Assembly.
         """
         # void rename(BSTR name);
-        self._instance.rename(name)
+        self._wrapped.rename(name)
 
     def delete_variable(self, name: str) -> None:
-        self._instance.deleteVariable(name)
+        self._wrapped.deleteVariable(name)

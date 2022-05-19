@@ -27,7 +27,7 @@ class IIfComponent(IComponent):
         -------
         True if in exclusive mode, False if in inclusive mode.
         """
-        return self._instance.exclusive
+        return self._wrapped.exclusive
 
     @exclusive.setter
     def exclusive(self, value: bool) -> None:
@@ -39,7 +39,7 @@ class IIfComponent(IComponent):
         value : bool
             The new value.
         """
-        self._instance.exclusive = value
+        self._wrapped.exclusive = value
 
     @property
     def run_last_branch_by_default(self) -> bool:
@@ -51,7 +51,7 @@ class IIfComponent(IComponent):
         -------
         True if there is an else branch, False otherwise.
         """
-        return self._instance.runLastBranchByDefault
+        return self._wrapped.runLastBranchByDefault
 
     @run_last_branch_by_default.setter
     def run_last_branch_by_default(self, value: bool) -> None:
@@ -63,12 +63,12 @@ class IIfComponent(IComponent):
         value : bool
             The new value.
         """
-        self._instance.runLastBranchByDefault = value
+        self._wrapped.runLastBranchByDefault = value
 
     @property
     def num_branches(self) -> int:
         """Get the number of branches."""
-        return self._instance.getNumBranches()
+        return self._wrapped.getNumBranches()
 
     def get_branch_condition(self, index: int) -> str:
         """
@@ -84,7 +84,7 @@ class IIfComponent(IComponent):
    str :
         The branch condition.
         """
-        return self._instance.getBranchCondition(index)
+        return self._wrapped.getBranchCondition(index)
 
     def set_branch_condition(self, index: int, condition: str) -> None:
         """
@@ -97,7 +97,7 @@ class IIfComponent(IComponent):
         condition : str
             The new condition.
         """
-        self._instance.setBranchCondition(index, condition)
+        self._wrapped.setBranchCondition(index, condition)
 
     def get_branch_name(self, index: int) -> str:
         """
@@ -112,7 +112,7 @@ class IIfComponent(IComponent):
         -------
         The name of the branch.
         """
-        return self._instance.getBranchName(index)
+        return self._wrapped.getBranchName(index)
 
     def rename_branch(self, index: int, name: str) -> None:
         """
@@ -125,4 +125,4 @@ class IIfComponent(IComponent):
         name : str
             New name of the branch.
         """
-        return self._instance.renameBranch(index, name)
+        return self._wrapped.renameBranch(index, name)

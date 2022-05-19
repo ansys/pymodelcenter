@@ -35,7 +35,7 @@ class CustomMetadataOwner:
             The raw MCAPI interface object to use to make direct calls
             to ModelCenter.
         """
-        self._instance = instance
+        self._wrapped = instance
 
     def set_custom_metadata(self,
                             name: str,
@@ -72,7 +72,7 @@ class CustomMetadataOwner:
         else:
             raise TypeError(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
 
-        return self._instance.setMetadata(name, meta_type.value, value, access.value, archive)
+        return self._wrapped.setMetadata(name, meta_type.value, value, access.value, archive)
 
     def get_custom_metadata(self, name: str) -> Union[str, int, float, bool, XMLElement]:
         """
@@ -87,7 +87,7 @@ class CustomMetadataOwner:
         -------
         Metadata value.
         """
-        ret = self._instance.getMetadata(name)
+        ret = self._wrapped.getMetadata(name)
         if isinstance(ret, str):
             ret_len = len(ret)
             # if it looks like it might be XML

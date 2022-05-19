@@ -1,176 +1,90 @@
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union
 
 from ansys.common import variableinterop as acvi
 from overrides import overrides
 
+from . import IDoubleVariable
 from .variable_links import VariableLink
 from .irefprop import IRefProp
 from .ivariable import IVariable, VarType
+from .dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list, from_dot_net_list
 import clr
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-import Phoenix.Mock as Mocks
+from Phoenix.Mock import MockReferenceVariable, MockDoubleVariable
 
 
 class IReferenceVariable(IVariable):
     """
     Hold a reference to a variable.
 
+    Currently, only valid for real (double) variables.
+
     Implements IVariable.
     """
 
-    def __init__(self, name: str, state: VarType):
+    def __init__(self, wrapped: MockReferenceVariable):
         """
         Initialize.
 
         Parameters
         ----------
-        name : str
-            The name of the variable.
-        state : VarType
-            The state of the variable.
+        wrapped : MockReferenceVariable
+            The .NET MockReferenceVariable to wrap.
         """
-        self._instance = Mocks.MockReferenceVariable(name, state)
+        self._wrapped = wrapped
+        self._std_metadata: acvi.CommonVariableMetadata = acvi.RealMetadata()
 
 ####################################################################################################
 # region Inherited from IVariable
-    @property
-    def value_absolute(self) -> acvi.IVariableValue:
-        pass
-
-    @property
-    def standard_metadata(self) -> acvi.CommonVariableMetadata:
-        pass
 
     @property
     @overrides
-    def has_changed(self) -> bool:
-        return self._instance.hasChanged
-
-    @property
-    @overrides
-    def hide(self) -> bool:
-        return self._instance.hide
-
-    @hide.setter
-    def hide(self, value: bool):
-        self._instance.hide = value
-
-    @property
-    @overrides
-    def owning_component(self) -> object:
-        return self._instance.OwningComponent
-
-    @overrides
-    def is_valid(self) -> bool:
-        return self._instance.isValid()
-
-    @overrides
-    def validate(self) -> None:
-        self._instance.validate()
-
-    @overrides
-    def get_name(self) -> str:
-        return self._instance.getName()
-
-    @overrides
-    def get_full_name(self) -> str:
-        return self._instance.getFullName()
-
-    @overrides
-    def get_type(self) -> str:
-        return self._instance.getType()
-
-    def is_input(self) -> bool:
-        return self._instance.isInput()
-
-    def to_string(self) -> str:
-        return self._instance.toString()
-
-    def from_string(self, value: str) -> None:
-        self._instance.fromString(value)
-
-    def to_string_absolute(self) -> str:
-        return self._instance.toStringAbsolute()
-
-    @overrides
-    def invalidate(self) -> None:
-        self._instance.invalidate()
-
-    @overrides
-    def direct_precedents(self, follow_suspended: bool = False,
-                          reserved: Optional[object] = None) -> Sequence['IVariable']:
-        return self._instance.directPrecedents(follow_suspended, reserved)
-
-    @overrides
-    def direct_dependents(self, follow_suspended: bool = False,
-                          reserved: Optional[object] = None) -> Sequence['IVariable']:
-        return self._instance.directDependents(follow_suspended, reserved)
-
-    @overrides
-    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        return self._instance.precedentLinks(reserved)
-
-    @overrides
-    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        return self._instance.dependentLinks(reserved)
-
-    @overrides
-    def precedents(self, follow_suspended: bool = False,
-                   reserved: Optional[object] = None) -> Sequence['IVariable']:
-        return self._instance.precedents(follow_suspended, reserved)
-
-    @overrides
-    def dependents(self, follow_suspended: bool = False,
-                   reserved: Optional[object] = None) -> Sequence['IVariable']:
-        return self._instance.dependents(follow_suspended, reserved)
-
-    @overrides
-    def is_input_to_component(self) -> bool:
-        return self._instance.isInputToComponent()
-
-    @overrides
-    def is_input_to_model(self) -> bool:
-        return self._instance.isInputToModel()
-
-    def set_metadata(self, name: str, type_: object, value: object, access: object,
-                     archive: bool) -> None:
-        self._instance.setMetadata(name, type_, value, access, archive)
-
-    def get_metadata(self, name: str) -> object:
-        return self._instance.getMetadata(name)
-
-# endregion
-####################################################################################################
-
-    @property
-    def value(self) -> float:
-        """Value of the variable."""
-        return self._instance.value
+    def value(self) -> acvi.RealValue:
+        return acvi.RealValue(self._wrapped.value)
 
     @value.setter
-    def value(self, val: float):
-        self._instance.value = val
+    @overrides
+    def value(self, val: Union[float, acvi.RealValue]):
+        self._wrapped.value = val if isinstance(val, acvi.RealValue) else acvi.RealValue(val)
+
+    @property
+    @overrides
+    def value_absolute(self) -> acvi.IVariableValue:
+        return self.value
+
+    @property
+    @overrides
+    def standard_metadata(self) -> acvi.CommonVariableMetadata:
+        return self._std_metadata
+
+    @standard_metadata.setter
+    @overrides
+    def standard_metadata(self, value: acvi.CommonVariableMetadata):
+        self._std_metadata = value
+    # endregion
+####################################################################################################
 
     @property
     def reference(self) -> str:
         """Reference of the variable."""
-        return self._instance.reference
+        return self._wrapped.reference
 
     @reference.setter
     def reference(self, value: str):
-        self._instance.reference = value
+        self._wrapped.reference = value
 
     @property
-    def referenced_variables(self) -> object:
+    def referenced_variables(self) -> Sequence[IDoubleVariable]:
         """Gets the referenced variables."""
-        return self._instance.referencedVariables
+        return from_dot_net_list(self._wrapped.referencedVariables, IDoubleVariable)
 
     @referenced_variables.setter
-    def referenced_variables(self, value):
-        self._instance.referencedVariables = value
+    def referenced_variables(self, values: Sequence[IDoubleVariable]):
+        mock_list = [var._wrapped for var in values]
+        self._wrapped.referencedVariables = to_dot_net_list(mock_list, MockDoubleVariable)
 
     @property
-    def referenced_variable(self) -> object:
+    def referenced_variable(self) -> IVariable:
         """
         Gets the referenced variable.
 
@@ -178,15 +92,16 @@ class IReferenceVariable(IVariable):
 
         Returns
         -------
-
+        IVariable
+            The referenced variable.
         """
-        return self._instance.referencedVariable
+        return from_dot_net_to_ivariable(self._wrapped.referencedVariable)
 
     @referenced_variable.setter
-    def referenced_variable(self, value):
-        self._instance.referencedVariable = value
+    def referenced_variable(self, value: IVariable):
+        self._wrapped.referencedVariable = value._wrapped
 
-    def create_ref_prop(self,  name: str, type_: str) -> IRefProp:
+    def create_real_ref_prop(self,  name: str, type_: str) -> IRefProp:
         """
         Creates a reference property for the variable.
 
@@ -202,9 +117,9 @@ class IReferenceVariable(IVariable):
         -------
         IRefProp object.
         """
-        return IRefProp('', '', self._instance.createRefProp(name, type_))
+        return IRefProp(self._wrapped.createRefProp(name, type_))
 
-    def get_ref_prop_value(self, name: str) -> object:
+    def get_real_ref_prop_value(self, name: str) -> acvi.RealValue:
         """
         Gets the value of a specified reference property for the \
         variable.
@@ -218,33 +133,34 @@ class IReferenceVariable(IVariable):
         -------
         The value as a variant.
         """
-        return self._instance.getRefPropValue(name)
+        return acvi.RealValue(self._wrapped.getRefPropValue(name))
 
-    def set_ref_prop_value(self, name: str, value: str) -> None:
+    def set_real_ref_prop_value(self, name: str, value: str) -> None:
         """
-        Sets the value of a specified reference property for the variable.
+        Sets the value of a specified reference property for the \
+        variable.
 
         Parameters
         ----------
-        name :
+        name : str
             Name of the reference property.
-        value :
+        value : str
             New value.
         """
-        self._instance.setRefPropValue(name, value)
+        self._wrapped.setRefPropValue(name, value)
 
-    def get_ref_prop_value_absolute(self, name: str) -> object:
+    def get_real_ref_prop_value_absolute(self, name: str) -> acvi.RealValue:
         """
         Gets the value of a specified reference property for the \
         variable, without validating first.
 
         Parameters
         ----------
-        name :
+        name : str
             Name of the reference property.
 
         Returns
         -------
         The value as a variant.
         """
-        return self._instance.getRefPropValueAbsolute(name)
+        return acvi.RealValue(self._wrapped.getRefPropValueAbsolute(name))
