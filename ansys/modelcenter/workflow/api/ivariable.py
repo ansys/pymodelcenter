@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from enum import IntEnum
 from typing import Generic, Optional, Sequence, TypeVar, Union
 
 import ansys.common.variableinterop as acvi
@@ -7,7 +6,6 @@ import ansys.common.variableinterop as acvi
 import ansys.modelcenter.workflow.api.arrayish as arrayish
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.icomponent as icomponent
-
 from .custom_metadata_owner import CustomMetadataOwner
 from .variable_links import VariableLink, dotnet_links_to_iterable
 

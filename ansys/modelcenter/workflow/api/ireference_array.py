@@ -1,12 +1,10 @@
-from typing import Optional, Sequence
+import ansys.common.variableinterop as acvi
+import clr
 from overrides import overrides
 
-import ansys.common.variableinterop as acvi
-from .variable_links import VariableLink
+from .data_type import VarType
 from .iarray import IArray
 from .irefprop import IRefArrayProp
-from .data_type import VarType
-import clr
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 import Phoenix.Mock as mocks
