@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Generic, TypeVar, Optional, Sequence
+from typing import Generic, TypeVar
 
 from .ivariable import IVariable
 
