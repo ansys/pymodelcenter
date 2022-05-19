@@ -2,7 +2,6 @@ import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from .data_type import VarType
 from .iarray import IArray
 from .irefprop import IRefArrayProp
 
@@ -23,10 +22,8 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
 
         Parameters
         ----------
-        name : str
-            The name of the variable.
-        state : VarType
-            The state of the variable.
+        wrapped : mocks.MockReferenceArray
+            The MockReferenceArray to be wrapped.
         """
         self._wrapped: mocks.MockReferenceArray = wrapped
         self._standard_metadata: acvi.RealArrayMetadata = acvi.RealArrayMetadata()
