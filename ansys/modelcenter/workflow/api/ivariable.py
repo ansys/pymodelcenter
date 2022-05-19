@@ -368,16 +368,3 @@ class FormattableVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
         Set the format string for displaying the variable to the user.
         """
         self._wrapped.format = value
-
-
-class VarType(IntEnum):
-    """Basic set of variable types."""
-
-    INPUT = 0
-    """This is an input."""
-
-    OUTPUT = 1
-    """This in an output."""
-
-    GROUP = 2
-    """This is a group."""

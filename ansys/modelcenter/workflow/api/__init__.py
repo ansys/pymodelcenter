@@ -2,6 +2,7 @@ from .arrayish import Arrayish
 from .assembly import Assembly
 from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .data_explorer import DataExplorer
+from .data_type import VarType
 from .datamonitor import DataMonitor
 from .engine import Engine, EngineInfo, OnConnectionErrorMode, WorkflowType
 from .format import Format
@@ -20,11 +21,8 @@ from .iintegerarray import IIntegerArray
 from .iintegervariable import IIntegerVariable
 from .ireference_array import IReferenceArray
 from .ireference_variable import IReferenceVariable
-
-# from .iref_array_prop import IRefArrayProp
 from .irefprop import IRefArrayProp, IRefProp
 from .iscript_component import IScriptComponent
-from .ivariable import IVariable, VarType
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
 from .ivariable import FormattableVariable, IVariable

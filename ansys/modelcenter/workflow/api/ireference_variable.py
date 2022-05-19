@@ -1,14 +1,14 @@
-from typing import Optional, Sequence, Union
+from typing import Sequence, Union
 
+import clr
 from ansys.common import variableinterop as acvi
 from overrides import overrides
 
-from . import IDoubleVariable
-from .variable_links import VariableLink
-from .irefprop import IRefProp
-from .ivariable import IVariable, VarType
+from .idoublevariable import IDoubleVariable
 from .dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list, from_dot_net_list
-import clr
+from .irefprop import IRefProp
+from .ivariable import IVariable
+
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockReferenceVariable, MockDoubleVariable
 
@@ -49,7 +49,7 @@ class IReferenceVariable(IVariable):
 
     @property
     @overrides
-    def value_absolute(self) -> acvi.IVariableValue:
+    def value_absolute(self) -> acvi.RealValue:
         return self.value
 
     @property

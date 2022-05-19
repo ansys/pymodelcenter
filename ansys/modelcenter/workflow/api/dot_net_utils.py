@@ -19,7 +19,7 @@ N = TypeVar('N', DotNetBoolean, DotNetDouble, DotNetInt64, DotNetString)
 The four Dot-Net primitive types that are supported.
 """
 
-P = TypeVar('P', int, float, str, bool)
+P = TypeVar('P', int, float, str, bool, object)
 """
 The four Python primitive types that are supported.
 """
