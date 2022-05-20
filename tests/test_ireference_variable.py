@@ -1,14 +1,14 @@
 from typing import Sequence
-import pytest
 
 import ansys.common.variableinterop as acvi
+import clr
+import pytest
+
 import ansys.modelcenter.workflow.api as mcapi
 
-import clr
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 import Phoenix.Mock as mocks
 from System.Runtime.InteropServices import COMException
-
 
 # Globals
 sut: mcapi.IReferenceVariable

@@ -4,6 +4,7 @@ between Dot-Net and Python types."""
 from typing import Iterable, List, Type, TypeVar
 
 import clr
+
 clr.AddReference('System.Collections')
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble

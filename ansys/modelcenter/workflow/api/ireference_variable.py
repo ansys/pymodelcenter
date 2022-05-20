@@ -1,16 +1,16 @@
 from typing import Sequence, Union
 
-import clr
 from ansys.common import variableinterop as acvi
+import clr
 from overrides import overrides
 
+from .dot_net_utils import from_dot_net_list, from_dot_net_to_ivariable, to_dot_net_list
 from .idoublevariable import IDoubleVariable
-from .dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list, from_dot_net_list
 from .irefprop import IRefProp
 from .ivariable import IVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockReferenceVariable, MockDoubleVariable
+from Phoenix.Mock import MockDoubleVariable, MockReferenceVariable
 
 
 class IReferenceVariable(IVariable):
