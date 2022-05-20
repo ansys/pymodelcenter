@@ -115,7 +115,7 @@ class IReferenceVariable(IVariable):
 
         Returns
         -------
-        IRefProp object.
+        IRefProp
         """
         return IRefProp(self._wrapped.createRefProp(name, type_))
 
