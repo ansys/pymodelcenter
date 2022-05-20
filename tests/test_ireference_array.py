@@ -1,16 +1,36 @@
 import pytest
 
+import ansys.modelcenter.workflow.api as mcapi
+
+sut: mcapi.IReferenceArray
+
+
+def setup_function():
+    """Setup called before each test in this module."""
+    global sut
+    sut = mcapi.IReferenceArray('test name', mcapi.VarType.INPUT)
+    sut.auto_grow = True
+    sut.set_value(1.1, 0)
+    sut.set_value(2.2, 1)
+    sut.set_value(3.3, 2)
+
 
 @pytest.mark.skip(reason="Not implemented.")
 def test_auto_grow() -> None:
     """Testing of the auto_grow property."""
-    raise NotImplementedError
+    # SUT
+    original_auto_grow = sut.auto_grow
+    sut.auto_grow = False
+
+    # Verify
+    assert original_auto_grow
+    assert not sut.auto_grow
 
 
 @pytest.mark.skip(reason="Not implemented.")
 def test_value() -> None:
     """Testing of the value property."""
-    raise NotImplementedError
+    pass
 
 
 @pytest.mark.skip(reason="Not implemented.")

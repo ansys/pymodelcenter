@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generic, Optional, Sequence, TypeVar
+from typing import Generic, Optional, Sequence, TypeVar, Union
 
 import ansys.common.variableinterop as acvi
 
@@ -33,7 +33,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
 
     @value.setter
     @abstractmethod
-    def value(self, new_value: acvi.IVariableValue) -> None:
+    def value(self, new_value: Union[float, acvi.IVariableValue]) -> None:
         raise NotImplementedError
 
     @property
@@ -179,7 +179,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         str
             The type of the variable as a string.
         """
-        return self._instance.getType()
+        return self._wrapped.getType()
 
     def invalidate(self) -> None:
         """

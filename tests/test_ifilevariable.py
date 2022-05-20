@@ -1,5 +1,6 @@
 import clr
 import pytest
+
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')

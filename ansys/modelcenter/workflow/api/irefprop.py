@@ -10,7 +10,7 @@ class IRefArrayProp:
     full link relationship.
     """
 
-    def __init__(self, name: str, type_: str):
+    def __init__(self, instance: MockRefArrayProp):
         """
         Initialize.
 
@@ -21,48 +21,48 @@ class IRefArrayProp:
         type_ : str
             The type of the variable.
         """
-        self._instance = MockRefArrayProp(name, type_)
+        self._wrapped = instance
 
     @property
     def enum_values(self) -> str:
         """Enumerated values of the reference array property."""
-        return self._instance.enumValues
+        return self._wrapped.enumValues
 
     @enum_values.setter
     def enum_values(self, value: str) -> None:
         """Enumerated values of the reference array property."""
-        self._instance.enumValues = value
+        self._wrapped.enumValues = value
 
     @property
     def is_input(self) -> bool:
         """Gets a flag that is true if this property is an input."""
         # boolean isInput;
-        return self._instance.isInput
+        return self._wrapped.isInput
 
     @is_input.setter
     def is_input(self, value):
         """Gets a flag that is true if this property is an input."""
-        self._instance.isInput = value
+        self._wrapped.isInput = value
 
     @property
     def title(self) -> str:
         """Title of the reference array property."""
-        return self._instance.title
+        return self._wrapped.title
 
     @title.setter
     def title(self, value: str) -> None:
         """Title of the reference array property."""
-        self._instance.title = value
+        self._wrapped.title = value
 
     @property
     def description(self) -> str:
         """Description of the reference array property."""
-        return self._instance.description
+        return self._wrapped.description
 
     @description.setter
     def description(self, value):
         """Description of the reference array property."""
-        self._instance.description = value
+        self._wrapped.description = value
 
     def get_name(self) -> str:
         """
@@ -73,7 +73,7 @@ class IRefArrayProp:
         str
             The name of the reference array property.
         """
-        return self._instance.getName()
+        return self._wrapped.getName()
 
     def get_type(self) -> str:
         """
@@ -84,7 +84,7 @@ class IRefArrayProp:
         str
             The type of the reference array property.
         """
-        return self._instance.getType()
+        return self._wrapped.getType()
 
 
 class IRefProp(IRefArrayProp):

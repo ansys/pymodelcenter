@@ -6,6 +6,10 @@ IRefProp is a pure descendant, so it does not need tests.
 
 import ansys.modelcenter.workflow.api as mcapi
 
+import clr
+clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+from Phoenix.Mock import MockRefArrayProp
+
 ####################################################################################################
 # Setup for every test
 ####################################################################################################
@@ -15,7 +19,7 @@ sut: mcapi.IRefArrayProp
 def setup_function():
     """Setup called before each test in this module."""
     global sut
-    sut = mcapi.IRefArrayProp('test name', 'test type')
+    sut = mcapi.IRefArrayProp(MockRefArrayProp('test name', 'test type'))
 
     sut.enum_values = 'test enumerated values'
     sut.is_input = True

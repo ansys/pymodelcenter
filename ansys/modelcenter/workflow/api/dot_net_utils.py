@@ -3,12 +3,14 @@ between Dot-Net and Python types."""
 
 from typing import Iterable, List, Type, TypeVar
 
+import clr
+
+clr.AddReference('System.Collections')
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
-import clr
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
@@ -18,7 +20,7 @@ N = TypeVar('N', DotNetBoolean, DotNetDouble, DotNetInt64, DotNetString)
 The four Dot-Net primitive types that are supported.
 """
 
-P = TypeVar('P', int, float, str, bool)
+P = TypeVar('P', int, float, str, bool, object)
 """
 The four Python primitive types that are supported.
 """
