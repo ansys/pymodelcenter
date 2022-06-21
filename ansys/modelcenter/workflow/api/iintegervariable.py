@@ -5,7 +5,7 @@ from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 class IIntegerVariable(IVariable, ABC):
     """
-    COM instance.
+    Represents integer variable.
 
     Implements IVariable.
     """
@@ -88,24 +88,24 @@ class IIntegerVariable(IVariable, ABC):
     @abstractmethod
     def has_lower_bound(self) -> bool:
         """
-        Whether or not the variable has an lower bound.
+        Whether the variable has a lower bound.
 
         Returns
         -------
         bool
-            yes(TRUE) or no(FALSE).
+            yes(``True``) or no(``False``).
         """
         raise NotImplementedError
 
     @abstractmethod
     def has_upper_bound(self) -> bool:
         """
-        Whether or not the variable has an upper bound.
+        Whether the variable has an upper bound.
 
         Returns
         -------
         bool
-            yes(TRUE) or no(FALSE).
+            yes(``True``) or no(``False``).
         """
         raise NotImplementedError
 

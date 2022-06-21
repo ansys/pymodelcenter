@@ -1,9 +1,16 @@
 """Definition of Engine and associated classes."""
 from enum import Enum
+from os import PathLike
 from string import Template
 from typing import Any, Union
 
+from ansys.engineeringworkflow.api import (
+    IFileBasedWorkflowEngine,
+    IWorkflowInstance,
+    WorkflowEngineInfo,
+)
 import clr
+from overrides import overrides
 
 from .data_explorer import DataExplorer
 from .format import Format
@@ -11,7 +18,7 @@ from .i18n import i18n
 from .workflow import Workflow
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockModelCenter
+from Phoenix.Mock import MockModelCenter  # type: ignore
 
 
 class WorkflowType(Enum):
@@ -36,43 +43,43 @@ class OnConnectionErrorMode(Enum):
     """(UI mode only) Show an error dialog."""
 
 
-class EngineInfo:
-    """Information about the engine."""
+# class EngineInfo:
+#     """Information about the engine."""
+#
+#     def __init__(self, exec_path: str, version: str, dir_path: str):
+#         """
+#         Initialize.
+#
+#         Parameters
+#         ----------
+#         exec_path: str
+#             Path to the engine executable.
+#         version: str
+#             Version of the engine.
+#         dir_path: str
+#             Path to the directory the engine executable is in.
+#         """
+#         self._engine_directory_path: str = dir_path
+#         self._engine_executable_path: str = exec_path
+#         self._version: str = version
+#
+#     @property
+#     def directory_path(self) -> str:
+#         """Path to the directory the engine executable is in."""
+#         return self._engine_directory_path
+#
+#     @property
+#     def executable_path(self) -> str:
+#         """Path to the engine executable."""
+#         return self._engine_executable_path
+#
+#     @property
+#     def version(self) -> str:
+#         """Version of the engine."""
+#         return self._version
 
-    def __init__(self, exec_path: str, version: str, dir_path: str):
-        """
-        Initialize.
 
-        Parameters
-        ----------
-        exec_path: str
-            Path to the engine executable.
-        version: str
-            Version of the engine.
-        dir_path: str
-            Path to the directory the engine executable is in.
-        """
-        self._engine_directory_path: str = dir_path
-        self._engine_executable_path: str = exec_path
-        self._version: str = version
-
-    @property
-    def directory_path(self) -> str:
-        """Path to the directory the engine executable is in."""
-        return self._engine_directory_path
-
-    @property
-    def executable_path(self) -> str:
-        """Path to the engine executable."""
-        return self._engine_executable_path
-
-    @property
-    def version(self) -> str:
-        """Version of the engine."""
-        return self._version
-
-
-class Engine:
+class Engine(IFileBasedWorkflowEngine):
     def __init__(self):
         """Initialize a new Engine instance."""
         self._instance = MockModelCenter()
@@ -110,8 +117,14 @@ class Engine:
             self._workflow = Workflow(self._instance, self)
             return self._workflow
 
-    def load_workflow(self, file_name: str,
-                      on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR) \
+    @overrides
+    def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
+        return self.load_workflow_ex(str(file_name))
+
+    def load_workflow_ex(
+            self,
+            file_name: str,
+            on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR) \
             -> Workflow:
         """
         Load a saved workflow from a file.
@@ -261,21 +274,31 @@ class Engine:
         """
         self._instance.saveTradeStudy(uri, 3, data_explorer)
 
-    def get_engine_info(self) -> EngineInfo:
+    # TODO: Rename to get_engine_info?
+    @overrides
+    def get_server_info(self) -> WorkflowEngineInfo:
         """
         Get information about the engine.
 
         Returns
         -------
-        A EngineInfo object with information about the Engine.
+        A `WorkflowEngineInfo` object with information about the Engine.
         """
-        full_path: str = self._instance.appFullPath
         version = {
             "major": self._instance.get_version(0),
             "minor": self._instance.get_version(1),
             "patch": self._instance.get_version(2)
         }
         version_str: str = Template("${major}.${minor}.${patch}").safe_substitute(version)
-        mc_path: str = self._instance.getModelCenterPath()
-        info: EngineInfo = EngineInfo(full_path, version_str, mc_path)
+        install_location: str = self._instance.getModelCenterPath()  # or self._instance.appFullPath
+        info = WorkflowEngineInfo(
+            release_year=version["major"],
+            release_id=version["minor"],
+            build=version["patch"],
+            is_release_build=False,
+            build_type="dev",
+            version_as_string=version_str,
+            server_type="MockModelCenter",
+            install_location=install_location,
+            base_url=None)
         return info

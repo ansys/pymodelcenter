@@ -1,6 +1,26 @@
-from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    AbstractSet,
+    Any,
+    Collection,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import ansys.common.variableinterop as acvi
+from ansys.common.variableinterop import IVariableValue
+from ansys.engineeringworkflow.api import (
+    IControlStatement,
+    IElement,
+    IVariable,
+    IWorkflowInstance,
+    Property,
+    WorkflowInstanceState,
+)
 import clr
 from overrides import overrides
 
@@ -41,7 +61,7 @@ class WorkflowVariable:
         self._variable = variable
 
 
-class Workflow:
+class Workflow(IWorkflowInstance):
     """Represents a Workflow or Model in ModelCenter."""
 
     def __init__(self, instance: phxmock.MockModelCenter, engine: 'Engine'):
@@ -58,6 +78,38 @@ class Workflow:
         """
         self._instance = instance
         self._engine = engine
+        self._state = WorkflowInstanceState.UNKNOWN
+
+# IWorkflowInstance
+
+    @overrides
+    def get_state(self) -> WorkflowInstanceState:
+        if self._instance.getHaltStatus():
+            return WorkflowInstanceState.PAUSED
+        return self._state
+
+    @overrides
+    def run(self, inputs: Mapping[str, acvi.VariableState], reset: bool,
+            validation_ids: AbstractSet[str]) -> Mapping[str, acvi.VariableState]:
+        raise NotImplementedError
+
+    @overrides
+    def start_run(self, inputs: Mapping[str, acvi.VariableState], reset: bool,
+                  validation_ids: AbstractSet[str]) -> str:
+        raise NotImplementedError
+
+    @overrides
+    def get_root(self) -> IControlStatement:
+        assembly = self._instance.getModel()
+        if assembly is None:
+            return None
+        return Assembly(assembly)
+
+    @overrides
+    def get_element_by_id(self, element_id: str) -> IElement:
+        raise NotImplementedError
+
+# ModelCenter specific
 
     @staticmethod
     def value_to_variable_value(value: Any) -> acvi.IVariableValue:
@@ -210,9 +262,35 @@ class Workflow:
         """
 
         class MockComponentWrapper(IComponent):
-            @property  # type: ignore
+            def get_position_x(self) -> int:
+                pass
+
+            def get_position_y(self) -> int:
+                pass
+
+            @property
+            def pacz_url(self):
+                pass
+
+            @property
+            def element_id(self) -> str:
+                pass
+
+            @property
+            def parent_element_id(self) -> str:
+                pass
+
+            def get_property(self, property_name: str) -> Property:
+                pass
+
+            def get_properties(self) -> Collection[Property]:
+                pass
+
+            def set_property(self, property_name: str, property_value: IVariableValue) -> None:
+                pass
+
             @overrides
-            def variables(self) -> object:
+            def get_variables(self) -> Collection[IVariable]:
                 pass
 
             @property  # type: ignore
@@ -240,8 +318,9 @@ class Workflow:
             def parent_assembly(self) -> object:
                 pass
 
+            @property  # type: ignore
             @overrides
-            def get_name(self) -> str:
+            def name(self) -> str:
                 return self._instance.getName()
 
             @overrides
@@ -309,11 +388,13 @@ class Workflow:
 
     def trade_study_end(self) -> None:
         self._instance.tradeStudyEnd()
+        self._state = WorkflowInstanceState.SUCCESS
 
     # Skip IDispatch* createJobManager([optional]VARIANT showProgressDialog);
 
     def trade_study_start(self) -> None:
         self._instance.tradeStudyStart()
+        self._state = WorkflowInstanceState.RUNNING
 
     def get_halt_status(self) -> bool:
         """

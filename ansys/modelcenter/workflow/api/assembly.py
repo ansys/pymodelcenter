@@ -1,13 +1,18 @@
-from typing import Optional, Sequence, Union
+from typing import Collection, List, Optional, Sequence, Union
+
+from ansys.common.variableinterop import IVariableValue
+from ansys.engineeringworkflow.api import IControlStatement, IElement, Property
+from overrides import overrides
 
 from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .i18n import i18n
 from .igroup import IGroup
 from .igroups import IGroups
+from .ivariable import IVariable
 
 
-class Assembly:
-    """COM Instance."""
+class Assembly(IControlStatement):
+    """COM Instance of an Assembly."""
 
     def __init__(self, assembly: object):
         """
@@ -21,17 +26,62 @@ class Assembly:
         """
         self._assembly = assembly
 
-    @property
-    def variables(self) -> object:  # IVariables:
-        """
-        Pointer to the variables in the Assembly.
+# IControlStatement
 
-        Returns
-        -------
-        IVariables object.
-        """
+    @property  # type: ignore
+    @overrides
+    def control_type(self) -> str:
+        """Gets the type of the Assembly (Sequence, Assembly, etc)."""
+        return self._assembly.AssemblyType
+
+    @overrides
+    def get_components(self) -> Collection[IElement]:
+        # VARIANT Components;
+        raise NotImplementedError
+
+# IVariableContainer
+
+    @overrides
+    def get_variables(self) -> Collection[IVariable]:
+        """Returns a collection of variables in the Assembly."""
         # VARIANT Variables;
         raise NotImplementedError
+
+# IElement
+
+    @property  # type: ignore
+    @overrides
+    def element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
+        raise NotImplementedError
+
+    @property  # type: ignore
+    @overrides
+    def parent_element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
+        raise NotImplementedError
+
+    @property  # type: ignore
+    @overrides
+    def name(self):
+        return self._assembly.getName()
+
+    @overrides
+    def get_property(self, property_name: str) -> Property:
+        # TODO: Is property a metadata?
+        raise NotImplementedError
+
+    @overrides
+    def get_properties(self) -> Collection[Property]:
+        # TODO: Is property a metadata?
+        raise NotImplementedError
+
+    @overrides
+    def set_property(self, property_name: str, property_value: IVariableValue) -> None:
+        # TODO: Is property a metadata?
+        raise NotImplementedError
+
+# ModelCenter specific
 
     @property
     def groups(self) -> Sequence[IGroup]:
@@ -57,18 +107,6 @@ class Assembly:
         dotnet_mock_mc_assemblies = self._assembly.Assemblies
         return [Assembly(dotnet_mock_mc_assemblies.Item(mock_index))
                 for mock_index in range(0, dotnet_mock_mc_assemblies.Count)]
-
-    @property
-    def components(self) -> object:     # IComponent
-        """
-        Pointer to the Components in the Assembly.
-
-        Returns
-        -------
-        IComponents object.
-        """
-        # VARIANT Components;
-        raise NotImplementedError
 
     @property
     def icon_id(self) -> int:
@@ -106,11 +144,6 @@ class Assembly:
         return None if to_wrap is None else Assembly(to_wrap)
 
     @property
-    def assembly_type(self) -> str:
-        """Gets the type of the Assembly (Sequence, Assembly, etc)."""
-        return self._assembly.AssemblyType
-
-    @property
     def user_data(self) -> object:
         """
         An arbitrary Variant which is not used internally by \
@@ -144,13 +177,8 @@ class Assembly:
         # decide whether it can set it into the user data field.
         self._assembly.userData = value
 
-    def get_name(self) -> str:
-        """Get the name of the Assembly."""
-        return self._assembly.getName()
-
     def get_full_name(self) -> str:
         """Get the Full ModelCenter path of the Assembly."""
-        # BSTR getFullName();
         return self._assembly.getFullName()
 
     def add_assembly(self,

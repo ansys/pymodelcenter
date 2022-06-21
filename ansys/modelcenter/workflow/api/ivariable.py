@@ -1,17 +1,19 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from ansys.engineeringworkflow.api import IVariable as IWorkflowVariable
 
-class IVariable(ABC):
+
+class IVariable(IWorkflowVariable, ABC):
     """
-    COM instance.
+    ModelCenter variable.
     """
 
     @property
     def has_changed(self) -> bool:
         """
         Boolean which indicates if the variable has changed since the last time the boolean was
-        reset. Typically used only by Plug-Ins for their own variables (to avoid conflicting use
+        reset. Typically, used only by Plug-Ins for their own variables (to avoid conflicting use
         by different Plug-Ins , macros, or tools). Set the value to false and it will
         automatically flip to true any time the value changes.
         """
@@ -28,7 +30,7 @@ class IVariable(ABC):
     @property
     def owning_component(self) -> object:
         """
-        Gets the component that owns this variable.
+        The component that owns this variable.
 
         Returns
         -------
@@ -40,12 +42,12 @@ class IVariable(ABC):
     @abstractmethod
     def is_valid(self) -> bool:
         """
-        Returns whether or not the variable is valid.
+        Indicates if the variable is valid.
 
         Returns
         -------
         bool
-            True if variable is valid. False if the variable is not valid.
+            ``True`` if variable is valid. ``False`` if the variable is not valid.
         """
         raise NotImplementedError
 
@@ -95,7 +97,7 @@ class IVariable(ABC):
     @abstractmethod
     def is_input(self) -> bool:
         """
-        Finds out whether or not the variable is an input with respect to the model.  Returnszs
+        Finds out whether the variable is an input with respect to the model. Returns
         the same value as \ref isInputToModel.
         """
         raise NotImplementedError
@@ -274,8 +276,8 @@ class IVariable(ABC):
     @abstractmethod
     def is_input_to_component(self) -> bool:
         """
-        Checks whether or not the variable is an input.
-        Returns true if the variable was originally added as an input, ignoring the
+        Checks whether the variable is an input.
+        Returns ``True`` if the variable was originally added as an input, ignoring the
         current state that can change based off of links.
         """
         raise NotImplementedError
@@ -283,7 +285,7 @@ class IVariable(ABC):
     @abstractmethod
     def is_input_to_model(self) -> bool:
         """
-        Checks whether or not the variable is an input. A linked input returns false (Output).
+        Checks whether the variable is an input. A linked input returns ``False`` (Output).
         """
         raise NotImplementedError
 
@@ -305,7 +307,7 @@ class IVariable(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_metadata(self, name: str) -> object:
+    def get_metadata_value(self, name: str) -> object:
         """
         Gets the meta data value of the given meta data key name.
 

@@ -127,7 +127,7 @@ def test_get_component():
     result: mcapi.IComponent = workflow.get_component("a.word")
 
     # Verification
-    assert result.get_name() == "word"
+    assert result.name == "word"
 
 
 def test_get_component_missing():

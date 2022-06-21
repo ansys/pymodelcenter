@@ -1,14 +1,12 @@
 """Definition of IComponent."""
+from abc import ABC
 from typing import List, Union
 
+from ansys.engineeringworkflow.api import IComponent as IBaseComponent
 
-class IComponent:
-    """A component in a Workflow."""
 
-    @property
-    def variables(self) -> object:  # IVariables
-        """Variables in the component."""
-        raise NotImplementedError
+class IComponent(IBaseComponent, ABC):
+    """A component in a ModelCenter workflow."""
 
     @property
     def groups(self) -> object:  # IGroups
@@ -37,16 +35,6 @@ class IComponent:
     @property
     def parent_assembly(self) -> object:    # IAssembly
         """Parent assembly of this component."""
-        raise NotImplementedError
-
-    def get_name(self) -> str:
-        """
-        Get the name of the component.
-
-        Returns
-        -------
-        The name of the component.
-        """
         raise NotImplementedError
 
     def get_full_name(self) -> str:

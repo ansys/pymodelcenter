@@ -60,7 +60,7 @@ def test_assemblies() -> None:
     result = sut_instance.assemblies
 
     assert all([isinstance(each_assembly, mcapi.Assembly) for each_assembly in result])
-    assert [assembly.get_name() for assembly in result] == [
+    assert [assembly.name for assembly in result] == [
         "mock assembly 1", "mock assembly 2", "mock assembly 3"]
 
 
@@ -116,7 +116,7 @@ def test_parent_assembly() -> None:
     result: Optional[mcapi.Assembly] = sut_instance.parent_assembly
 
     assert isinstance(result, mcapi.Assembly)
-    assert result.get_name() == "a parent"
+    assert result.name == "a parent"
 
 
 def test_parent_assembly_none() -> None:
@@ -136,7 +136,7 @@ def test_assembly_type() -> None:
     """Testing of the assembly_type property."""
     wrapped_mock_comp.AssemblyType = "Sequence"
 
-    result: str = sut_instance.assembly_type
+    result: str = sut_instance.control_type
 
     assert result == "Sequence"
 
@@ -144,7 +144,7 @@ def test_assembly_type() -> None:
 def test_assembly_type_readonly() -> None:
     """Testing of the assembly_type property."""
     with pytest.raises(AttributeError, match="can't set"):
-        sut_instance.assembly_type = "Sequence"
+        sut_instance.control_type = "Sequence"
 
 
 def test_user_data() -> None:
@@ -166,7 +166,7 @@ def test_user_data_set() -> None:
 
 
 def test_get_name() -> None:
-    assert sut_instance.get_name() == "mock_comp_name"
+    assert sut_instance.name == "mock_comp_name"
 
 
 def test_get_full_name() -> None:
@@ -191,7 +191,7 @@ def test_add_assembly() -> None:
     assert wrapped_mock_comp.getArgumentRecord("addAssembly2", 0) == [
         subassembly_name, x_pos, y_pos, sub_assembly_type]
     assert isinstance(result, mcapi.Assembly)
-    assert result.get_name() == subassembly_name
+    assert result.name == subassembly_name
 
 
 @pytest.mark.parametrize(
@@ -217,7 +217,7 @@ def test_add_assembly_no_position(x_pos: Optional[int], y_pos: Optional[int]) ->
     assert wrapped_mock_comp.getArgumentRecord("addAssembly", 0) == [
         subassembly_name, sub_assembly_type]
     assert isinstance(result, mcapi.Assembly)
-    assert result.get_name() == subassembly_name
+    assert result.name == subassembly_name
 
 
 def test_add_variable() -> None:
@@ -238,7 +238,7 @@ def test_rename() -> None:
 
     sut_instance.rename(new_name)
 
-    assert sut_instance.get_name() == new_name
+    assert sut_instance.name == new_name
 
 
 def test_delete_variable() -> None:
