@@ -103,12 +103,12 @@ jobs:
         run: |
           make -C doc html SPHINXOPTS="-W"
 
-      - name: Build PDF Documentation
-        run: |
-          # sudo apt update
-          # sudo apt-cyg install -y texlive-latex-extra latexmk
-          choco install texlive --params="'/collections:latex /scheme:full /extraPackages:latexmk'" 
-          make -C doc latexpdf
+#      - name: Build PDF Documentation
+#        run: |
+#          # sudo apt update
+#          # sudo apt-cyg install -y texlive-latex-extra latexmk
+#          choco install texlive --params="'/collections:latex /scheme:full /extraPackages:latexmk'"
+#          make -C doc latexpdf
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v2
@@ -117,12 +117,21 @@ jobs:
           path: doc/build/html
           retention-days: 7
 
-      - name: Upload PDF Documentation
-        uses: actions/upload-artifact@v2
+#      - name: Upload PDF Documentation
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: Documentation-pdf
+#          path: doc/build/latex/*.pdf
+#          retention-days: 7
+
+      - name: Deploy to gh-pages
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@4.1.8
         with:
-          name: Documentation-pdf
-          path: doc/build/latex/*.pdf
-          retention-days: 7
+          BRANCH: gh-pages
+          FOLDER: doc/build/html
+          CLEAN: true
+          single-commit: true
 
   Release:
     if: contains(github.ref, 'refs/tags')
@@ -140,9 +149,9 @@ jobs:
         with:
           name: ansys-product-library-wheel
 
-      - uses: actions/download-artifact@v2
-        with:
-          name: Documentation-pdf
+#      - uses: actions/download-artifact@v2
+#        with:
+#          name: Documentation-pdf
 
       - uses: actions/download-artifact@v2
         with:
