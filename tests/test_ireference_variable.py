@@ -108,8 +108,8 @@ def test_referenced_variables():
     sut.referenced_variables = generate_referenced_variables(start=2.5, num=4)
 
     # Verify
-    assert [var.value for var in original] == [1.5, 2.5, 3.5]
-    assert [var.value for var in sut.referenced_variables] == [2.5, 3.5, 4.5, 5.5]
+    assert [var.get_value(None).value for var in original] == [1.5, 2.5, 3.5]
+    assert [var.get_value(None).value for var in sut.referenced_variables] == [2.5, 3.5, 4.5, 5.5]
 
 
 def test_referenced_variable():

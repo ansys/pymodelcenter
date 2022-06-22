@@ -1,3 +1,5 @@
+from typing import Optional
+
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -18,15 +20,21 @@ class IStringArray(IArray[MockStringArray]):
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.StringArrayMetadata()
 
-    @property  # type: ignore
     @overrides
-    def value(self) -> acvi.StringArrayValue:
-        return acvi.StringArrayValue.from_api_string(self._wrapped.toString())
+    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
+        return acvi.VariableState(
+            acvi.StringArrayValue.from_api_string(self._wrapped.toString()),
+            self._wrapped.isValid())
 
-    @value.setter  # type: ignore
-    @overrides
-    def value(self, new_value: acvi.IVariableValue):
-        self._wrapped.fromString(new_value.to_api_string())
+    # @property  # type: ignore
+    # @overrides
+    # def value(self) -> acvi.StringArrayValue:
+    #     return acvi.StringArrayValue.from_api_string(self._wrapped.toString())
+    #
+    # @value.setter  # type: ignore
+    # @overrides
+    # def value(self, new_value: acvi.IVariableValue):
+    #     self._wrapped.fromString(new_value.to_api_string())
 
     @property  # type: ignore
     @overrides

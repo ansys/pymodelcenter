@@ -17,7 +17,7 @@ def test_value_setter():
     dummy_file = None
 
     # Execute
-    sut.value = dummy_file
+    sut.set_value(dummy_file)
 
     assert sut._wrapped.getCallCount('fromString') == 1
 
@@ -30,7 +30,7 @@ def test_value_getter():
     sut = mcapi.IFileArray(mock)
 
     # Execute
-    value = sut.value
+    value = sut.get_value(None)
 
     assert value is None
     assert sut._wrapped.getCallCount('toString') == 1

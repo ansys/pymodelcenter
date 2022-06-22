@@ -1,6 +1,6 @@
 from abc import ABC
 from typing import Generic, TypeVar
-
+from overrides import overrides
 from .ivariable import IVariable
 
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
@@ -16,6 +16,10 @@ class IArray(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
 
     Implements IVariable
     """
+
+    @overrides
+    def __init__(self, wrapped):
+        super().__init__(wrapped)
 
     @property
     def auto_size(self) -> bool:

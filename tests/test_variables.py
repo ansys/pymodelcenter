@@ -95,7 +95,7 @@ def test_get_value(value: object, mock: MockVariable, sut_type: Type,
     # TODO: looks like I need to change to setting value via MockSetStringValue to support arrays
     sut: mcapi.IVariable = sut_type(mock)
 
-    result: acvi.IVariableValue = sut.value
+    result: acvi.IVariableValue = sut.get_value(None).value
 
     assert result == expected
 

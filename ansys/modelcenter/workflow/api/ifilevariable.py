@@ -1,3 +1,5 @@
+from typing import Optional
+
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -16,17 +18,8 @@ class IFileVariable(IVariable[MockFileVariable]):
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.FileMetadata()
 
-    @property
     @overrides
-    def value(self) -> acvi.FileValue:
-        """
-        Value of the variable.
-
-        Returns
-        -------
-        FileValue :
-            Value of the file variable.
-        """
+    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
         contents: str = self._wrapped.value
         mime: str = acvi.FileValue.BINARY_MIMETYPE
         encoding = None
@@ -45,26 +38,70 @@ class IFileVariable(IVariable[MockFileVariable]):
         # TODO: Implement FileScope.read_from_string()
         # return acvi.FileScope.read_from_string(contents, mime, encoding)
 
-    @value.setter
-    @overrides
-    def value(self, new_value: acvi.FileValue) -> None:
-        """
-        Set value of the variable.
+        # TODO: Implement acvi.FileArrayValue.from_api_string().
 
-        Parameters
-        ----------
-        new_value : FileValue
-            Value of the file variable.
-        """
-        if new_value is None:
+    # @overrides
+    def set_value(self, value: acvi.VariableState) -> None:
+        if value is None:
             self._wrapped.value = None
         else:
             # TODO: Get save context.
-            self._wrapped.fromString(new_value.to_api_string(None))
+            file_value: acvi.FileValue = value.value  # type: ignore
+            self._wrapped.fromString(file_value.to_api_string(None))
         # Or:
         # TODO: Actual implementation might require async.
         # See notes for the get property.
-        # self._wrapped.value = await new_value.get_contents(new_value.file_encoding)
+        # self._wrapped.value = await new_value.get_contents(file_value.file_encoding)
+
+    # @property
+    # @overrides
+    # def value(self) -> acvi.FileValue:
+    #     """
+    #     Value of the variable.
+    #
+    #     Returns
+    #     -------
+    #     FileValue :
+    #         Value of the file variable.
+    #     """
+    #     contents: str = self._wrapped.value
+    #     mime: str = acvi.FileValue.BINARY_MIMETYPE
+    #     encoding = None
+    #     # Create FileValue from string.
+    #     if not self._wrapped.isBinary:
+    #         mime: str = acvi.FileValue.TEXT_MIMETYPE
+    #         encoding: str = 'utf-8'
+    #     return None
+    #     # TODO: Implement acvi.FileValue.from_api_string().
+    #     # return acvi.FileValue.from_api_string(self._wrapped.toString())
+    #     # Or:
+    #     # TODO: Actual implementation might require async.
+    #     # This should not be a property then, according to PEP8:
+    #     #   Avoid using properties for computationally expensive operations;
+    #     #   the attribute notation makes the caller believe that access is (relatively) cheap.
+    #     # TODO: Implement FileScope.read_from_string()
+    #     # return acvi.FileScope.read_from_string(contents, mime, encoding)
+    #
+    # @value.setter
+    # @overrides
+    # def value(self, new_value: acvi.FileValue) -> None:
+    #     """
+    #     Set value of the variable.
+    #
+    #     Parameters
+    #     ----------
+    #     new_value : FileValue
+    #         Value of the file variable.
+    #     """
+    #     if new_value is None:
+    #         self._wrapped.value = None
+    #     else:
+    #         # TODO: Get save context.
+    #         self._wrapped.fromString(new_value.to_api_string(None))
+    #     # Or:
+    #     # TODO: Actual implementation might require async.
+    #     # See notes for the get property.
+    #     # self._wrapped.value = await new_value.get_contents(new_value.file_encoding)
 
     @property
     @overrides

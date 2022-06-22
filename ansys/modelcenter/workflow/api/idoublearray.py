@@ -1,3 +1,5 @@
+from typing import Optional
+
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -6,7 +8,7 @@ from ansys.modelcenter.workflow.api.iarray import IArray
 from ansys.modelcenter.workflow.api.ivariable import FormattableVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockDoubleArray
+from Phoenix.Mock import MockDoubleArray  # type: ignore
 
 
 class IDoubleArray(IArray[MockDoubleArray], FormattableVariable[MockDoubleArray]):
@@ -19,15 +21,23 @@ class IDoubleArray(IArray[MockDoubleArray], FormattableVariable[MockDoubleArray]
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.RealArrayMetadata()
 
-    @property  # type: ignore
-    @overrides
-    def value(self) -> acvi.RealArrayValue:
-        return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
+    # ansys.engineeringworkflow.api.IVariable
 
-    @value.setter  # type: ignore
     @overrides
-    def value(self, new_value: acvi.IVariableValue):
-        self._wrapped.fromString(new_value.to_api_string())
+    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
+        return acvi.VariableState(
+            acvi.RealArrayValue.from_api_string(self._wrapped.toString()),
+            self._wrapped.isValid())
+
+    # @property  # type: ignore
+    # @overrides
+    # def value(self) -> acvi.RealArrayValue:
+    #     return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
+    #
+    # @value.setter  # type: ignore
+    # @overrides
+    # def value(self, new_value: acvi.IVariableValue):
+    #     self._wrapped.fromString(new_value.to_api_string())
 
     @property  # type: ignore
     @overrides

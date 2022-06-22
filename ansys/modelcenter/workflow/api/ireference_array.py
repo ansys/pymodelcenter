@@ -1,3 +1,4 @@
+from typing import Optional
 from typing import Sequence
 
 import ansys.common.variableinterop as acvi
@@ -37,15 +38,23 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
 ####################################################################################################
 # region Inherited from IVariable
 
-    @property
-    @overrides
-    def value(self) -> acvi.RealArrayValue:
-        return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
+    # ansys.engineeringworkflow.api.IVariable
 
-    @value.setter
     @overrides
-    def value(self, new_value: acvi.RealArrayValue):
-        self._wrapped.fromString(new_value.to_api_string())
+    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
+        return acvi.VariableState(
+            acvi.RealArrayValue.from_api_string(self._wrapped.toString()),
+            self._wrapped.is_valid)
+
+    # @property
+    # @overrides
+    # def value(self) -> acvi.RealArrayValue:
+    #     return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
+    #
+    # @value.setter
+    # @overrides
+    # def value(self, new_value: acvi.RealArrayValue):
+    #     self._wrapped.fromString(new_value.to_api_string())
 
     @property
     @overrides

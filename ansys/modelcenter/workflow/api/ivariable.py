@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from overrides import overrides
+from typing import Collection
 from typing import Generic, Optional, Sequence, TypeVar, Union
 
 import ansys.common.variableinterop as acvi
@@ -6,6 +8,8 @@ import ansys.common.variableinterop as acvi
 import ansys.modelcenter.workflow.api.arrayish as arrayish
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.icomponent as icomponent
+from ansys.engineeringworkflow.api import IVariable as IAnsysVariable
+from ansys.engineeringworkflow.api import Property
 
 from .custom_metadata_owner import CustomMetadataOwner
 from .variable_links import VariableLink, dotnet_links_to_iterable
@@ -13,7 +17,7 @@ from .variable_links import VariableLink, dotnet_links_to_iterable
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
 
 
-class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
+class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     """
     Represents a variable in the workflow.
     """
@@ -21,20 +25,66 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         super().__init__(wrapped)
         self._wrapped = wrapped
 
-    @property
-    @abstractmethod
-    def value(self) -> acvi.IVariableValue:
-        """
-        Get or set the value of the variable.
-        If the variable is invalid, the workflow will run to the extent necessary to
-        validate the variable.
-        """
+    # ansys.engineeringworkflow.api.IElement
+
+    @property  # type: ignore
+    @overrides
+    def name(self):
+        return self._wrapped.getName()
+
+    @property  # type: ignore
+    @overrides
+    def element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
         raise NotImplementedError
 
-    @value.setter
-    @abstractmethod
-    def value(self, new_value: Union[float, acvi.IVariableValue]) -> None:
+    @property  # type: ignore
+    @overrides
+    def parent_element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
         raise NotImplementedError
+
+    @overrides
+    def get_property(self, property_name: str) -> Property:
+        # TODO: Is property a metadata?
+        raise NotImplementedError
+
+    @overrides
+    def get_properties(self) -> Collection[Property]:
+        # TODO: Is property a metadata or a custom metadata?
+        raise NotImplementedError
+
+    @overrides
+    def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
+        # TODO: Is property a metadata?
+        raise NotImplementedError
+
+    # ansys.engineeringworkflow.api.IVariable
+
+    @overrides
+    def get_metadata(self) -> acvi.CommonVariableMetadata:
+        return self.standard_metadata
+
+    @overrides
+    def set_value(self, value: acvi.VariableState) -> None:
+        self._wrapped.fromString(value.value.to_api_string())
+
+    # ModelCenter
+
+    # @property
+    # @abstractmethod
+    # def value(self) -> acvi.IVariableValue:
+    #     """
+    #     Get or set the value of the variable.
+    #     If the variable is invalid, the workflow will run to the extent necessary to
+    #     validate the variable.
+    #     """
+    #     raise NotImplementedError
+
+    # @value.setter
+    # @abstractmethod
+    # def value(self, new_value: Union[float, acvi.IVariableValue]) -> None:
+    #     raise NotImplementedError
 
     @property
     @abstractmethod
@@ -147,17 +197,6 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         Validates the variable by running the component if needed.
         """
         self._wrapped.validate()
-
-    def get_name(self) -> str:
-        """
-        Get the name of the variable.
-
-        Returns
-        -------
-        str
-            The name of the variable.
-        """
-        return self._wrapped.getName()
 
     def get_full_name(self) -> str:
         """
@@ -330,6 +369,7 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
         Checks whether the variable is an input. A linked input returns ``False`` (Output).
         """
         return self._wrapped.isInputToModel()
+
 
 class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
     """

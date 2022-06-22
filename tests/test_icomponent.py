@@ -60,9 +60,9 @@ def test_variables() -> None:
     # Verify
     assert isinstance(result, mcapi.Arrayish)
     assert len(result) == 2
-    assert result[0].get_name() == "One"
+    assert result[0].name == "One"
     assert isinstance(result[0], mcapi.IIntegerVariable)
-    assert result[1].get_name() == "Two"
+    assert result[1].name == "Two"
     assert isinstance(result[1], mcapi.IDoubleVariable)
 
 
@@ -234,7 +234,7 @@ def test_get_variable(name: str, type_: Type, value) -> None:
     assert isinstance(result, mcapi.IVariable)
     assert isinstance(result, type_)
     if isinstance(result, mcapi.IIntegerVariable) or isinstance(result, mcapi.IDoubleVariable):
-        assert result.value == value
+        assert result.get_value(None).value == value
     else:
         TypeError("Unsupported type in test")
 
