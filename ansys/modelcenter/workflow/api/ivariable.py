@@ -133,12 +133,12 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
 
     def is_valid(self) -> bool:
         """
-        Return whether or not the variable is valid.
+        Indicates if the variable is valid.
 
         Returns
         -------
         bool
-            True if variable is valid. False if the variable is not valid.
+            ``True`` if variable is valid. ``False`` if the variable is not valid.
         """
         return self._wrapped.isValid()
 
@@ -319,15 +319,15 @@ class IVariable(ABC, Generic[WRAPPED_TYPE], CustomMetadataOwner):
 
     def is_input_to_component(self) -> bool:
         """
-        Checks whether or not the variable is an input.
-        Returns true if the variable was originally added as an input, ignoring the
+        Checks whether the variable is an input.
+        Returns ``True`` if the variable was originally added as an input, ignoring the
         current state that can change based off of links.
         """
         return self._wrapped.isInputToComponent()
 
     def is_input_to_model(self) -> bool:
         """
-        Checks whether or not the variable is an input. A linked input returns false (Output).
+        Checks whether the variable is an input. A linked input returns ``False`` (Output).
         """
         return self._wrapped.isInputToModel()
 

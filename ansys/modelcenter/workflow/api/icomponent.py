@@ -1,23 +1,28 @@
 """Definition of IComponent."""
 from typing import Any, List, Sequence, Union
+from typing import Collection
 
-from System import Object as DotNetObject
-from System import String as DotNetString
 import clr
+from System import Object as DotNetObject  # type: ignore
+from System import String as DotNetString  # type: ignore
+from ansys.common.variableinterop import IVariableValue
+from ansys.engineeringworkflow.api import IVariable
+from ansys.engineeringworkflow.api import Property
+from overrides import overrides
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
 import ansys.modelcenter.workflow.api.assembly as assembly
 from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
 import ansys.modelcenter.workflow.api.igroup as igroup
-import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 from .custom_metadata_owner import CustomMetadataOwner
 
+from ansys.engineeringworkflow.api import IComponent as IAnsysComponent
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IComponent as mcapiIComponent
+from ModelCenter import IComponent as mcapiIComponent  # type: ignore
 
 
-class IComponent(CustomMetadataOwner):
+class IComponent(CustomMetadataOwner, IAnsysComponent):
     """A component in a Workflow."""
 
     def __init__(self, instance: mcapiIComponent):
@@ -31,11 +36,52 @@ class IComponent(CustomMetadataOwner):
         """
         super().__init__(instance)
 
-    @property
-    def variables(self) -> 'Sequence[ivariable.IVariable]':
+    # ansys.engineeringworkflow.api import.IComponent
+
+    @property  # type: ignore
+    @overrides
+    def name(self):
+        return self._wrapped.getName()
+
+    @property  # type: ignore
+    @overrides
+    def element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
+        raise NotImplementedError
+
+    @property  # type: ignore
+    @overrides
+    def parent_element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
+        raise NotImplementedError
+
+    @overrides
+    def get_property(self, property_name: str) -> Property:
+        # TODO: Is property a metadata?
+        raise NotImplementedError
+
+    @overrides
+    def get_properties(self) -> Collection[Property]:
+        # TODO: Is property a metadata or a custom metadata?
+        raise NotImplementedError
+
+    @overrides
+    def set_property(self, property_name: str, property_value: IVariableValue) -> None:
+        # TODO: Is property a metadata or a custom metadata?
+        raise NotImplementedError
+
+    @overrides
+    def get_variables(self) -> Collection[IVariable]:
         """Variables in the component."""
         variables = self._wrapped.Variables
         return Arrayish(variables, from_dot_net_to_ivariable)
+
+    @property  # type: ignore
+    @overrides
+    def pacz_url(self):
+        raise NotImplementedError
+
+    # ModelCenter
 
     @property
     def groups(self) -> 'Sequence[igroup.IGroup]':
@@ -91,16 +137,6 @@ class IComponent(CustomMetadataOwner):
         """Parent assembly of this component."""
         parent_assembly = self._wrapped.ParentAssembly
         return assembly.Assembly(parent_assembly)
-
-    def get_name(self) -> str:
-        """
-        Get the name of the component.
-
-        Returns
-        -------
-        The name of the component.
-        """
-        return self._wrapped.getName()
 
     def get_full_name(self) -> str:
         """

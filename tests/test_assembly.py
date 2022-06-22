@@ -6,10 +6,12 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import (
+from Phoenix.Mock import (  # type: ignore
     MockAssemblies,
     MockAssembly,
     MockBooleanVariable,
+    MockComponent,
+    MockComponents,
     MockDoubleVariable,
     MockGroup,
     MockGroups,
@@ -40,7 +42,7 @@ def test_variables() -> None:
     for mock_var in mock_vars:
         wrapped_mock_comp.Variables.addItem(mock_var)
 
-    result: Sequence[mcapi.IVariable] = sut_instance.variables
+    result: Sequence[mcapi.IVariable] = sut_instance.get_variables()
 
     assert isinstance(result[0], mcapi.IDoubleVariable)
     assert isinstance(result[1], mcapi.IIntegerVariable)
@@ -79,14 +81,28 @@ def test_assemblies() -> None:
     result = sut_instance.assemblies
 
     assert all([isinstance(each_assembly, mcapi.Assembly) for each_assembly in result])
-    assert [assembly.get_name() for assembly in result] == [
+    assert [assembly.name for assembly in result] == [
         "mock assembly 1", "mock assembly 2", "mock assembly 3"]
 
 
-@pytest.mark.skip(reason="Not implemented.")
 def test_components() -> None:
-    """Testing of the components property."""
-    raise NotImplementedError
+    """Testing of the `get_components` method."""
+
+    # Setup
+    mock_components = MockComponents()
+    mock_components.AddComponent(MockComponent("mock component 1"))
+    mock_components.AddComponent(MockComponent("mock component 2"))
+    mock_components.AddComponent(MockComponent("mock component 3"))
+
+    wrapped_mock_comp.Components = mock_components
+
+    # Execute
+    result = sut_instance.get_components()
+
+    # Verify
+    assert all([isinstance(each_component, mcapi.IComponent) for each_component in result])
+    assert [component.name for component in result] == [
+        "mock component 1", "mock component 2", "mock component 3"]
 
 
 def test_icon_id() -> None:
@@ -135,7 +151,7 @@ def test_parent_assembly() -> None:
     result: Optional[mcapi.Assembly] = sut_instance.parent_assembly
 
     assert isinstance(result, mcapi.Assembly)
-    assert result.get_name() == "a parent"
+    assert result.name == "a parent"
 
 
 def test_parent_assembly_none() -> None:
@@ -155,7 +171,7 @@ def test_assembly_type() -> None:
     """Testing of the assembly_type property."""
     wrapped_mock_comp.AssemblyType = "Sequence"
 
-    result: str = sut_instance.assembly_type
+    result: str = sut_instance.control_type
 
     assert result == "Sequence"
 
@@ -163,7 +179,7 @@ def test_assembly_type() -> None:
 def test_assembly_type_readonly() -> None:
     """Testing of the assembly_type property."""
     with pytest.raises(AttributeError, match="can't set"):
-        sut_instance.assembly_type = "Sequence"
+        sut_instance.control_type = "Sequence"
 
 
 def test_user_data() -> None:
@@ -185,7 +201,7 @@ def test_user_data_set() -> None:
 
 
 def test_get_name() -> None:
-    assert sut_instance.get_name() == "mock_comp_name"
+    assert sut_instance.name == "mock_comp_name"
 
 
 def test_get_full_name() -> None:
@@ -210,7 +226,7 @@ def test_add_assembly() -> None:
     assert wrapped_mock_comp.getArgumentRecord("addAssembly2", 0) == [
         subassembly_name, x_pos, y_pos, sub_assembly_type]
     assert isinstance(result, mcapi.Assembly)
-    assert result.get_name() == subassembly_name
+    assert result.name == subassembly_name
 
 
 @pytest.mark.parametrize(
@@ -236,7 +252,7 @@ def test_add_assembly_no_position(x_pos: Optional[int], y_pos: Optional[int]) ->
     assert wrapped_mock_comp.getArgumentRecord("addAssembly", 0) == [
         subassembly_name, sub_assembly_type]
     assert isinstance(result, mcapi.Assembly)
-    assert result.get_name() == subassembly_name
+    assert result.name == subassembly_name
 
 
 def test_add_variable() -> None:
@@ -257,7 +273,7 @@ def test_rename() -> None:
 
     sut_instance.rename(new_name)
 
-    assert sut_instance.get_name() == new_name
+    assert sut_instance.name == new_name
 
 
 def test_delete_variable() -> None:

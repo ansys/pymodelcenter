@@ -1,18 +1,25 @@
+from typing import Collection
+from typing import List
 from typing import Optional, Sequence
 
 import clr
+from ansys.common.variableinterop import IVariableValue
+from ansys.engineeringworkflow.api import IVariable
+from overrides import overrides
 
 from .arrayish import Arrayish
 from .custom_metadata_owner import CustomMetadataOwner
 
+from ansys.engineeringworkflow.api import IControlStatement, IElement, Property
+
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IAssembly as mcapiIAssembly
+from ModelCenter import IAssembly as mcapiIAssembly  # type: ignore
 
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.igroup as igroup
 
 
-class Assembly(CustomMetadataOwner):
+class Assembly(CustomMetadataOwner, IControlStatement):
     """COM Instance."""
 
     def __init__(self, assembly: mcapiIAssembly):
@@ -27,16 +34,62 @@ class Assembly(CustomMetadataOwner):
         """
         super().__init__(assembly)
 
-    @property
-    def variables(self) -> Sequence['ivariable.IVariable']:
-        """
-        Pointer to the variables in the Assembly.
+    # IElement
 
-        Returns
-        -------
-        IVariables object.
-        """
+    @property  # type: ignore
+    @overrides
+    def name(self):
+        return self._wrapped.getName()
+
+    @property  # type: ignore
+    @overrides
+    def element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
+        raise NotImplementedError
+
+    @property  # type: ignore
+    @overrides
+    def parent_element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
+        raise NotImplementedError
+
+    @overrides
+    def get_property(self, property_name: str) -> Property:
+        # TODO: Is property a metadata?
+        raise NotImplementedError
+
+    @overrides
+    def get_properties(self) -> Collection[Property]:
+        # TODO: Is property a metadata or a custom metadata?
+        raise NotImplementedError
+
+    @overrides
+    def set_property(self, property_name: str, property_value: IVariableValue) -> None:
+        # TODO: Is property a metadata or a custom metadata?
+        raise NotImplementedError
+
+    # IVariableContainer
+
+    @overrides
+    def get_variables(self) -> Collection[IVariable]:
         return Arrayish(self._wrapped.Variables, utils.from_dot_net_to_ivariable)
+
+    # IControlStatement
+
+    @property  # type: ignore
+    @overrides
+    def control_type(self) -> str:
+        """Gets the type of the Assembly (Sequence, Assembly, etc)."""
+        return self._wrapped.AssemblyType
+
+    @overrides
+    def get_components(self) -> Collection[IElement]:
+        dotnet_mock_mc_components = self._wrapped.Components
+        from .icomponent import IComponent
+        return [IComponent(dotnet_mock_mc_components.Item(mock_index))
+                for mock_index in range(0, dotnet_mock_mc_components.Count)]
+
+    # ModelCenter specific
 
     @property
     def groups(self) -> Sequence['igroup.IGroup']:
@@ -62,18 +115,6 @@ class Assembly(CustomMetadataOwner):
         dotnet_mock_mc_assemblies = self._wrapped.Assemblies
         return [Assembly(dotnet_mock_mc_assemblies.Item(mock_index))
                 for mock_index in range(0, dotnet_mock_mc_assemblies.Count)]
-
-    @property
-    def components(self) -> object:     # IComponent
-        """
-        Pointer to the Components in the Assembly.
-
-        Returns
-        -------
-        IComponents object.
-        """
-        # VARIANT Components;
-        raise NotImplementedError
 
     @property
     def icon_id(self) -> int:
@@ -111,11 +152,6 @@ class Assembly(CustomMetadataOwner):
         return None if to_wrap is None else Assembly(to_wrap)
 
     @property
-    def assembly_type(self) -> str:
-        """Gets the type of the Assembly (Sequence, Assembly, etc)."""
-        return self._wrapped.AssemblyType
-
-    @property
     def user_data(self) -> object:
         """
         An arbitrary Variant which is not used internally by \
@@ -148,10 +184,6 @@ class Assembly(CustomMetadataOwner):
         # For now, we do nothing and just pass the unmodified value in, and let pythonnet
         # decide whether it can set it into the user data field.
         self._wrapped.userData = value
-
-    def get_name(self) -> str:
-        """Get the name of the Assembly."""
-        return self._wrapped.getName()
 
     def get_full_name(self) -> str:
         """Get the Full ModelCenter path of the Assembly."""

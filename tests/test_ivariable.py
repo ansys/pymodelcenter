@@ -103,7 +103,7 @@ def test_owning_component(sut: mcapi.IVariable) -> None:
     component: mcapi.IComponent = sut.owning_component
 
     # Verify
-    assert component.get_name() == mock_component.getName()
+    assert component.name == mock_component.getName()
 
 
 __is_input_tests = [

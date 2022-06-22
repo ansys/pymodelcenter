@@ -4,7 +4,7 @@ from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
 from .data_explorer import DataExplorer
 from .data_type import VarType
 from .datamonitor import DataMonitor
-from .engine import Engine, EngineInfo, OnConnectionErrorMode, WorkflowType
+from .engine import Engine, OnConnectionErrorMode, WorkflowType
 from .format import Format
 from .iarray import IArray
 from .ibooleanarray import IBooleanArray

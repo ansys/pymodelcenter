@@ -1,7 +1,15 @@
+from typing import AbstractSet
 from typing import Any, Iterable, Optional, Tuple
+from typing import Mapping
 
 import ansys.common.variableinterop as acvi
 import clr
+from ansys.common.variableinterop import VariableState
+from ansys.engineeringworkflow.api import IControlStatement
+from ansys.engineeringworkflow.api import IElement
+from ansys.engineeringworkflow.api import IWorkflowInstance
+from ansys.engineeringworkflow.api import WorkflowInstanceState
+from overrides import overrides
 
 from . import DataExplorer
 from .datamonitor import DataMonitor
@@ -10,10 +18,10 @@ from .icomponent import IComponent
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-import Phoenix.Mock as phxmock
+import Phoenix.Mock as phxmock  # type: ignore
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IComponent as mcapiIComponent
+from ModelCenter import IComponent as mcapiIComponent  # type: ignore
 
 from ansys.modelcenter.workflow.api.assembly import Assembly
 
@@ -41,7 +49,7 @@ class WorkflowVariable:
         self._variable = variable
 
 
-class Workflow:
+class Workflow(IWorkflowInstance):
     """Represents a Workflow or Model in ModelCenter."""
 
     def __init__(self, instance: phxmock.MockModelCenter):
@@ -55,6 +63,38 @@ class Workflow:
             ModelCenter.
         """
         self._instance = instance
+        self._state = WorkflowInstanceState.UNKNOWN
+
+    # IWorkflowInstance
+
+    @overrides
+    def get_state(self) -> WorkflowInstanceState:
+        if self._instance.getHaltStatus():
+            return WorkflowInstanceState.PAUSED
+        return self._state
+
+    @overrides
+    def run(self, inputs: Mapping[str, acvi.VariableState], reset: bool,
+            validation_ids: AbstractSet[str]) -> Mapping[str, acvi.VariableState]:
+        raise NotImplementedError
+
+    @overrides
+    def start_run(self, inputs: Mapping[str, acvi.VariableState], reset: bool,
+                  validation_ids: AbstractSet[str]) -> str:
+        raise NotImplementedError
+
+    @overrides
+    def get_root(self) -> IControlStatement:
+        assembly = self._instance.getModel()
+        if assembly is None:
+            return None
+        return Assembly(assembly)
+
+    @overrides
+    def get_element_by_id(self, element_id: str) -> IElement:
+        raise NotImplementedError
+
+    # ModelCenter specific
 
     @staticmethod
     def value_to_variable_value(value: Any) -> acvi.IVariableValue:

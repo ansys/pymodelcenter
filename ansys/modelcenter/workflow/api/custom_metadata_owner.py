@@ -14,9 +14,9 @@ from ansys.modelcenter.workflow.api.component_metadata import (
 from ansys.modelcenter.workflow.api.i18n import i18n
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IAssembly as mcapiIAssembly
-from ModelCenter import IComponent as mcapiIComponent
-from ModelCenter import IVariable as mcapiIVariable
+from ModelCenter import IAssembly as mcapiIAssembly  # type: ignore
+from ModelCenter import IComponent as mcapiIComponent  # type: ignore
+from ModelCenter import IVariable as mcapiIVariable  # type: ignore
 
 
 class CustomMetadataOwner:

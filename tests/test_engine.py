@@ -1,3 +1,4 @@
+from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import clr
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
@@ -236,7 +237,7 @@ def test_load_workflow(path: str, error: mcapi.OnConnectionErrorMode) -> None:
     engine = mcapi.Engine()
 
     # SUT
-    result: mcapi.Workflow = engine.load_workflow(path, error)
+    result: mcapi.Workflow = engine.load_workflow_ex(path, error)
 
     # Verification
     assert isinstance(result, mcapi.Workflow)
@@ -255,7 +256,7 @@ def test_load_workflow_existing() -> None:
 
     # SUT
     with pytest.raises(Exception) as except_info:
-        engine.load_workflow("", mcapi.OnConnectionErrorMode.ERROR)
+        engine.load_workflow("")
 
     # Verification
     assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. " \
@@ -379,9 +380,9 @@ def test_get_engine_info() -> None:
     engine._instance.appFullPath = "C:\\Path\\To\\ModelCenter\\app.exe"
 
     # SUT
-    info: mcapi.EngineInfo = engine.get_engine_info()
+    info: WorkflowEngineInfo = engine.get_server_info()
 
     # Verification
-    assert info.directory_path == "C:\\Path\\To\\ModelCenter\\"
-    assert info.executable_path == "C:\\Path\\To\\ModelCenter\\app.exe"
-    assert info.version == "12.0.1"
+    assert info.install_location == "C:\\Path\\To\\ModelCenter\\"
+    # assert info. == "C:\\Path\\To\\ModelCenter\\app.exe"
+    assert info.version_as_string == "12.0.1"

@@ -55,7 +55,7 @@ def test_variables() -> None:
     mock_component.Variables = mock_variables
 
     # SUT
-    result = component.variables
+    result = component.get_variables()
 
     # Verify
     assert isinstance(result, mcapi.Arrayish)
@@ -176,13 +176,13 @@ def test_parent_assembly() -> None:
 
     # Verify
     assert type(result) == Assembly
-    assert result.get_name() == "Assembly Name"
+    assert result.name == "Assembly Name"
 
 
 def test_get_name() -> None:
     """Testing of the get_name method."""
     # SUT
-    result = component.get_name()
+    result = component.name
 
     # Verify
     assert result == "ComponentName"
@@ -302,7 +302,7 @@ def test_rename() -> None:
     # Verify
     assert mock_component.getCallCount("rename")
     assert component.get_full_name() == "the.new.name"
-    assert component.get_name() == "name"
+    assert component.name == "name"
 
 
 def test_get_position_x() -> None:
