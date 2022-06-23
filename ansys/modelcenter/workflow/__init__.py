@@ -3,7 +3,9 @@ Ansys ModelCenter Workflow.
 
 --------------------------
 
-TODO: Library description.
+This library provides a Python API for using the ModelCenter suite of
+Ansys products. These products provide tools for creating and automating
+engineering workflows.
 """
 
 try:
