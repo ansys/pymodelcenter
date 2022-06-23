@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from overrides import overrides
 from typing import Collection
 from typing import Generic, Optional, Sequence, TypeVar, Union
@@ -37,28 +38,29 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     @overrides
     def element_id(self) -> str:
         # TODO: Should return UUID of the element probably. Not available via COM.
-        raise NotImplementedError
+        return None  # type: ignore
 
     @property  # type: ignore
     @overrides
     def parent_element_id(self) -> str:
         # TODO: Should return UUID of the element probably. Not available via COM.
-        raise NotImplementedError
+        return None  # type: ignore
 
     @overrides
     def get_property(self, property_name: str) -> Property:
-        # TODO: Is property a metadata?
-        raise NotImplementedError
+        value = super().get_custom_metadata_value(property_name)
+        if value is not None:
+            return Property(self.element_id, property_name, value)
+        raise ValueError("Property not found.")
 
     @overrides
     def get_properties(self) -> Collection[Property]:
-        # TODO: Is property a metadata or a custom metadata?
+        # TODO: Getting collection of metadata is not provided by ModelCenter objects.
         raise NotImplementedError
 
     @overrides
     def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
-        # TODO: Is property a metadata?
-        raise NotImplementedError
+        super().set_custom_metadata_value(property_name, property_value)
 
     # ansys.engineeringworkflow.api.IVariable
 

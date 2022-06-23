@@ -1,19 +1,27 @@
 from __future__ import annotations
 
+from typing import Collection
 from typing import Sequence
 
 import clr
+from ansys.engineeringworkflow.api import IVariable
+from ansys.engineeringworkflow.api import IVariableContainer
+from overrides import overrides
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IGroup as mcapiIGroup
+from ModelCenter import IGroup as mcapiIGroup  # type: ignore
 
 
-class IGroup:
+class IGroup(IVariableContainer):
     """COM Instance."""
+
+    @overrides
+    def get_variables(self) -> Collection[IVariable]:
+        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     def __init__(self, group: mcapiIGroup):
         """Initialize."""

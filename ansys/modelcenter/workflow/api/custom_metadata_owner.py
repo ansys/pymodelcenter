@@ -1,11 +1,14 @@
 """Definition of common base for any type which uses custom metadata."""
-
+from typing import Any
+from typing import Optional
 from typing import Union
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element as XMLElement
 from xml.etree.ElementTree import ParseError as XMLParseError
 
 import clr
+import ansys.common.variableinterop as acvi
+from ansys.common.variableinterop.utils.implicit_coercion import implicit_coerce
 
 from ansys.modelcenter.workflow.api.component_metadata import (
     ComponentMetadataAccess,
@@ -17,6 +20,54 @@ clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly  # type: ignore
 from ModelCenter import IComponent as mcapiIComponent  # type: ignore
 from ModelCenter import IVariable as mcapiIVariable  # type: ignore
+
+
+class _MetadataValueVisitor(acvi.IVariableValueVisitor[ComponentMetadataType]):
+    """
+    Visits a Python Ansys Common Variable Interop value and converts it to the simple Python value.
+
+    File and array values are not supported.
+    """
+    def __init__(self):
+        self._value: Any = None
+
+    @property
+    def value(self) -> Any:
+        return self._value
+
+    def visit_integer(self, value: acvi.IntegerValue) -> ComponentMetadataType:
+        self._value = int(value)
+        return ComponentMetadataType.LONG
+
+    def visit_real(self, value: acvi.RealValue) -> ComponentMetadataType:
+        self._value = float(value)
+        return ComponentMetadataType.DOUBLE
+
+    def visit_boolean(self, value: acvi.BooleanValue) -> ComponentMetadataType:
+        self._value = bool(value)
+        return ComponentMetadataType.BOOLEAN
+
+    def visit_string(self, value: acvi.StringValue) -> ComponentMetadataType:
+        self._value = str(value)
+        return ComponentMetadataType.STRING
+
+    def visit_file(self, value: acvi.FileValue) -> ComponentMetadataType:
+        pass
+
+    def visit_integer_array(self, value: acvi.IntegerArrayValue) -> ComponentMetadataType:
+        pass
+
+    def visit_real_array(self, value: acvi.RealArrayValue) -> ComponentMetadataType:
+        pass
+
+    def visit_boolean_array(self, value: acvi.BooleanArrayValue) -> ComponentMetadataType:
+        pass
+
+    def visit_string_array(self, value: acvi.StringArrayValue) -> ComponentMetadataType:
+        pass
+
+    def visit_file_array(self, value: acvi.FileArrayValue) -> ComponentMetadataType:
+        pass
 
 
 class CustomMetadataOwner:
@@ -98,3 +149,47 @@ class CustomMetadataOwner:
                 except XMLParseError:
                     pass
         return ret
+
+    def set_custom_metadata_value(self, name: str, value: acvi.IVariableValue) -> None:
+        """
+        Set metadata value of the given named metadata.
+
+        Parameters
+        ----------
+        name :
+            Metadata specifier used to store the data.
+        value : IVariableValue
+            The value of the metadata item.
+        """
+        visitor = _MetadataValueVisitor()
+        meta_type: ComponentMetadataType = value.accept(visitor)
+
+        if visitor.value is None:
+            raise TypeError(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+
+        self._wrapped.setMetadata(
+            name, meta_type.value, visitor.value, ComponentMetadataAccess.PUBLIC.value, True)
+
+    def get_custom_metadata_value(self, name: str) -> Optional[acvi.IVariableValue]:
+        """
+        Get the named metadata as a `Property` object.
+
+        Parameters
+        ----------
+        name :
+            Metadata key name.
+
+        Returns
+        -------
+        `Property` object or ``None`` if metadata not found.
+        """
+        value: Optional[acvi.IVariableValue] = None
+        metadata = self._wrapped.getMetadata(name)
+        if metadata is not None:
+            value = self.__interop_value(metadata)
+        return value
+
+    @implicit_coerce
+    def __interop_value(self, value: acvi.IVariableValue) -> acvi.IVariableValue:
+        """Helper to convert common Python values to interop value."""
+        return value
