@@ -31,7 +31,7 @@ def test_value_getter():
     sut = mcapi.IFileVariable(mock)
 
     # Execute
-    value = sut.get_value(None)
+    value = sut.value
 
     assert value is None
     assert sut._wrapped.getCallCount('get_value') == 1

@@ -1,13 +1,11 @@
-from typing import Optional
-
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import ScalarVariable
+from .ivariable import ScalarVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockStringVariable
+from Phoenix.Mock import MockStringVariable  # type: ignore
 
 
 class IStringVariable(ScalarVariable[MockStringVariable]):
@@ -20,21 +18,15 @@ class IStringVariable(ScalarVariable[MockStringVariable]):
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.StringMetadata()
 
+    @property  # type: ignore
     @overrides
-    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
-        return acvi.VariableState(
-            acvi.StringValue(self._wrapped.value),
-            self._wrapped.isValid())
+    def value(self) -> acvi.StringValue:
+        return acvi.StringValue(self._wrapped.value)
 
-    # @property  # type: ignore
-    # @overrides
-    # def value(self) -> acvi.StringValue:
-    #     return acvi.StringValue(self._wrapped.value)
-    #
-    # @value.setter  # type: ignore
-    # @overrides
-    # def value(self, new_value: acvi.IVariableValue):
-    #     self._wrapped.fromString(new_value.to_api_string())
+    @value.setter  # type: ignore
+    @overrides
+    def value(self, new_value: acvi.IVariableValue):
+        self._wrapped.fromString(new_value.to_api_string())
 
     @property  # type: ignore
     @overrides

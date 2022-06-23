@@ -1,4 +1,3 @@
-from typing import Optional
 from typing import Sequence, Union
 
 from ansys.common import variableinterop as acvi
@@ -38,23 +37,15 @@ class IReferenceVariable(IVariable):
 ####################################################################################################
 # region Inherited from IVariable
 
-    # ansys.engineeringworkflow.api.IVariable
-
+    @property
     @overrides
-    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
-        return acvi.VariableState(
-            acvi.RealValue(self._wrapped.value),
-            self._wrapped.is_valid)
+    def value(self) -> acvi.RealValue:
+        return acvi.RealValue(self._wrapped.value)
 
-    # @property
-    # @overrides
-    # def value(self) -> acvi.RealValue:
-    #     return acvi.RealValue(self._wrapped.value)
-    #
-    # @value.setter
-    # @overrides
-    # def value(self, val: Union[float, acvi.RealValue]):
-    #     self._wrapped.value = val if isinstance(val, acvi.RealValue) else acvi.RealValue(val)
+    @value.setter
+    @overrides
+    def value(self, val: Union[float, acvi.RealValue]):
+        self._wrapped.value = val if isinstance(val, acvi.RealValue) else acvi.RealValue(val)
 
     @property
     @overrides

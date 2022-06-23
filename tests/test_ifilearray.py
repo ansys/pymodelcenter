@@ -4,7 +4,7 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockFileArray
+from Phoenix.Mock import MockFileArray  # type: ignore
 
 
 def test_value_setter():

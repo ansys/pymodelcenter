@@ -11,7 +11,7 @@ from .idoublearray import IDoubleArray
 from .irefprop import IRefArrayProp
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-import Phoenix.Mock as mocks
+import Phoenix.Mock as mocks  # type: ignore
 
 
 class IReferenceArray(IArray[mocks.MockReferenceArray]):
@@ -38,23 +38,15 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
 ####################################################################################################
 # region Inherited from IVariable
 
-    # ansys.engineeringworkflow.api.IVariable
-
+    @property
     @overrides
-    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
-        return acvi.VariableState(
-            acvi.RealArrayValue.from_api_string(self._wrapped.toString()),
-            self._wrapped.is_valid)
+    def value(self) -> acvi.RealArrayValue:
+        return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
 
-    # @property
-    # @overrides
-    # def value(self) -> acvi.RealArrayValue:
-    #     return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
-    #
-    # @value.setter
-    # @overrides
-    # def value(self, new_value: acvi.RealArrayValue):
-    #     self._wrapped.fromString(new_value.to_api_string())
+    @value.setter
+    @overrides
+    def value(self, new_value: acvi.RealArrayValue):
+        self._wrapped.fromString(new_value.to_api_string())
 
     @property
     @overrides
@@ -90,7 +82,7 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
     def auto_grow(self, value: bool) -> None:
         self._wrapped.autoGrow = value
 
-    def get_value(self, index: int) -> acvi.RealValue:
+    def get_element_value(self, index: int) -> acvi.RealValue:
         """
         Gets the value of an array element.
 
@@ -106,7 +98,7 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
         """
         return acvi.RealValue(self._wrapped.get_value(index))
 
-    def set_value(self, value: float, index: int) -> acvi.RealValue:
+    def set_element_value(self, value: float, index: int) -> acvi.RealValue:
         """
         Sets the value of an array element.
 

@@ -1,7 +1,7 @@
 import clr
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockRefArrayProp
+from Phoenix.Mock import MockRefArrayProp  # type: ignore
 
 
 class IRefArrayProp:
@@ -13,13 +13,6 @@ class IRefArrayProp:
     def __init__(self, instance: MockRefArrayProp):
         """
         Initialize.
-
-        Parameters
-        ----------
-        name : str
-            The name of the variable.
-        type_ : str
-            The type of the variable.
         """
         self._wrapped = instance
 

@@ -12,6 +12,7 @@ from ansys.engineeringworkflow.api import IVariable as IAnsysVariable
 from ansys.engineeringworkflow.api import Property
 
 from .custom_metadata_owner import CustomMetadataOwner
+from .i18n import i18n
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
@@ -69,22 +70,28 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     def set_value(self, value: acvi.VariableState) -> None:
         self._wrapped.fromString(value.value.to_api_string())
 
+    @overrides
+    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
+        if hid is not None:
+            raise NotImplemented(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+        return acvi.VariableState(self.value, self._wrapped.isValid())
+
     # ModelCenter
 
-    # @property
-    # @abstractmethod
-    # def value(self) -> acvi.IVariableValue:
-    #     """
-    #     Get or set the value of the variable.
-    #     If the variable is invalid, the workflow will run to the extent necessary to
-    #     validate the variable.
-    #     """
-    #     raise NotImplementedError
+    @property
+    @abstractmethod
+    def value(self) -> acvi.IVariableValue:
+        """
+        Get or set the value of the variable.
+        If the variable is invalid, the workflow will run to the extent necessary to
+        validate the variable.
+        """
+        raise NotImplementedError
 
-    # @value.setter
-    # @abstractmethod
-    # def value(self, new_value: Union[float, acvi.IVariableValue]) -> None:
-    #     raise NotImplementedError
+    @value.setter
+    @abstractmethod
+    def value(self, new_value: Union[float, acvi.IVariableValue]) -> None:
+        raise NotImplementedError
 
     @property
     @abstractmethod
@@ -322,7 +329,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
             Optional boolean specifies whether links which are
             suspended should be included in the search. Default is false.
         reserved
-            Reserved for future use.
+            Parameter reserved for future use.
 
         Returns
         -------
@@ -346,7 +353,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
             Optional boolean specifies whether links which are
             suspended should be included in the search. Default is false.
         reserved
-            Reserved for future use.
+            Parameter reserved for future use.
 
         Returns
         -------

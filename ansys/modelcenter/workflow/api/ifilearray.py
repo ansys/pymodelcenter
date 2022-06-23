@@ -5,9 +5,10 @@ import clr
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api.iarray import IArray
+from ansys.modelcenter.workflow.api.i18n import i18n
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockFileArray
+from Phoenix.Mock import MockFileArray  # type: ignore
 
 
 class IFileArray(IArray[MockFileArray]):
@@ -22,61 +23,62 @@ class IFileArray(IArray[MockFileArray]):
 
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:
+        if hid is not None:
+            raise NotImplemented(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+
         # TODO: Implement acvi.FileArrayValue.from_api_string().
         _ = self._wrapped.toString()
-        # return acvi.VariableState(
-        #     acvi.FileArrayValue.from_api_string(self._wrapped.toString()),
-        #     self._wrapped.is_valid)
         return None
+        # return acvi.VariableState(self.value, self._wrapped.isValid())
 
-    # @overrides
+    @overrides
     def set_value(self, value: acvi.VariableState) -> None:
         if value is None:
             self._wrapped.fromString(None)
         else:
             self._wrapped.fromString(value.value.to_api_string())
 
-    # @property
-    # @overrides
-    # def value(self) -> acvi.FileArrayValue:
-    #     """
-    #     Value of the variable.
-    #
-    #     Returns
-    #     -------
-    #     FileArrayValue :
-    #         Value of the file array variable.
-    #     """
-    #     string: str = self._wrapped.toString()
-    #     return None
-    #     # TODO: Implement acvi.FileArrayValue.from_api_string().
-    #     # return acvi.FileArrayValue.from_api_string(string)
-    #
-    # @value.setter
-    # @overrides
-    # def value(self, new_value: acvi.FileArrayValue):
-    #     """
-    #     Set value of the variable.
-    #
-    #     Parameters
-    #     ----------
-    #     new_value : FileArrayValue
-    #         Value of the file array variable.
-    #     """
-    #     if new_value is None:
-    #         self._wrapped.fromString(None)
-    #     else:
-    #         self._wrapped.fromString(new_value.to_api_string())
+    @property
+    @overrides
+    def value(self) -> acvi.FileArrayValue:
+        """
+        Value of the variable.
+
+        Returns
+        -------
+        FileArrayValue :
+            Value of the file array variable.
+        """
+        string: str = self._wrapped.toString()
+        return None
+        # TODO: Implement acvi.FileArrayValue.from_api_string().
+        # return acvi.FileArrayValue.from_api_string(string)
+
+    @value.setter
+    @overrides
+    def value(self, new_value: acvi.FileArrayValue):
+        """
+        Set value of the variable.
+
+        Parameters
+        ----------
+        new_value : FileArrayValue
+            Value of the file array variable.
+        """
+        if new_value is None:
+            self._wrapped.fromString(None)
+        else:
+            self._wrapped.fromString(new_value.to_api_string())
 
     @property
     @overrides
     def value_absolute(self) -> acvi.FileArrayValue:
-        return self.get_value().value
+        return self.value
 
     @value_absolute.setter
     @overrides
     def value_absolute(self, value: acvi.FileArrayValue) -> None:
-        self.set_value(value)
+        self.value = value
 
     @property
     def save_with_model(self) -> bool:
@@ -116,8 +118,3 @@ class IFileArray(IArray[MockFileArray]):
                 self._standard_metadata.variable_type.name)
         else:
             self._standard_metadata = new_metadata
-
-
-print("------->")
-print(IFileArray.mro())
-print("<-------")
