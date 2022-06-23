@@ -33,7 +33,6 @@ def test_get_name(sut: mcapi.IVariable, expected_result: str) -> None:
     """
 
     # Execute
-    print(type(sut).mro())
     result = sut.name
 
     assert result == expected_result
