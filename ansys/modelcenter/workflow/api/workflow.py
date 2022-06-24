@@ -1,14 +1,14 @@
-from typing import AbstractSet
-from typing import Any, Iterable, Optional, Tuple
-from typing import Mapping
+from typing import AbstractSet, Any, Iterable, Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
-import clr
 from ansys.common.variableinterop import VariableState
-from ansys.engineeringworkflow.api import IControlStatement
-from ansys.engineeringworkflow.api import IElement
-from ansys.engineeringworkflow.api import IWorkflowInstance
-from ansys.engineeringworkflow.api import WorkflowInstanceState
+from ansys.engineeringworkflow.api import (
+    IControlStatement,
+    IElement,
+    IWorkflowInstance,
+    WorkflowInstanceState,
+)
+import clr
 from overrides import overrides
 
 from . import DataExplorer

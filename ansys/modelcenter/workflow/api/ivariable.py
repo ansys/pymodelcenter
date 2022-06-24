@@ -1,16 +1,14 @@
 from abc import ABC, abstractmethod
-
-from overrides import overrides
-from typing import Collection
-from typing import Generic, Optional, Sequence, TypeVar, Union
+from typing import Collection, Generic, Optional, Sequence, TypeVar, Union
 
 import ansys.common.variableinterop as acvi
+from ansys.engineeringworkflow.api import IVariable as IAnsysVariable
+from ansys.engineeringworkflow.api import Property
+from overrides import overrides
 
 import ansys.modelcenter.workflow.api.arrayish as arrayish
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.icomponent as icomponent
-from ansys.engineeringworkflow.api import IVariable as IAnsysVariable
-from ansys.engineeringworkflow.api import Property
 
 from .custom_metadata_owner import CustomMetadataOwner
 from .i18n import i18n

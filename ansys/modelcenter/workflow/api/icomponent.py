@@ -1,13 +1,12 @@
 """Definition of IComponent."""
-from typing import Any, List, Sequence, Union
-from typing import Collection
+from typing import Any, Collection, List, Sequence, Union
 
-import clr
 from System import Object as DotNetObject  # type: ignore
 from System import String as DotNetString  # type: ignore
 from ansys.common.variableinterop import IVariableValue
-from ansys.engineeringworkflow.api import IVariable
-from ansys.engineeringworkflow.api import Property
+from ansys.engineeringworkflow.api import IComponent as IAnsysComponent
+from ansys.engineeringworkflow.api import IVariable, Property
+import clr
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
@@ -17,7 +16,6 @@ import ansys.modelcenter.workflow.api.igroup as igroup
 
 from .custom_metadata_owner import CustomMetadataOwner
 
-from ansys.engineeringworkflow.api import IComponent as IAnsysComponent
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent  # type: ignore
 
@@ -47,13 +45,13 @@ class IComponent(CustomMetadataOwner, IAnsysComponent):
     @overrides
     def element_id(self) -> str:
         # TODO: Should return UUID of the element probably. Not available via COM.
-        raise NotImplementedError
+        return None  # type: ignore
 
     @property  # type: ignore
     @overrides
     def parent_element_id(self) -> str:
         # TODO: Should return UUID of the element probably. Not available via COM.
-        raise NotImplementedError
+        return None  # type: ignore
 
     @overrides
     def get_property(self, property_name: str) -> Property:

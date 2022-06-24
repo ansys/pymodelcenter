@@ -1,5 +1,4 @@
-from typing import Optional
-from typing import Sequence
+from typing import Optional, Sequence
 
 import ansys.common.variableinterop as acvi
 import clr

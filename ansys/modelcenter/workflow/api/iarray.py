@@ -1,6 +1,8 @@
 from abc import ABC
 from typing import Generic, TypeVar
+
 from overrides import overrides
+
 from .ivariable import IVariable
 
 WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')

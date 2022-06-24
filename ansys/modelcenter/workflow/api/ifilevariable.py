@@ -4,8 +4,8 @@ import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from .ivariable import IVariable
 from .i18n import i18n
+from .ivariable import IVariable
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockFileVariable  # type: ignore

@@ -1,15 +1,12 @@
-from typing import Collection
-from typing import Optional, Sequence
+from typing import Collection, Optional, Sequence
 
-import clr
 from ansys.common.variableinterop import IVariableValue
-from ansys.engineeringworkflow.api import IVariable
+from ansys.engineeringworkflow.api import IControlStatement, IElement, IVariable, Property
+import clr
 from overrides import overrides
 
 from .arrayish import Arrayish
 from .custom_metadata_owner import CustomMetadataOwner
-
-from ansys.engineeringworkflow.api import IControlStatement, IElement, Property
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IAssembly as mcapiIAssembly  # type: ignore

@@ -1,14 +1,12 @@
 """Definition of common base for any type which uses custom metadata."""
-from typing import Any
-from typing import Optional
-from typing import Union
+from typing import Any, Optional, Union
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element as XMLElement
 from xml.etree.ElementTree import ParseError as XMLParseError
 
-import clr
 import ansys.common.variableinterop as acvi
 from ansys.common.variableinterop.utils.implicit_coercion import implicit_coerce
+import clr
 
 from ansys.modelcenter.workflow.api.component_metadata import (
     ComponentMetadataAccess,

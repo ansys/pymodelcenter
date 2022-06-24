@@ -4,8 +4,8 @@ import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.iarray import IArray
 from ansys.modelcenter.workflow.api.i18n import i18n
+from ansys.modelcenter.workflow.api.iarray import IArray
 
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockFileArray  # type: ignore

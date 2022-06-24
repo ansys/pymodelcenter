@@ -4,9 +4,10 @@ Unit tests for IRefArrayProp.
 IRefProp is a pure descendant, so it does not need tests.
 """
 
+import clr
+
 import ansys.modelcenter.workflow.api as mcapi
 
-import clr
 clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
 from Phoenix.Mock import MockRefArrayProp
 

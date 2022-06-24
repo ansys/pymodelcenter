@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import Collection
-from typing import Sequence
+from typing import Collection, Sequence
 
+from ansys.engineeringworkflow.api import IVariable, IVariableContainer
 import clr
-from ansys.engineeringworkflow.api import IVariable
-from ansys.engineeringworkflow.api import IVariableContainer
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish

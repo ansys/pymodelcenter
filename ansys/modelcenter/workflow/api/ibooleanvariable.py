@@ -1,7 +1,6 @@
-from overrides import overrides
-
 import ansys.common.variableinterop as acvi
 import clr
+from overrides import overrides
 
 from .ivariable import ScalarVariable
 
