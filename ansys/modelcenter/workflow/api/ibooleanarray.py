@@ -1,3 +1,4 @@
+"""Boolean array implementation."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -9,9 +10,7 @@ from Phoenix.Mock import MockBooleanArray  # type: ignore
 
 
 class IBooleanArray(IArray[MockBooleanArray]):
-    """
-    Represents a boolean array variable on the workflow.
-    """
+    """Represents a boolean array variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockBooleanArray):

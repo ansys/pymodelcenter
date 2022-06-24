@@ -36,8 +36,10 @@ class VariableLink:
     @property
     def lhs(self) -> str:
         """
-        The left-hand side of the link. The left-hand side receives a value from the right-hand
-        side (analagous to a variable assignment in most languages). This will aloways be
+        The left-hand side of the link.
+
+        The left-hand side receives a value from the right-hand
+        side (analogous to a variable assignment in most languages). This will always be
         a simple variable name.
         """
         return self._link.LHS

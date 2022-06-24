@@ -1,4 +1,5 @@
-from typing import Collection, Optional, Sequence
+"""Contains definitions for assemblies."""
+from typing import Any, Collection, Optional, Sequence
 
 from ansys.common.variableinterop import IVariableValue
 from ansys.engineeringworkflow.api import IControlStatement, IElement, IVariable, Property
@@ -164,7 +165,7 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         return self._wrapped.userData
 
     @user_data.setter
-    def user_data(self, value: any) -> object:
+    def user_data(self, value: Any) -> None:
         """
         An arbitrary Variant which is not used internally by \
         ModelCenter but can store data for programmatic purposes.
@@ -217,7 +218,6 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         -------
         IAssembly object.
         """
-
         if x_pos is not None and y_pos is not None:
             return Assembly(self._wrapped.addAssembly2(name, x_pos, y_pos, assembly_type))
         else:
@@ -258,6 +258,7 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         """
         # TODO: Wrap and return when variable wrappers are available
         self._wrapped.addVariable(name, type_)
+        return None
 
     def rename(self, name: str) -> None:
         """
@@ -272,4 +273,12 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         self._wrapped.rename(name)
 
     def delete_variable(self, name: str) -> None:
+        """
+        Delete the variable.
+
+        Parameters
+        ----------
+        name : str
+            Name of the variable to be deleted.
+        """
         self._wrapped.deleteVariable(name)

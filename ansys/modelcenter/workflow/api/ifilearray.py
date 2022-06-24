@@ -1,3 +1,4 @@
+"""Module contains definitions for file array variables."""
 from typing import Optional
 
 import ansys.common.variableinterop as acvi
@@ -24,7 +25,7 @@ class IFileArray(IArray[MockFileArray]):
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:
         if hid is not None:
-            raise NotImplemented(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
+            raise NotImplementedError(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
 
         # TODO: Implement acvi.FileArrayValue.from_api_string().
         _ = self._wrapped.toString()
@@ -38,7 +39,7 @@ class IFileArray(IArray[MockFileArray]):
         else:
             self._wrapped.fromString(value.value.to_api_string())
 
-    @property
+    @property  # type: ignore
     @overrides
     def value(self) -> acvi.FileArrayValue:
         """
@@ -54,7 +55,7 @@ class IFileArray(IArray[MockFileArray]):
         # TODO: Implement acvi.FileArrayValue.from_api_string().
         # return acvi.FileArrayValue.from_api_string(string)
 
-    @value.setter
+    @value.setter  # type: ignore
     @overrides
     def value(self, new_value: acvi.FileArrayValue):
         """
@@ -70,15 +71,16 @@ class IFileArray(IArray[MockFileArray]):
         else:
             self._wrapped.fromString(new_value.to_api_string())
 
-    @property
+    @property  # type: ignore
     @overrides
     def value_absolute(self) -> acvi.FileArrayValue:
         return self.value
 
-    @value_absolute.setter
+    @value_absolute.setter  # type: ignore
     @overrides
     def value_absolute(self, value: acvi.FileArrayValue) -> None:
-        self.value = value
+        # TODO: MyPy complains here about read-only property. Check when files implemented.
+        self.value = value  # type: ignore
 
     @property
     def save_with_model(self) -> bool:

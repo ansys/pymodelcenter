@@ -1,4 +1,5 @@
-from typing import Optional, Sequence
+"""Definition of array reference."""
+from typing import Sequence
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -34,30 +35,30 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
         self._wrapped: mocks.MockReferenceArray = wrapped
         self._standard_metadata: acvi.RealArrayMetadata = acvi.RealArrayMetadata()
 
-    ####################################################################################################
+    ################################################################################################
     # region Inherited from IVariable
 
-    @property
+    @property  # type: ignore
     @overrides
     def value(self) -> acvi.RealArrayValue:
         return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
 
-    @value.setter
+    @value.setter  # type: ignore
     @overrides
     def value(self, new_value: acvi.RealArrayValue):
         self._wrapped.fromString(new_value.to_api_string())
 
-    @property
+    @property  # type: ignore
     @overrides
     def value_absolute(self) -> acvi.RealArrayValue:
         return self.value
 
-    @property
+    @property  # type: ignore
     @overrides
     def standard_metadata(self) -> acvi.CommonVariableMetadata:
         return self._standard_metadata
 
-    @standard_metadata.setter
+    @standard_metadata.setter  # type: ignore
     @overrides
     def standard_metadata(self, new_metadata: acvi.RealArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealArrayMetadata):
@@ -68,13 +69,11 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
             self._standard_metadata = new_metadata
 
     # endregion
-    ####################################################################################################
+    ################################################################################################
 
     @property
     def auto_grow(self) -> bool:
-        """
-        Whether or not the reference array is set to automatically grow.
-        """
+        """Whether the reference array is set to automatically grow."""
         return self._wrapped.autoGrow
 
     @auto_grow.setter
@@ -164,7 +163,7 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
 
     def get_real_ref_prop_value_absolute(self, name: str, index: int) -> IDoubleArray:
         """
-        Gets the value of a specified reference property for an \
+        Get the value of a specified reference property for an \
         element in the array without running to validate.
 
         Parameters
@@ -195,7 +194,9 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
         object
             The references variables of the element.
         """
-        return from_dot_net_list(self._wrapped.get_referencedVariables(index), IDoubleArray)
+        return from_dot_net_list(
+            self._wrapped.get_referencedVariables(index), IDoubleArray
+        )  # type: ignore
 
     def referenced_variable(self, index: int) -> IDoubleArray:
         """
@@ -217,8 +218,7 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
 
     def get_value_absolute(self, index: int) -> acvi.RealValue:
         """
-        gets the value of the variable at a specific location without \
-        validating.
+        Get the value of the variable at a specific location without validating.
 
         Parameters
         ----------

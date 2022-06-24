@@ -94,7 +94,7 @@ def test_remove_variable() -> None:
 def test_set_variables() -> None:
     """Testing of the set_variables method."""
     sut.set_variables(
-        "bool b, int i, double r, string s", "bool[] ba, int[] ia, double[] ra, string[] sa"
+        "bool b, int i, double r, string s", "bool[] b_a, int[] i_a, double[] r_a, string[] s_a"
     )
 
     assert mock.getCallCount("setVariables") == 1

@@ -1,3 +1,4 @@
+"""Contains definitions for double variables."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -9,9 +10,7 @@ from Phoenix.Mock import MockDoubleVariable  # type: ignore
 
 
 class IDoubleVariable(ScalarVariable[MockDoubleVariable], FormattableVariable):
-    """
-    Represents a double / real variable on the workflow.
-    """
+    """Represents a double / real variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockDoubleVariable):

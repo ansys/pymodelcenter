@@ -1,3 +1,4 @@
+"""Contains common base class for all variables."""
 from abc import ABC, abstractmethod
 from typing import Collection, Generic, Optional, Sequence, TypeVar, Union
 
@@ -18,11 +19,17 @@ WRAPPED_TYPE = TypeVar("WRAPPED_TYPE")
 
 
 class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
-    """
-    Represents a variable in the workflow.
-    """
+    """Represents a variable in the workflow."""
 
     def __init__(self, wrapped: WRAPPED_TYPE):
+        """
+        Initialize variable with wrapped COM object.
+
+        Parameters
+        ----------
+        wrapped
+            Wrapped COM object.
+        """
         super().__init__(wrapped)
         self._wrapped = wrapped
 
@@ -74,22 +81,23 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:
         if hid is not None:
-            raise NotImplemented(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
+            raise NotImplementedError(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
         return acvi.VariableState(self.value, self._wrapped.isValid())
 
     # ModelCenter
 
-    @property
+    @property  # type: ignore
     @abstractmethod
     def value(self) -> acvi.IVariableValue:
         """
         Get or set the value of the variable.
+
         If the variable is invalid, the workflow will run to the extent necessary to
         validate the variable.
         """
         raise NotImplementedError
 
-    @value.setter
+    @value.setter  # type: ignore
     @abstractmethod
     def value(self, new_value: Union[float, acvi.IVariableValue]) -> None:
         raise NotImplementedError
@@ -97,25 +105,19 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     @property
     @abstractmethod
     def value_absolute(self) -> acvi.IVariableValue:
-        """
-        Get the value of the variable without attempting to validate it.
-        """
+        """Get the value of the variable without attempting to validate it."""
         raise NotImplementedError
 
-    @property
+    @property  # type: ignore
     @abstractmethod
     def standard_metadata(self) -> acvi.CommonVariableMetadata:
-        """
-        Get the standard metadata for this variable.
-        """
+        """Get the standard metadata for this variable."""
         raise NotImplementedError
 
-    @standard_metadata.setter
+    @standard_metadata.setter  # type: ignore
     @abstractmethod
     def standard_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        """
-        Get the standard metadata for this variable.
-        """
+        """Get the standard metadata for this variable."""
         raise NotImplementedError
 
     @property
@@ -136,21 +138,14 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
 
     @has_changed.setter
     def has_changed(self, value: bool) -> None:
-        """
-        Reset the value to `False`, and it will automatically flip to `True` any time the variable
-        value changes.
-
-        Parameters
-        ----------
-        value : bool
-            Set the value to `False` to reset the property.
-        """
+        """Setter for the `has_changed` property."""
         self._wrapped.hasChanged = value
 
     @property
     def hide(self) -> bool:
         """
         Hide the variable from the User Interface.
+
         Variable will not be visible in Component Tree, Data Explorer, or Data Monitors.
 
         Returns
@@ -162,19 +157,11 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
 
     @hide.setter
     def hide(self, value: bool) -> None:
-        """
-        Hide the variable from the User Interface.
-        Variable will not be visible in Component Tree, Data Explorer, or Data Monitors.
-
-        Parameters
-        ----------
-        value : bool
-            Set the value to `True` to hide the variable.
-        """
+        """Setter for the `hide` property."""
         self._wrapped.hide = value
 
     @property
-    def owning_component(self) -> "IComponent":
+    def owning_component(self) -> "IComponent":  # type: ignore
         """
         The component that owns this variable.
 
@@ -201,9 +188,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         return self._wrapped.isValid()
 
     def validate(self) -> None:
-        """
-        Validates the variable by running the component if needed.
-        """
+        """Validates the variable by running the component if needed."""
         self._wrapped.validate()
 
     def get_full_name(self) -> str:
@@ -231,6 +216,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     def invalidate(self) -> None:
         """
         Marks the variable as invalid (needs to be computed).
+
         This will set all dependent variables invalid also.
         """
         self._wrapped.invalidate()
@@ -240,6 +226,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     ) -> Sequence["IVariable"]:
         """
         Returns a list of variables that are immediate precedents to the value of this variable.
+
         This function returns all variables that influence this variable and are directly
         connected via a link to it.
 
@@ -249,7 +236,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
             Optional boolean specifies whether links which are
             suspended should be included in the search. Default is false.
         reserved
-            Reserved for future use.
+            Parameter reserved for future use.
 
         Returns
         -------
@@ -265,6 +252,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     ) -> Sequence["IVariable"]:
         """
         Returns a list of variables that are immediate dependents of the value of this variable.
+
         This function returns all variables that are influenced by this variable and are
         directly connected via a link to it.
 
@@ -274,7 +262,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
             Optional boolean specifies whether links which are
             suspended should be included in the search. Default is false.
         reserved
-            Reserved for future use.
+            Parameter reserved for future use.
 
         Returns
         -------
@@ -288,6 +276,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
         Returns a list of links that are immediate precedents to the value of this variable.
+
         All the returned links will have this variable as the LHS of the equation. Except
         for arrays, the returned list will be 1 element long.
 
@@ -306,6 +295,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
         Returns a list of links that immediately depend on the value of this variable.
+
         All the returned links will have this variable as part of a RHS equation.
 
         Parameters
@@ -324,9 +314,10 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         self, follow_suspended: bool = False, reserved: Optional[object] = None
     ) -> Sequence["IVariable"]:
         """
-        Returns a list of variables that are precedents to the value of this variable. This
-        function returns all variables that influence this variable, not just directly connected
-        ones.
+        Returns a list of variables that are precedents to the value of this variable.
+
+        This function returns all variables that influence this variable,
+        not just directly connected ones.
 
         Parameters
         ----------
@@ -350,6 +341,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     ) -> Sequence["IVariable"]:
         """
         Returns a list of variables that are dependent upon the value of this variable.
+
         This function returns all variables that are influenced by this variable,
         not just directly connected ones.
 
@@ -373,6 +365,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     def is_input_to_component(self) -> bool:
         """
         Checks whether the variable is an input.
+
         Returns ``True`` if the variable was originally added as an input, ignoring the
         current state that can change based off of links.
         """
@@ -380,15 +373,15 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
 
     def is_input_to_model(self) -> bool:
         """
-        Checks whether the variable is an input. A linked input returns ``False`` (Output).
+        Checks whether the variable is an input.
+
+        A linked input returns ``False`` (Output).
         """
         return self._wrapped.isInputToModel()
 
 
 class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
-    """
-    Base class with methods common to scalar variables.
-    """
+    """Base class with methods common to scalar variables."""
 
     @abstractmethod
     def set_initial_value(self, value: acvi.IVariableValue) -> None:
@@ -404,20 +397,14 @@ class ScalarVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
 
 
 class FormattableVariable(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
-    """
-    Base class for variables which accept a format.
-    """
+    """Base class for variables which accept a format."""
 
     @property
     def format(self) -> str:
-        """
-        Get a format string for displaying the variable to the user.
-        """
+        """Get a format string for displaying the variable to the user."""
         return self._wrapped.format
 
     @format.setter
-    def format(self, value: str) -> str:
-        """
-        Set the format string for displaying the variable to the user.
-        """
+    def format(self, value: str) -> None:
+        """Set the format string for displaying the variable to the user."""
         self._wrapped.format = value

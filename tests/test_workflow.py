@@ -26,14 +26,14 @@ import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 
-mock_mc: Optional[Any] = None
+mock_mc: MockModelCenter  # Optional[Any]
 """
 Mock ModelCenter object.
 
 Used to simulate ModelCenter's response to different API calls.
 """
 
-workflow: Optional[mcapi.Workflow] = None
+workflow: mcapi.Workflow
 """
 Workflow object under test.
 """
@@ -186,119 +186,6 @@ def test_workflow_close():
     assert sut_engine._instance.getCallCount("closeModel") == 1
 
 
-def test_save_workflow():
-    # Setup
-    sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-    assert sut_workflow._instance.getCallCount("saveModel") == 0
-
-    # Execute
-    sut_workflow.save_workflow()
-
-    # Verify
-    assert sut_workflow._instance.getCallCount("saveModel") == 1
-
-
-def test_save_workflow_as():
-    # Setup
-    sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-    assert sut_workflow._instance.getCallCount("saveModelAs") == 0
-
-    # Execute
-    sut_workflow.save_workflow_as(r"C:\Temp\workflow.pxcz")
-
-    # Verify
-    assert sut_workflow._instance.getCallCount("saveModelAs") == 1
-    argument = sut_workflow._instance.getArgumentRecord("saveModelAs", 0)[0]
-    assert argument == r"C:\Temp\workflow.pxcz"
-
-
-@pytest.mark.parametrize(
-    "server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos",
-    [
-        pytest.param(
-            "saserv://tests/add42",
-            "Adder",
-            "Workflow.model.workflow.model",
-            47,
-            42,
-            47,
-            42,
-            id="fully specified position",
-        ),
-        # It's difficult to test these cases, because the mock expects Missing.Value,
-        # and that really screws with the reflection-based method matching in pythonnet,
-        # since it seems Missing.Value has special meaning in that case.
-        # Passing None doesn't work and neither does leaving the method off.
-        # This is probably something that the real GRPC api will have to solve.
-        # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', None, 42,
-        #             Missing.Value, 42, id="missing x value"),
-        # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, None,
-        #             47, Missing.Value, id="missing y value")
-    ],
-)
-def test_create_component(
-    server_path: str,
-    name: str,
-    parent: str,
-    x_pos: Optional[object],
-    y_pos: Optional[object],
-    expected_passed_x_pos,
-    expected_passed_y_pos,
-) -> None:
-    # Setup
-    sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-    assert sut_workflow._instance.getCallCount("createComponent") == 0
-
-    # Execute
-    sut_workflow.create_component(server_path, name, parent, x_pos, y_pos)
-
-    # Verify
-    assert sut_workflow._instance.getCallCount("createComponent") == 1
-    assert sut_workflow._instance.getArgumentRecord("createComponent", 0) == [
-        server_path,
-        name,
-        parent,
-        expected_passed_x_pos,
-        expected_passed_y_pos,
-    ]
-
-
-def test_create_link() -> None:
-    # Setup
-    sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-    assert sut_workflow._instance.getCallCount("createLink") == 0
-    test_var_name = "inputs.var1"
-    test_eqn = "Workflow.comp.output4"
-
-    # Execute
-    sut_workflow.create_link(test_var_name, test_eqn)
-
-    # Verify
-    assert sut_workflow._instance.getCallCount("createLink") == 1
-    assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [test_var_name, test_eqn]
-
-
-def test_get_variable() -> None:
-    # Setup
-    sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-    test_var_name = "test_assembly_var"
-    sut_workflow._instance.createAssemblyVariable(test_var_name, "Input", "Model")
-    assert sut_workflow._instance.getCallCount("getVariable") == 0
-
-    # Execute
-    result = sut_workflow.get_variable("Model.test_assembly_var")
-
-    # Verify
-    assert sut_workflow._instance.getCallCount("getVariable") == 1
-    assert sut_workflow._instance.getArgumentRecord("getVariable", 0) == ["Model.test_assembly_var"]
-    assert result._variable.getFullName() == "Model.test_assembly_var"
-
-
 def test_workflow_directory() -> None:
     """
     Testing of workflow_directory method.
@@ -373,10 +260,10 @@ get_value_tests = [
     pytest.param("root.i", acvi.IntegerValue(42), id="int"),
     pytest.param("root.r", acvi.RealValue(3.14), id="real"),
     pytest.param("root.s", acvi.StringValue("sVal"), id="str"),
-    pytest.param("root.ba", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
-    pytest.param("root.ia", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
-    pytest.param("root.ra", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
-    pytest.param("root.sa", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
+    pytest.param("root.b_a", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
+    pytest.param("root.i_a", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
+    pytest.param("root.r_a", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
+    pytest.param("root.s_a", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
 ]
 """Collection of tests for get_value, used in test_get_value."""
 
@@ -391,12 +278,12 @@ def setup_test_values():
     mock_mc.createAssemblyVariable("i", "Input", "root")
     mock_mc.createAssemblyVariable("r", "Input", "root")
     mock_mc.createAssemblyVariable("s", "Input", "root")
-    mock_mc.createAssemblyVariable("ba", "Input", "root")
-    mock_mc.createAssemblyVariable("ia", "Input", "root")
-    mock_mc.createAssemblyVariable("ra", "Input", "root")
-    mock_mc.createAssemblyVariable("sa", "Input", "root")
+    mock_mc.createAssemblyVariable("b_a", "Input", "root")
+    mock_mc.createAssemblyVariable("i_a", "Input", "root")
+    mock_mc.createAssemblyVariable("r_a", "Input", "root")
+    mock_mc.createAssemblyVariable("s_a", "Input", "root")
     vars_ = py_list_to_net_typed_list(
-        ["root.b", "root.i", "root.r", "root.s", "root.ba", "root.ia", "root.ra", "root.sa"]
+        ["root.b", "root.i", "root.r", "root.s", "root.b_a", "root.i_a", "root.r_a", "root.s_a"]
     )
     vals = py_list_to_net_list(
         [
@@ -457,10 +344,10 @@ below."""
 
 value_absolute_tests.extend(
     [
-        pytest.param("root.ba[1]", acvi.BooleanValue(False), id="bool array indexed"),
-        pytest.param("root.ia[2]", acvi.IntegerValue(1), id="int array indexed"),
-        pytest.param("root.ra[0]", acvi.RealValue(1.414), id="real array indexed"),
-        pytest.param("root.sa[1]", acvi.StringValue("two"), id="str array indexed"),
+        pytest.param("root.b_a[1]", acvi.BooleanValue(False), id="bool array indexed"),
+        pytest.param("root.i_a[2]", acvi.IntegerValue(1), id="int array indexed"),
+        pytest.param("root.r_a[0]", acvi.RealValue(1.414), id="real array indexed"),
+        pytest.param("root.s_a[1]", acvi.StringValue("two"), id="str array indexed"),
     ]
 )
 
@@ -949,27 +836,6 @@ def test_create_assembly() -> None:
     ]
 
 
-def test_workflow_close():
-    # Setup
-    sut_engine = mcapi.Engine()
-    sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-
-    # Check pre-reqs.
-    try:
-        sut_engine.new_workflow("workflow2.pxcz")
-        assert False, "Should have failed by now."
-    except Exception:
-        pass
-
-    # Execute
-    sut_workflow.close_workflow()
-
-    # Verify
-    next_workflow = sut_engine.new_workflow("workflow.pxcz")
-    assert isinstance(next_workflow, mcapi.Workflow)
-    assert sut_engine._instance.getCallCount("closeModel") == 1
-
-
 def test_save_workflow():
     # Setup
     sut_engine = mcapi.Engine()
@@ -1095,7 +961,7 @@ def test_run(variables: Optional[str]) -> None:
     global workflow
 
     # SUT
-    workflow.run(variables)
+    workflow.run_variables(variables)
 
     # Verification
     assert workflow._instance.getCallCount("run") == 1

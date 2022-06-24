@@ -1,3 +1,4 @@
+"""Contains definitions for integer variables."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -11,9 +12,7 @@ from Phoenix.Mock import MockIntegerVariable  # type: ignore
 class IIntegerVariable(
     ScalarVariable[MockIntegerVariable], FormattableVariable[MockIntegerVariable]
 ):
-    """
-    Represents an integer variable on the workflow.
-    """
+    """Represents an integer variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockIntegerVariable):

@@ -6,14 +6,14 @@ from typing import Iterable, List, Type, TypeVar
 import clr
 
 clr.AddReference("System.Collections")
-from System import Boolean as DotNetBoolean
-from System import Double as DotNetDouble
-from System import Int64 as DotNetInt64
-from System import String as DotNetString
-from System.Collections.Generic import List as DotNetList
+from System import Boolean as DotNetBoolean  # type: ignore
+from System import Double as DotNetDouble  # type: ignore
+from System import Int64 as DotNetInt64  # type: ignore
+from System import String as DotNetString  # type: ignore
+from System.Collections.Generic import List as DotNetList  # type: ignore
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IVariable as mcapiIVariable
+from ModelCenter import IVariable as mcapiIVariable  # type: ignore
 
 N = TypeVar("N", DotNetBoolean, DotNetDouble, DotNetInt64, DotNetString)
 """
@@ -66,7 +66,7 @@ def from_dot_net_list(source: DotNetList, inner_python_type: Type[P]) -> List[P]
     """
     result: List[P] = []
     for item in source:
-        result.append(inner_python_type(item))
+        result.append(inner_python_type(item))  # type: ignore
     return result
 
 
@@ -112,7 +112,7 @@ IVariable descendant type.
 """
 
 
-def from_dot_net_to_ivariable(source: mcapiIVariable) -> "IVariable":
+def from_dot_net_to_ivariable(source: mcapiIVariable) -> "IVariable":  # type: ignore
     """
     Construct the appropriate IVariable type wrapping the given \
     MCAP IVariable value.

@@ -1,5 +1,5 @@
 """Tests for IVariable and its descendants."""
-from typing import Type
+from typing import List, Type
 
 import ansys.common.variableinterop as acvi
 import clr
@@ -64,7 +64,7 @@ acvi_arrays = [
 ]
 array_names = ["Bool Array", "Real Array", "Integer Array", "String Array"]
 
-value_array_cases = []
+value_array_cases: List = []
 for i in range(4):
     value_test_cases.append(
         pytest.param(
@@ -248,7 +248,7 @@ def test_set_metadata(
     assert result is value
 
 
-auto_size_cases = []
+auto_size_cases: List = []
 for i in range(4):
     is_valid_cases.append(
         pytest.param(mock_arrays[i], array_types[i], True, id=array_names[i] + " True")

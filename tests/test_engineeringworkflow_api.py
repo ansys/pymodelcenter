@@ -13,7 +13,6 @@ from Phoenix.Mock import (  # type: ignore
     MockComponent,
     MockDoubleVariable,
     MockIntegerArray,
-    MockVariable,
 )
 
 

@@ -90,19 +90,6 @@ def test_get_num_unit_categories() -> None:
     assert result == 3
 
 
-def test_get_num_unit_categories() -> None:
-    # Setup
-    # Construct an instance of the API adaptor.
-    sut: mcapi.Engine = mcapi.Engine()
-    __set_up_test_unit_categories(sut._instance)
-
-    # Execute
-    result: int = sut.get_num_unit_categories()
-
-    # Verify
-    assert result == 3
-
-
 @pytest.mark.parametrize(
     "category,expected_result",
     [

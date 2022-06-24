@@ -21,7 +21,7 @@ from Phoenix.Mock import (  # type: ignore
 wrapped_mock_comp: MockAssembly = None
 
 
-sut_instance: mcapi.Assembly(wrapped_mock_comp) = None
+sut_instance: mcapi.Assembly = None
 
 
 def setup_function(test_func):

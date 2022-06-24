@@ -1,3 +1,4 @@
+"""Definitions of string array variable."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -9,9 +10,7 @@ from Phoenix.Mock import MockStringArray  # type: ignore
 
 
 class IStringArray(IArray[MockStringArray]):
-    """
-    Represents a boolean variable on the workflow.
-    """
+    """Represents a boolean variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockStringArray):
