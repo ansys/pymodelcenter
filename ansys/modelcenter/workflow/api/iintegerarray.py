@@ -1,3 +1,4 @@
+"""Definition of integer array variable."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -10,12 +11,11 @@ from Phoenix.Mock import MockIntegerArray  # type: ignore
 
 
 class IIntegerArray(IArray[MockIntegerArray], FormattableVariable[MockIntegerArray]):
-    """
-    Represents an integer array variable on the workflow.
-    """
+    """Represents an integer array variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockIntegerArray):
+        """Initialize integer array object."""
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.IntegerArrayMetadata()
 

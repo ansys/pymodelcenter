@@ -1,3 +1,4 @@
+"""Definitions of string variable."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -9,12 +10,11 @@ from Phoenix.Mock import MockStringVariable  # type: ignore
 
 
 class IStringVariable(ScalarVariable[MockStringVariable]):
-    """
-    Represents a string variable on the workflow.
-    """
+    """Represents a string variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockStringVariable):
+        """Initialize object."""
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.StringMetadata()
 

@@ -1,3 +1,4 @@
+"""Contains definitions for boolean variables."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides

@@ -1,3 +1,4 @@
+"""Definitions of ModelCenter data types."""
 from enum import IntEnum
 
 

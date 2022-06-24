@@ -43,56 +43,32 @@ class OnConnectionErrorMode(Enum):
     """(UI mode only) Show an error dialog."""
 
 
-# class EngineInfo:
-#     """Information about the engine."""
-#
-#     def __init__(self, exec_path: str, version: str, dir_path: str):
-#         """
-#         Initialize.
-#
-#         Parameters
-#         ----------
-#         exec_path: str
-#             Path to the engine executable.
-#         version: str
-#             Version of the engine.
-#         dir_path: str
-#             Path to the directory the engine executable is in.
-#         """
-#         self._engine_directory_path: str = dir_path
-#         self._engine_executable_path: str = exec_path
-#         self._version: str = version
-#
-#     @property
-#     def directory_path(self) -> str:
-#         """Path to the directory the engine executable is in."""
-#         return self._engine_directory_path
-#
-#     @property
-#     def executable_path(self) -> str:
-#         """Path to the engine executable."""
-#         return self._engine_executable_path
-#
-#     @property
-#     def version(self) -> str:
-#         """Version of the engine."""
-#         return self._version
-
-
 class Engine(IFileBasedWorkflowEngine):
+    """Engine class used to wrap around MockModelCenter class."""
+
     def __init__(self):
         """Initialize a new Engine instance."""
         self._instance = MockModelCenter()
 
-    # BOOL IsInteractive;
     @property
     def is_interactive(self) -> bool:
+        """Indicates if ModelCenter is running in interactive/GUI mode."""
         # IsInteractive is an int property on the interface for COM reasons.
         return bool(self._instance.IsInteractive)
 
-    # unsigned long ProcessID;
     @property
     def process_id(self) -> int:
+        """
+        The process identifier of the ModelCenter process.
+
+        Useful for cases where ModelCenter is running in COM server mode and a client process
+        needs to grant it permission to do something (like move a window to the foreground).
+
+        Returns
+        -------
+        int
+            The process identifier.
+        """
         return int(self._instance.ProcessID)
 
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
@@ -207,20 +183,65 @@ class Engine(IFileBasedWorkflowEngine):
         """
         return self._instance.getPreference(pref)
 
-    # long getNumUnitCategories();
     def get_num_unit_categories(self) -> int:
+        """
+        Get the number of unit categories in the IModelCenter object.
+
+        Returns
+        -------
+        int
+            The number for unit categories, or -1 if there is an error.
+        """
         return self._instance.getNumUnitCategories()
 
-    # BSTR getUnitCategoryName(long index);
     def get_unit_category_name(self, index: int) -> str:
+        """
+        Get the name of the category of a unit.
+
+        Parameters
+        ----------
+        index : int
+            Index of the unit.
+
+        Returns
+        -------
+        str
+            The name of the category, or empty string if there is an error.
+        """
         return self._instance.getUnitCategoryName(index)
 
-    # long getNumUnits(BSTR category);
     def get_num_units(self, category: str) -> int:
+        """
+        Get the number of units inside a specified category.
+
+        Parameters
+        ----------
+        category : str
+            Specified category of units.
+
+        Returns
+        -------
+        int
+            The number of units, or -1 if there is an error.
+        """
         return self._instance.getNumUnits(category)
 
-    # BSTR getUnitName(BSTR category, long index);
     def get_unit_name(self, category: str, index: int) -> str:
+        """
+        Get the name of the unit.
+
+        Parameters
+        ----------
+        category : str
+            Category to retrieve the unit.
+        index : int
+            Index of the element in the category.
+
+        Returns
+        -------
+        str
+            The name of the unit, or empty string if there is an error.
+        """
         return self._instance.getUnitName(category, index)
 
     def get_run_only_mode(self) -> bool:

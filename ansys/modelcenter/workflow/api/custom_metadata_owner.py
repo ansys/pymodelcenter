@@ -193,5 +193,5 @@ class CustomMetadataOwner:
 
     @implicit_coerce
     def __interop_value(self, value: acvi.IVariableValue) -> acvi.IVariableValue:
-        """Helper to convert common Python values to interop value."""
+        """Convert common Python values to interop value."""
         return value

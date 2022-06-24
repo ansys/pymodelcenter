@@ -1,3 +1,4 @@
+"""Definitions for array of doubles variables."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
@@ -10,12 +11,11 @@ from Phoenix.Mock import MockDoubleArray  # type: ignore
 
 
 class IDoubleArray(IArray[MockDoubleArray], FormattableVariable[MockDoubleArray]):
-    """
-    Represents a double array variable on the workflow.
-    """
+    """Represents a double array variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockDoubleArray):
+        """Initialize object."""
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.RealArrayMetadata()
 

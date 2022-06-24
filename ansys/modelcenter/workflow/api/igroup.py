@@ -1,3 +1,4 @@
+"""Definition of group of variables."""
 from __future__ import annotations
 
 from typing import Collection, Sequence
