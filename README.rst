@@ -1,41 +1,60 @@
-PyAnsys Library Template
-########################
+PyAnsys ModelCenter Workflow
+############################
+|pyansys| |python| |MIT| |black|
 
-This repository is a template repository where you can `Create a
-repository from a template`_ and create a new PyAnsys project that
-follows the guidelines specified in the `PyAnsys Developer's Guide`_.
+.. |pyansys| image:: https://img.shields.io/badge/Py-Ansys-ffc107.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABDklEQVQ4jWNgoDfg5mD8vE7q/3bpVyskbW0sMRUwofHD7Dh5OBkZGBgW7/3W2tZpa2tLQEOyOzeEsfumlK2tbVpaGj4N6jIs1lpsDAwMJ278sveMY2BgCA0NFRISwqkhyQ1q/Nyd3zg4OBgYGNjZ2ePi4rB5loGBhZnhxTLJ/9ulv26Q4uVk1NXV/f///////69du4Zdg78lx//t0v+3S88rFISInD59GqIH2esIJ8G9O2/XVwhjzpw5EAam1xkkBJn/bJX+v1365hxxuCAfH9+3b9/+////48cPuNehNsS7cDEzMTAwMMzb+Q2u4dOnT2vWrMHu9ZtzxP9vl/69RVpCkBlZ3N7enoDXBwEAAA+YYitOilMVAAAAAElFTkSuQmCC
+   :target: https://docs.pyansys.com/
+   :alt: PyAnsys
 
-The following sections should be filled and documented for your project.
+.. |python| image:: https://img.shields.io/badge/Python-%3E%3D3.8-blue
+   :target: https://pypi.org/project/py-cam-client/
+   :alt: Python
 
-.. _Create a repository from a template: https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
-.. _PyAnsys Developer's Guide: https://github.com/pyansys/about
+.. TODO: pypi and GH-CI badges
+
+.. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
+   :target: https://opensource.org/licenses/MIT
+   :alt: MIT
+
+.. |black| image:: https://img.shields.io/badge/code_style-black-000000.svg?style=flat
+   :target: https://github.com/psf/black
+   :alt: Black
 
 
 Project Overview
 ----------------
-Provide a description of your PyAnsys Python library.
+This library provides a Python API for using the ModelCenter suite of
+Ansys products. These products provide tools for creating and automating
+engineering workflows.
 
 
 Installation
 ------------
-Include installation directions.  Note that this README will be
-included in your PyPI package, so be sure to include ``pip``
-directions along with developer installation directions.  For example.
-
-Install <PyAnsys Library> with:
-
-.. code::
-
-   pip install ansys-<product/service>-<library>
-
-Alternatively, clone and install in development mode with:
+The ``ansys-modelcenter-workflow`` package currently supports Python
+3.8 through 3.10 on Windows and Linux.
+This package is not currently available on PyPI, but will be when it is
+ready for use.
+At that time you can install ``ansys-modelcenter-workflow`` with:
 
 .. code::
 
-   git clone https://github.com/pyansys/
-   cd <PyAnsys-Library>
+   pip install ansys-modelcenter-workflow
+
+Alternatively, install the latest from `pymodelcenter GitHub
+<https://github.com/pyansys/pymodelcenter>`_ via:
+
+.. code::
+
+   pip install git+https://github.com/pyansys/pymodelcenter.git
+
+For a local "development" version, install with:
+
+.. code::
+
+   git clone https://github.com/pyansys/pymodelcenter.git
+   cd pymodelcenter
    pip install poetry
-   poetry install
+   poetry install -E dev
 
 This creates a new virtual environment, which can be activated with
 
@@ -43,30 +62,59 @@ This creates a new virtual environment, which can be activated with
 
    poetry shell
 
+
 Documentation
 -------------
-Include a link to the full sphinx documentation.  For example `PyAnsys <https://docs.pyansys.com/>`_
+TODO: link to the full sphinx documentation. `PyAnsys <https://py-pacz.docs.pyansys.com/>`_
+For building documentation, you can run the usual rules provided in the Sphinx Makefile, such as:
+
+.. code::
+
+    make -C doc/ html && your_browser_name doc/html/index.html
+
+on Unix, or:
+
+.. code::
+
+    .\doc\make.bat html
+
+on Windows. Make sure the required dependencies are installed with:
+
+.. code::
+
+    pip install -E docs
 
 
 Usage
 -----
-It's best to provide a sample code or even a figure demonstrating the usage of your library.  For example:
+The main classes used to create and run workflows are the Engine class
+and the Workflow class.
+
+This is an example of how to load a previously saved workflow, execute
+it, and retrieve the value o a variable:
 
 .. code:: python
 
-   >>> from ansys.<product/service> import <library>
-   >>> my_object.<library>()
-   >>> my_object.foo()
-   'bar'
+   >>> from ansys.modelcenter.workflow.api import Engine
+   >>> engine = Engine()
+   >>> workflow = engine.load_workflow("brake.pxcz")
+   >>> workflow.run()
+   >>> workflow.get_value("Model.caliper.normalForce")
+   1687.145838
 
 
 Testing
 -------
-You can feel free to include this at the README level or in CONTRIBUTING.md
+Dependencies required for testing can be installed via:
+
+.. code::
+
+    pip install -E test
+
+The tests can then be run via pytest.
 
 
 License
 -------
-Be sure to point out your license (and any acknowledgments).  State
-that the full license can be found in the root directory of the
-repository.
+ansys-modelcenter-workflow is licensed under the MIT license.
+
