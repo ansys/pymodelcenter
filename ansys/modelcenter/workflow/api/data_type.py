@@ -3,6 +3,7 @@ from enum import IntEnum
 
 class DataType(IntEnum):
     """Data types from MC API."""
+
     UNKNOWN = 0
     DOUBLE = 1
     INTEGER = 2

@@ -8,7 +8,7 @@ import clr
 
 import ansys.modelcenter.workflow.api as mcapi
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockRefArrayProp
 
 ####################################################################################################
@@ -20,12 +20,13 @@ sut: mcapi.IRefArrayProp
 def setup_function():
     """Setup called before each test in this module."""
     global sut
-    sut = mcapi.IRefArrayProp(MockRefArrayProp('test name', 'test type'))
+    sut = mcapi.IRefArrayProp(MockRefArrayProp("test name", "test type"))
 
-    sut.enum_values = 'test enumerated values'
+    sut.enum_values = "test enumerated values"
     sut.is_input = True
-    sut.title = 'test title'
-    sut.description = 'test description'
+    sut.title = "test title"
+    sut.description = "test description"
+
 
 ####################################################################################################
 
@@ -34,11 +35,11 @@ def test_enum_values() -> None:
     """Testing of the enum_values property."""
     # SUT
     original_enum_values = sut.enum_values
-    sut.enum_values = 'new enumerated values'
+    sut.enum_values = "new enumerated values"
 
     # Verify
-    assert original_enum_values == 'test enumerated values'
-    assert sut.enum_values == 'new enumerated values'
+    assert original_enum_values == "test enumerated values"
+    assert sut.enum_values == "new enumerated values"
 
 
 def test_is_input() -> None:
@@ -56,22 +57,22 @@ def test_title() -> None:
     """Testing of the title property."""
     # SUT
     original_title = sut.title
-    sut.title = 'new title'
+    sut.title = "new title"
 
     # Verify
-    assert original_title == 'test title'
-    assert sut.title == 'new title'
+    assert original_title == "test title"
+    assert sut.title == "new title"
 
 
 def test_description() -> None:
     """Testing of the description property."""
     # SUT
     original_description = sut.description
-    sut.description = 'new description'
+    sut.description = "new description"
 
     # Verify
-    assert original_description == 'test description'
-    assert sut.description == 'new description'
+    assert original_description == "test description"
+    assert sut.description == "new description"
 
 
 def test_get_name() -> None:
@@ -80,7 +81,7 @@ def test_get_name() -> None:
     result = sut.get_name()
 
     # Verify
-    assert result == 'test name'
+    assert result == "test name"
 
 
 def test_get_type() -> None:
@@ -89,4 +90,4 @@ def test_get_type() -> None:
     result = sut.get_type()
 
     # Verify
-    assert result == 'test type'
+    assert result == "test type"

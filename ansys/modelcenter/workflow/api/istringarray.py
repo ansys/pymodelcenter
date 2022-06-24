@@ -4,7 +4,7 @@ from overrides import overrides
 
 from .iarray import IArray
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockStringArray  # type: ignore
 
 
@@ -43,7 +43,7 @@ class IStringArray(IArray[MockStringArray]):
     def standard_metadata(self, new_metadata: acvi.StringArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.StringArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

@@ -39,14 +39,14 @@ def test_count() -> None:
 
 
 @pytest.mark.parametrize(
-    'index, value',
+    "index, value",
     [
         pytest.param(1, 2),
         pytest.param(1, 2.2),
-        pytest.param('a', True),
-        pytest.param('a', 'b'),
+        pytest.param("a", True),
+        pytest.param("a", "b"),
         # LTTODO: check all types that can be passed over GRPC
-    ]
+    ],
 )
 def test_get_item(index: object, value: object) -> None:
     """Testing of the get_item method."""
@@ -61,14 +61,14 @@ def test_get_item(index: object, value: object) -> None:
 
 
 @pytest.mark.parametrize(
-    'index, value',
+    "index, value",
     [
         pytest.param(1, 2),
         pytest.param(1, 2.2),
-        pytest.param('a', True),
-        pytest.param('a', 'b'),
+        pytest.param("a", True),
+        pytest.param("a", "b"),
         # LTTODO: check all types that can be passed over GRPC
-    ]
+    ],
 )
 def test_set_item(index: object, value: object) -> None:
     """Testing of the set_item method."""

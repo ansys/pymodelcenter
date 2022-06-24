@@ -3,7 +3,7 @@ from typing import Any, Iterable, List, Optional, Type
 
 import clr
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (
     MockBooleanArray,
     MockBooleanVariable,
@@ -177,8 +177,10 @@ def test_workflow_close():
     sut_workflow.close_workflow()
 
     # Verify
-    assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "\
+    assert (
+        except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "
         "Close the current Workflow before loading or creating a new one."
+    )
     next_workflow = sut_engine.new_workflow("workflow.pxcz")
     assert isinstance(next_workflow, mcapi.Workflow)
     assert sut_engine._instance.getCallCount("closeModel") == 1
@@ -213,10 +215,18 @@ def test_save_workflow_as():
 
 
 @pytest.mark.parametrize(
-    'server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos',
+    "server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos",
     [
-        pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, 42,
-                     47, 42, id="fully specified position"),
+        pytest.param(
+            "saserv://tests/add42",
+            "Adder",
+            "Workflow.model.workflow.model",
+            47,
+            42,
+            47,
+            42,
+            id="fully specified position",
+        ),
         # It's difficult to test these cases, because the mock expects Missing.Value,
         # and that really screws with the reflection-based method matching in pythonnet,
         # since it seems Missing.Value has special meaning in that case.
@@ -226,16 +236,16 @@ def test_save_workflow_as():
         #             Missing.Value, 42, id="missing x value"),
         # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, None,
         #             47, Missing.Value, id="missing y value")
-    ]
+    ],
 )
 def test_create_component(
-        server_path: str,
-        name: str,
-        parent: str,
-        x_pos: Optional[object],
-        y_pos: Optional[object],
-        expected_passed_x_pos,
-        expected_passed_y_pos
+    server_path: str,
+    name: str,
+    parent: str,
+    x_pos: Optional[object],
+    y_pos: Optional[object],
+    expected_passed_x_pos,
+    expected_passed_y_pos,
 ) -> None:
     # Setup
     sut_engine = mcapi.Engine()
@@ -248,7 +258,12 @@ def test_create_component(
     # Verify
     assert sut_workflow._instance.getCallCount("createComponent") == 1
     assert sut_workflow._instance.getArgumentRecord("createComponent", 0) == [
-        server_path, name, parent, expected_passed_x_pos, expected_passed_y_pos]
+        server_path,
+        name,
+        parent,
+        expected_passed_x_pos,
+        expected_passed_y_pos,
+    ]
 
 
 def test_create_link() -> None:
@@ -264,9 +279,7 @@ def test_create_link() -> None:
 
     # Verify
     assert sut_workflow._instance.getCallCount("createLink") == 1
-    assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [
-        test_var_name, test_eqn
-    ]
+    assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [test_var_name, test_eqn]
 
 
 def test_get_variable() -> None:
@@ -356,14 +369,14 @@ def test_set_value(src: Any, expected: str):
 
 
 get_value_tests = [
-    pytest.param('root.b', acvi.BooleanValue(False), id="bool"),
-    pytest.param('root.i', acvi.IntegerValue(42), id="int"),
-    pytest.param('root.r', acvi.RealValue(3.14), id="real"),
-    pytest.param('root.s', acvi.StringValue("sVal"), id="str"),
-    pytest.param('root.ba', acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
-    pytest.param('root.ia', acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
-    pytest.param('root.ra', acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
-    pytest.param('root.sa', acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
+    pytest.param("root.b", acvi.BooleanValue(False), id="bool"),
+    pytest.param("root.i", acvi.IntegerValue(42), id="int"),
+    pytest.param("root.r", acvi.RealValue(3.14), id="real"),
+    pytest.param("root.s", acvi.StringValue("sVal"), id="str"),
+    pytest.param("root.ba", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
+    pytest.param("root.ia", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
+    pytest.param("root.ra", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
+    pytest.param("root.sa", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
 ]
 """Collection of tests for get_value, used in test_get_value."""
 
@@ -374,25 +387,29 @@ def setup_test_values():
     get_value_absolute.
     """
     global mock_mc
-    mock_mc.createAssemblyVariable('b', "Input", "root")
-    mock_mc.createAssemblyVariable('i', "Input", "root")
-    mock_mc.createAssemblyVariable('r', "Input", "root")
-    mock_mc.createAssemblyVariable('s', "Input", "root")
-    mock_mc.createAssemblyVariable('ba', "Input", "root")
-    mock_mc.createAssemblyVariable('ia', "Input", "root")
-    mock_mc.createAssemblyVariable('ra', "Input", "root")
-    mock_mc.createAssemblyVariable('sa', "Input", "root")
-    vars_ = py_list_to_net_typed_list([
-        'root.b', 'root.i', 'root.r', 'root.s',
-        'root.ba', 'root.ia', 'root.ra', 'root.sa'
-    ])
-    vals = py_list_to_net_list([
-        False, 42, 3.14, "sVal",
-        [True, False, True],
-        [86, 42, 1],
-        [1.414, 0.717, 3.14],
-        ["one", "two", "three"]
-    ])
+    mock_mc.createAssemblyVariable("b", "Input", "root")
+    mock_mc.createAssemblyVariable("i", "Input", "root")
+    mock_mc.createAssemblyVariable("r", "Input", "root")
+    mock_mc.createAssemblyVariable("s", "Input", "root")
+    mock_mc.createAssemblyVariable("ba", "Input", "root")
+    mock_mc.createAssemblyVariable("ia", "Input", "root")
+    mock_mc.createAssemblyVariable("ra", "Input", "root")
+    mock_mc.createAssemblyVariable("sa", "Input", "root")
+    vars_ = py_list_to_net_typed_list(
+        ["root.b", "root.i", "root.r", "root.s", "root.ba", "root.ia", "root.ra", "root.sa"]
+    )
+    vals = py_list_to_net_list(
+        [
+            False,
+            42,
+            3.14,
+            "sVal",
+            [True, False, True],
+            [86, 42, 1],
+            [1.414, 0.717, 3.14],
+            ["one", "two", "three"],
+        ]
+    )
     mock_mc.SetMockValues(vars_, vals)
 
 
@@ -416,7 +433,7 @@ def test_get_value(var_name: str, expected: acvi.IVariableValue):
 
 @pytest.mark.parametrize(
     "halted", [pytest.param(False, id="running"), pytest.param(True, id="halted")]
- )
+)
 def test_get_halt_status(halted: bool):
     """Testing of get_halt_status method."""
     global mock_mc, workflow
@@ -438,17 +455,17 @@ value_absolute_tests = get_value_tests.copy()
 Reusing the tests for get_values, but then adding some additional tests
 below."""
 
-value_absolute_tests.extend([
-    pytest.param('root.ba[1]', acvi.BooleanValue(False), id="bool array indexed"),
-    pytest.param('root.ia[2]', acvi.IntegerValue(1), id="int array indexed"),
-    pytest.param('root.ra[0]', acvi.RealValue(1.414), id="real array indexed"),
-    pytest.param('root.sa[1]', acvi.StringValue("two"), id="str array indexed"),
-])
-
-
-@pytest.mark.parametrize(
-    "var_name,expected", value_absolute_tests
+value_absolute_tests.extend(
+    [
+        pytest.param("root.ba[1]", acvi.BooleanValue(False), id="bool array indexed"),
+        pytest.param("root.ia[2]", acvi.IntegerValue(1), id="int array indexed"),
+        pytest.param("root.ra[0]", acvi.RealValue(1.414), id="real array indexed"),
+        pytest.param("root.sa[1]", acvi.StringValue("two"), id="str array indexed"),
+    ]
 )
+
+
+@pytest.mark.parametrize("var_name,expected", value_absolute_tests)
 def test_get_value_absolute(var_name: str, expected: acvi.IVariableValue):
     """
     Testing of get_value_tests method pulling each of the different \
@@ -488,7 +505,7 @@ def test_set_scheduler(schedular: str) -> None:
 
 
 def test_remove_component():
-    """ Testing of remove_component method."""
+    """Testing of remove_component method."""
     global mock_mc, workflow
 
     # SUT
@@ -504,13 +521,14 @@ def test_remove_component():
 @pytest.mark.parametrize(
     "name,get_model_call_count,get_assembly_call_count,result_type",
     [
-        pytest.param(None,           2, 0, mcapi.Assembly,  id="root"),
-        pytest.param("root.aName",   1, 1, mcapi.Assembly,  id="named"),
-        pytest.param("root.noExist", 1, 1, None,       id="missing")
-    ]
+        pytest.param(None, 2, 0, mcapi.Assembly, id="root"),
+        pytest.param("root.aName", 1, 1, mcapi.Assembly, id="named"),
+        pytest.param("root.noExist", 1, 1, None, id="missing"),
+    ],
 )
 def test_get_assembly(
-        name: str, get_model_call_count: int, get_assembly_call_count: int, result_type: Type):
+    name: str, get_model_call_count: int, get_assembly_call_count: int, result_type: Type
+):
     """
     Testing of get_assembly.
 
@@ -601,7 +619,7 @@ def _setup_variables(mc: MockModelCenter) -> None:
     # String
     var = MockStringVariable("model.string", 0)
     var.description = "String value in Model."
-    var.enumValues = "\"one\" \"two\" \"three\""
+    var.enumValues = '"one" "two" "three"'
     var.enumAliases = "One Two Three"
     variables.Add(var)
     values.Add("Capsule 1")
@@ -639,7 +657,7 @@ def _setup_variables(mc: MockModelCenter) -> None:
     # String[]
     var = MockStringArray("model.strings", 0)
     var.description = "String array in Model."
-    var.enumValues = "\"one\" \"two\" \"three\""
+    var.enumValues = '"one" "two" "three"'
     var.enumAliases = "One Two Three"
     variables.Add(var)
     values.Add("Capsule 1")
@@ -675,24 +693,25 @@ def test_get_variable_meta_data() -> None:
 
 
 @pytest.mark.parametrize(
-    'mc_type,acvi_type',
+    "mc_type,acvi_type",
     [
         # TODO: Other types require support from MockModelCenter.
-        pytest.param('boolean', acvi.VariableType.BOOLEAN),
-        pytest.param('integer', acvi.VariableType.INTEGER),
-        pytest.param('double', acvi.VariableType.REAL),
-        pytest.param('string', acvi.VariableType.STRING),
+        pytest.param("boolean", acvi.VariableType.BOOLEAN),
+        pytest.param("integer", acvi.VariableType.INTEGER),
+        pytest.param("double", acvi.VariableType.REAL),
+        pytest.param("string", acvi.VariableType.STRING),
         # arrays
-        pytest.param('boolean[]', acvi.VariableType.BOOLEAN_ARRAY),
-        pytest.param('integer[]', acvi.VariableType.INTEGER_ARRAY),
-        pytest.param('double[]', acvi.VariableType.REAL_ARRAY),
-        pytest.param('string[]', acvi.VariableType.STRING_ARRAY),
-    ]
+        pytest.param("boolean[]", acvi.VariableType.BOOLEAN_ARRAY),
+        pytest.param("integer[]", acvi.VariableType.INTEGER_ARRAY),
+        pytest.param("double[]", acvi.VariableType.REAL_ARRAY),
+        pytest.param("string[]", acvi.VariableType.STRING_ARRAY),
+    ],
 )
 def test_create_assembly_variable(mc_type: str, acvi_type: acvi.VariableType) -> None:
     # SUT
-    metadata: acvi.CommonVariableMetadata =\
-        workflow.create_assembly_variable("variable_name", mc_type, "container")
+    metadata: acvi.CommonVariableMetadata = workflow.create_assembly_variable(
+        "variable_name", mc_type, "container"
+    )
 
     # Verification
     assert metadata.variable_type == acvi_type
@@ -845,8 +864,8 @@ def test_break_link() -> None:
     "link_lhs_values",
     [
         pytest.param([], id="empty"),
-        pytest.param(['linkTarget1', 'linkTarget2', 'linkTarget3'], id="some links")
-    ]
+        pytest.param(["linkTarget1", "linkTarget2", "linkTarget3"], id="some links"),
+    ],
 )
 def test_get_links(link_lhs_values: Iterable[str]) -> None:
     """
@@ -904,7 +923,8 @@ def test_auto_link() -> None:
     # Verify
     assert sut_workflow._instance.getCallCount("autoLink") == 1
     assert sut_workflow._instance.getArgumentRecord("autoLink", 0) == [
-        "Workflow.source_comp", "Workflow.dest_comp"
+        "Workflow.source_comp",
+        "Workflow.dest_comp",
     ]
 
 
@@ -923,7 +943,9 @@ def test_create_assembly() -> None:
     # Verify
     assert sut_workflow._instance.getCallCount("createAssembly") == 1
     assert sut_workflow._instance.getArgumentRecord("createAssembly", 0) == [
-        test_assembly_name, test_assembly_parent, test_assembly_type
+        test_assembly_name,
+        test_assembly_parent,
+        test_assembly_type,
     ]
 
 
@@ -977,10 +999,18 @@ def test_save_workflow_as():
 
 
 @pytest.mark.parametrize(
-    'server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos',
+    "server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos",
     [
-        pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, 42,
-                     47, 42, id="fully specified position"),
+        pytest.param(
+            "saserv://tests/add42",
+            "Adder",
+            "Workflow.model.workflow.model",
+            47,
+            42,
+            47,
+            42,
+            id="fully specified position",
+        ),
         # It's difficult to test these cases, because the mock expects Missing.Value,
         # and that really screws with the reflection-based method matching in pythonnet,
         # since it seems Missing.Value has special meaning in that case.
@@ -990,16 +1020,16 @@ def test_save_workflow_as():
         #             Missing.Value, 42, id="missing x value"),
         # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, None,
         #             47, Missing.Value, id="missing y value")
-    ]
+    ],
 )
 def test_create_component(
-        server_path: str,
-        name: str,
-        parent: str,
-        x_pos: Optional[object],
-        y_pos: Optional[object],
-        expected_passed_x_pos,
-        expected_passed_y_pos
+    server_path: str,
+    name: str,
+    parent: str,
+    x_pos: Optional[object],
+    y_pos: Optional[object],
+    expected_passed_x_pos,
+    expected_passed_y_pos,
 ) -> None:
     # Setup
     sut_engine = mcapi.Engine()
@@ -1012,7 +1042,12 @@ def test_create_component(
     # Verify
     assert sut_workflow._instance.getCallCount("createComponent") == 1
     assert sut_workflow._instance.getArgumentRecord("createComponent", 0) == [
-        server_path, name, parent, expected_passed_x_pos, expected_passed_y_pos]
+        server_path,
+        name,
+        parent,
+        expected_passed_x_pos,
+        expected_passed_y_pos,
+    ]
 
 
 def test_create_link() -> None:
@@ -1028,9 +1063,7 @@ def test_create_link() -> None:
 
     # Verify
     assert sut_workflow._instance.getCallCount("createLink") == 1
-    assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [
-        test_var_name, test_eqn
-    ]
+    assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [test_var_name, test_eqn]
 
 
 def test_get_variable() -> None:
@@ -1051,11 +1084,11 @@ def test_get_variable() -> None:
 
 
 @pytest.mark.parametrize(
-    'variables',
+    "variables",
     [
         pytest.param(None),
         pytest.param("Model.a,Model.b,Model.c"),
-    ]
+    ],
 )
 def test_run(variables: Optional[str]) -> None:
     # Setup
@@ -1066,16 +1099,16 @@ def test_run(variables: Optional[str]) -> None:
 
     # Verification
     assert workflow._instance.getCallCount("run") == 1
-    expected_arg: str = variables or ''
+    expected_arg: str = variables or ""
     assert workflow._instance.getArgumentRecord("run", 0) == [expected_arg]
 
 
 @pytest.mark.parametrize(
-    'index',
+    "index",
     [
         pytest.param(0),
         pytest.param(2),
-    ]
+    ],
 )
 def test_get_datamonitor(index: int) -> None:
     # Setup

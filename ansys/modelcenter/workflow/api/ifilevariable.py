@@ -7,7 +7,7 @@ from overrides import overrides
 from .i18n import i18n
 from .ivariable import IVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockFileVariable  # type: ignore
 
 
@@ -22,7 +22,7 @@ class IFileVariable(IVariable[MockFileVariable]):
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:
         if hid is not None:
-            raise NotImplemented(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+            raise NotImplemented(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
 
         return None
         # return acvi.VariableState(self.value, self._wrapped.isValid())
@@ -51,7 +51,7 @@ class IFileVariable(IVariable[MockFileVariable]):
         # Create FileValue from string.
         if not self._wrapped.isBinary:
             mime: str = acvi.FileValue.TEXT_MIMETYPE
-            encoding: str = 'utf-8'
+            encoding: str = "utf-8"
         return None
         # TODO: Implement acvi.FileValue.from_api_string().
         # return acvi.FileValue.from_api_string(self._wrapped.toString())
@@ -152,7 +152,7 @@ class IFileVariable(IVariable[MockFileVariable]):
     def standard_metadata(self, new_metadata: acvi.FileMetadata) -> None:
         if not isinstance(new_metadata, acvi.FileMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

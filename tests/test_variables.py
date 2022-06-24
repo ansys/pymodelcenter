@@ -7,7 +7,7 @@ import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (
     MockBooleanArray,
     MockBooleanVariable,
@@ -22,64 +22,78 @@ from Phoenix.Mock import (
 
 raw_scalars = [True, 6.7, 8, "$"]
 mock_scalars = [
-    MockBooleanVariable("var1", 0), MockDoubleVariable("var1", 0), MockIntegerVariable("var1", 0),
+    MockBooleanVariable("var1", 0),
+    MockDoubleVariable("var1", 0),
+    MockIntegerVariable("var1", 0),
     MockStringVariable("var1", 0),
 ]
 scalar_types = [
-    mcapi.IBooleanVariable, mcapi.IDoubleVariable, mcapi.IIntegerVariable, mcapi.IStringVariable
+    mcapi.IBooleanVariable,
+    mcapi.IDoubleVariable,
+    mcapi.IIntegerVariable,
+    mcapi.IStringVariable,
 ]
 acvi_scalars = [
-    acvi.BooleanValue(True), acvi.RealValue(6.7), acvi.IntegerValue(8), acvi.StringValue("$")
+    acvi.BooleanValue(True),
+    acvi.RealValue(6.7),
+    acvi.IntegerValue(8),
+    acvi.StringValue("$"),
 ]
 scalar_names = ["Bool", "Real", "Integer", "String"]
 value_test_cases = []
 for i in range(4):
     value_test_cases.append(
-        pytest.param(raw_scalars[i], mock_scalars[i], scalar_types[i], acvi_scalars[i],
-                     id=scalar_names[i])
+        pytest.param(
+            raw_scalars[i], mock_scalars[i], scalar_types[i], acvi_scalars[i], id=scalar_names[i]
+        )
     )
 
 raw_arrays = [[True, False, True], [1.1, 2.2, 3.3], [1, 2, 3], ["a", "b", "c"]]
 mock_arrays = [
-    MockBooleanArray("var1", 0), MockDoubleArray("var1", 0), MockIntegerArray("var1", 0),
+    MockBooleanArray("var1", 0),
+    MockDoubleArray("var1", 0),
+    MockIntegerArray("var1", 0),
     MockStringArray("var1", 0),
 ]
-array_types = [
-    mcapi.IBooleanArray, mcapi.IDoubleArray, mcapi.IIntegerArray, mcapi.IStringArray
-]
+array_types = [mcapi.IBooleanArray, mcapi.IDoubleArray, mcapi.IIntegerArray, mcapi.IStringArray]
 acvi_arrays = [
-    acvi.BooleanArrayValue(3, [True, False, True]), acvi.RealArrayValue(3, [1.1, 2.2, 3.3]),
-    acvi.IntegerArrayValue(3, [1, 2, 3]), acvi.StringArrayValue(3, ["a", "b", "c"]),
+    acvi.BooleanArrayValue(3, [True, False, True]),
+    acvi.RealArrayValue(3, [1.1, 2.2, 3.3]),
+    acvi.IntegerArrayValue(3, [1, 2, 3]),
+    acvi.StringArrayValue(3, ["a", "b", "c"]),
 ]
 array_names = ["Bool Array", "Real Array", "Integer Array", "String Array"]
 
 value_array_cases = []
 for i in range(4):
     value_test_cases.append(
-        pytest.param(raw_arrays[i], mock_arrays[i], array_types[i], acvi_arrays[i],
-                     id=array_names[i])
+        pytest.param(
+            raw_arrays[i], mock_arrays[i], array_types[i], acvi_arrays[i], id=array_names[i]
+        )
     )
 
 scalar_metadata = [
-    acvi.BooleanMetadata(), acvi.RealMetadata(), acvi.IntegerMetadata(), acvi.StringMetadata()
+    acvi.BooleanMetadata(),
+    acvi.RealMetadata(),
+    acvi.IntegerMetadata(),
+    acvi.StringMetadata(),
 ]
 array_metadata = [
-    acvi.BooleanArrayMetadata(), acvi.RealArrayMetadata(), acvi.IntegerArrayMetadata(),
-    acvi.StringArrayMetadata()
+    acvi.BooleanArrayMetadata(),
+    acvi.RealArrayMetadata(),
+    acvi.IntegerArrayMetadata(),
+    acvi.StringArrayMetadata(),
 ]
 metadata_test_cases = []
 for i in range(4):
-    metadata_test_cases.append(
-        pytest.param(mock_scalars[i], scalar_types[i], scalar_metadata[i])
-    )
-    metadata_test_cases.append(
-        pytest.param(mock_arrays[i], array_types[i], array_metadata[i])
-    )
+    metadata_test_cases.append(pytest.param(mock_scalars[i], scalar_types[i], scalar_metadata[i]))
+    metadata_test_cases.append(pytest.param(mock_arrays[i], array_types[i], array_metadata[i]))
 
 
 @pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases + value_array_cases)
-def test_get_value(value: object, mock: MockVariable, sut_type: Type,
-                   expected: acvi.IVariableValue) -> None:
+def test_get_value(
+    value: object, mock: MockVariable, sut_type: Type, expected: acvi.IVariableValue
+) -> None:
     """
     Verifies getting the value for all IVariable descendants.
 
@@ -91,7 +105,7 @@ def test_get_value(value: object, mock: MockVariable, sut_type: Type,
     expected The expected result.
     """
     mock.value = value
-    mock.MockSetStringValue(str(value).replace('[', '').replace(']', '').replace('\'', ''))
+    mock.MockSetStringValue(str(value).replace("[", "").replace("]", "").replace("'", ""))
     # TODO: looks like I need to change to setting value via MockSetStringValue to support arrays
     sut: mcapi.IVariable = sut_type(mock)
 
@@ -101,8 +115,9 @@ def test_get_value(value: object, mock: MockVariable, sut_type: Type,
 
 
 @pytest.mark.parametrize("value,mock,sut_type,expected", value_test_cases + value_array_cases)
-def test_get_value_absolute(value: object, mock: MockVariable, sut_type: Type,
-                            expected: acvi.IVariableValue) -> None:
+def test_get_value_absolute(
+    value: object, mock: MockVariable, sut_type: Type, expected: acvi.IVariableValue
+) -> None:
     """
     Verifies getting the 'absolute' value for all IVariable descendants.
 
@@ -114,7 +129,7 @@ def test_get_value_absolute(value: object, mock: MockVariable, sut_type: Type,
     expected The expected result.
     """
     mock.valueAbsolute = value
-    mock.MockSetStringValue(str(value).replace('[', '').replace(']', '').replace('\'', ''))
+    mock.MockSetStringValue(str(value).replace("[", "").replace("]", "").replace("'", ""))
     sut: mcapi.IVariable = sut_type(mock)
 
     result: acvi.IVariableValue = sut.value_absolute
@@ -125,20 +140,17 @@ def test_get_value_absolute(value: object, mock: MockVariable, sut_type: Type,
 set_value_cases = []
 for i in range(4):
     set_value_cases.append(
-        pytest.param(mock_scalars[i], scalar_types[i], acvi_scalars[i],
-                     id=scalar_names[i])
+        pytest.param(mock_scalars[i], scalar_types[i], acvi_scalars[i], id=scalar_names[i])
     )
 set_value_array_cases = []
 for i in range(4):
     set_value_array_cases.append(
-        pytest.param(mock_arrays[i], array_types[i], acvi_arrays[i],
-                     id=array_names[i])
+        pytest.param(mock_arrays[i], array_types[i], acvi_arrays[i], id=array_names[i])
     )
 
 
 @pytest.mark.parametrize("mock,sut_type,expected", set_value_cases + set_value_array_cases)
-def test_set_value(mock: MockVariable, sut_type: Type,
-                   expected: acvi.IVariableValue) -> None:
+def test_set_value(mock: MockVariable, sut_type: Type, expected: acvi.IVariableValue) -> None:
     """
     Verifies setting the value for all IVariable descendants.
 
@@ -157,8 +169,9 @@ def test_set_value(mock: MockVariable, sut_type: Type,
 
 
 @pytest.mark.parametrize("mock,sut_type,expected", set_value_cases)
-def test_set_initial_value(mock: MockVariable, sut_type: Type,
-                           expected: acvi.IVariableValue) -> None:
+def test_set_initial_value(
+    mock: MockVariable, sut_type: Type, expected: acvi.IVariableValue
+) -> None:
     """
     Verifies setting the initial value for all ScalarVariable descendants.
 
@@ -212,8 +225,9 @@ def test_is_valid(mock: MockVariable, sut_type: Type, valid: bool) -> None:
 
 
 @pytest.mark.parametrize("mock,sut_type,expected", metadata_test_cases)
-def test_get_metadata(mock: MockVariable, sut_type: Type, expected: acvi.CommonVariableMetadata) \
-        -> None:
+def test_get_metadata(
+    mock: MockVariable, sut_type: Type, expected: acvi.CommonVariableMetadata
+) -> None:
     sut: mcapi.IVariable = sut_type(mock)
 
     result: acvi.CommonVariableMetadata = sut.standard_metadata
@@ -222,8 +236,9 @@ def test_get_metadata(mock: MockVariable, sut_type: Type, expected: acvi.CommonV
 
 
 @pytest.mark.parametrize("mock,sut_type,value", metadata_test_cases)
-def test_set_metadata(mock: MockVariable, sut_type: Type, value: acvi.CommonVariableMetadata) \
-        -> None:
+def test_set_metadata(
+    mock: MockVariable, sut_type: Type, value: acvi.CommonVariableMetadata
+) -> None:
     sut: mcapi.IVariable = sut_type(mock)
     assert sut.standard_metadata is not value
 

@@ -1,7 +1,7 @@
 """Tests for variable_links"""
 import clr
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockVariableLink
 import pytest
 

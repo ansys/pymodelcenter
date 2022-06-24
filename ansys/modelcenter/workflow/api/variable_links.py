@@ -82,5 +82,6 @@ def dotnet_links_to_iterable(dotnet_links) -> Sequence[VariableLink]:
     -------
     A sequence of variable link objects.
     """
-    return [VariableLink(dotnet_links.Item(var_index))
-            for var_index in range(0, dotnet_links.Count)]
+    return [
+        VariableLink(dotnet_links.Item(var_index)) for var_index in range(0, dotnet_links.Count)
+    ]

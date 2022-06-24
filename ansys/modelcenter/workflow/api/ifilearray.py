@@ -7,7 +7,7 @@ from overrides import overrides
 from ansys.modelcenter.workflow.api.i18n import i18n
 from ansys.modelcenter.workflow.api.iarray import IArray
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockFileArray  # type: ignore
 
 
@@ -24,7 +24,7 @@ class IFileArray(IArray[MockFileArray]):
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:
         if hid is not None:
-            raise NotImplemented(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+            raise NotImplemented(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
 
         # TODO: Implement acvi.FileArrayValue.from_api_string().
         _ = self._wrapped.toString()
@@ -114,7 +114,7 @@ class IFileArray(IArray[MockFileArray]):
     def standard_metadata(self, new_metadata: acvi.FileArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.FileArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

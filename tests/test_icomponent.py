@@ -100,7 +100,6 @@ user_data_tests = [
     pytest.param([42, 86], id="[int]"),
     pytest.param([1.414, 0.717], id="[float]"),
     pytest.param([True, False], id="[bool]"),
-
     # Did not expect these to work
     pytest.param(["str", 42, 1.414, True], id="[mixed]"),
     pytest.param({"one", "two"}, id="{str}"),
@@ -111,7 +110,6 @@ user_data_tests = [
     pytest.param({"one": 1, "two": 2}, id="dict"),
     pytest.param({"one": "un", "two": 2, "three": 3.14, "four": False}, id="dict-mixed"),
     pytest.param({2: "two", 3.14: "pi", False: "nine"}, id="dict-key-mixed"),
-
     # Other types to be complete
     pytest.param(("one", "two"), id="(str)", marks=pytest.mark.xfail),
     pytest.param((42, 86), id="(int)", marks=pytest.mark.xfail),
@@ -120,9 +118,7 @@ user_data_tests = [
 ]
 
 
-@pytest.mark.parametrize(
-    "value", user_data_tests
-)
+@pytest.mark.parametrize("value", user_data_tests)
 def test_user_data(value: Any) -> None:
     """Testing of the user_data property."""
     global component
@@ -140,7 +136,7 @@ def test_user_data(value: Any) -> None:
     [
         pytest.param("a string", id="str"),
         pytest.param(["one string", "two string"], id="[str]"),
-    ]
+    ],
 )
 def test_associated_files(value: Any) -> None:
     """Testing of the associated_files property."""
@@ -205,7 +201,7 @@ def test_get_source() -> None:
     result = component.get_source()
 
     # Verify
-    assert result == "有りのままの姿見せるのよ"     # Value comes from MockComponent.getSource()
+    assert result == "有りのままの姿見せるのよ"  # Value comes from MockComponent.getSource()
     assert isinstance(result, str)
 
 
@@ -214,7 +210,7 @@ def test_get_source() -> None:
     [
         pytest.param("i", mcapi.IIntegerVariable, 42, id="int"),
         pytest.param("d", mcapi.IDoubleVariable, 1.414, id="double"),
-    ]
+    ],
 )
 def test_get_variable(name: str, type_: Type, value) -> None:
     """Testing of the get_variable method."""
@@ -244,7 +240,7 @@ def test_get_type() -> None:
     result = component.get_type()
 
     # Verify
-    assert result == "それは早いぞ"       # Value came from MockComponents.MockComponent(string)
+    assert result == "それは早いぞ"  # Value came from MockComponents.MockComponent(string)
 
 
 def test_run() -> None:
@@ -311,7 +307,7 @@ def test_get_position_x() -> None:
     result = component.get_position_x()
 
     # Verify
-    assert result == 24     # value from MockComponent(string name)
+    assert result == 24  # value from MockComponent(string name)
 
 
 def test_get_position_y() -> None:
@@ -320,7 +316,7 @@ def test_get_position_y() -> None:
     result = component.get_position_y()
 
     # Verify
-    assert result == 31     # value from MockComponent(string name)
+    assert result == 31  # value from MockComponent(string name)
 
 
 def test_show() -> None:

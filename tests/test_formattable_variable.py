@@ -5,7 +5,7 @@ import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockDoubleArray, MockDoubleVariable, MockIntegerArray, MockIntegerVariable
 
 __format_cases = [
@@ -16,7 +16,7 @@ __format_cases = [
 ]
 
 
-@pytest.mark.parametrize('sut', __format_cases)
+@pytest.mark.parametrize("sut", __format_cases)
 def test_get_format(sut: mcapi.FormattableVariable):
     """Verify that the format can be retrieved."""
     # Setup
@@ -29,7 +29,7 @@ def test_get_format(sut: mcapi.FormattableVariable):
     assert result == "TEST PASS"
 
 
-@pytest.mark.parametrize('sut', __format_cases)
+@pytest.mark.parametrize("sut", __format_cases)
 def test_set_format(sut: mcapi.FormattableVariable):
     """Verify that the format can be set."""
     # Setup

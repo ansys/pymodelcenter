@@ -5,7 +5,7 @@ import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import (  # type: ignore
     MockAssemblies,
     MockAssembly,
@@ -36,9 +36,11 @@ def setup_function(test_func):
 def test_variables() -> None:
     """Testing of variables property."""
     """Testing of the variables property."""
-    mock_vars = [MockDoubleVariable("mockvar", 0),
-                 MockIntegerVariable("mockVar2", 0),
-                 MockBooleanVariable("mockVar3", 0)]
+    mock_vars = [
+        MockDoubleVariable("mockvar", 0),
+        MockIntegerVariable("mockVar2", 0),
+        MockBooleanVariable("mockVar3", 0),
+    ]
     for mock_var in mock_vars:
         wrapped_mock_comp.Variables.addItem(mock_var)
 
@@ -66,7 +68,9 @@ def test_groups() -> None:
 
     assert all([isinstance(each_group, mcapi.IGroup) for each_group in result])
     assert [each_group.get_name() for each_group in result] == [
-        "mock group 1", "mock group 2", "mock group 3"
+        "mock group 1",
+        "mock group 2",
+        "mock group 3",
     ]
 
 
@@ -82,7 +86,10 @@ def test_assemblies() -> None:
 
     assert all([isinstance(each_assembly, mcapi.Assembly) for each_assembly in result])
     assert [assembly.name for assembly in result] == [
-        "mock assembly 1", "mock assembly 2", "mock assembly 3"]
+        "mock assembly 1",
+        "mock assembly 2",
+        "mock assembly 3",
+    ]
 
 
 def test_components() -> None:
@@ -102,7 +109,10 @@ def test_components() -> None:
     # Verify
     assert all([isinstance(each_component, mcapi.IComponent) for each_component in result])
     assert [component.name for component in result] == [
-        "mock component 1", "mock component 2", "mock component 3"]
+        "mock component 1",
+        "mock component 2",
+        "mock component 3",
+    ]
 
 
 def test_icon_id() -> None:
@@ -219,23 +229,28 @@ def test_add_assembly() -> None:
     assert wrapped_mock_comp.getCallCount("addAssembly") == 0
 
     result: mcapi.Assembly = sut_instance.add_assembly(
-        subassembly_name, x_pos, y_pos, sub_assembly_type)
+        subassembly_name, x_pos, y_pos, sub_assembly_type
+    )
 
     assert wrapped_mock_comp.getCallCount("addAssembly2") == 1
     assert wrapped_mock_comp.getCallCount("addAssembly") == 0
     assert wrapped_mock_comp.getArgumentRecord("addAssembly2", 0) == [
-        subassembly_name, x_pos, y_pos, sub_assembly_type]
+        subassembly_name,
+        x_pos,
+        y_pos,
+        sub_assembly_type,
+    ]
     assert isinstance(result, mcapi.Assembly)
     assert result.name == subassembly_name
 
 
 @pytest.mark.parametrize(
-    'x_pos,y_pos',
+    "x_pos,y_pos",
     [
         pytest.param(47, None, id="no y"),
         pytest.param(None, 47, id="no x"),
         pytest.param(None, None, id="no position"),
-    ]
+    ],
 )
 def test_add_assembly_no_position(x_pos: Optional[int], y_pos: Optional[int]) -> None:
     """Testing of the add_assembly method when some position info is missing"""
@@ -245,12 +260,15 @@ def test_add_assembly_no_position(x_pos: Optional[int], y_pos: Optional[int]) ->
     assert wrapped_mock_comp.getCallCount("addAssembly") == 0
 
     result: mcapi.Assembly = sut_instance.add_assembly(
-        subassembly_name, x_pos, y_pos, sub_assembly_type)
+        subassembly_name, x_pos, y_pos, sub_assembly_type
+    )
 
     assert wrapped_mock_comp.getCallCount("addAssembly2") == 0
     assert wrapped_mock_comp.getCallCount("addAssembly") == 1
     assert wrapped_mock_comp.getArgumentRecord("addAssembly", 0) == [
-        subassembly_name, sub_assembly_type]
+        subassembly_name,
+        sub_assembly_type,
+    ]
     assert isinstance(result, mcapi.Assembly)
     assert result.name == subassembly_name
 
@@ -263,8 +281,7 @@ def test_add_variable() -> None:
     sut_instance.add_variable(var_name, var_type)
 
     assert wrapped_mock_comp.getCallCount("addVariable") == 1
-    assert wrapped_mock_comp.getArgumentRecord("addVariable", 0) == [
-        var_name, var_type]
+    assert wrapped_mock_comp.getArgumentRecord("addVariable", 0) == [var_name, var_type]
 
 
 def test_rename() -> None:

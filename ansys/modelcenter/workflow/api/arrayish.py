@@ -1,7 +1,7 @@
 """Implementation of Arrayish wrapper class."""
 from typing import Callable, Sequence, Type, TypeVar, Union, overload
 
-VT = TypeVar('VT')
+VT = TypeVar("VT")
 """A generic value type."""
 
 
@@ -34,13 +34,16 @@ class Arrayish(Sequence[VT]):
         self._converter = converter
 
     @overload
-    def __getitem__(self, i: int) -> VT: ...
+    def __getitem__(self, i: int) -> VT:
+        ...
 
     @overload
-    def __getitem__(self, s: slice) -> Sequence[VT]: ...
+    def __getitem__(self, s: slice) -> Sequence[VT]:
+        ...
 
     @overload
-    def __getitem__(self, s: str) -> VT: ...
+    def __getitem__(self, s: str) -> VT:
+        ...
 
     def __getitem__(self, index: Union[int, slice, str]) -> Union[Sequence[VT], VT]:
         """

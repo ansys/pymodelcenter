@@ -83,7 +83,7 @@ class IComponent(CustomMetadataOwner, IAnsysComponent):
     # ModelCenter
 
     @property
-    def groups(self) -> 'Sequence[igroup.IGroup]':
+    def groups(self) -> "Sequence[igroup.IGroup]":
         """All groups in the component."""
         return Arrayish(self._wrapped.Groups, igroup.IGroup)
 
@@ -132,7 +132,7 @@ class IComponent(CustomMetadataOwner, IAnsysComponent):
         return self._wrapped.IndexInParent
 
     @property
-    def parent_assembly(self) -> 'assembly.Assembly':
+    def parent_assembly(self) -> "assembly.Assembly":
         """Parent assembly of this component."""
         parent_assembly = self._wrapped.ParentAssembly
         return assembly.Assembly(parent_assembly)
@@ -157,7 +157,7 @@ class IComponent(CustomMetadataOwner, IAnsysComponent):
         """
         return self._wrapped.getSource()
 
-    def get_variable(self, name: str) -> 'IVariable':
+    def get_variable(self, name: str) -> "IVariable":
         """
         Get a variable in this component by name.
 

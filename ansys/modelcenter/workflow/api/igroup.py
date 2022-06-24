@@ -26,12 +26,12 @@ class IGroup(IVariableContainer):
         self._instance = group
 
     @property
-    def variables(self) -> 'Sequence[ivariable.IVariable]':
+    def variables(self) -> "Sequence[ivariable.IVariable]":
         """The variables in the Group."""
         return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> 'Sequence[IGroup]':
+    def groups(self) -> "Sequence[IGroup]":
         """The Groups this Group is a member of."""
         return Arrayish(self._instance.Groups, IGroup)
 

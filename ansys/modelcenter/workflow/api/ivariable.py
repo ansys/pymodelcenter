@@ -14,13 +14,14 @@ from .custom_metadata_owner import CustomMetadataOwner
 from .i18n import i18n
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
-WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
+WRAPPED_TYPE = TypeVar("WRAPPED_TYPE")
 
 
 class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     """
     Represents a variable in the workflow.
     """
+
     def __init__(self, wrapped: WRAPPED_TYPE):
         super().__init__(wrapped)
         self._wrapped = wrapped
@@ -73,7 +74,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:
         if hid is not None:
-            raise NotImplemented(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+            raise NotImplemented(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
         return acvi.VariableState(self.value, self._wrapped.isValid())
 
     # ModelCenter
@@ -173,7 +174,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         self._wrapped.hide = value
 
     @property
-    def owning_component(self) -> 'IComponent':
+    def owning_component(self) -> "IComponent":
         """
         The component that owns this variable.
 
@@ -234,8 +235,9 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         """
         self._wrapped.invalidate()
 
-    def direct_precedents(self, follow_suspended: bool = False,
-                          reserved: Optional[object] = None) -> Sequence['IVariable']:
+    def direct_precedents(
+        self, follow_suspended: bool = False, reserved: Optional[object] = None
+    ) -> Sequence["IVariable"]:
         """
         Returns a list of variables that are immediate precedents to the value of this variable.
         This function returns all variables that influence this variable and are directly
@@ -254,11 +256,13 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return arrayish.Arrayish(self._wrapped.directPrecedents(
-            follow_suspended), utils.from_dot_net_to_ivariable)
+        return arrayish.Arrayish(
+            self._wrapped.directPrecedents(follow_suspended), utils.from_dot_net_to_ivariable
+        )
 
-    def direct_dependents(self, follow_suspended: bool = False,
-                          reserved: Optional[object] = None) -> Sequence['IVariable']:
+    def direct_dependents(
+        self, follow_suspended: bool = False, reserved: Optional[object] = None
+    ) -> Sequence["IVariable"]:
         """
         Returns a list of variables that are immediate dependents of the value of this variable.
         This function returns all variables that are influenced by this variable and are
@@ -277,8 +281,9 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return arrayish.Arrayish(self._wrapped.directDependents(
-            follow_suspended), utils.from_dot_net_to_ivariable)
+        return arrayish.Arrayish(
+            self._wrapped.directDependents(follow_suspended), utils.from_dot_net_to_ivariable
+        )
 
     def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
@@ -315,9 +320,9 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         """
         return dotnet_links_to_iterable(self._wrapped.dependentLinks(reserved))
 
-    def precedents(self,
-                   follow_suspended: bool = False,
-                   reserved: Optional[object] = None) -> Sequence['IVariable']:
+    def precedents(
+        self, follow_suspended: bool = False, reserved: Optional[object] = None
+    ) -> Sequence["IVariable"]:
         """
         Returns a list of variables that are precedents to the value of this variable. This
         function returns all variables that influence this variable, not just directly connected
@@ -336,12 +341,13 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return arrayish.Arrayish(self._wrapped.precedents(follow_suspended),
-                                 utils.from_dot_net_to_ivariable)
+        return arrayish.Arrayish(
+            self._wrapped.precedents(follow_suspended), utils.from_dot_net_to_ivariable
+        )
 
-    def dependents(self,
-                   follow_suspended: bool = False,
-                   reserved: Optional[object] = None) -> Sequence['IVariable']:
+    def dependents(
+        self, follow_suspended: bool = False, reserved: Optional[object] = None
+    ) -> Sequence["IVariable"]:
         """
         Returns a list of variables that are dependent upon the value of this variable.
         This function returns all variables that are influenced by this variable,
@@ -360,8 +366,9 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariables object.
         """
-        return arrayish.Arrayish(self._wrapped.dependents(follow_suspended),
-                                 utils.from_dot_net_to_ivariable)
+        return arrayish.Arrayish(
+            self._wrapped.dependents(follow_suspended), utils.from_dot_net_to_ivariable
+        )
 
     def is_input_to_component(self) -> bool:
         """

@@ -1,6 +1,6 @@
 import clr
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockRefArrayProp  # type: ignore
 
 
@@ -87,4 +87,5 @@ class IRefProp(IRefArrayProp):
 
     Implements IRefArrayProp.
     """
+
     pass

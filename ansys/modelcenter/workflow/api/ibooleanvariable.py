@@ -4,7 +4,7 @@ from overrides import overrides
 
 from .ivariable import ScalarVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockBooleanVariable  # type: ignore
 
 
@@ -47,7 +47,7 @@ class IBooleanVariable(ScalarVariable[MockBooleanVariable]):
     def standard_metadata(self, new_metadata: acvi.BooleanMetadata) -> None:
         if not isinstance(new_metadata, acvi.BooleanMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

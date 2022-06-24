@@ -24,7 +24,7 @@ from Phoenix.Mock import MockModelCenter  # type: ignore
 class WorkflowType(Enum):
     """Enumeration of the types of workflows that can be created."""
 
-    DATA = "dataModel",
+    DATA = ("dataModel",)
     """Legacy style workflow where execution flow is determined from
     links between components and an execution strategy."""
     PROCESS = "processModel"
@@ -35,9 +35,9 @@ class WorkflowType(Enum):
 class OnConnectionErrorMode(Enum):
     """Enumeration of actions to take on connection error."""
 
-    ERROR = 3,
+    ERROR = (3,)
     """Abort loading and throw the error back to the caller."""
-    IGNORE = 1,
+    IGNORE = (1,)
     """Ignore the error and continue loading."""
     DIALOG = -1
     """(UI mode only) Show an error dialog."""
@@ -123,10 +123,8 @@ class Engine(IFileBasedWorkflowEngine):
         return self.load_workflow_ex(str(file_name))
 
     def load_workflow_ex(
-            self,
-            file_name: str,
-            on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR) \
-            -> Workflow:
+        self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
+    ) -> Workflow:
         """
         Load a saved workflow from a file.
 
@@ -281,7 +279,7 @@ class Engine(IFileBasedWorkflowEngine):
         version = {
             "major": self._instance.get_version(0),
             "minor": self._instance.get_version(1),
-            "patch": self._instance.get_version(2)
+            "patch": self._instance.get_version(2),
         }
         version_str: str = Template("${major}.${minor}.${patch}").safe_substitute(version)
         install_location: str = self._instance.getModelCenterPath()  # or self._instance.appFullPath
@@ -294,5 +292,6 @@ class Engine(IFileBasedWorkflowEngine):
             version_as_string=version_str,
             server_type="MockModelCenter",
             install_location=install_location,
-            base_url=None)
+            base_url=None,
+        )
         return info

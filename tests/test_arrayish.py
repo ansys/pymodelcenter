@@ -10,6 +10,7 @@ class MockAPIItem:
     A mock ModelCenter API item returned as an item by the arrayish \
     MockAPIInstance ModelCenter API object's items.
     """
+
     def __init__(self, name: str):
         """
         Initialize a mock item.

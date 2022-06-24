@@ -74,13 +74,21 @@ class Workflow(IWorkflowInstance):
         return self._state
 
     @overrides
-    def run(self, inputs: Mapping[str, acvi.VariableState], reset: bool,
-            validation_ids: AbstractSet[str]) -> Mapping[str, acvi.VariableState]:
+    def run(
+        self,
+        inputs: Mapping[str, acvi.VariableState],
+        reset: bool,
+        validation_ids: AbstractSet[str],
+    ) -> Mapping[str, acvi.VariableState]:
         raise NotImplementedError
 
     @overrides
-    def start_run(self, inputs: Mapping[str, acvi.VariableState], reset: bool,
-                  validation_ids: AbstractSet[str]) -> str:
+    def start_run(
+        self,
+        inputs: Mapping[str, acvi.VariableState],
+        reset: bool,
+        validation_ids: AbstractSet[str],
+    ) -> str:
         raise NotImplementedError
 
     @overrides
@@ -186,12 +194,13 @@ class Workflow(IWorkflowInstance):
     # void createComponent(
     #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
     def create_component(
-            self,
-            server_path: str,
-            name: str,
-            parent: str,
-            x_pos: Optional[object] = None,
-            y_pos: Optional[object] = None) -> None:
+        self,
+        server_path: str,
+        name: str,
+        parent: str,
+        x_pos: Optional[object] = None,
+        y_pos: Optional[object] = None,
+    ) -> None:
         pass
 
         # LTTODO: The mock expects System.Reflection.Missing.Value for x_pos and y_pos to indicate
@@ -200,13 +209,7 @@ class Workflow(IWorkflowInstance):
         # (Missing.Value has a special meaning there, it seems.)
         # This is something the actual GRPC API will probably have to solve.
 
-        self._instance.createComponent(
-            server_path,
-            name,
-            parent,
-            x_pos,
-            y_pos
-        )
+        self._instance.createComponent(server_path, name, parent, x_pos, y_pos)
 
     # void createLink(BSTR variable, BSTR equation);
     def create_link(self, variable: str, equation: str) -> None:
@@ -231,7 +234,7 @@ class Workflow(IWorkflowInstance):
     def get_variable(self, name: str) -> object:
         return WorkflowVariable(self._instance.getVariable(name))
 
-    def get_component(self, name: str) -> IComponent:   # IComponent, IIfComponent, IScriptComponent
+    def get_component(self, name: str) -> IComponent:  # IComponent, IIfComponent, IScriptComponent
         """
         Get a component from the workflow.
 
@@ -339,8 +342,9 @@ class Workflow(IWorkflowInstance):
         return self._instance.createAssembly(name, parent, assembly_type)
 
     # IDispatch* createAssemblyVariable(BSTR name, BSTR type, BSTR parent);
-    def create_assembly_variable(self, name: str, type_: str, parent: str) ->\
-            acvi.CommonVariableMetadata:
+    def create_assembly_variable(
+        self, name: str, type_: str, parent: str
+    ) -> acvi.CommonVariableMetadata:
         """
         Create a new variable in an Assembly.
 
@@ -392,17 +396,17 @@ class Workflow(IWorkflowInstance):
         metadata: acvi.CommonVariableMetadata = None
         type_: str = variable.getType()
         is_array: bool = False
-        if type_.endswith('[]'):
+        if type_.endswith("[]"):
             is_array = True
             type_ = type_[:-2]
 
-        if type_ == 'boolean':
+        if type_ == "boolean":
             if is_array:
                 metadata = acvi.BooleanArrayMetadata()
             else:
                 metadata = acvi.BooleanMetadata()
             metadata.description = variable.description
-        elif type_ == 'double':
+        elif type_ == "double":
             if is_array:
                 metadata = acvi.RealArrayMetadata()
             else:
@@ -413,9 +417,10 @@ class Workflow(IWorkflowInstance):
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
             metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
-        elif type_ == 'integer':
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
+        elif type_ == "integer":
             if is_array:
                 metadata = acvi.IntegerArrayMetadata()
             else:
@@ -424,17 +429,19 @@ class Workflow(IWorkflowInstance):
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
             metadata.enumerated_values = acvi.IntegerArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
-        elif type_ == 'string':
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
+        elif type_ == "string":
             if is_array:
                 metadata = acvi.StringArrayMetadata()
             else:
                 metadata = acvi.StringMetadata()
             metadata.description = variable.description
             metadata.enumerated_values = acvi.StringArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
         else:
             raise NotImplementedError
 
@@ -561,18 +568,15 @@ class Workflow(IWorkflowInstance):
     # void setAssemblyStyle(
     #   BSTR assemblyName, AssemblyStyle style, [optional]VARIANT width, [optional]VARIANT height);
     def set_assembly_style(
-            self,
-            assembly_name: str,
-            style: object,
-            width: object = None,
-            height: object = None) -> None:
+        self, assembly_name: str, style: object, width: object = None, height: object = None
+    ) -> None:
         pass
 
     # AssemblyStyle getAssemblyStyle(BSTR assemblyName, int *width, int *height);
     def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         pass
 
-    def get_assembly(self, name: str = None) -> object:    # IAssembly
+    def get_assembly(self, name: str = None) -> object:  # IAssembly
         """Gets the named assembly or the top level assembly."""
         if name is None or name == "":
             assembly = self._instance.getModel()
@@ -586,13 +590,14 @@ class Workflow(IWorkflowInstance):
     #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,
     #   [optional]VARIANT xPos, [optional]VARIANT yPos);
     def create_and_init_component(
-            self,
-            server_path: str,
-            name: str,
-            parent: str,
-            init_string: str,
-            x_pos: object = None,
-            y_pos: object = None):
+        self,
+        server_path: str,
+        name: str,
+        parent: str,
+        init_string: str,
+        x_pos: object = None,
+        y_pos: object = None,
+    ):
         pass
 
     # BSTR getMacroScript(BSTR macroName);
@@ -704,10 +709,10 @@ class Workflow(IWorkflowInstance):
         """
         metadata: acvi.CommonVariableMetadata = None
         variable = self._instance.getVariableMetaData(name)  # PHXDATAHISTORYLib.IDHVariable
-        is_array: bool = variable.type.endswith('[]')
+        is_array: bool = variable.type.endswith("[]")
         type_: str = variable.type[:-2] if is_array else variable.type
 
-        if type_ == 'double':
+        if type_ == "double":
             if is_array:
                 metadata = acvi.RealArrayMetadata()
             else:
@@ -719,10 +724,11 @@ class Workflow(IWorkflowInstance):
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
             metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
 
-        elif type_ == 'integer':
+        elif type_ == "integer":
             if is_array:
                 metadata = acvi.IntegerArrayMetadata()
             else:
@@ -730,23 +736,25 @@ class Workflow(IWorkflowInstance):
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
             metadata.enumerated_values = acvi.IntegerArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
 
-        elif type_ == 'boolean':
+        elif type_ == "boolean":
             if is_array:
                 metadata = acvi.BooleanArrayMetadata()
             else:
                 metadata = acvi.BooleanMetadata()
 
-        elif type_ == 'string':
+        elif type_ == "string":
             if is_array:
                 metadata = acvi.StringArrayMetadata()
             else:
                 metadata = acvi.StringMetadata()
             metadata.enumerated_values = acvi.StringArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
         else:
             raise NotImplementedError
 

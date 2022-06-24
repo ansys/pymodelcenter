@@ -4,7 +4,7 @@ from overrides import overrides
 
 from .ivariable import FormattableVariable, ScalarVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockDoubleVariable  # type: ignore
 
 
@@ -49,7 +49,7 @@ class IDoubleVariable(ScalarVariable[MockDoubleVariable], FormattableVariable):
     def standard_metadata(self, new_metadata: acvi.RealMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

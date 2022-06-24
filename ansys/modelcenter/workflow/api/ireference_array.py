@@ -9,7 +9,7 @@ from .iarray import IArray
 from .idoublearray import IDoubleArray
 from .irefprop import IRefArrayProp
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 import Phoenix.Mock as mocks  # type: ignore
 
 
@@ -34,8 +34,8 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
         self._wrapped: mocks.MockReferenceArray = wrapped
         self._standard_metadata: acvi.RealArrayMetadata = acvi.RealArrayMetadata()
 
-####################################################################################################
-# region Inherited from IVariable
+    ####################################################################################################
+    # region Inherited from IVariable
 
     @property
     @overrides
@@ -62,13 +62,13 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
     def standard_metadata(self, new_metadata: acvi.RealArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata
 
-# endregion
-####################################################################################################
+    # endregion
+    ####################################################################################################
 
     @property
     def auto_grow(self) -> bool:

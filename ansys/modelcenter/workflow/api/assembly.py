@@ -83,13 +83,16 @@ class Assembly(CustomMetadataOwner, IControlStatement):
     def get_components(self) -> Collection[IElement]:
         dotnet_mock_mc_components = self._wrapped.Components
         from .icomponent import IComponent
-        return [IComponent(dotnet_mock_mc_components.Item(mock_index))
-                for mock_index in range(0, dotnet_mock_mc_components.Count)]
+
+        return [
+            IComponent(dotnet_mock_mc_components.Item(mock_index))
+            for mock_index in range(0, dotnet_mock_mc_components.Count)
+        ]
 
     # ModelCenter specific
 
     @property
-    def groups(self) -> Sequence['igroup.IGroup']:
+    def groups(self) -> Sequence["igroup.IGroup"]:
         """
         Get a list of variable groups in the Assembly.
 
@@ -100,7 +103,7 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         return Arrayish(self._wrapped.Groups, igroup.IGroup)
 
     @property
-    def assemblies(self) -> Sequence['Assembly']:
+    def assemblies(self) -> Sequence["Assembly"]:
         """
         Pointer to the Assemblies in the Assembly.
 
@@ -110,8 +113,10 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         """
         # VARIANT Assemblies;
         dotnet_mock_mc_assemblies = self._wrapped.Assemblies
-        return [Assembly(dotnet_mock_mc_assemblies.Item(mock_index))
-                for mock_index in range(0, dotnet_mock_mc_assemblies.Count)]
+        return [
+            Assembly(dotnet_mock_mc_assemblies.Item(mock_index))
+            for mock_index in range(0, dotnet_mock_mc_assemblies.Count)
+        ]
 
     @property
     def icon_id(self) -> int:
@@ -136,7 +141,7 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         return self._wrapped.IndexInParent
 
     @property
-    def parent_assembly(self) -> Optional['Assembly']:    # IAssembly:
+    def parent_assembly(self) -> Optional["Assembly"]:  # IAssembly:
         """
         Gets the parent of assembly of this assembly.
 
@@ -187,11 +192,13 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         # BSTR getFullName();
         return self._wrapped.getFullName()
 
-    def add_assembly(self,
-                     name: str,
-                     x_pos: Optional[int],
-                     y_pos: Optional[int],
-                     assembly_type: Optional[str] = None) -> 'Assembly':     # IAssembly
+    def add_assembly(
+        self,
+        name: str,
+        x_pos: Optional[int],
+        y_pos: Optional[int],
+        assembly_type: Optional[str] = None,
+    ) -> "Assembly":  # IAssembly
         """
         This method creates a sub-Assembly in the current Assembly \
         with a specific type and position.
@@ -216,7 +223,7 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         else:
             return Assembly(self._wrapped.addAssembly(name, assembly_type))
 
-    def add_variable(self, name: str, type_: str) -> object:    # IVariable
+    def add_variable(self, name: str, type_: str) -> object:  # IVariable
         # IDispatch* addVariable(BSTR name, BSTR type);
         """
         Creates a variable for the current Assembly.

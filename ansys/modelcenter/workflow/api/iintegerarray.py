@@ -5,7 +5,7 @@ from overrides import overrides
 from .iarray import IArray
 from .ivariable import FormattableVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockIntegerArray  # type: ignore
 
 
@@ -46,7 +46,7 @@ class IIntegerArray(IArray[MockIntegerArray], FormattableVariable[MockIntegerArr
     def standard_metadata(self, new_metadata: acvi.IntegerArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.IntegerArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

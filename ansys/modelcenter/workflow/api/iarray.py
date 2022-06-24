@@ -5,7 +5,7 @@ from overrides import overrides
 
 from .ivariable import IVariable
 
-WRAPPED_TYPE = TypeVar('WRAPPED_TYPE')
+WRAPPED_TYPE = TypeVar("WRAPPED_TYPE")
 
 
 class IArray(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):

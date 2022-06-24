@@ -72,17 +72,17 @@ class IIfComponent(IComponent):
 
     def get_branch_condition(self, index: int) -> str:
         """
-        Get the branch condition.
+             Get the branch condition.
 
-        Parameters
-        ----------
-        index : int
-            Index of the branch.
+             Parameters
+             ----------
+             index : int
+                 Index of the branch.
 
-        Returns
-        -------
-   str :
-        The branch condition.
+             Returns
+             -------
+        str :
+             The branch condition.
         """
         return self._wrapped.getBranchCondition(index)
 

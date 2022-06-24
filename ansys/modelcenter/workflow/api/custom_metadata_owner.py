@@ -26,6 +26,7 @@ class _MetadataValueVisitor(acvi.IVariableValueVisitor[ComponentMetadataType]):
 
     File and array values are not supported.
     """
+
     def __init__(self):
         self._value: Any = None
 
@@ -86,11 +87,13 @@ class CustomMetadataOwner:
         """
         self._wrapped = instance
 
-    def set_custom_metadata(self,
-                            name: str,
-                            value: Union[str, int, float, bool, XMLElement],
-                            access: ComponentMetadataAccess,
-                            archive: bool) -> None:
+    def set_custom_metadata(
+        self,
+        name: str,
+        value: Union[str, int, float, bool, XMLElement],
+        access: ComponentMetadataAccess,
+        archive: bool,
+    ) -> None:
         """
         Set metadata value of the given named metadata.
 
@@ -119,7 +122,7 @@ class CustomMetadataOwner:
             meta_type = ComponentMetadataType.XML
             value = ElementTree.tostring(value).decode("utf-8")
         else:
-            raise TypeError(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+            raise TypeError(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
 
         return self._wrapped.setMetadata(name, meta_type.value, value, access.value, archive)
 
@@ -140,7 +143,7 @@ class CustomMetadataOwner:
         if isinstance(ret, str):
             ret_len = len(ret)
             # if it looks like it might be XML
-            if ret_len > 2 and ret[0] == '<' and ret[ret_len-1] == '>':
+            if ret_len > 2 and ret[0] == "<" and ret[ret_len - 1] == ">":
                 try:
                     xml = ElementTree.fromstring(ret)
                     ret = xml
@@ -163,10 +166,11 @@ class CustomMetadataOwner:
         meta_type: ComponentMetadataType = value.accept(visitor)
 
         if visitor.value is None:
-            raise TypeError(i18n('Exceptions', 'ERROR_METADATA_TYPE_NOT_ALLOWED'))
+            raise TypeError(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
 
         self._wrapped.setMetadata(
-            name, meta_type.value, visitor.value, ComponentMetadataAccess.PUBLIC.value, True)
+            name, meta_type.value, visitor.value, ComponentMetadataAccess.PUBLIC.value, True
+        )
 
     def get_custom_metadata_value(self, name: str) -> Optional[acvi.IVariableValue]:
         """

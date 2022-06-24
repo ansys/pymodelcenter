@@ -25,11 +25,11 @@ def setup_function(_):
 
 def test_language() -> None:
     """Testing of the language property."""
-    assert sut.language != 'JavaScript'
+    assert sut.language != "JavaScript"
 
-    sut.language = 'JavaScript'
+    sut.language = "JavaScript"
 
-    assert sut.language == 'JavaScript'
+    assert sut.language == "JavaScript"
 
 
 def test_timeout() -> None:
@@ -61,11 +61,11 @@ def test_pre_validate() -> None:
 
 def test_source() -> None:
     """Testing of the source property."""
-    assert sut.source_script == ''
+    assert sut.source_script == ""
 
-    sut.source_script = 'a script source'
+    sut.source_script = "a script source"
 
-    assert sut.source_script == 'a script source'
+    assert sut.source_script == "a script source"
 
 
 def test_set_source_from_file() -> None:
@@ -77,7 +77,7 @@ def test_set_source_from_file() -> None:
 
 def test_add_variable() -> None:
     """Testing of the add_variable method."""
-    variable = sut.add_variable('boolean_var', 'bool', 'input')
+    variable = sut.add_variable("boolean_var", "bool", "input")
 
     assert variable is not None
     assert mock.getCallCount("addVariable") == 1
@@ -86,15 +86,16 @@ def test_add_variable() -> None:
 
 def test_remove_variable() -> None:
     """Testing of the remove_variable method."""
-    sut.remove_variable('boolean_var')
+    sut.remove_variable("boolean_var")
 
     assert mock.getCallCount("removeVariable") == 1
 
 
 def test_set_variables() -> None:
     """Testing of the set_variables method."""
-    sut.set_variables('bool b, int i, double r, string s',
-                      'bool[] ba, int[] ia, double[] ra, string[] sa')
+    sut.set_variables(
+        "bool b, int i, double r, string s", "bool[] ba, int[] ia, double[] ra, string[] sa"
+    )
 
     assert mock.getCallCount("setVariables") == 1
     assert mock.Variables.Count == 8

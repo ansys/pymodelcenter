@@ -9,7 +9,7 @@ from .idoublevariable import IDoubleVariable
 from .irefprop import IRefProp
 from .ivariable import IVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockDoubleVariable, MockReferenceVariable
 
 
@@ -34,8 +34,8 @@ class IReferenceVariable(IVariable):
         self._wrapped = wrapped
         self._std_metadata: acvi.CommonVariableMetadata = acvi.RealMetadata()
 
-####################################################################################################
-# region Inherited from IVariable
+    ####################################################################################################
+    # region Inherited from IVariable
 
     @property
     @overrides
@@ -61,8 +61,9 @@ class IReferenceVariable(IVariable):
     @overrides
     def standard_metadata(self, value: acvi.CommonVariableMetadata):
         self._std_metadata = value
+
     # endregion
-####################################################################################################
+    ####################################################################################################
 
     @property
     def reference(self) -> str:
@@ -101,7 +102,7 @@ class IReferenceVariable(IVariable):
     def referenced_variable(self, value: IVariable):
         self._wrapped.referencedVariable = value._wrapped
 
-    def create_real_ref_prop(self,  name: str, type_: str) -> IRefProp:
+    def create_real_ref_prop(self, name: str, type_: str) -> IRefProp:
         """
         Creates a reference property for the variable.
 

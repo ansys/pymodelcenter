@@ -5,7 +5,7 @@ from typing import Iterable, List, Type, TypeVar
 
 import clr
 
-clr.AddReference('System.Collections')
+clr.AddReference("System.Collections")
 from System import Boolean as DotNetBoolean
 from System import Double as DotNetDouble
 from System import Int64 as DotNetInt64
@@ -15,12 +15,12 @@ from System.Collections.Generic import List as DotNetList
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IVariable as mcapiIVariable
 
-N = TypeVar('N', DotNetBoolean, DotNetDouble, DotNetInt64, DotNetString)
+N = TypeVar("N", DotNetBoolean, DotNetDouble, DotNetInt64, DotNetString)
 """
 The four Dot-Net primitive types that are supported.
 """
 
-P = TypeVar('P', int, float, str, bool, object)
+P = TypeVar("P", int, float, str, bool, object)
 """
 The four Python primitive types that are supported.
 """
@@ -69,6 +69,7 @@ def from_dot_net_list(source: DotNetList, inner_python_type: Type[P]) -> List[P]
         result.append(inner_python_type(item))
     return result
 
+
 def __str_type_to_class_map():
     global STR_TYPE_TO_CLASS
     from .ibooleanarray import IBooleanArray
@@ -92,7 +93,6 @@ def __str_type_to_class_map():
             "boolean": IBooleanVariable,
             "file": IFileVariable,
             "reference": IReferenceVariable,
-
             "double[]": IDoubleArray,
             "integer[]": IIntegerArray,
             "string[]": IStringArray,
@@ -101,6 +101,7 @@ def __str_type_to_class_map():
             "reference[]": IReferenceArray,
         }
     return STR_TYPE_TO_CLASS
+
 
 STR_TYPE_TO_CLASS = None
 
@@ -111,7 +112,7 @@ IVariable descendant type.
 """
 
 
-def from_dot_net_to_ivariable(source: mcapiIVariable) -> 'IVariable':
+def from_dot_net_to_ivariable(source: mcapiIVariable) -> "IVariable":
     """
     Construct the appropriate IVariable type wrapping the given \
     MCAP IVariable value.

@@ -11,13 +11,13 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 from ansys.modelcenter.workflow.api.custom_metadata_owner import CustomMetadataOwner
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
 from Phoenix.Mock import MockAssembly, MockComponent, MockVariable
 
 target_instances = [
     ("assembly", lambda: MockAssembly("assemblyName")),
     ("component", lambda: MockComponent("componentName")),
-    ("variable", lambda: MockVariable("variableName", 0, 1))
+    ("variable", lambda: MockVariable("variableName", 0, 1)),
 ]
 """
 List of different types of instances to use as the inner type in \
@@ -44,7 +44,7 @@ test_values = [
     ("bool", True, mcapi.ComponentMetadataType.BOOLEAN),
     ("int", 42, mcapi.ComponentMetadataType.LONG),
     ("xml", ElementTree.fromstring(xml_str), mcapi.ComponentMetadataType.XML),
-    ("not-xml", "<This is not XML>", mcapi.ComponentMetadataType.STRING)
+    ("not-xml", "<This is not XML>", mcapi.ComponentMetadataType.STRING),
 ]
 """
 List of different metadata values to use in tests.
@@ -75,8 +75,9 @@ def get_tests() -> List[pytest.param]:
             access = mcapi.ComponentMetadataAccess(access_num % 3)
             tests.append(
                 pytest.param(
-                    type_, (value, access, archive), expected_type,
-                    id=type_name+"-"+value_name))
+                    type_, (value, access, archive), expected_type, id=type_name + "-" + value_name
+                )
+            )
             access_num += 1
             archive = not archive
         access_start += 1
@@ -85,9 +86,9 @@ def get_tests() -> List[pytest.param]:
 
 @pytest.mark.parametrize("get_instance,params,expected_metadata_type", get_tests())
 def test_custom_metadata_owner(
-        get_instance: Callable,
-        params: Tuple[Any, mcapi.ComponentMetadataAccess, bool],
-        expected_metadata_type: mcapi.ComponentMetadataType
+    get_instance: Callable,
+    params: Tuple[Any, mcapi.ComponentMetadataAccess, bool],
+    expected_metadata_type: mcapi.ComponentMetadataType,
 ) -> None:
     """
     Testing of the CustomMetadataOwner set_custom_metadata and \
@@ -134,23 +135,31 @@ def test_custom_metadata_owner(
 
 
 @pytest.mark.parametrize(
-    'instance,name,value,access,archive',
+    "instance,name,value,access,archive",
     [
         pytest.param(
-            MockAssembly("assemblyName"), "none_metadata", None,
-            mcapi.ComponentMetadataAccess.PUBLIC, True
+            MockAssembly("assemblyName"),
+            "none_metadata",
+            None,
+            mcapi.ComponentMetadataAccess.PUBLIC,
+            True,
         ),
         pytest.param(
-            MockComponent("componentName"), "list_metadata", [0, 1, 2],
-            mcapi.ComponentMetadataAccess.PUBLIC, True
-        )
-    ]
+            MockComponent("componentName"),
+            "list_metadata",
+            [0, 1, 2],
+            mcapi.ComponentMetadataAccess.PUBLIC,
+            True,
+        ),
+    ],
 )
 def test_set_metadata_invalid(
-        instance: CustomMetadataOwner.InstanceType,
-        name: str, value: Union[str, int, float, bool],
-        access: mcapi.ComponentMetadataAccess,
-        archive: bool) -> None:
+    instance: CustomMetadataOwner.InstanceType,
+    name: str,
+    value: Union[str, int, float, bool],
+    access: mcapi.ComponentMetadataAccess,
+    archive: bool,
+) -> None:
     """Testing of the set_metadata method."""
     target: CustomMetadataOwner = CustomMetadataOwner(instance)
     with pytest.raises(TypeError, match="Assembly or component metadata"):

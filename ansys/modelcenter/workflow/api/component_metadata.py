@@ -15,6 +15,7 @@ class ComponentMetadataType(Enum):
     This is a temporary strategy designed to work around an inability to access that enum
     directly.
     """
+
     STRING = 0
     DOUBLE = 1
     LONG = 2
@@ -30,6 +31,7 @@ class ComponentMetadataAccess(Enum):
     This is a temporary strategy designed to work around an inability to access that enum
     directly.
     """
+
     PRIVATE = 0
     READONLY = 1
     PUBLIC = 2
