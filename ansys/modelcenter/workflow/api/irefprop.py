@@ -1,26 +1,15 @@
+"""Contains definitions for array variable that references other variables."""
 import clr
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockRefArrayProp
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockRefArrayProp  # type: ignore
 
 
 class IRefArrayProp:
-    """
-    Array variable that references other variables without creating a \
-    full link relationship.
-    """
+    """Array variable that references other variables without creating a full link relationship."""
 
     def __init__(self, instance: MockRefArrayProp):
-        """
-        Initialize.
-
-        Parameters
-        ----------
-        name : str
-            The name of the variable.
-        type_ : str
-            The type of the variable.
-        """
+        """Initialize."""
         self._wrapped = instance
 
     @property
@@ -35,13 +24,13 @@ class IRefArrayProp:
 
     @property
     def is_input(self) -> bool:
-        """Gets a flag that is true if this property is an input."""
+        """A flag that is true if this property is an input."""
         # boolean isInput;
         return self._wrapped.isInput
 
     @is_input.setter
     def is_input(self, value):
-        """Gets a flag that is true if this property is an input."""
+        """A flag that is true if this property is an input."""
         self._wrapped.isInput = value
 
     @property
@@ -94,4 +83,5 @@ class IRefProp(IRefArrayProp):
 
     Implements IRefArrayProp.
     """
+
     pass

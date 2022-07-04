@@ -1,22 +1,23 @@
+"""Contains definitions for double variables."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import FormattableVariable, ScalarVariable
+from .ivariable import FormattableVariable, ScalarVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockDoubleVariable
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockDoubleVariable  # type: ignore
 
 
 class IDoubleVariable(ScalarVariable[MockDoubleVariable], FormattableVariable):
-    """
-    Represents a double / real variable on the workflow.
-    """
+    """Represents a double / real variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockDoubleVariable):
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.RealMetadata()
+
+    # IVariable
 
     @property  # type: ignore
     @overrides
@@ -47,7 +48,7 @@ class IDoubleVariable(ScalarVariable[MockDoubleVariable], FormattableVariable):
     def standard_metadata(self, new_metadata: acvi.RealMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

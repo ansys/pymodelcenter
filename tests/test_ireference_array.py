@@ -8,7 +8,7 @@ sut: mcapi.IReferenceArray
 def setup_function():
     """Setup called before each test in this module."""
     global sut
-    sut = mcapi.IReferenceArray('test name', mcapi.VarType.INPUT)
+    sut = mcapi.IReferenceArray("test name", mcapi.VarType.INPUT)
     sut.auto_grow = True
     sut.set_value(1.1, 0)
     sut.set_value(2.2, 1)

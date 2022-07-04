@@ -1,31 +1,38 @@
+"""Definition of group of variables."""
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Collection, Sequence
 
+from ansys.engineeringworkflow.api import IVariable, IVariableContainer
 import clr
+from overrides import overrides
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IGroup as mcapiIGroup
+from ModelCenter import IGroup as mcapiIGroup  # type: ignore
 
 
-class IGroup:
+class IGroup(IVariableContainer):
     """COM Instance."""
+
+    @overrides
+    def get_variables(self) -> Collection[IVariable]:
+        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     def __init__(self, group: mcapiIGroup):
         """Initialize."""
         self._instance = group
 
     @property
-    def variables(self) -> 'Sequence[ivariable.IVariable]':
+    def variables(self) -> "Sequence[ivariable.IVariable]":
         """The variables in the Group."""
         return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     @property
-    def groups(self) -> 'Sequence[IGroup]':
+    def groups(self) -> "Sequence[IGroup]":
         """The Groups this Group is a member of."""
         return Arrayish(self._instance.Groups, IGroup)
 

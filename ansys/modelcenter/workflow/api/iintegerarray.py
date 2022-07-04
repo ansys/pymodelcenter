@@ -1,23 +1,25 @@
+"""Definition of integer array variable."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.iarray import IArray
-from ansys.modelcenter.workflow.api.ivariable import FormattableVariable
+from .iarray import IArray
+from .ivariable import FormattableVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockIntegerArray
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockIntegerArray  # type: ignore
 
 
 class IIntegerArray(IArray[MockIntegerArray], FormattableVariable[MockIntegerArray]):
-    """
-    Represents an integer array variable on the workflow.
-    """
+    """Represents an integer array variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockIntegerArray):
+        """Initialize integer array object."""
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.IntegerArrayMetadata()
+
+    # IVariable
 
     @property  # type: ignore
     @overrides
@@ -44,7 +46,7 @@ class IIntegerArray(IArray[MockIntegerArray], FormattableVariable[MockIntegerArr
     def standard_metadata(self, new_metadata: acvi.IntegerArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.IntegerArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

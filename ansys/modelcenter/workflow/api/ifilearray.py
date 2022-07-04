@@ -1,11 +1,15 @@
+"""Module contains definitions for file array variables."""
+from typing import Optional
+
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
+from ansys.modelcenter.workflow.api.i18n import i18n
 from ansys.modelcenter.workflow.api.iarray import IArray
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockFileArray
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockFileArray  # type: ignore
 
 
 class IFileArray(IArray[MockFileArray]):
@@ -16,7 +20,26 @@ class IFileArray(IArray[MockFileArray]):
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.FileArrayMetadata()
 
-    @property
+    # ansys.engineeringworkflow.api.IVariable
+
+    @overrides
+    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
+        if hid is not None:
+            raise NotImplementedError(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
+
+        # TODO: Implement acvi.FileArrayValue.from_api_string().
+        _ = self._wrapped.toString()
+        return None
+        # return acvi.VariableState(self.value, self._wrapped.isValid())
+
+    @overrides
+    def set_value(self, value: acvi.VariableState) -> None:
+        if value is None:
+            self._wrapped.fromString(None)
+        else:
+            self._wrapped.fromString(value.value.to_api_string())
+
+    @property  # type: ignore
     @overrides
     def value(self) -> acvi.FileArrayValue:
         """
@@ -32,7 +55,7 @@ class IFileArray(IArray[MockFileArray]):
         # TODO: Implement acvi.FileArrayValue.from_api_string().
         # return acvi.FileArrayValue.from_api_string(string)
 
-    @value.setter
+    @value.setter  # type: ignore
     @overrides
     def value(self, new_value: acvi.FileArrayValue):
         """
@@ -48,15 +71,16 @@ class IFileArray(IArray[MockFileArray]):
         else:
             self._wrapped.fromString(new_value.to_api_string())
 
-    @property
+    @property  # type: ignore
     @overrides
     def value_absolute(self) -> acvi.FileArrayValue:
         return self.value
 
-    @value_absolute.setter
+    @value_absolute.setter  # type: ignore
     @overrides
     def value_absolute(self, value: acvi.FileArrayValue) -> None:
-        self.value = value
+        # TODO: MyPy complains here about read-only property. Check when files implemented.
+        self.value = value  # type: ignore
 
     @property
     def save_with_model(self) -> bool:
@@ -92,7 +116,7 @@ class IFileArray(IArray[MockFileArray]):
     def standard_metadata(self, new_metadata: acvi.FileArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.FileArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

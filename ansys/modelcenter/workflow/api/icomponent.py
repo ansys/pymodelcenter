@@ -1,23 +1,26 @@
 """Definition of IComponent."""
-from typing import Any, List, Sequence, Union
+from typing import Any, Collection, List, Sequence, Union
 
-from System import Object as DotNetObject
-from System import String as DotNetString
+from System import Object as DotNetObject  # type: ignore
+from System import String as DotNetString  # type: ignore
+from ansys.common.variableinterop import IVariableValue
+from ansys.engineeringworkflow.api import IComponent as IAnsysComponent
+from ansys.engineeringworkflow.api import IVariable, Property
 import clr
+from overrides import overrides
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
 import ansys.modelcenter.workflow.api.assembly as assembly
 from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
 import ansys.modelcenter.workflow.api.igroup as igroup
-import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 from .custom_metadata_owner import CustomMetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IComponent as mcapiIComponent
+from ModelCenter import IComponent as mcapiIComponent  # type: ignore
 
 
-class IComponent(CustomMetadataOwner):
+class IComponent(CustomMetadataOwner, IAnsysComponent):
     """A component in a Workflow."""
 
     def __init__(self, instance: mcapiIComponent):
@@ -31,14 +34,56 @@ class IComponent(CustomMetadataOwner):
         """
         super().__init__(instance)
 
-    @property
-    def variables(self) -> 'Sequence[ivariable.IVariable]':
+    # ansys.engineeringworkflow.api import.IComponent
+
+    @property  # type: ignore
+    @overrides
+    def name(self):
+        return self._wrapped.getName()
+
+    @property  # type: ignore
+    @overrides
+    def element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
+        return None  # type: ignore
+
+    @property  # type: ignore
+    @overrides
+    def parent_element_id(self) -> str:
+        # TODO: Should return UUID of the element probably. Not available via COM.
+        return None  # type: ignore
+
+    @overrides
+    def get_property(self, property_name: str) -> Property:
+        value = super().get_custom_metadata_value(property_name)
+        if value is not None:
+            return Property(self.element_id, property_name, value)
+        raise ValueError("Property not found.")
+
+    @overrides
+    def get_properties(self) -> Collection[Property]:
+        # TODO: Getting collection of metadata is not provided by ModelCenter objects.
+        raise NotImplementedError
+
+    @overrides
+    def set_property(self, property_name: str, property_value: IVariableValue) -> None:
+        super().set_custom_metadata_value(property_name, property_value)
+
+    @overrides
+    def get_variables(self) -> Collection[IVariable]:
         """Variables in the component."""
         variables = self._wrapped.Variables
         return Arrayish(variables, from_dot_net_to_ivariable)
 
+    @property  # type: ignore
+    @overrides
+    def pacz_url(self):
+        raise NotImplementedError
+
+    # ModelCenter
+
     @property
-    def groups(self) -> 'Sequence[igroup.IGroup]':
+    def groups(self) -> "Sequence[igroup.IGroup]":
         """All groups in the component."""
         return Arrayish(self._wrapped.Groups, igroup.IGroup)
 
@@ -87,20 +132,10 @@ class IComponent(CustomMetadataOwner):
         return self._wrapped.IndexInParent
 
     @property
-    def parent_assembly(self) -> 'assembly.Assembly':
+    def parent_assembly(self) -> "assembly.Assembly":
         """Parent assembly of this component."""
         parent_assembly = self._wrapped.ParentAssembly
         return assembly.Assembly(parent_assembly)
-
-    def get_name(self) -> str:
-        """
-        Get the name of the component.
-
-        Returns
-        -------
-        The name of the component.
-        """
-        return self._wrapped.getName()
 
     def get_full_name(self) -> str:
         """
@@ -122,7 +157,7 @@ class IComponent(CustomMetadataOwner):
         """
         return self._wrapped.getSource()
 
-    def get_variable(self, name: str) -> 'IVariable':
+    def get_variable(self, name: str) -> "IVariable":
         """
         Get a variable in this component by name.
 

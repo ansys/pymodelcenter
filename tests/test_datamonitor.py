@@ -75,7 +75,7 @@ def test_set_name() -> None:
     [
         pytest.param(True),
         pytest.param(False),
-    ]
+    ],
 )
 def test_is_renamed(rename: bool) -> None:
     """Testing of the is_renamed method."""
@@ -96,8 +96,9 @@ def test_get_link() -> None:
     """Testing of the get_link method."""
     # Setup
     sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
-    sut.add_item("Kraftfahrzeug-Haftpflichtversicherung",
-                 "Sozialversicherungsfachangestelltenauszubildender")
+    sut.add_item(
+        "Kraftfahrzeug-Haftpflichtversicherung", "Sozialversicherungsfachangestelltenauszubildender"
+    )
 
     # SUT
     result = sut.get_link(0)
@@ -126,8 +127,9 @@ def test_add_item() -> None:
     sut: mcapi.DataMonitor = workflow.create_data_monitor("comp", "a", 0, 0)
 
     # SUT
-    result = sut.add_item("Massenkommunikationsdienstleistungsunternehmen",
-                          "Nahrungsmittelunverträglichkeit")
+    result = sut.add_item(
+        "Massenkommunikationsdienstleistungsunternehmen", "Nahrungsmittelunverträglichkeit"
+    )
 
     # Verification
     assert result == 0
@@ -158,7 +160,7 @@ def test_remove_item() -> None:
     sut.remove_item(0)
 
     # Verification
-    assert sut.get_name(0) == ''
+    assert sut.get_name(0) == ""
     # LTTODO: a real implementation should probably return None or throw
 
 

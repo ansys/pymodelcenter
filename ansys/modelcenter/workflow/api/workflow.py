@@ -1,7 +1,15 @@
-from typing import Any, Iterable, Optional, Tuple
+"""Definition of workflow."""
+from typing import AbstractSet, Any, Iterable, Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
+from ansys.engineeringworkflow.api import (
+    IControlStatement,
+    IElement,
+    IWorkflowInstance,
+    WorkflowInstanceState,
+)
 import clr
+from overrides import overrides
 
 from . import DataExplorer
 from .datamonitor import DataMonitor
@@ -10,10 +18,10 @@ from .icomponent import IComponent
 from .variable_links import VariableLink, dotnet_links_to_iterable
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-import Phoenix.Mock as phxmock
+import Phoenix.Mock as phxmock  # type: ignore
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IComponent as mcapiIComponent
+from ModelCenter import IComponent as mcapiIComponent  # type: ignore
 
 from ansys.modelcenter.workflow.api.assembly import Assembly
 
@@ -22,17 +30,18 @@ class MockDataMonitorWrapper(DataMonitor):
     """Maps a COM MockDataMonitor to the IDataMonitor interface."""
 
     def __init__(self, monitor: phxmock.MockDataMonitor):
-        """
-        Initialize.
-        """
+        """Initialize."""
 
 
 class WorkflowVariable:
+    """Workflow variable."""
+
     # LTTODO: Fleshing this out is part of another PBI.
 
     def __init__(self, variable: Any):
         """
-        Create a new instance
+        Create a new instance of the workflow variable.
+
         Parameters
         ----------
         variable: Any
@@ -41,7 +50,7 @@ class WorkflowVariable:
         self._variable = variable
 
 
-class Workflow:
+class Workflow(IWorkflowInstance):
     """Represents a Workflow or Model in ModelCenter."""
 
     def __init__(self, instance: phxmock.MockModelCenter):
@@ -54,7 +63,47 @@ class Workflow:
             The raw interface object to use to make direct calls to
             ModelCenter.
         """
-        self._instance = instance
+        self._instance: phxmock.MockModelCenter = instance
+        self._state = WorkflowInstanceState.UNKNOWN
+
+    # IWorkflowInstance
+
+    @overrides
+    def get_state(self) -> WorkflowInstanceState:
+        if self._instance.getHaltStatus():
+            return WorkflowInstanceState.PAUSED
+        return self._state
+
+    @overrides
+    def run(
+        self,
+        inputs: Mapping[str, acvi.VariableState],
+        reset: bool,
+        validation_ids: AbstractSet[str],
+    ) -> Mapping[str, acvi.VariableState]:
+        raise NotImplementedError
+
+    @overrides
+    def start_run(
+        self,
+        inputs: Mapping[str, acvi.VariableState],
+        reset: bool,
+        validation_ids: AbstractSet[str],
+    ) -> str:
+        raise NotImplementedError
+
+    @overrides
+    def get_root(self) -> IControlStatement:
+        assembly = self._instance.getModel()
+        if assembly is None:
+            return None
+        return Assembly(assembly)
+
+    @overrides
+    def get_element_by_id(self, element_id: str) -> IElement:
+        raise NotImplementedError
+
+    # ModelCenter specific
 
     @staticmethod
     def value_to_variable_value(value: Any) -> acvi.IVariableValue:
@@ -143,15 +192,30 @@ class Workflow:
         value = self._instance.getValue(var_name)
         return Workflow.value_to_variable_value(value)
 
-    # void createComponent(
-    #   BSTR serverPath, BSTR name, BSTR parent, [optional]VARIANT xPos, [optional]VARIANT yPos);
     def create_component(
-            self,
-            server_path: str,
-            name: str,
-            parent: str,
-            x_pos: Optional[object] = None,
-            y_pos: Optional[object] = None) -> None:
+        self,
+        server_path: str,
+        name: str,
+        parent: str,
+        x_pos: Optional[object] = None,
+        y_pos: Optional[object] = None,
+    ) -> None:
+        """
+        Create, or connect, to a new MCRE Component.
+
+        Parameters
+        ----------
+        server_path : str
+            The MCRE source path of the new component.
+        name : str
+            Name of the new component.
+        parent : str
+            Parent assembly of the component.
+        x_pos
+            The x-position in pixels in the Analysis View.
+        y_pos
+            The y-position in pixels in the Analysis View.
+        """
         pass
 
         # LTTODO: The mock expects System.Reflection.Missing.Value for x_pos and y_pos to indicate
@@ -160,38 +224,56 @@ class Workflow:
         # (Missing.Value has a special meaning there, it seems.)
         # This is something the actual GRPC API will probably have to solve.
 
-        self._instance.createComponent(
-            server_path,
-            name,
-            parent,
-            x_pos,
-            y_pos
-        )
+        self._instance.createComponent(server_path, name, parent, x_pos, y_pos)
 
-    # void createLink(BSTR variable, BSTR equation);
     def create_link(self, variable: str, equation: str) -> None:
+        """
+        Create a link to the specified variable based on the specified equation.
+
+        Parameters
+        ----------
+        variable : str
+            Variable to add the link to.
+        equation : str
+            Equation of the link.
+        """
         self._instance.createLink(variable, equation)
 
-    # void saveModel();
     def save_workflow(self) -> None:
+        """Save the current Model."""
         self._instance.saveModel()
 
-    # void saveModelAs(BSTR fileName);
     def save_workflow_as(self, file_name: str) -> None:
+        """
+        Save the current Model to a specified file.
+
+        Parameters
+        ----------
+        file_name : str
+            Path to save the Model in.
+        """
         self._instance.saveModelAs(file_name)
 
-    # void closeModel();
     def close_workflow(self) -> None:
+        """Close the current Model."""
         self._instance.closeModel()
 
-    # IDispatch* getVariable(BSTR name);
-    #   IDoubleVariable IDoubleArray IBooleanVariable IIntegerVariable IReferenceVariable
-    #   IObjectVariable IFileVariable IStringVariable IBooleanArray IIntegerArray IReferenceArray
-    #   IFileArray IStringArray IGeometryVariable:
     def get_variable(self, name: str) -> object:
+        """
+        Get variable of given name.
+
+        Parameters
+        ----------
+        name : str
+            Full ModelCenter path of the variable.
+
+        Returns
+        -------
+        The variable.
+        """
         return WorkflowVariable(self._instance.getVariable(name))
 
-    def get_component(self, name: str) -> IComponent:   # IComponent, IIfComponent, IScriptComponent
+    def get_component(self, name: str) -> IComponent:  # IComponent, IIfComponent, IScriptComponent
         """
         Get a component from the workflow.
 
@@ -211,20 +293,22 @@ class Workflow:
         return IComponent(mc_i_component)
 
     def trade_study_end(self) -> None:
+        """Let ModelCenter know that a Trade Study has been completed."""
         self._instance.tradeStudyEnd()
 
     # Skip IDispatch* createJobManager([optional]VARIANT showProgressDialog);
 
     def trade_study_start(self) -> None:
+        """Let ModelCenter know that a Trade Study has been started."""
         self._instance.tradeStudyStart()
 
     def get_halt_status(self) -> bool:
         """
-        Finds out if the user has pressed the halt button.
+        Find out if the user has pressed the halt button.
 
         Returns
         -------
-        Boolean True for yes or False for no.
+        Boolean ``True`` for yes, or ``False`` for no.
         """
         return self._instance.getHaltStatus()
 
@@ -246,7 +330,7 @@ class Workflow:
 
     def set_scheduler(self, schedular: str) -> None:
         """
-        Sets the current active scheduler for the Model.
+        Set the current active scheduler for the Model.
 
         Parameters
         ----------
@@ -262,20 +346,26 @@ class Workflow:
 
     def remove_component(self, name: str) -> None:
         """
-        Removes the specified component from the Model.
+        Remove the specified component from the Model.
 
         Parameters
         ----------
-        name :
+        name : str
             Full ModelCenter path of the component to remove.
         """
         self._instance.removeComponent(name)
 
-    # void breakLink(BSTR variable);
     def break_link(self, variable: str) -> None:
+        """
+        Break the link to a variable.
+
+        Parameters
+        ----------
+        variable : str
+            The full ModelCenter path of the variable whose link is to be broken.
+        """
         self._instance.breakLink(variable)
 
-    # VARIANT runMacro(BSTR macro, [optional]VARIANT useMCObject);
     def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
         """
         Run the specified macro.
@@ -294,13 +384,28 @@ class Workflow:
         """
         return self._instance.runMacro(macro_name, use_mc_object)
 
-    # IDispatch* createAssembly(BSTR name, BSTR parent, [optional]VARIANT assemblyType);
     def create_assembly(self, name: str, parent: str, assembly_type: Optional[str] = None):
+        """
+        Create a new Assembly in the Model.
+
+        Parameters
+        ----------
+        name : str
+            Desired name of the new Assembly.
+        parent : str
+            Full ModelCenter path of the parent Assembly.
+        assembly_type : str, optional
+            Type of the assembly to create.
+
+        Returns
+        -------
+        Assembly.
+        """
         return self._instance.createAssembly(name, parent, assembly_type)
 
-    # IDispatch* createAssemblyVariable(BSTR name, BSTR type, BSTR parent);
-    def create_assembly_variable(self, name: str, type_: str, parent: str) ->\
-            acvi.CommonVariableMetadata:
+    def create_assembly_variable(
+        self, name: str, type_: str, parent: str
+    ) -> acvi.CommonVariableMetadata:
         """
         Create a new variable in an Assembly.
 
@@ -340,7 +445,7 @@ class Workflow:
         return self._convert_variable(self._instance.createAssemblyVariable(name, type_, parent))
 
     @staticmethod
-    def _convert_variable(variable: object) -> acvi.CommonVariableMetadata:
+    def _convert_variable(variable: Any) -> acvi.CommonVariableMetadata:
         """
         Convert IVariable object into appropriate CommonVariableMetadata implementation.
 
@@ -349,20 +454,20 @@ class Workflow:
         variable : object
             IVariable object containing variable data.
         """
-        metadata: acvi.CommonVariableMetadata = None
+        metadata: acvi.CommonVariableMetadata
         type_: str = variable.getType()
         is_array: bool = False
-        if type_.endswith('[]'):
+        if type_.endswith("[]"):
             is_array = True
             type_ = type_[:-2]
 
-        if type_ == 'boolean':
+        if type_ == "boolean":
             if is_array:
                 metadata = acvi.BooleanArrayMetadata()
             else:
                 metadata = acvi.BooleanMetadata()
             metadata.description = variable.description
-        elif type_ == 'double':
+        elif type_ == "double":
             if is_array:
                 metadata = acvi.RealArrayMetadata()
             else:
@@ -373,9 +478,10 @@ class Workflow:
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
             metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
-        elif type_ == 'integer':
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
+        elif type_ == "integer":
             if is_array:
                 metadata = acvi.IntegerArrayMetadata()
             else:
@@ -384,17 +490,19 @@ class Workflow:
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
             metadata.enumerated_values = acvi.IntegerArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
-        elif type_ == 'string':
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
+        elif type_ == "string":
             if is_array:
                 metadata = acvi.StringArrayMetadata()
             else:
                 metadata = acvi.StringMetadata()
             metadata.description = variable.description
             metadata.enumerated_values = acvi.StringArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
         else:
             raise NotImplementedError
 
@@ -403,23 +511,43 @@ class Workflow:
 
         return metadata
 
-    # void autoLink(BSTR srcComp, BSTR destComp);
     def auto_link(self, src_comp: str, dest_comp: str) -> None:
+        """
+        Automatically links two components.
+
+        Parameters
+        ----------
+        src_comp : str
+            The source component.
+        dest_comp : str
+            The destination component.
+        """
         self._instance.autoLink(src_comp, dest_comp)
 
-    # LPDISPATCH getLinks([optional]VARIANT reserved);
     def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
+        """
+        Get a list of all links in the model.
+
+        Parameters
+        ----------
+        reserved
+            Parameter reserved for future use.
+
+        Returns
+        -------
+        Iterable over variable links.
+        """
         return dotnet_links_to_iterable(self._instance.getLinks(reserved))
 
-    # BSTR getModelUUID();
     def get_workflow_uuid(self) -> str:
+        """Get the unique ID string for the current model."""
         return self._instance.getModelUUID()
 
-    # void halt();
     def halt(self) -> None:
+        """Stop execution of the Model currently running in ModelCenter."""
         self._instance.halt()
 
-    def run(self, variable_array: Optional[str]) -> None:
+    def run_variables(self, variable_array: Optional[str]) -> None:
         """
         Runs a specified set of variables in the workflow.
 
@@ -447,7 +575,6 @@ class Workflow:
         -------
         The component's DataMonitor at the given index.
         """
-
         dm_object: phxmock.MockDataMonitor = self._instance.getDataMonitor(component, index)
         return DataMonitor(dm_object)
 
@@ -470,7 +597,6 @@ class Workflow:
         -------
         The created DataMonitor.
         """
-
         dm_object: phxmock.MockDataMonitor = self._instance.createDataMonitor(component, name, x, y)
         return DataMonitor(dm_object)
 
@@ -510,29 +636,36 @@ class Workflow:
         else:
             return DataExplorer(de_object)
 
-    # void moveComponent(BSTR component, BSTR parent, [optional]VARIANT index);
     def move_component(self, component: str, parent: str, index: object) -> None:
+        """
+        Move the component to the parent at the given index.
+
+        Parameters
+        ----------
+        component : str
+            The component to move.
+        parent : str
+            Owning object of the component.
+        index
+            Position in the parent.
+        """
         pass
 
-    # void setXMLExtension(BSTR xml);
     def set_xml_extension(self, xml: str) -> None:
+        """Adds the XML as an XML extension node to the model file."""
         pass
 
-    # void setAssemblyStyle(
-    #   BSTR assemblyName, AssemblyStyle style, [optional]VARIANT width, [optional]VARIANT height);
     def set_assembly_style(
-            self,
-            assembly_name: str,
-            style: object,
-            width: object = None,
-            height: object = None) -> None:
+        self, assembly_name: str, style: object, width: object = None, height: object = None
+    ) -> None:
+        """Sets the assembly style of the component (collapse, expanded, N^2, etc)."""
         pass
 
-    # AssemblyStyle getAssemblyStyle(BSTR assemblyName, int *width, int *height);
     def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
+        """Gets the style of the assembly (Collapsed, expanded, N^2, etc)."""
         pass
 
-    def get_assembly(self, name: str = None) -> object:    # IAssembly
+    def get_assembly(self, name: str = None) -> object:  # IAssembly
         """Gets the named assembly or the top level assembly."""
         if name is None or name == "":
             assembly = self._instance.getModel()
@@ -542,20 +675,18 @@ class Workflow:
             return None
         return Assembly(assembly)
 
-    # IDispatch* createAndInitComponent(
-    #   BSTR serverPath, BSTR name, BSTR parent, BSTR initString,
-    #   [optional]VARIANT xPos, [optional]VARIANT yPos);
     def create_and_init_component(
-            self,
-            server_path: str,
-            name: str,
-            parent: str,
-            init_string: str,
-            x_pos: object = None,
-            y_pos: object = None):
+        self,
+        server_path: str,
+        name: str,
+        parent: str,
+        init_string: str,
+        x_pos: object = None,
+        y_pos: object = None,
+    ):
+        """Creates a new component and initializes it from string data."""
         pass
 
-    # BSTR getMacroScript(BSTR macroName);
     def get_macro_script(self, macro_name: str) -> str:
         """
         Get a macro script.
@@ -575,7 +706,6 @@ class Workflow:
         """
         return self._instance.getMacroScript(macro_name)
 
-    # void setMacroScript(BSTR macroName, BSTR script);
     def set_macro_script(self, macro_name: str, script: str) -> None:
         """
         Set a macro script.
@@ -592,7 +722,6 @@ class Workflow:
         """
         self._instance.setMacroScript(macro_name, script)
 
-    # BSTR getMacroScriptLanguage(BSTR macroName);
     def get_macro_script_language(self, macro_name: str) -> str:
         """
         Get a macro script language.
@@ -612,7 +741,6 @@ class Workflow:
         """
         return self._instance.getMacroScriptLanguage(macro_name)
 
-    # void setMacroScriptLanguage(BSTR macroName, BSTR language);
     def set_macro_script_language(self, macro_name: str, language: str) -> None:
         """
         Set a macro script language.
@@ -629,7 +757,6 @@ class Workflow:
         """
         self._instance.setMacroScriptLanguage(macro_name, language)
 
-    # void addNewMacro(BSTR macroName, boolean isAppMacro);
     def add_new_macro(self, macro_name: str, is_app_macro: bool) -> None:
         """
         Add a new macro.
@@ -644,7 +771,6 @@ class Workflow:
         """
         self._instance.addNewMacro(macro_name, is_app_macro)
 
-    # LPDISPATCH getVariableMetaData(BSTR name);
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
         """
         Get metadata from a variable.
@@ -664,10 +790,10 @@ class Workflow:
         """
         metadata: acvi.CommonVariableMetadata = None
         variable = self._instance.getVariableMetaData(name)  # PHXDATAHISTORYLib.IDHVariable
-        is_array: bool = variable.type.endswith('[]')
+        is_array: bool = variable.type.endswith("[]")
         type_: str = variable.type[:-2] if is_array else variable.type
 
-        if type_ == 'double':
+        if type_ == "double":
             if is_array:
                 metadata = acvi.RealArrayMetadata()
             else:
@@ -679,10 +805,11 @@ class Workflow:
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
             metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
 
-        elif type_ == 'integer':
+        elif type_ == "integer":
             if is_array:
                 metadata = acvi.IntegerArrayMetadata()
             else:
@@ -690,23 +817,25 @@ class Workflow:
             metadata.lower_bound = variable.lowerBound
             metadata.upper_bound = variable.upperBound
             metadata.enumerated_values = acvi.IntegerArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
 
-        elif type_ == 'boolean':
+        elif type_ == "boolean":
             if is_array:
                 metadata = acvi.BooleanArrayMetadata()
             else:
                 metadata = acvi.BooleanMetadata()
 
-        elif type_ == 'string':
+        elif type_ == "string":
             if is_array:
                 metadata = acvi.StringArrayMetadata()
             else:
                 metadata = acvi.StringMetadata()
             metadata.enumerated_values = acvi.StringArrayValue.from_api_string(variable.enumValues)
-            metadata.enumerated_aliases =\
-                acvi.StringArrayValue.from_api_string(variable.enumAliases)
+            metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
+                variable.enumAliases
+            )
         else:
             raise NotImplementedError
 
@@ -718,7 +847,6 @@ class Workflow:
                 metadata.custom_metadata[key] = variable.getMetaData(key)
         return metadata
 
-    # IDispatch* createDataExplorer(BSTR tradeStudyType, BSTR setup);
     def create_data_explorer(self, trade_study_type: str, setup: str) -> DataExplorer:
         """
         Creates a new Data Explorer.
@@ -744,7 +872,6 @@ class Workflow:
         de_object: object = self._instance.createDataExplorer(trade_study_type, setup)
         return DataExplorer(de_object)
 
-    # double getMacroTimeout(BSTR macroName);
     def get_macro_timeout(self, macro_name: str) -> float:
         """
         Get a macro's timeout.
@@ -765,7 +892,6 @@ class Workflow:
         """
         return self._instance.getMacroTimeout(macro_name)
 
-    # void setMacroTimeout(BSTR macroName, double timeout);
     def set_macro_timeout(self, macro_name: str, timeout: float) -> None:
         """
         Set a macro's timeout.

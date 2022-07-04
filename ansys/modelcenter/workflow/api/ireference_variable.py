@@ -1,3 +1,4 @@
+"""Contains definitions for reference variables."""
 from typing import Sequence, Union
 
 from ansys.common import variableinterop as acvi
@@ -9,8 +10,8 @@ from .idoublevariable import IDoubleVariable
 from .irefprop import IRefProp
 from .ivariable import IVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockDoubleVariable, MockReferenceVariable
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockDoubleVariable, MockReferenceVariable  # type: ignore
 
 
 class IReferenceVariable(IVariable):
@@ -34,35 +35,36 @@ class IReferenceVariable(IVariable):
         self._wrapped = wrapped
         self._std_metadata: acvi.CommonVariableMetadata = acvi.RealMetadata()
 
-####################################################################################################
-# region Inherited from IVariable
+    ################################################################################################
+    # region Inherited from IVariable
 
-    @property
+    @property  # type: ignore
     @overrides
     def value(self) -> acvi.RealValue:
         return acvi.RealValue(self._wrapped.value)
 
-    @value.setter
+    @value.setter  # type: ignore
     @overrides
     def value(self, val: Union[float, acvi.RealValue]):
         self._wrapped.value = val if isinstance(val, acvi.RealValue) else acvi.RealValue(val)
 
-    @property
+    @property  # type: ignore
     @overrides
     def value_absolute(self) -> acvi.RealValue:
         return self.value
 
-    @property
+    @property  # type: ignore
     @overrides
     def standard_metadata(self) -> acvi.CommonVariableMetadata:
         return self._std_metadata
 
-    @standard_metadata.setter
+    @standard_metadata.setter  # type: ignore
     @overrides
     def standard_metadata(self, value: acvi.CommonVariableMetadata):
         self._std_metadata = value
+
     # endregion
-####################################################################################################
+    ################################################################################################
 
     @property
     def reference(self) -> str:
@@ -76,7 +78,7 @@ class IReferenceVariable(IVariable):
     @property
     def referenced_variables(self) -> Sequence[IDoubleVariable]:
         """Gets the referenced variables."""
-        return from_dot_net_list(self._wrapped.referencedVariables, IDoubleVariable)
+        return from_dot_net_list(self._wrapped.referencedVariables, IDoubleVariable)  # type: ignore
 
     @referenced_variables.setter
     def referenced_variables(self, values: Sequence[IDoubleVariable]):
@@ -101,7 +103,7 @@ class IReferenceVariable(IVariable):
     def referenced_variable(self, value: IVariable):
         self._wrapped.referencedVariable = value._wrapped
 
-    def create_real_ref_prop(self,  name: str, type_: str) -> IRefProp:
+    def create_real_ref_prop(self, name: str, type_: str) -> IRefProp:
         """
         Creates a reference property for the variable.
 

@@ -1,18 +1,18 @@
+"""Contains definitions for integer variables."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import FormattableVariable, ScalarVariable
+from .ivariable import FormattableVariable, ScalarVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockIntegerVariable
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockIntegerVariable  # type: ignore
 
 
-class IIntegerVariable(ScalarVariable[MockIntegerVariable],
-                       FormattableVariable[MockIntegerVariable]):
-    """
-    Represents an integer variable on the workflow.
-    """
+class IIntegerVariable(
+    ScalarVariable[MockIntegerVariable], FormattableVariable[MockIntegerVariable]
+):
+    """Represents an integer variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockIntegerVariable):
@@ -48,7 +48,7 @@ class IIntegerVariable(ScalarVariable[MockIntegerVariable],
     def standard_metadata(self, new_metadata: acvi.IntegerMetadata) -> None:
         if not isinstance(new_metadata, acvi.IntegerMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

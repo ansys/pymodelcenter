@@ -1,20 +1,20 @@
+"""Definitions of string variable."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.ivariable import ScalarVariable
+from .ivariable import ScalarVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockStringVariable
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockStringVariable  # type: ignore
 
 
 class IStringVariable(ScalarVariable[MockStringVariable]):
-    """
-    Represents a string variable on the workflow.
-    """
+    """Represents a string variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockStringVariable):
+        """Initialize object."""
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.StringMetadata()
 
@@ -47,7 +47,7 @@ class IStringVariable(ScalarVariable[MockStringVariable]):
     def standard_metadata(self, new_metadata: acvi.StringMetadata) -> None:
         if not isinstance(new_metadata, acvi.StringMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

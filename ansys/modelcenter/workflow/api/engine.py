@@ -1,9 +1,16 @@
 """Definition of Engine and associated classes."""
 from enum import Enum
+from os import PathLike
 from string import Template
 from typing import Union
 
+from ansys.engineeringworkflow.api import (
+    IFileBasedWorkflowEngine,
+    IWorkflowInstance,
+    WorkflowEngineInfo,
+)
 import clr
+from overrides import overrides
 
 from .data_explorer import DataExplorer
 from .format import Format
@@ -11,13 +18,13 @@ from .i18n import i18n
 from .workflow import Workflow
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockModelCenter
+from Phoenix.Mock import MockModelCenter  # type: ignore
 
 
 class WorkflowType(Enum):
     """Enumeration of the types of workflows that can be created."""
 
-    DATA = "dataModel",
+    DATA = ("dataModel",)
     """Legacy style workflow where execution flow is determined from
     links between components and an execution strategy."""
     PROCESS = "processModel"
@@ -28,64 +35,40 @@ class WorkflowType(Enum):
 class OnConnectionErrorMode(Enum):
     """Enumeration of actions to take on connection error."""
 
-    ERROR = 3,
+    ERROR = (3,)
     """Abort loading and throw the error back to the caller."""
-    IGNORE = 1,
+    IGNORE = (1,)
     """Ignore the error and continue loading."""
     DIALOG = -1
     """(UI mode only) Show an error dialog."""
 
 
-class EngineInfo:
-    """Information about the engine."""
+class Engine(IFileBasedWorkflowEngine):
+    """Engine class used to wrap around MockModelCenter class."""
 
-    def __init__(self, exec_path: str, version: str, dir_path: str):
-        """
-        Initialize.
-
-        Parameters
-        ----------
-        exec_path: str
-            Path to the engine executable.
-        version: str
-            Version of the engine.
-        dir_path: str
-            Path to the directory the engine executable is in.
-        """
-        self._engine_directory_path: str = dir_path
-        self._engine_executable_path: str = exec_path
-        self._version: str = version
-
-    @property
-    def directory_path(self) -> str:
-        """Path to the directory the engine executable is in."""
-        return self._engine_directory_path
-
-    @property
-    def executable_path(self) -> str:
-        """Path to the engine executable."""
-        return self._engine_executable_path
-
-    @property
-    def version(self) -> str:
-        """Version of the engine."""
-        return self._version
-
-
-class Engine:
     def __init__(self):
         """Initialize a new Engine instance."""
         self._instance = MockModelCenter()
 
-    # BOOL IsInteractive;
     @property
     def is_interactive(self) -> bool:
+        """Indicates if ModelCenter is running in interactive/GUI mode."""
         # IsInteractive is an int property on the interface for COM reasons.
         return bool(self._instance.IsInteractive)
 
-    # unsigned long ProcessID;
     @property
     def process_id(self) -> int:
+        """
+        The process identifier of the ModelCenter process.
+
+        Useful for cases where ModelCenter is running in COM server mode and a client process
+        needs to grant it permission to do something (like move a window to the foreground).
+
+        Returns
+        -------
+        int
+            The process identifier.
+        """
         return int(self._instance.ProcessID)
 
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
@@ -111,9 +94,13 @@ class Engine:
             self._instance.saveModelAs(name)
             return Workflow(self._instance)
 
-    def load_workflow(self, file_name: str,
-                      on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR) \
-            -> Workflow:
+    @overrides
+    def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
+        return self.load_workflow_ex(str(file_name))
+
+    def load_workflow_ex(
+        self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
+    ) -> Workflow:
         """
         Load a saved workflow from a file.
 
@@ -196,20 +183,65 @@ class Engine:
         """
         return self._instance.getPreference(pref)
 
-    # long getNumUnitCategories();
     def get_num_unit_categories(self) -> int:
+        """
+        Get the number of unit categories in the IModelCenter object.
+
+        Returns
+        -------
+        int
+            The number for unit categories, or -1 if there is an error.
+        """
         return self._instance.getNumUnitCategories()
 
-    # BSTR getUnitCategoryName(long index);
     def get_unit_category_name(self, index: int) -> str:
+        """
+        Get the name of the category of a unit.
+
+        Parameters
+        ----------
+        index : int
+            Index of the unit.
+
+        Returns
+        -------
+        str
+            The name of the category, or empty string if there is an error.
+        """
         return self._instance.getUnitCategoryName(index)
 
-    # long getNumUnits(BSTR category);
     def get_num_units(self, category: str) -> int:
+        """
+        Get the number of units inside a specified category.
+
+        Parameters
+        ----------
+        category : str
+            Specified category of units.
+
+        Returns
+        -------
+        int
+            The number of units, or -1 if there is an error.
+        """
         return self._instance.getNumUnits(category)
 
-    # BSTR getUnitName(BSTR category, long index);
     def get_unit_name(self, category: str, index: int) -> str:
+        """
+        Get the name of the unit.
+
+        Parameters
+        ----------
+        category : str
+            Category to retrieve the unit.
+        index : int
+            Index of the element in the category.
+
+        Returns
+        -------
+        str
+            The name of the unit, or empty string if there is an error.
+        """
         return self._instance.getUnitName(category, index)
 
     def get_run_only_mode(self) -> bool:
@@ -255,21 +287,32 @@ class Engine:
         """
         self._instance.saveTradeStudy(uri, 3, data_explorer)
 
-    def get_engine_info(self) -> EngineInfo:
+    # TODO: Rename to get_engine_info?
+    @overrides
+    def get_server_info(self) -> WorkflowEngineInfo:
         """
         Get information about the engine.
 
         Returns
         -------
-        A EngineInfo object with information about the Engine.
+        A `WorkflowEngineInfo` object with information about the Engine.
         """
-        full_path: str = self._instance.appFullPath
         version = {
             "major": self._instance.get_version(0),
             "minor": self._instance.get_version(1),
-            "patch": self._instance.get_version(2)
+            "patch": self._instance.get_version(2),
         }
         version_str: str = Template("${major}.${minor}.${patch}").safe_substitute(version)
-        mc_path: str = self._instance.getModelCenterPath()
-        info: EngineInfo = EngineInfo(full_path, version_str, mc_path)
+        install_location: str = self._instance.getModelCenterPath()  # or self._instance.appFullPath
+        info = WorkflowEngineInfo(
+            release_year=version["major"],
+            release_id=version["minor"],
+            build=version["patch"],
+            is_release_build=False,
+            build_type="dev",
+            version_as_string=version_str,
+            server_type="MockModelCenter",
+            install_location=install_location,
+            base_url=None,
+        )
         return info

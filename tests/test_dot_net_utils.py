@@ -1,9 +1,8 @@
 from typing import List
 
-import clr
 from System import String as DotNetString
 from System.Collections.Generic import List as DotNetList
-
+import clr
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi

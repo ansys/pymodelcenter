@@ -38,9 +38,11 @@ def setup_function(_):
 
 def test_variables() -> None:
     """Testing of the variables property."""
-    mock_vars = [MockDoubleVariable("mockvar", 0),
-                 MockIntegerVariable("mockVar2", 0),
-                 MockBooleanVariable("mockVar3", 0)]
+    mock_vars = [
+        MockDoubleVariable("mockvar", 0),
+        MockIntegerVariable("mockVar2", 0),
+        MockBooleanVariable("mockVar3", 0),
+    ]
     for mock_var in mock_vars:
         mock.Variables.addItem(mock_var)
 

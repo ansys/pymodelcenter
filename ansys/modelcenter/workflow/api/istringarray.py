@@ -1,17 +1,16 @@
+"""Definitions of string array variable."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.iarray import IArray
+from .iarray import IArray
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockStringArray
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockStringArray  # type: ignore
 
 
 class IStringArray(IArray[MockStringArray]):
-    """
-    Represents a boolean variable on the workflow.
-    """
+    """Represents a boolean variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockStringArray):
@@ -43,7 +42,7 @@ class IStringArray(IArray[MockStringArray]):
     def standard_metadata(self, new_metadata: acvi.StringArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.StringArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

@@ -1,23 +1,25 @@
+"""Definitions for array of doubles variables."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.iarray import IArray
-from ansys.modelcenter.workflow.api.ivariable import FormattableVariable
+from .iarray import IArray
+from .ivariable import FormattableVariable
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockDoubleArray
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockDoubleArray  # type: ignore
 
 
 class IDoubleArray(IArray[MockDoubleArray], FormattableVariable[MockDoubleArray]):
-    """
-    Represents a double array variable on the workflow.
-    """
+    """Represents a double array variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockDoubleArray):
+        """Initialize object."""
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.RealArrayMetadata()
+
+    # IVariable
 
     @property  # type: ignore
     @overrides
@@ -44,7 +46,7 @@ class IDoubleArray(IArray[MockDoubleArray], FormattableVariable[MockDoubleArray]
     def standard_metadata(self, new_metadata: acvi.RealArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata

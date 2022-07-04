@@ -54,8 +54,7 @@ class IGlobalParameters:
         """
         self._instance[index] = new_value
 
-    def set_export_to_remote_components(
-            self, index: Union[int, str], export: bool) -> None:
+    def set_export_to_remote_components(self, index: Union[int, str], export: bool) -> None:
         """
         Set whether this name/value pair is passed to external \
         servers when a component is run on that server.

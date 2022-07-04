@@ -1,7 +1,7 @@
 """Implementation of Arrayish wrapper class."""
 from typing import Callable, Sequence, Type, TypeVar, Union, overload
 
-VT = TypeVar('VT')
+VT = TypeVar("VT")
 """A generic value type."""
 
 
@@ -34,13 +34,19 @@ class Arrayish(Sequence[VT]):
         self._converter = converter
 
     @overload
-    def __getitem__(self, i: int) -> VT: ...
+    def __getitem__(self, i: int) -> VT:
+        """Get the object specified by index."""
+        ...
 
     @overload
-    def __getitem__(self, s: slice) -> Sequence[VT]: ...
+    def __getitem__(self, s: slice) -> Sequence[VT]:
+        """Get the objects specified by slice."""
+        ...
 
     @overload
-    def __getitem__(self, s: str) -> VT: ...
+    def __getitem__(self, s: str) -> VT:
+        """Get the object specified by name."""
+        ...
 
     def __getitem__(self, index: Union[int, slice, str]) -> Union[Sequence[VT], VT]:
         """
@@ -61,18 +67,18 @@ class Arrayish(Sequence[VT]):
             # (list comprehensions, for-each, etc)
             # Python just keeps calling __getitem__ until it gets an IndexError specifically.
             if index < len(self):
-                return self._converter(self._instance.Item(index))
+                return self._converter(self._instance.Item(index))  # type: ignore
             else:
                 raise IndexError
         elif isinstance(index, str):
-            return self._converter(self._instance.Item(index))
+            return self._converter(self._instance.Item(index))  # type: ignore
         elif isinstance(index, slice):
             # TODO: Return an efficient list instead of pulling all the items in the range
             ret = []
             len_ = len(self)
             for i in range(index.stop)[index]:
                 if i < len_:
-                    val = self._converter(self._instance.Item(i))
+                    val = self._converter(self._instance.Item(i))  # type: ignore
                     ret.append(val)
             return ret
         else:

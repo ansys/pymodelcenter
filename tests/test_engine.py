@@ -1,7 +1,8 @@
+from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import clr
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-clr.AddReference('System.Collections')
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+clr.AddReference("System.Collections")
 
 from typing import Any
 
@@ -16,10 +17,10 @@ import ansys.modelcenter.workflow.api as mcapi
 @pytest.mark.parametrize(
     "actual_value,expected_result",
     [
-        pytest.param(0, False, id='zero is false'),
-        pytest.param(1, True, id='one is true'),
-        pytest.param(-1, True, id='negative one is true'),
-    ]
+        pytest.param(0, False, id="zero is false"),
+        pytest.param(1, True, id="one is true"),
+        pytest.param(-1, True, id="negative one is true"),
+    ],
 )
 def test_is_interactive(actual_value: int, expected_result: bool) -> None:
     """
@@ -89,26 +90,13 @@ def test_get_num_unit_categories() -> None:
     assert result == 3
 
 
-def test_get_num_unit_categories() -> None:
-    # Setup
-    # Construct an instance of the API adaptor.
-    sut: mcapi.Engine = mcapi.Engine()
-    __set_up_test_unit_categories(sut._instance)
-
-    # Execute
-    result: int = sut.get_num_unit_categories()
-
-    # Verify
-    assert result == 3
-
-
 @pytest.mark.parametrize(
-    'category,expected_result',
+    "category,expected_result",
     [
-        pytest.param('001_empty_category', 0, id="empty category"),
-        pytest.param('002_length', 4, id="four units"),
-        pytest.param('003_seconds', 1, id="one unit"),
-    ]
+        pytest.param("001_empty_category", 0, id="empty category"),
+        pytest.param("002_length", 4, id="four units"),
+        pytest.param("003_seconds", 1, id="one unit"),
+    ],
 )
 def test_get_num_units(category: str, expected_result: int) -> None:
     # Setup
@@ -124,12 +112,12 @@ def test_get_num_units(category: str, expected_result: int) -> None:
 
 
 @pytest.mark.parametrize(
-    'category_index,expected_result',
+    "category_index,expected_result",
     [
-        pytest.param(0, '001_empty_category'),
-        pytest.param(1, '002_length'),
-        pytest.param(2, "003_seconds")
-    ]
+        pytest.param(0, "001_empty_category"),
+        pytest.param(1, "002_length"),
+        pytest.param(2, "003_seconds"),
+    ],
 )
 def test_get_unit_category_name(category_index: int, expected_result: str) -> None:
     # Setup
@@ -145,13 +133,13 @@ def test_get_unit_category_name(category_index: int, expected_result: str) -> No
 
 
 @pytest.mark.parametrize(
-    'category,unit_index,expected_result',
+    "category,unit_index,expected_result",
     [
-        pytest.param('002_length', 0, 'inches', id="inches"),
-        pytest.param('002_length', 1, 'feet', id="feet"),
-        pytest.param('002_length', 2, 'mm', id="cm"),
-        pytest.param('002_length', 3, 'cm', id="mm"),
-    ]
+        pytest.param("002_length", 0, "inches", id="inches"),
+        pytest.param("002_length", 1, "feet", id="feet"),
+        pytest.param("002_length", 2, "mm", id="cm"),
+        pytest.param("002_length", 3, "cm", id="mm"),
+    ],
 )
 def test_get_unit_name(category: str, unit_index: int, expected_result: str) -> None:
     # Setup
@@ -166,13 +154,7 @@ def test_get_unit_name(category: str, unit_index: int, expected_result: str) -> 
     assert result == expected_result
 
 
-@pytest.mark.parametrize(
-    "workflow_type",
-    [
-        mcapi.WorkflowType.DATA,
-        mcapi.WorkflowType.PROCESS
-    ]
-)
+@pytest.mark.parametrize("workflow_type", [mcapi.WorkflowType.DATA, mcapi.WorkflowType.PROCESS])
 def test_new_workflow(workflow_type: mcapi.WorkflowType) -> None:
     """
     Verify that new_workflow works as expected.
@@ -208,9 +190,11 @@ def test_new_workflow_with_existing() -> None:
         engine.new_workflow("workflow2.pxcz")
 
     # Verification
-    assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "\
-                                        "Close the current Workflow before loading or creating a "\
-                                        "new one."
+    assert (
+        except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "
+        "Close the current Workflow before loading or creating a "
+        "new one."
+    )
 
 
 @pytest.mark.parametrize(
@@ -218,7 +202,7 @@ def test_new_workflow_with_existing() -> None:
     [
         ("", mcapi.OnConnectionErrorMode.ERROR),
         # TODO: More cases when we have a real backend
-    ]
+    ],
 )
 def test_load_workflow(path: str, error: mcapi.OnConnectionErrorMode) -> None:
     """
@@ -236,7 +220,7 @@ def test_load_workflow(path: str, error: mcapi.OnConnectionErrorMode) -> None:
     engine = mcapi.Engine()
 
     # SUT
-    result: mcapi.Workflow = engine.load_workflow(path, error)
+    result: mcapi.Workflow = engine.load_workflow_ex(path, error)
 
     # Verification
     assert isinstance(result, mcapi.Workflow)
@@ -255,25 +239,18 @@ def test_load_workflow_existing() -> None:
 
     # SUT
     with pytest.raises(Exception) as except_info:
-        engine.load_workflow("", mcapi.OnConnectionErrorMode.ERROR)
+        engine.load_workflow("")
 
     # Verification
-    assert except_info.value.args[0] == "Error: Only one Workflow can be open at a time. " \
-                                        "Close the current Workflow before loading or creating a " \
-                                        "new one."
+    assert (
+        except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "
+        "Close the current Workflow before loading or creating a "
+        "new one."
+    )
 
 
 @pytest.mark.parametrize(
-    "fmt",
-    [
-        "General",
-        "0.00",
-        "$#,##0.00",
-        "0.00%",
-        "# ?/?",
-        "0.00E+00",
-        "EpSec"
-    ]
+    "fmt", ["General", "0.00", "$#,##0.00", "0.00%", "# ?/?", "0.00E+00", "EpSec"]
 )
 def test_get_formatter(fmt: str) -> None:
     """
@@ -322,15 +299,7 @@ def test_set_password() -> None:
     assert engine._instance.getCallCount("setPassword") == 1
 
 
-@pytest.mark.parametrize(
-    "key, value",
-    [
-        ("a", True),
-        ("b", 1),
-        ("c", "2.3"),
-        ("d", "e")
-    ]
-)
+@pytest.mark.parametrize("key, value", [("a", True), ("b", 1), ("c", "2.3"), ("d", "e")])
 def test_get_preference(key: str, value: object) -> None:
     """
     Verify that preferences of different value types can be retrieved.
@@ -379,9 +348,9 @@ def test_get_engine_info() -> None:
     engine._instance.appFullPath = "C:\\Path\\To\\ModelCenter\\app.exe"
 
     # SUT
-    info: mcapi.EngineInfo = engine.get_engine_info()
+    info: WorkflowEngineInfo = engine.get_server_info()
 
     # Verification
-    assert info.directory_path == "C:\\Path\\To\\ModelCenter\\"
-    assert info.executable_path == "C:\\Path\\To\\ModelCenter\\app.exe"
-    assert info.version == "12.0.1"
+    assert info.install_location == "C:\\Path\\To\\ModelCenter\\"
+    # assert info. == "C:\\Path\\To\\ModelCenter\\app.exe"
+    assert info.version_as_string == "12.0.1"

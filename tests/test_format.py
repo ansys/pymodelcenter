@@ -45,11 +45,11 @@ def test_set_format() -> None:
 
 
 @pytest.mark.parametrize(
-    'format_, string',
+    "format_, string",
     [
-        pytest.param('General', '5'),
-        pytest.param('mockFormat', 'ඞ5'),
-    ]
+        pytest.param("General", "5"),
+        pytest.param("mockFormat", "ඞ5"),
+    ],
 )
 def test_string_to_integer(format_: str, string: str) -> None:
     """Verifies the string_to_integer method."""
@@ -65,11 +65,11 @@ def test_string_to_integer(format_: str, string: str) -> None:
 
 
 @pytest.mark.parametrize(
-    'format_, string',
+    "format_, string",
     [
-        pytest.param('General', '5.5'),
-        pytest.param('mockFormat', 'ඞ5.5'),
-    ]
+        pytest.param("General", "5.5"),
+        pytest.param("mockFormat", "ඞ5.5"),
+    ],
 )
 def test_string_to_real(format_: str, string: str) -> None:
     """Verifies the string_to_real method."""
@@ -85,11 +85,11 @@ def test_string_to_real(format_: str, string: str) -> None:
 
 
 @pytest.mark.parametrize(
-    'format_, expected',
+    "format_, expected",
     [
-        pytest.param('General', '5'),
-        pytest.param('mockFormat', 'ඞ5'),
-    ]
+        pytest.param("General", "5"),
+        pytest.param("mockFormat", "ඞ5"),
+    ],
 )
 def test_integer_to_string(format_: str, expected: str) -> None:
     """Verifies the integer_to_string method."""
@@ -105,11 +105,11 @@ def test_integer_to_string(format_: str, expected: str) -> None:
 
 
 @pytest.mark.parametrize(
-    'format_, expected',
+    "format_, expected",
     [
-        pytest.param('General', '5.5'),
-        pytest.param('mockFormat', 'ඞ5.5'),
-    ]
+        pytest.param("General", "5.5"),
+        pytest.param("mockFormat", "ඞ5.5"),
+    ],
 )
 def test_real_to_string(format_: str, expected: str) -> None:
     """Verifies the real_to_string method."""
@@ -125,11 +125,11 @@ def test_real_to_string(format_: str, expected: str) -> None:
 
 
 @pytest.mark.parametrize(
-    'format_, expected',
+    "format_, expected",
     [
-        pytest.param('General', 'abc'),
-        pytest.param('mockFormat', 'ඞabc'),
-    ]
+        pytest.param("General", "abc"),
+        pytest.param("mockFormat", "ඞabc"),
+    ],
 )
 def test_string_to_string(format_: str, expected: str) -> None:
     """Verifies the string_to_string method."""
@@ -137,7 +137,7 @@ def test_string_to_string(format_: str, expected: str) -> None:
     sut: mcapi.Format = engine.get_formatter(format_)
 
     # SUT
-    result: str = sut.string_to_string('abc')
+    result: str = sut.string_to_string("abc")
 
     # Verification
     assert isinstance(result, str)
@@ -145,11 +145,11 @@ def test_string_to_string(format_: str, expected: str) -> None:
 
 
 @pytest.mark.parametrize(
-    'format_, expected',
+    "format_, expected",
     [
-        pytest.param('General', '5'),
-        pytest.param('mockFormat', 'ඞ5'),
-    ]
+        pytest.param("General", "5"),
+        pytest.param("mockFormat", "ඞ5"),
+    ],
 )
 def test_integer_to_editable_string(format_: str, expected: str) -> None:
     """Verifies the integer_to_editable_string method."""
@@ -165,11 +165,11 @@ def test_integer_to_editable_string(format_: str, expected: str) -> None:
 
 
 @pytest.mark.parametrize(
-    'format_, expected',
+    "format_, expected",
     [
-        pytest.param('General', '5.5'),
-        pytest.param('mockFormat', 'ඞ5.5'),
-    ]
+        pytest.param("General", "5.5"),
+        pytest.param("mockFormat", "ඞ5.5"),
+    ],
 )
 def test_real_to_editable_string(format_: str, expected: str) -> None:
     """Verifies the real_to_editable_string method."""

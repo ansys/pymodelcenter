@@ -1,22 +1,23 @@
+"""Boolean array implementation."""
 import ansys.common.variableinterop as acvi
 import clr
 from overrides import overrides
 
-import ansys.modelcenter.workflow.api.iarray as iarray
+from .iarray import IArray
 
-clr.AddReference('phoenix-mocks/Phoenix.Mock.v45')
-from Phoenix.Mock import MockBooleanArray
+clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
+from Phoenix.Mock import MockBooleanArray  # type: ignore
 
 
-class IBooleanArray(iarray.IArray[MockBooleanArray]):
-    """
-    Represents a boolean array variable on the workflow.
-    """
+class IBooleanArray(IArray[MockBooleanArray]):
+    """Represents a boolean array variable on the workflow."""
 
     @overrides
     def __init__(self, wrapped: MockBooleanArray):
         super().__init__(wrapped)
         self._standard_metadata: acvi.CommonVariableMetadata = acvi.BooleanArrayMetadata()
+
+    # IVariable
 
     @property  # type: ignore
     @overrides
@@ -43,7 +44,7 @@ class IBooleanArray(iarray.IArray[MockBooleanArray]):
     def standard_metadata(self, new_metadata: acvi.BooleanArrayMetadata) -> None:
         if not isinstance(new_metadata, acvi.BooleanArrayMetadata):
             raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name,
-                self._standard_metadata.variable_type.name)
+                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
+            )
         else:
             self._standard_metadata = new_metadata
