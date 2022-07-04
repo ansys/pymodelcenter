@@ -6,7 +6,7 @@ from pyansys_sphinx_theme import pyansys_logo_black
 from ansys.modelcenter.workflow import __version__
 
 # Project information
-project = "ansys-product-library"
+project = "ansys-modelcenter-workflow"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "Ansys, Inc."
 release = version = __version__
