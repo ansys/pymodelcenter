@@ -78,13 +78,13 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v2
         with:
-          name: ansys-product-library-wheel
+          name: ansys-modelcenter-workflow-wheel
           path: dist/
           retention-days: 7
 
   docs:
     name: Build Documentation
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -100,18 +100,19 @@ jobs:
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
 
       - name: Install library, with docs extra
-        run: pip install .[docs]
+        run: |
+          pip install poetry
+          poetry install -E docs
 
       - name: Build HTML
         run: |
-          make -C doc html SPHINXOPTS="-W"
+          poetry run make -C doc html SPHINXOPTS="-W"
 
 #      - name: Build PDF Documentation
 #        run: |
-#          # sudo apt update
-#          # sudo apt-cyg install -y texlive-latex-extra latexmk
-#          choco install texlive --params="'/collections:latex /scheme:full /extraPackages:latexmk'"
-#          make -C doc latexpdf
+#          sudo apt update
+#          sudo apt-get install -y texlive-latex-extra latexmk
+#          poetry run make -C doc latexpdf
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v2
@@ -150,7 +151,7 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: ansys-product-library-wheel
+          name: ansys-modelcenter-workflow-wheel
 
 #      - uses: actions/download-artifact@v2
 #        with:
