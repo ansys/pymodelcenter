@@ -36,6 +36,7 @@ pythonnet = "^2.5.2"
 # It's probably not strictly necessary to keep these exactly in sync,
 # but it might be helpful.
 grpcio = "1.47.0"
+grpcio-tools = "1.47.0"
 
 Sphinx =  {version="^4.4", optional=true}
 numpydoc =  {version="^1.2", optional=true}
@@ -57,7 +58,7 @@ ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-v
 
 [tool.poetry.extras]
 dev = ["Sphinx", "numpydoc", "pyansys_sphinx_theme", "sphinx-copybutton", "codespell",
-    "flake8", "pytest", "pytest-cov", "pre-commit", "mypy"]
+    "flake8", "pytest", "pytest-cov", "pre-commit", "mypy", "grpcio-tools"]
 docs = ["Sphinx", "numpydoc", "pyansys_sphinx_theme", "sphinx-copybutton"]
 style = ["codespell", "flake8"]
 test = ["pytest", "pytest-cov"]
