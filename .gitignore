@@ -47,3 +47,6 @@ test-output.xml
 .idea
 
 /phoenix-mocks/
+
+## gRPC generated folders
+ansys/modelcenter/workflow/grpc_modelcenter/proto
