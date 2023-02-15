@@ -38,7 +38,7 @@ jobs:
 
       - name: flake8
         run: |
-          make flake8
+          make flake8 
 
   main:
     name: Build and Testing
@@ -56,6 +56,12 @@ jobs:
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+
+      - name: Install dev dependencies
+        run: pip install .[dev]
+
+      - name: Run gRPC compiler
+        run: protos/generate-proto.bat
 
       - name: Create wheel
         run: |
