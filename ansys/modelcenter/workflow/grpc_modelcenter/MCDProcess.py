@@ -31,4 +31,3 @@ class MCDProcess:
 
         # May want to use some additional parameters for capturing stdout, etc.
         self._process = subprocess.Popen(self._exe_path)
-
