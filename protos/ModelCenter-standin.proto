@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "RemoteModelCenter";
+
+package ProofOfConcept;
+
+// The greeting service definition.
+service ComponentQuery {
+  // Sends a greeting
+  rpc GetComponentVariables (ComponentVariablesRequest) returns (ComponentVariablesReply);
+}
+
+// The request message containing the user's name.
+message ComponentVariablesRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings.
+message ComponentVariablesReply {
+  string message = 1;
+}
