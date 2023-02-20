@@ -1,0 +1,49 @@
+/*
+ * Defines the ModelCenter Engine, the main entrypoint of using ModelCenter over grpc.
+ */
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package modelcenter;
+
+// The main service definition.
+service Engine
+{
+   // Get information about the engine.
+   rpc GetEngineInfo(google.protobuf.Empty) returns (EngineInfoResponse) {}
+
+   // Create and save a new workflow.
+   rpc NewWorkflow(NewWorkflowRequest) returns (google.protobuf.Empty) {}
+
+   // Shutdown ModelCenter.
+   rpc Shutdown(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
+
+message EngineInfoResponse
+{
+   // The version number of the Engine.
+   message Version
+   {
+      int32 major = 1;
+      int32 minor = 2;
+      int32 patch = 3;
+      int32 revision = 4; 
+   }
+
+   Version version = 1;
+   string directory_path = 2;
+   string executable_path = 3;
+}
+
+enum WorkflowType
+{
+   DATA = 0;
+   PROCESS = 1;
+}
+
+message NewWorkflowRequest
+{
+   string name = 1;
+   WorkflowType type = 2;
+}
