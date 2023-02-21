@@ -16,6 +16,9 @@ service Engine
    // Create and save a new workflow.
    rpc NewWorkflow(NewWorkflowRequest) returns (google.protobuf.Empty) {}
 
+   // Load an existing workflow
+   rpc LoadWorkflow(LoadWorkflowRequest) returns (google.protobuf.Empty) {}
+
    // Shutdown ModelCenter.
    rpc Shutdown(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
@@ -46,4 +49,9 @@ message NewWorkflowRequest
 {
    string name = 1;
    WorkflowType type = 2;
+}
+
+message LoadWorkflowRequest
+{
+    string path = 1;
 }
