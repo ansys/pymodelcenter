@@ -82,7 +82,7 @@ on Windows. Make sure the required dependencies are installed with:
 
 .. code::
 
-    pip install -E docs
+    poetry install -E docs
 
 
 Usage
@@ -109,7 +109,7 @@ Dependencies required for testing can be installed via:
 
 .. code::
 
-    pip install -E test
+    poetry install -E test
 
 The tests can then be run via pytest.
 
