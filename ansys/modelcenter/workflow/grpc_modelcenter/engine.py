@@ -1,7 +1,7 @@
 """Implementation of Engine."""
 from os import PathLike
 from string import Template
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 from ansys.engineeringworkflow.api import IWorkflowInstance, WorkflowEngineInfo
 import grpc
@@ -20,10 +20,21 @@ from .mcd_process import MCDProcess
 from .proto.engine_messages_pb2 import (
     DATA,
     PROCESS,
+    GetPreferenceRequest,
+    GetPreferenceResponse,
     GetRunOnlyModeRequest,
+    GetRunOnlyModeResponse,
     GetServerInfoRequest,
+    GetServerInfoResponse,
+    GetUnitCategoriesRequest,
+    GetUnitCategoriesResponse,
+    GetUnitNamesRequest,
+    GetUnitNamesResponse,
     NewWorkflowRequest,
+    NewWorkflowResponse,
+    SetPasswordRequest,
     SetRunOnlyModeRequest,
+    SetUserNameRequest,
     ShutdownRequest,
 )
 from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
@@ -51,7 +62,7 @@ class Engine(IEngine):
 
     def close(self):
         """Shuts down the grpc server and clear out all objects."""
-        request: Any = ShutdownRequest()
+        request = ShutdownRequest()
         self._stub.Shutdown(request)
         self._stub = None
 
@@ -76,29 +87,22 @@ class Engine(IEngine):
             msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
             raise Exception(msg)
         else:
-            request: Any = NewWorkflowRequest()
+            request = NewWorkflowRequest()
             request.path = name
             request.workflow_type = DATA if workflow_type is WorkflowType.DATA else PROCESS
-            response: Any = self._stub.EngineCreateWorkflow(request)
+            response: NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
             self._workflow_id = response.workflow_id
             return Workflow(response.root_element, response.workflow_id)
 
     @overrides
     def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
-        # return self.load_workflow_ex(str(file_name))
-        return IWorkflowInstance()
+        raise NotImplementedError
 
     @overrides
     def load_workflow_ex(
         self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
     ) -> IWorkflow:
-        # if self._instance.getModel() is not None:
-        #     msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
-        #     raise Exception(msg)
-        # else:
-        #     self._instance.loadModel(file_name, on_connect_error.value)
-        #     return Workflow(self._instance)
-        return IWorkflow(None)
+        raise NotImplementedError
 
     @overrides
     def get_formatter(self, fmt: str) -> IFormat:
@@ -107,60 +111,73 @@ class Engine(IEngine):
 
     @overrides
     def set_user_name(self, user_name: str) -> None:
-        # self._instance.setUserName(user_name)
-        return
+        request = SetUserNameRequest()
+        request.user_name = user_name
+        self._stub.EngineSetUserName(request)
 
     @overrides
     def set_password(self, password: str) -> None:
-        # self._instance.setPassword(password)
-        return
+        request = SetPasswordRequest()
+        request.password = password
+        self._stub.EngineSetPassword(request)
 
     @overrides
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
-        # return self._instance.getPreference(pref)
-        return False
+        request = GetPreferenceRequest()
+        request.preference_name = pref
+        response: GetPreferenceResponse = self._stub.EngineGetPreference(request)
+        attr: Optional[str] = response.WhichOneof("value")
+        if attr is not None:
+            return getattr(response, attr)
+        else:
+            raise Exception("Server did not return a value.")
 
     @overrides
     def get_num_unit_categories(self) -> int:
-        # return self._instance.getNumUnitCategories()
-        return 0
+        request = GetUnitCategoriesRequest()
+        response: GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(request)
+        return len(response.names)
 
     @overrides
     def get_unit_category_name(self, index: int) -> str:
-        # return self._instance.getUnitCategoryName(index)
-        return ""
+        request = GetUnitCategoriesRequest()
+        response: GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(request)
+        return response.names[index]
 
     @overrides
     def get_num_units(self, category: str) -> int:
-        # return self._instance.getNumUnits(category)
-        return 0
+        request = GetUnitNamesRequest()
+        request.category = category
+        response: GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
+        return len(response.names)
 
     @overrides
     def get_unit_name(self, category: str, index: int) -> str:
-        # return self._instance.getUnitName(category, index)
-        return ""
+        request = GetUnitNamesRequest()
+        request.category = category
+        response: GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
+        return response.names[index]
 
     @overrides
     def get_run_only_mode(self) -> bool:
-        request: Any = GetRunOnlyModeRequest()
-        response: Any = self._stub.EngineGetRunOnlyMode(request)
+        request = GetRunOnlyModeRequest()
+        response: GetRunOnlyModeResponse = self._stub.EngineGetRunOnlyMode(request)
         return response.is_run_only
 
     @overrides
     def set_run_only_mode(self, should_be_in_run_only: bool) -> None:
-        request: Any = SetRunOnlyModeRequest()
+        request = SetRunOnlyModeRequest()
         request.set_run_only = should_be_in_run_only
         self._stub.EngineSetRunOnlyMode(request)
 
     @overrides
     def save_trade_study(self, uri: str, data_explorer: DataExplorer) -> None:
-        # self._instance.saveTradeStudy(uri, 3, data_explorer)
-        return
+        raise NotImplementedError
 
     @overrides
     def get_server_info(self) -> WorkflowEngineInfo:
-        request: Any = GetServerInfoRequest()
-        response: Any = self._stub.GetEngineInfo(request)
+        request = GetServerInfoRequest()
+        response: GetServerInfoResponse = self._stub.GetEngineInfo(request)
 
         version = {
             "major": response.version.major,
