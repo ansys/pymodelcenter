@@ -9,11 +9,13 @@ from overrides import overrides
 
 from ansys.modelcenter.workflow.api import DataExplorer
 from ansys.modelcenter.workflow.api import Engine as IEngine
-from ansys.modelcenter.workflow.api import Format, OnConnectionErrorMode
+from ansys.modelcenter.workflow.api import Format as IFormat
+from ansys.modelcenter.workflow.api import OnConnectionErrorMode
 from ansys.modelcenter.workflow.api import Workflow as IWorkflow
 from ansys.modelcenter.workflow.api import WorkflowType
 from ansys.modelcenter.workflow.api.i18n import i18n
 
+from .format import Format
 from .mcd_process import MCDProcess
 from .proto.engine_messages_pb2 import (
     DATA,
@@ -99,10 +101,9 @@ class Engine(IEngine):
         return IWorkflow(None)
 
     @overrides
-    def get_formatter(self, fmt: str) -> Format:
-        # formatter: Format = Format(self._instance.getFormatter(fmt))
-        # return formatter
-        return Format(None)
+    def get_formatter(self, fmt: str) -> IFormat:
+        formatter: Format = Format(fmt)
+        return formatter
 
     @overrides
     def set_user_name(self, user_name: str) -> None:

@@ -6,4 +6,5 @@ and attempt to communicate with it via gRPC.
 """
 
 from .engine import Engine
+from .format import Format
 from .workflow import Workflow
