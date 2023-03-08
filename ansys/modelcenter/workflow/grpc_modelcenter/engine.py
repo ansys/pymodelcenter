@@ -1,18 +1,31 @@
 """Implementation of Engine."""
 from os import PathLike
 from string import Template
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from ansys.engineeringworkflow.api import IWorkflowInstance, WorkflowEngineInfo
 import grpc
-import mcd_process
 from overrides import overrides
-import proto.engine_messages_pb2 as engine_messages
-import proto.grpc_modelcenter_pb2_grpc as mcd_grpc
 
 from ansys.modelcenter.workflow.api import DataExplorer
 from ansys.modelcenter.workflow.api import Engine as IEngine
-from ansys.modelcenter.workflow.api import Format, OnConnectionErrorMode, Workflow, WorkflowType
+from ansys.modelcenter.workflow.api import Format, OnConnectionErrorMode
+from ansys.modelcenter.workflow.api import Workflow as IWorkflow
+from ansys.modelcenter.workflow.api import WorkflowType
+from ansys.modelcenter.workflow.api.i18n import i18n
+
+from .mcd_process import MCDProcess
+from .proto.engine_messages_pb2 import (
+    DATA,
+    PROCESS,
+    GetRunOnlyModeRequest,
+    GetServerInfoRequest,
+    NewWorkflowRequest,
+    SetRunOnlyModeRequest,
+    ShutdownRequest,
+)
+from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
+from .workflow import Workflow
 
 
 class Engine(IEngine):
@@ -20,10 +33,11 @@ class Engine(IEngine):
 
     def __init__(self):
         """Initialize a new Engine instance."""
-        self._process = mcd_process.MCDProcess()
+        self._process = MCDProcess()
         self._process.start()
         self._channel = grpc.insecure_channel("localhost:50051")
-        self._stub = mcd_grpc.GRPCModelCenterServiceStub(self._channel)
+        self._stub = GRPCModelCenterServiceStub(self._channel)
+        self._workflow_id: Optional[str] = None
 
     def __enter__(self):
         """Initialization when created in a 'with' statement."""
@@ -35,7 +49,7 @@ class Engine(IEngine):
 
     def close(self):
         """Shuts down the grpc server and clear out all objects."""
-        request: Any = engine_messages.ShutdownRequest()
+        request: Any = ShutdownRequest()
         self._stub.Shutdown(request)
         self._stub = None
 
@@ -55,15 +69,17 @@ class Engine(IEngine):
         return self._process.get_process_id()
 
     @overrides
-    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
-        # if self._instance.getModel() is not None:
-        #     msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
-        #     raise Exception(msg)
-        # else:
-        #     self._instance.newModel(workflow_type.value)
-        #     self._instance.saveModelAs(name)
-        #     return Workflow(self._instance)
-        return Workflow(None)
+    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
+        if self._workflow_id is not None:
+            msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
+            raise Exception(msg)
+        else:
+            request: Any = NewWorkflowRequest()
+            request.path = name
+            request.workflow_type = DATA if workflow_type is WorkflowType.DATA else PROCESS
+            response: Any = self._stub.EngineCreateWorkflow(request)
+            self._workflow_id = response.workflow_id
+            return Workflow(response.root_element, response.workflow_id)
 
     @overrides
     def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
@@ -73,14 +89,14 @@ class Engine(IEngine):
     @overrides
     def load_workflow_ex(
         self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
-    ) -> Workflow:
+    ) -> IWorkflow:
         # if self._instance.getModel() is not None:
         #     msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
         #     raise Exception(msg)
         # else:
         #     self._instance.loadModel(file_name, on_connect_error.value)
         #     return Workflow(self._instance)
-        return Workflow(None)
+        return IWorkflow(None)
 
     @overrides
     def get_formatter(self, fmt: str) -> Format:
@@ -125,13 +141,15 @@ class Engine(IEngine):
 
     @overrides
     def get_run_only_mode(self) -> bool:
-        # return self._instance.getRunOnlyMode()
-        return False
+        request: Any = GetRunOnlyModeRequest()
+        response: Any = self._stub.EngineGetRunOnlyMode(request)
+        return response.is_run_only
 
     @overrides
     def set_run_only_mode(self, should_be_in_run_only: bool) -> None:
-        # self._instance.setRunOnlyMode(should_be_in_run_only)
-        return
+        request: Any = SetRunOnlyModeRequest()
+        request.set_run_only = should_be_in_run_only
+        self._stub.EngineSetRunOnlyMode(request)
 
     @overrides
     def save_trade_study(self, uri: str, data_explorer: DataExplorer) -> None:
@@ -140,7 +158,7 @@ class Engine(IEngine):
 
     @overrides
     def get_server_info(self) -> WorkflowEngineInfo:
-        request: Any = engine_messages.GetServerInfoRequest()
+        request: Any = GetServerInfoRequest()
         response: Any = self._stub.GetEngineInfo(request)
 
         version = {
@@ -162,9 +180,3 @@ class Engine(IEngine):
             base_url=None,
         )
         return info
-
-
-if __name__ == "__main__":
-    with Engine() as test:
-        result = test.get_server_info()
-        print(result)
