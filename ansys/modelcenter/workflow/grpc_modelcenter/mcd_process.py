@@ -30,14 +30,16 @@ class MCDProcess:
         self._debug: bool = True if self._exe_path.endswith("ModelCenterD.exe") else False
         self._timeout: float = 60 if self._debug else 30
 
-    def start(self):
+    def start(self, run_only: bool = False):
         """Start the MCD process."""
-        self._process = subprocess.Popen(
-            [self._exe_path, "/Grpc", "/Automation"], stdout=subprocess.PIPE
-        )
+        args = [self._exe_path, "/Grpc", "/Automation"]
+        if run_only:
+            args.append("/runonly")
+        self._process = subprocess.Popen(args, stdout=subprocess.PIPE)
 
         # Wait until we read the grpc server start message from stdout.
-        start: time = time.time()
+        start: float = time.time()
+        assert self._process.stdout is not None
         for line in TextIOWrapper(self._process.stdout, encoding="utf-8"):
             # if self._debug:
             #     print(line)

@@ -22,8 +22,6 @@ from .proto.engine_messages_pb2 import (
     PROCESS,
     GetPreferenceRequest,
     GetPreferenceResponse,
-    GetRunOnlyModeRequest,
-    GetRunOnlyModeResponse,
     GetServerInfoRequest,
     GetServerInfoResponse,
     GetUnitCategoriesRequest,
@@ -33,7 +31,6 @@ from .proto.engine_messages_pb2 import (
     NewWorkflowRequest,
     NewWorkflowResponse,
     SetPasswordRequest,
-    SetRunOnlyModeRequest,
     SetUserNameRequest,
     ShutdownRequest,
 )
@@ -44,10 +41,11 @@ from .workflow import Workflow
 class Engine(IEngine):
     """GRPC implementation of IEngine."""
 
-    def __init__(self):
+    def __init__(self, is_run_only: bool = False):
         """Initialize a new Engine instance."""
+        self._is_run_only: bool = is_run_only
         self._process = MCDProcess()
-        self._process.start()
+        self._process.start(is_run_only)
         self._channel = grpc.insecure_channel("localhost:50051")
         self._stub = GRPCModelCenterServiceStub(self._channel)
         self._workflow_id: Optional[str] = None
@@ -73,12 +71,8 @@ class Engine(IEngine):
 
     @property  # type: ignore
     @overrides
-    def is_interactive(self) -> bool:
-        return False
-
-    @property  # type: ignore
-    @overrides
     def process_id(self) -> int:
+        # Can also get this via grpc if we want.
         return self._process.get_process_id()
 
     @overrides
@@ -160,15 +154,7 @@ class Engine(IEngine):
 
     @overrides
     def get_run_only_mode(self) -> bool:
-        request = GetRunOnlyModeRequest()
-        response: GetRunOnlyModeResponse = self._stub.EngineGetRunOnlyMode(request)
-        return response.is_run_only
-
-    @overrides
-    def set_run_only_mode(self, should_be_in_run_only: bool) -> None:
-        request = SetRunOnlyModeRequest()
-        request.set_run_only = should_be_in_run_only
-        self._stub.EngineSetRunOnlyMode(request)
+        return self._is_run_only
 
     @overrides
     def save_trade_study(self, uri: str, data_explorer: DataExplorer) -> None:
