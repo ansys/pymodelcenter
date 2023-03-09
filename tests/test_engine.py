@@ -14,30 +14,6 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 
 
-@pytest.mark.parametrize(
-    "actual_value,expected_result",
-    [
-        pytest.param(0, False, id="zero is false"),
-        pytest.param(1, True, id="one is true"),
-        pytest.param(-1, True, id="negative one is true"),
-    ],
-)
-def test_is_interactive(actual_value: int, expected_result: bool) -> None:
-    """
-    Test that the is_interactive implementation properly calls and interprets results
-    from the mock.
-    """
-    sut: mcapi.Engine = mcapi.Engine()
-    # Configure the mock to report a particular result when asked if it is interactive.
-    sut._instance.IsInteractive = actual_value
-
-    # Execute
-    result: bool = sut.is_interactive
-
-    # Verify
-    assert result == expected_result
-
-
 def test_process_id() -> None:
     # Setup
     # Construct an instance of the API adaptor.
