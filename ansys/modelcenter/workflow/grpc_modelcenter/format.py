@@ -5,7 +5,9 @@ from overrides import overrides
 
 from ansys.modelcenter.workflow.api.format import Format as IFormat
 
-from .proto.format_messages_pb2 import FormatFromStringRequest, FormatToIntegerResponse
+from .proto.format_messages_pb2 import FormatFromStringRequest, FormatToIntegerResponse, \
+    FormatToDoubleResponse, FormatFromIntegerRequest, FormatToStringResponse, \
+    FormatFromDoubleRequest
 from .proto.grpc_modelcenter_format_pb2_grpc import ModelCenterFormatServiceStub
 
 
@@ -31,7 +33,7 @@ class Format(IFormat):
 
     @overrides
     def string_to_integer(self, string: str) -> int64:
-        request: FormatFromStringRequest = FormatFromStringRequest()
+        request = FormatFromStringRequest()
         request.format = self._format
         request.original = string
         response: FormatToIntegerResponse = self._stub.FormatStringToInteger(request)
@@ -39,30 +41,48 @@ class Format(IFormat):
 
     @overrides
     def string_to_real(self, string: str) -> float64:
-        # return self._instance.stringToDouble(string)
-        raise NotImplementedError
+        request = FormatFromStringRequest()
+        request.format = self._format
+        request.original = string
+        response: FormatToDoubleResponse = self._stub.FormatStringToDouble(request)
+        return response.result
 
     @overrides
     def integer_to_string(self, integer: int64) -> str:
-        # return self._instance.longToString(integer)
-        raise NotImplementedError
+        request = FormatFromIntegerRequest()
+        request.format = self._format
+        request.original = integer
+        response: FormatToStringResponse = self._stub.FormatIntegerToString(request)
+        return response.result
 
     @overrides
     def real_to_string(self, real: float64) -> str:
-        # return self._instance.doubleToString(real)
-        raise NotImplementedError
+        request = FormatFromDoubleRequest()
+        request.format = self._format
+        request.original = real
+        response: FormatToStringResponse = self._stub.FormatDoubleToString(request)
+        return response.result
 
     @overrides
     def string_to_string(self, string: str) -> str:
-        # return self._instance.stringToString(string)
-        raise NotImplementedError
+        request = FormatFromStringRequest()
+        request.format = self._format
+        request.original = string
+        response: FormatToStringResponse = self._stub.FormatStringToString(request)
+        return response.result
 
     @overrides
     def integer_to_editable_string(self, integer: int64) -> str:
-        # return self._instance.longToEditableString(integer)
-        raise NotImplementedError
+        request = FormatFromIntegerRequest()
+        request.format = self._format
+        request.original = integer
+        response: FormatToStringResponse = self._stub.FormatIntegerToEditString(request)
+        return response.result
 
     @overrides
     def real_to_editable_string(self, real: float64) -> str:
-        # return self._instance.doubleToEditableString(real)
-        raise NotImplementedError
+        request = FormatFromDoubleRequest()
+        request.format = self._format
+        request.original = real
+        response: FormatToStringResponse = self._stub.FormatDoubleToEditString(request)
+        return response.result
