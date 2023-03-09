@@ -17,10 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Update submodules
-        run: git submodule update
-        
+          with:
+            submodules: recursive
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -50,6 +48,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+          with:
+            submodules: recursive
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -98,6 +98,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+          with:
+            submodules: recursive
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -158,6 +160,8 @@ jobs:
           python-version: 3.9
 
       - uses: actions/checkout@v2
+          with:
+            submodules: recursive
 
       - uses: actions/download-artifact@v2
         with:
