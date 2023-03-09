@@ -5,9 +5,14 @@ from overrides import overrides
 
 from ansys.modelcenter.workflow.api.format import Format as IFormat
 
-from .proto.format_messages_pb2 import FormatFromStringRequest, FormatToIntegerResponse, \
-    FormatToDoubleResponse, FormatFromIntegerRequest, FormatToStringResponse, \
-    FormatFromDoubleRequest
+from .proto.format_messages_pb2 import (
+    FormatFromDoubleRequest,
+    FormatFromIntegerRequest,
+    FormatFromStringRequest,
+    FormatToDoubleResponse,
+    FormatToIntegerResponse,
+    FormatToStringResponse,
+)
 from .proto.grpc_modelcenter_format_pb2_grpc import ModelCenterFormatServiceStub
 
 
