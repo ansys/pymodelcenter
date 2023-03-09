@@ -16,17 +16,22 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: setup-git-credentials
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-
-      - name: setup-git-credentials
-        run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
 
       - name: Install style requirements
         run: |
@@ -45,17 +50,22 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: setup-git-credentials
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-
-      - name: setup-git-credentials
-        run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
 
       - name: Install dev dependencies
         run: pip install .[dev]
@@ -93,17 +103,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: setup-git-credentials
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+          
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-
-      - name: setup-git-credentials
-        run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
 
       - name: Install library, with docs extra
         run: |
@@ -154,6 +169,8 @@ jobs:
           python-version: 3.9
 
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - uses: actions/download-artifact@v2
         with:
