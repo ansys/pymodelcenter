@@ -26,6 +26,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -54,10 +56,12 @@ jobs:
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
-      
+
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -109,6 +113,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+          
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
