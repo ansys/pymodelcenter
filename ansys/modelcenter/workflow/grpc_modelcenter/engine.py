@@ -28,6 +28,8 @@ from .proto.engine_messages_pb2 import (
     GetUnitCategoriesResponse,
     GetUnitNamesRequest,
     GetUnitNamesResponse,
+    LoadWorkflowRequest,
+    LoadWorkflowResponse,
     NewWorkflowRequest,
     NewWorkflowResponse,
     SetPasswordRequest,
@@ -90,13 +92,22 @@ class Engine(IEngine):
 
     @overrides
     def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
-        raise NotImplementedError
+        self.load_workflow_ex(file_name)
 
     @overrides
     def load_workflow_ex(
         self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
     ) -> IWorkflow:
-        raise NotImplementedError
+        if on_connect_error == OnConnectionErrorMode.DIALOG:
+            raise ValueError("This client does not support UI mode.")
+        if self._workflow_id is not None:
+            msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
+            raise Exception(msg)
+        request = LoadWorkflowRequest()
+        request.path = file_name
+        response: LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
+        self._workflow_id = response.workflow_id
+        return Workflow(response.root_element, response.workflow_id)
 
     @overrides
     def get_formatter(self, fmt: str) -> IFormat:
