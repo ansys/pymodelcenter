@@ -3,11 +3,20 @@ from typing import AbstractSet, Iterable, Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import IControlStatement, IElement, WorkflowInstanceState
+import grpc
 from overrides import overrides
 
-from ..api import DataExplorer, DataMonitor, IComponent, VariableLink
-from ..api import Workflow as IWorkflow
+from ansys.modelcenter.workflow.api import DataExplorer, DataMonitor, IComponent, VariableLink
+from ansys.modelcenter.workflow.api import Workflow as IWorkflow
+
+from .assembly import Assembly
 from .proto.element_messages_pb2 import ElementId
+from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .proto.workflow_messages_pb2 import (
+    WorkflowGetDirectoryResponse,
+    WorkflowGetRootResponse,
+    WorkflowId,
+)
 
 
 class Workflow(IWorkflow):
@@ -27,6 +36,9 @@ class Workflow(IWorkflow):
         self._state = WorkflowInstanceState.UNKNOWN
         self._root = root_element
         self._id = workflow_id
+        # (MPP): Unsure if we should pass this in from Engine
+        self._channel = grpc.insecure_channel("localhost:50051")
+        self._stub = ModelCenterWorkflowServiceStub(self._channel)
 
     @overrides
     def get_state(self) -> WorkflowInstanceState:
@@ -55,11 +67,11 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_root(self) -> IControlStatement:
-        # assembly = self._instance.getModel()
-        # if assembly is None:
-        #     return None
-        # return Assembly(assembly)
-        raise NotImplementedError
+        request = WorkflowId()
+        request.id = self._id
+        response: WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
+        root: ElementId = response.id
+        return Assembly(root)
 
     @overrides
     def get_element_by_id(self, element_id: str) -> IElement:
@@ -68,8 +80,11 @@ class Workflow(IWorkflow):
     @property  # type: ignore
     @overrides
     def workflow_directory(self) -> str:
-        # return self._instance.modelDirectory
-        raise NotImplementedError
+        # TODO: readonly?
+        request = WorkflowId()
+        request.id = self._id
+        response: WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
+        return response.workflow_dir
 
     @property  # type: ignore
     @overrides
@@ -205,8 +220,7 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_workflow_uuid(self) -> str:
-        # return self._instance.getModelUUID()
-        raise NotImplementedError
+        return self._id
 
     @overrides
     def halt(self) -> None:
