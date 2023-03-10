@@ -92,7 +92,7 @@ class Engine(IEngine):
 
     @overrides
     def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
-        self.load_workflow_ex(file_name)
+        return self.load_workflow_ex(file_name)
 
     @overrides
     def load_workflow_ex(
