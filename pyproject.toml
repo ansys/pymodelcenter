@@ -32,7 +32,7 @@ numpy = "^1.22.3"
 overrides = "^6.1"
 pythonnet = "^2.5.2"
 
-# This is the closest verison to what we're using in C++.
+# This is the closest version to what we're using in C++.
 # It's probably not strictly necessary to keep these exactly in sync,
 # but it might be helpful.
 grpcio = "1.47.0"

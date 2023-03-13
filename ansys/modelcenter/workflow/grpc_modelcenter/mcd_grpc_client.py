@@ -1,15 +1,17 @@
-"""
-Module containing methods to query the MCD GRPC server.
-"""
+"""Module containing methods to query the MCD GRPC server."""
 
+
+from enum import Enum
 
 import grpc
-from enum import Enum
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.modelcenter_pb2_grpc as mcd_grpc
+
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.modelcenter_pb2 as mcd
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.modelcenter_pb2_grpc as mcd_grpc
 
 
 class WorkflowType(Enum):
+    """Type of workflow."""
+
     DATA = 0
     PROCESS = 1
 

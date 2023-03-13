@@ -51,12 +51,6 @@ class Engine(IFileBasedWorkflowEngine):
         self._instance = MockModelCenter()
 
     @property
-    def is_interactive(self) -> bool:
-        """Indicates if ModelCenter is running in interactive/GUI mode."""
-        # IsInteractive is an int property on the interface for COM reasons.
-        return bool(self._instance.IsInteractive)
-
-    @property
     def process_id(self) -> int:
         """
         The process identifier of the ModelCenter process.
@@ -256,20 +250,6 @@ class Engine(IFileBasedWorkflowEngine):
         True if in Run-Only mode; otherwise, False.
         """
         return self._instance.getRunOnlyMode()
-
-    def set_run_only_mode(self, should_be_in_run_only: bool) -> None:
-        """
-        Set whether the engine is in Run-Only mode.
-
-        Note that this method call only be called immediately after
-        creation of the Engine, and will throw otherwise.
-
-        Parameters
-        ----------
-        should_be_in_run_only: bool
-            True if Run-Only mode should be enabled; otherwise, False.
-        """
-        self._instance.setRunOnlyMode(should_be_in_run_only)
 
     def save_trade_study(self, uri: str, data_explorer: DataExplorer) -> None:
         """
