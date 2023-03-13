@@ -38,9 +38,7 @@ class Format(IFormat):
 
     @overrides
     def string_to_integer(self, string: str) -> int64:
-        request = FormatFromStringRequest()
-        request.format = self._format
-        request.original = string
+        request = FormatFromStringRequest(format=self._format, original=string)
         response: FormatToIntegerResponse = self._stub.FormatStringToInteger(request)
         return response.result
 
