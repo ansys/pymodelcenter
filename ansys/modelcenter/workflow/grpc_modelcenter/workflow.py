@@ -17,6 +17,10 @@ from .proto.workflow_messages_pb2 import (
     WorkflowGetRootResponse,
     WorkflowId,
 )
+from .proto.variable_value_messages_pb2 import (
+    VariableState,
+    VariableValue
+)
 
 
 class Workflow(IWorkflow):
@@ -102,10 +106,12 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def get_value(self, var_name: str) -> object:
-        # value = self._instance.getValue(var_name)
-        # return Workflow.value_to_variable_value(value)
-        raise NotImplementedError
+    def get_value(self, var_name: str) -> VariableValue:
+        request = ElementId()
+        request.id_string = var_name
+        response: VariableState = self._stub.VariableGetState()
+
+        return response.value
 
     @overrides
     def create_component(
