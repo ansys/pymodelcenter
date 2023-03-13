@@ -48,5 +48,6 @@ test-output.xml
 
 /phoenix-mocks/
 
-## gRPC generated folders
-ansys/modelcenter/workflow/grpc_modelcenter/proto
+## gRPC generated .py files
+ansys/modelcenter/workflow/grpc_modelcenter/proto/*.py
+!__init__.py
