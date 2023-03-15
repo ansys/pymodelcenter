@@ -10,7 +10,7 @@ repos:
     ]
 
 - repo: https://github.com/pycqa/isort
-  rev: 5.10.1
+  rev: 5.12.0
   hooks:
   - id: isort
     exclude: ^src/ansys/templates/pypkg/
@@ -21,7 +21,7 @@ repos:
     "--section-default", "THIRDPARTY", "hooks", "tests"
     ]
 
-- repo: https://gitlab.com/PyCQA/flake8
+- repo: https://github.com/PyCQA/flake8
   rev: 4.0.1
   hooks:
   - id: flake8
