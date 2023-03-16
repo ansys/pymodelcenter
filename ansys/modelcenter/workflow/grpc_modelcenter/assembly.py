@@ -27,7 +27,8 @@ class Assembly(api.Assembly):
         self._element_id = element_id
         self._client = self._create_client(channel)
 
-    @property
+    @property  # type: ignore
+    @overrides
     def element_id(self) -> str:
         """
         TODO.
@@ -37,7 +38,7 @@ class Assembly(api.Assembly):
         TODO.
         """
         # TODO: readonly?
-        return self._element_id
+        return self._element_id.id_string
 
     @property  # type: ignore
     @overrides
