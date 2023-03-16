@@ -403,47 +403,6 @@ class Workflow(IWorkflowInstance):
         """
         return self._instance.createAssembly(name, parent, assembly_type)
 
-    def create_assembly_variable(
-        self, name: str, type_: str, parent: str
-    ) -> acvi.CommonVariableMetadata:
-        """
-        Create a new variable in an Assembly.
-
-        Possible variable types are:
-          - double
-          - int
-          - boolean
-          - string
-          - file
-          - double[]
-          - int[]
-          - boolean[]
-          - string[]
-          - quadfacet
-          - surfaceofrevolution
-          - nurbs
-          - bspline
-          - ruled
-          - skinned
-          - vrml
-          - node
-
-        Parameters
-        ----------
-        name : str
-            Desired name of the new variable.
-        type_ : str
-            Type of the new variable.
-        parent : str
-            Full path of the parent Assembly.
-
-        Returns
-        -------
-        CommonVariableMetadata :
-            Created variable metadata.
-        """
-        return self._convert_variable(self._instance.createAssemblyVariable(name, type_, parent))
-
     @staticmethod
     def _convert_variable(variable: Any) -> acvi.CommonVariableMetadata:
         """

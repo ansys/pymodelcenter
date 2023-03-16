@@ -202,13 +202,6 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def create_assembly_variable(
-        self, name: str, type_: str, parent: str
-    ) -> acvi.CommonVariableMetadata:
-        # return self._convert_variable(self._instance.createAssemblyVariable(name, type_, parent))
-        raise NotImplementedError
-
-    @overrides
     def auto_link(self, src_comp: str, dest_comp: str) -> None:
         # self._instance.autoLink(src_comp, dest_comp)
         raise NotImplementedError
