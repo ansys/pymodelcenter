@@ -1,5 +1,7 @@
 """Implementation of Assembly."""
 
+from typing import Optional
+
 from grpc import Channel
 from overrides import overrides
 
@@ -25,6 +27,7 @@ class Assembly(api.Assembly):
             The id of the .
         """
         self._element_id = element_id
+        self._channel = channel
         self._client = self._create_client(channel)
 
     @property  # type: ignore
@@ -50,3 +53,18 @@ class Assembly(api.Assembly):
     def get_full_name(self) -> str:
         result = self._client.ElementGetFullName(self._element_id)
         return result.name
+
+    @property  # type: ignore
+    @overrides
+    def control_type(self) -> str:
+        result = self._client.RegistryGetControlType(self._element_id)
+        return result.type
+
+    @property  # type: ignore
+    @overrides
+    def parent_assembly(self) -> Optional[api.Assembly]:
+        result = self._client.ElementGetParentElement(self._element_id)
+        if result.id_string is None or result.id_string == "":
+            return None
+        else:
+            return Assembly(result, self._channel)
