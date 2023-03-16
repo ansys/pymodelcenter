@@ -71,7 +71,7 @@ class Workflow(IWorkflow):
         request.id = self._id
         response: WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
         root: ElementId = response.id
-        return Assembly(root)
+        return Assembly(root, self._channel)
 
     @overrides
     def get_element_by_id(self, element_id: str) -> IElement:
