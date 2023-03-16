@@ -2,31 +2,27 @@
 from typing import AbstractSet, Iterable, Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
-from ansys.engineeringworkflow.api import IControlStatement, IElement, WorkflowInstanceState
+import ansys.engineeringworkflow.api as engapi
+
+import ansys.modelcenter.workflow.api as wfapi
+
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc \
+    as grpc_mcd_workflow
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 \
+    as var_val_msg
+
+from .assembly import Assembly
+
 import grpc
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import DataExplorer, DataMonitor, IComponent, VariableLink
-from ansys.modelcenter.workflow.api import Workflow as IWorkflow
 
-from .assembly import Assembly
-from .proto.element_messages_pb2 import ElementId
-from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
-from .proto.workflow_messages_pb2 import (
-    WorkflowGetDirectoryResponse,
-    WorkflowGetRootResponse,
-    WorkflowId,
-)
-from .proto.variable_value_messages_pb2 import (
-    VariableState,
-    VariableValue
-)
-
-
-class Workflow(IWorkflow):
+class Workflow(wfapi.Workflow):
     """Represents a Workflow or Model in ModelCenter."""
 
-    def __init__(self, root_element: ElementId, workflow_id: str):
+    def __init__(self, root_element: element_msg.ElementId, workflow_id: str):
         """
         Initialize a new Workflow instance.
 
@@ -37,15 +33,15 @@ class Workflow(IWorkflow):
         workflow_id: str
             The workflow's ID.
         """
-        self._state = WorkflowInstanceState.UNKNOWN
+        self._state = engapi.WorkflowInstanceState.UNKNOWN
         self._root = root_element
         self._id = workflow_id
         # (MPP): Unsure if we should pass this in from Engine
         self._channel = grpc.insecure_channel("localhost:50051")
-        self._stub = ModelCenterWorkflowServiceStub(self._channel)
+        self._stub = grpc_mcd_workflow.ModelCenterWorkflowServiceStub(self._channel)
 
     @overrides
-    def get_state(self) -> WorkflowInstanceState:
+    def get_state(self) -> engapi.WorkflowInstanceState:
         # if self._instance.getHaltStatus():
         #     return WorkflowInstanceState.PAUSED
         # return self._state
@@ -70,24 +66,24 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def get_root(self) -> IControlStatement:
-        request = WorkflowId()
+    def get_root(self) -> engapi.IControlStatement:
+        request = workflow_msg.WorkflowId()
         request.id = self._id
-        response: WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
-        root: ElementId = response.id
+        response: workflow_msg.WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
+        root: element_msg.ElementId = response.id
         return Assembly(root)
 
     @overrides
-    def get_element_by_id(self, element_id: str) -> IElement:
+    def get_element_by_id(self, element_id: str) -> engapi.IElement:
         raise NotImplementedError
 
     @property  # type: ignore
     @overrides
     def workflow_directory(self) -> str:
         # TODO: readonly?
-        request = WorkflowId()
+        request = workflow_msg.WorkflowId()
         request.id = self._id
-        response: WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
+        response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
         return response.workflow_dir
 
     @property  # type: ignore
@@ -97,19 +93,10 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def set_value(self, var_name: str, value: str) -> None:
-        # if isinstance(value, acvi.IVariableValue):
-        #     api_value = value.to_api_string()
-        # else:
-        #     api_value = str(value)
-        # self._instance.setValue(var_name, api_value)
-        raise NotImplementedError
-
-    @overrides
-    def get_value(self, var_name: str) -> VariableValue:
-        request = ElementId()
+    def get_value(self, var_name: str) -> var_val_msg.VariableValue:
+        request = element_msg.ElementId()
         request.id_string = var_name
-        response: VariableState = self._stub.VariableGetState()
+        response: var_val_msg.VariableState = self._stub.VariableGetState()
 
         return response.value
 
@@ -151,7 +138,7 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def get_component(self, name: str) -> IComponent:  # IComponent, IIfComponent, IScriptComponent
+    def get_component(self, name: str) -> wfapi.IComponent:  # IComponent, IIfComponent, IScriptComponent
         # mc_i_component: mcapiIComponent = self._instance.getComponent(name)
         # if mc_i_component is None:
         #     msg: str = i18n("Exceptions", "ERROR_COMPONENT_NOT_FOUND")
@@ -220,7 +207,7 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
+    def get_links(self, reserved: object = None) -> Iterable[wfapi.VariableLink]:
         # return dotnet_links_to_iterable(self._instance.getLinks(reserved))
         raise NotImplementedError
 
@@ -239,7 +226,7 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def get_data_monitor(self, component: str, index: int) -> DataMonitor:
+    def get_data_monitor(self, component: str, index: int) -> wfapi.DataMonitor:
         # dm_object: phxmock.MockDataMonitor = self._instance.getDataMonitor(component, index)
         # return DataMonitor(dm_object)
         raise NotImplementedError
@@ -257,7 +244,7 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def get_data_explorer(self, index: int) -> Optional[DataExplorer]:
+    def get_data_explorer(self, index: int) -> Optional[wfapi.DataExplorer]:
         # de_object: object = self._instance.getDataExplorer(index)
         # if de_object is None:
         #     return None
@@ -396,7 +383,7 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def create_data_explorer(self, trade_study_type: str, setup: str) -> DataExplorer:
+    def create_data_explorer(self, trade_study_type: str, setup: str) -> wfapi.DataExplorer:
         # de_object: object = self._instance.createDataExplorer(trade_study_type, setup)
         # return DataExplorer(de_object)
         raise NotImplementedError
@@ -410,3 +397,90 @@ class Workflow(IWorkflow):
     def set_macro_timeout(self, macro_name: str, timeout: float) -> None:
         # self._instance.setMacroTimeout(macro_name, timeout)
         raise NotImplementedError
+
+    @overrides
+    def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
+        was_changed: bool = False
+        try:
+            var_type = value.variable_type
+            if var_type == acvi.VariableType.REAL:
+                was_changed = self._set_real_variable(var_name, acvi.RealValue(value))
+            elif var_type == acvi.VariableType.INTEGER:
+                was_changed = self._set_integer_variable(var_name, acvi.IntegerValue(value))
+            elif var_type == acvi.VariableType.BOOLEAN:
+                was_changed = self._set_boolean_variable(var_name, acvi.BooleanValue(value))
+            elif var_type == acvi.VariableType.STRING:
+                was_changed = self._set_string_variable(var_name, acvi.StringValue(value))
+
+            elif var_type == acvi.VariableType.REAL_ARRAY:
+                was_changed = self._set_real_array_variable(var_name, value)  # type: ignore
+            elif var_type == acvi.VariableType.INTEGER_ARRAY:
+                was_changed = self._set_integer_array_variable(var_name, value)  # type: ignore
+            elif var_type == acvi.VariableType.BOOLEAN_ARRAY:
+                was_changed = self._set_boolean_array_variable(var_name, value)  # type: ignore
+            elif var_type == acvi.VariableType.STRING_ARRAY:
+                was_changed = self._set_string_array_variable(var_name, value)  # type: ignore
+
+            else:
+                raise TypeError(f"Incompatible type {var_type}")
+
+        except grpc.RpcError as e:
+            # How should we handle errors here?
+            raise e
+
+    def _set_real_variable(self, var_name: str, new_value: acvi.RealValue) -> bool:
+        target = element_msg.ElementId(var_name)
+        request = var_val_msg.SetDoubleValueRequest(target, float(new_value))
+        response = self._stub.DoubleVariableSetValue(request)
+        return response.was_changed
+
+    def _set_integer_variable(self, var_name: str, new_value: acvi.IntegerValue) -> bool:
+        target = element_msg.ElementId(var_name)
+        request = var_val_msg.SetIntegerValueRequest(target, int(new_value))
+        response = self._stub.IntegerVariableSetValue(request)
+        return response.was_changed
+
+    def _set_boolean_variable(self, var_name: str, new_value: acvi.BooleanValue) -> bool:
+        target = element_msg.ElementId(var_name)
+        request = var_val_msg.SetBooleanValueRequest(target, bool(new_value))
+        response = self._stub.BooleanVariableSetValue(request)
+        return response.was_changed
+
+    def _set_string_variable(self, var_name: str, new_value: acvi.IntegerValue) -> bool:
+        target = element_msg.ElementId(var_name)
+        request = var_val_msg.SetStringValueRequest(target, str(new_value))
+        response = self._stub.StringVariableSetValue(request)
+        return response.was_changed
+
+    def _set_real_array_variable(self, var_name: str, new_value: acvi.RealArrayValue) -> bool:
+        target = element_msg.ElementId(var_name)
+        set_value = var_val_msg.DoubleArrayValue(new_value, self.__dims(new_value))
+        request = var_val_msg.SetDoubleArrayValueRequest(target, set_value)
+        response = self._stub.DoubleArraySetValue(request)
+        return response.was_changed
+
+    def _set_integer_array_variable(self, var_name: str, new_value: acvi.IntegerArrayValue) -> bool:
+        target = element_msg.ElementId(var_name)
+        set_value = var_val_msg.IntegerArrayValue(new_value, self.__dims(new_value))
+        request = var_val_msg.SetIntegerArrayValueRequest(target, set_value)
+        response = self._stub.IntegerArraySetValue(request)
+        return response.was_changed
+
+    def _set_boolean_array_variable(self, var_name: str, new_value: acvi.BooleanArrayValue) -> bool:
+        target = element_msg.ElementId(var_name)
+        set_value = var_val_msg.BooleanArrayValue(new_value, self.__dims(new_value))
+        request = var_val_msg.SetBooleanArrayValueRequest(target, set_value)
+        response = self._stub.BooleanVariableSetValue(request)
+        return response.was_changed
+
+    def _set_string_array_variable(self, var_name: str, new_value: acvi.StringArrayValue) -> bool:
+        target = element_msg.ElementId(var_name)
+        set_value = var_val_msg.StringArrayValue(new_value, self.__dims(new_value))
+        request = var_val_msg.SetStringArrayValueRequest(target, set_value)
+        response = self._stub.StringVariableSetValue(request)
+        return response.was_changed
+
+    @staticmethod
+    def __dims(array: acvi.CommonArrayValue) -> var_val_msg.ArrayDimensions:
+        """Helper method to get array dimensions (protobuf)"""
+        return var_val_msg.ArrayDimensions(array.get_lengths())
