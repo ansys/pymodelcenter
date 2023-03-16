@@ -22,9 +22,22 @@ class Format(IFormat):
     def __init__(self, fmt: str):
         """Initialize."""
         self._format: str = fmt
+        if self._format == "":
+            self._format = "General"
         # (MPP): Unsure if we should pass this in from Engine
         self._channel = grpc.insecure_channel("localhost:50051")
-        self._stub = ModelCenterFormatServiceStub(self._channel)
+        self._stub = self._create_client(self._channel)
+
+    @staticmethod
+    def _create_client(grpc_channel) -> ModelCenterFormatServiceStub:
+        """
+        Create a client from a grpc channel.
+
+        If this test approach is to be used, each implementation class will need a method
+        like this that can be patched out. As a suggested convention, it should be an instance
+        method that takes a channel and returns a client.
+        """
+        return ModelCenterFormatServiceStub(grpc_channel)
 
     @property  # type: ignore
     @overrides

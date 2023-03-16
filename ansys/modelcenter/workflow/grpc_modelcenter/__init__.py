@@ -7,4 +7,5 @@ and attempt to communicate with it via gRPC.
 
 from .engine import Engine
 from .format import Format
+from .mcd_process import MCDProcess
 from .workflow import Workflow
