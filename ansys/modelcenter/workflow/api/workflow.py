@@ -1,5 +1,5 @@
 """Definition of workflow."""
-from typing import AbstractSet, Any, Iterable, Mapping, Optional, Tuple
+from typing import AbstractSet, Any, Iterable, Mapping, Optional
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import (
@@ -653,16 +653,6 @@ class Workflow(IWorkflowInstance):
 
     def set_xml_extension(self, xml: str) -> None:
         """Adds the XML as an XML extension node to the model file."""
-        pass
-
-    def set_assembly_style(
-        self, assembly_name: str, style: object, width: object = None, height: object = None
-    ) -> None:
-        """Sets the assembly style of the component (collapse, expanded, N^2, etc)."""
-        pass
-
-    def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
-        """Gets the style of the assembly (Collapsed, expanded, N^2, etc)."""
         pass
 
     def get_assembly(self, name: str = None) -> object:  # IAssembly

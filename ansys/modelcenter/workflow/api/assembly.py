@@ -1,4 +1,5 @@
 """Contains definitions for assemblies."""
+from enum import IntEnum
 from typing import Any, Collection, Optional, Sequence
 
 from ansys.common.variableinterop import IVariableValue
@@ -14,6 +15,46 @@ from ModelCenter import IAssembly as mcapiIAssembly  # type: ignore
 
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.igroup as igroup
+
+
+class AssemblyLayout(IntEnum):
+    """Represents the options for an assembly layout."""
+
+    COLLAPSED = 0
+    EXPANDED = 1
+    CLASSIC = 100
+    N_SQUARED = 101
+    AUTO_N_SQUARED = 102
+
+
+class AssemblyStyle:
+    """Represents an assembly style."""
+
+    def __init__(self, layout_style: AssemblyLayout, width: Optional[int], height: Optional[int]):
+        """
+        Constructs a new instance.
+
+        @param layout_style: the layout style
+        @param width: the width of the assembly when expanded
+        @param height: the height of the assembly when expanded
+        """
+        self._layout_style = layout_style
+        self._width = width
+        self._height = height
+
+    @property
+    def layout_style(self) -> AssemblyLayout:
+        """Get the layout style."""
+        return self._layout_style
+
+    @property
+    def width(self) -> Optional[int]:
+        """Get the width when expanded."""
+        return self._width
+
+    def height(self) -> Optional[int]:
+        """Get the height when expanded."""
+        return self._height
 
 
 class Assembly(CustomMetadataOwner, IControlStatement):
@@ -282,3 +323,24 @@ class Assembly(CustomMetadataOwner, IControlStatement):
             Name of the variable to be deleted.
         """
         self._wrapped.deleteVariable(name)
+
+    def set_style(self, style: AssemblyStyle) -> None:
+        """
+        Set the style for the assembly.
+
+        Parameters
+        ----------
+        style:
+            The new assembly style.
+        """
+        raise NotImplementedError
+
+    def get_style(self) -> AssemblyStyle:
+        """
+        Get the style of the assembly.
+
+        Returns
+        ----------
+        The current style of the assembly.
+        """
+        raise NotImplementedError

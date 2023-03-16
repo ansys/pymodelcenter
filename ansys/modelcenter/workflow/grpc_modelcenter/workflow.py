@@ -1,5 +1,5 @@
 """Implementation of Workflow."""
-from typing import AbstractSet, Iterable, Mapping, Optional, Tuple
+from typing import AbstractSet, Iterable, Mapping, Optional
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import IControlStatement, IElement, WorkflowInstanceState
@@ -265,16 +265,6 @@ class Workflow(IWorkflow):
 
     @overrides
     def set_xml_extension(self, xml: str) -> None:
-        raise NotImplementedError
-
-    @overrides
-    def set_assembly_style(
-        self, assembly_name: str, style: object, width: object = None, height: object = None
-    ) -> None:
-        raise NotImplementedError
-
-    @overrides
-    def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         raise NotImplementedError
 
     @overrides
