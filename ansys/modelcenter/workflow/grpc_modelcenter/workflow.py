@@ -3,20 +3,16 @@ from typing import AbstractSet, Iterable, Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
-
-import ansys.modelcenter.workflow.api as wfapi
-
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc \
-    as grpc_mcd_workflow
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 \
-    as var_val_msg
-
-from .assembly import Assembly
-
 import grpc
 from overrides import overrides
+
+import ansys.modelcenter.workflow.api as wfapi
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
+
+from .assembly import Assembly
 
 
 class Workflow(wfapi.Workflow):
@@ -83,7 +79,9 @@ class Workflow(wfapi.Workflow):
         # TODO: readonly?
         request = workflow_msg.WorkflowId()
         request.id = self._id
-        response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
+        response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(
+            request
+        )
         return response.workflow_dir
 
     @property  # type: ignore
@@ -161,7 +159,9 @@ class Workflow(wfapi.Workflow):
         raise NotImplementedError
 
     @overrides
-    def get_component(self, name: str) -> wfapi.IComponent:  # IComponent, IIfComponent, IScriptComponent
+    def get_component(
+        self, name: str
+    ) -> wfapi.IComponent:  # IComponent, IIfComponent, IScriptComponent
         # mc_i_component: mcapiIComponent = self._instance.getComponent(name)
         # if mc_i_component is None:
         #     msg: str = i18n("Exceptions", "ERROR_COMPONENT_NOT_FOUND")
@@ -503,5 +503,5 @@ class Workflow(wfapi.Workflow):
 
     @staticmethod
     def __dims(array: acvi.CommonArrayValue) -> var_val_msg.ArrayDimensions:
-        """Helper method to get array dimensions (protobuf)"""
+        """Helper method to get array dimensions (protobuf)."""
         return var_val_msg.ArrayDimensions(array.get_lengths())
