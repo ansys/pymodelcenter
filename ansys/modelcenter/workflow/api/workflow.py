@@ -156,7 +156,7 @@ class Workflow(IWorkflowInstance):
         """Full path of the current Workflow."""
         return self._instance.modelFileName
 
-    def set_value(self, var_name: str, value: str) -> None:
+    def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
         """
         Set the value of a variable.
 

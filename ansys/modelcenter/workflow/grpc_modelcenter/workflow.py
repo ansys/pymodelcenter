@@ -93,12 +93,35 @@ class Workflow(wfapi.Workflow):
         raise NotImplementedError
 
     @overrides
-    def get_value(self, var_name: str) -> var_val_msg.VariableValue:
-        request = element_msg.ElementId()
-        request.id_string = var_name
-        response: var_val_msg.VariableState = self._stub.VariableGetState()
+    def get_value(self, var_name: str) -> acvi.IVariableValue:
+        request = element_msg.ElementId(var_name)
+        response: var_val_msg.VariableState
+        try:
+            response = self._stub.VariableGetState(request)
+        except grpc.RpcError as e:
+            # TODO: how to handle?
+            raise e
 
-        return response.value
+        value = getattr(response.value, response.value.WhichOneof("value"))
+        if isinstance(value, float):
+            return acvi.RealValue(value)
+        elif isinstance(value, int):
+            return acvi.IntegerValue(value)
+        elif isinstance(value, bool):
+            return acvi.BooleanValue(value)
+        elif isinstance(value, str):
+            return acvi.StringValue(value)
+        elif isinstance(value, var_val_msg.DoubleArrayValue):
+            return acvi.RealArrayValue(value.values)
+        elif isinstance(value, var_val_msg.IntegerArrayValue):
+            return acvi.IntegerArrayValue(value.values)
+        elif isinstance(value, var_val_msg.BooleanArrayValue):
+            return acvi.BooleanArrayValue(value.values)
+        elif isinstance(value, var_val_msg.StringArrayValue):
+            return acvi.StringArrayValue(value.values)
+        else:
+            # unsupported type (should be impossible)
+            raise TypeError(f"Unsupported type was returned: {type(value)}")
 
     @overrides
     def create_component(
@@ -404,14 +427,13 @@ class Workflow(wfapi.Workflow):
         try:
             var_type = value.variable_type
             if var_type == acvi.VariableType.REAL:
-                was_changed = self._set_real_variable(var_name, acvi.RealValue(value))
+                was_changed = self._set_real_variable(var_name, acvi.to_real_value(value))
             elif var_type == acvi.VariableType.INTEGER:
-                was_changed = self._set_integer_variable(var_name, acvi.IntegerValue(value))
+                was_changed = self._set_integer_variable(var_name, acvi.to_integer_value(value))
             elif var_type == acvi.VariableType.BOOLEAN:
-                was_changed = self._set_boolean_variable(var_name, acvi.BooleanValue(value))
+                was_changed = self._set_boolean_variable(var_name, acvi.to_boolean_value(value))
             elif var_type == acvi.VariableType.STRING:
-                was_changed = self._set_string_variable(var_name, acvi.StringValue(value))
-
+                was_changed = self._set_string_variable(var_name, acvi.to_string_value(value))
             elif var_type == acvi.VariableType.REAL_ARRAY:
                 was_changed = self._set_real_array_variable(var_name, value)  # type: ignore
             elif var_type == acvi.VariableType.INTEGER_ARRAY:
@@ -420,7 +442,6 @@ class Workflow(wfapi.Workflow):
                 was_changed = self._set_boolean_array_variable(var_name, value)  # type: ignore
             elif var_type == acvi.VariableType.STRING_ARRAY:
                 was_changed = self._set_string_array_variable(var_name, value)  # type: ignore
-
             else:
                 raise TypeError(f"Incompatible type {var_type}")
 
