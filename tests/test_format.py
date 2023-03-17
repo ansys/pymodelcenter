@@ -103,7 +103,11 @@ def setup_function(monkeypatch):
     def mock_start(self, run_only: bool = False):
         pass
 
+    def mock_init(self):
+        pass
+
     monkeypatch.setattr(mcapi.MCDProcess, "start", mock_start)
+    monkeypatch.setattr(mcapi.MCDProcess, "__init__", mock_init)
     global mock_client
     mock_client = MockEngineClientForFormatTest()
     monkeypatch_client_creation(monkeypatch, mcapi.Format, mock_client)
