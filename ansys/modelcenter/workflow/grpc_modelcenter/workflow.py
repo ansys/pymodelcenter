@@ -1,9 +1,10 @@
 """Implementation of Workflow."""
-from typing import AbstractSet, Iterable, Mapping, Optional, Tuple
+from typing import AbstractSet, Iterable, Mapping, Optional, Tuple, Type
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
 import grpc
+import numpy as np
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
@@ -102,6 +103,9 @@ class Workflow(wfapi.Workflow):
             # TODO: how to handle?
             raise e
 
+        def convert(val: Iterable, val_type: Type) -> acvi.IVariableValue:
+            return val_type(np.array(val).flatten())
+
         value = getattr(response.value, response.value.WhichOneof("value"))
         if isinstance(value, float):
             return acvi.RealValue(value)
@@ -112,13 +116,13 @@ class Workflow(wfapi.Workflow):
         elif isinstance(value, str):
             return acvi.StringValue(value)
         elif isinstance(value, var_val_msg.DoubleArrayValue):
-            return acvi.RealArrayValue(value.values)
+            return convert(value.values, acvi.RealArrayValue)
         elif isinstance(value, var_val_msg.IntegerArrayValue):
-            return acvi.IntegerArrayValue(value.values)
+            return convert(value.values, acvi.IntegerArrayValue)
         elif isinstance(value, var_val_msg.BooleanArrayValue):
-            return acvi.BooleanArrayValue(value.values)
+            return convert(value.values, acvi.BooleanArrayValue)
         elif isinstance(value, var_val_msg.StringArrayValue):
-            return acvi.StringArrayValue(value.values)
+            return convert(value.values, acvi.StringArrayValue)
         else:
             # unsupported type (should be impossible)
             raise TypeError(f"Unsupported type was returned: {type(value)}")
