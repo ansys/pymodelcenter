@@ -35,8 +35,8 @@ pythonnet = "^2.5.2"
 # This is the closest version to what we're using in C++.
 # It's probably not strictly necessary to keep these exactly in sync,
 # but it might be helpful.
-grpcio = "1.47.0"
-grpcio-tools = "1.47.0"
+grpcio = "1.51.3"
+grpcio-tools = "1.51.3"
 
 Sphinx =  {version="^4.4", optional=true}
 numpydoc =  {version="^1.2", optional=true}
