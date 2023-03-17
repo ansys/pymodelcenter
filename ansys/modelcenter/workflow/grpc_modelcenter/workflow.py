@@ -12,6 +12,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workfl
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
+from ._visitors import VariableValueVisitor
 from .assembly import Assembly
 
 
@@ -92,7 +93,8 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def get_value(self, var_name: str) -> acvi.IVariableValue:
-        request = element_msg.ElementId(var_name)
+        request = element_msg.ElementId()
+        request.id_string = var_name
         response: var_val_msg.VariableState
         try:
             response = self._stub.VariableGetState(request)
@@ -423,85 +425,8 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
-        was_changed: bool = False
         try:
-            var_type = value.variable_type
-            if var_type == acvi.VariableType.REAL:
-                was_changed = self._set_real_variable(var_name, acvi.to_real_value(value))
-            elif var_type == acvi.VariableType.INTEGER:
-                was_changed = self._set_integer_variable(var_name, acvi.to_integer_value(value))
-            elif var_type == acvi.VariableType.BOOLEAN:
-                was_changed = self._set_boolean_variable(var_name, acvi.to_boolean_value(value))
-            elif var_type == acvi.VariableType.STRING:
-                was_changed = self._set_string_variable(var_name, acvi.to_string_value(value))
-            elif var_type == acvi.VariableType.REAL_ARRAY:
-                was_changed = self._set_real_array_variable(var_name, value)  # type: ignore
-            elif var_type == acvi.VariableType.INTEGER_ARRAY:
-                was_changed = self._set_integer_array_variable(var_name, value)  # type: ignore
-            elif var_type == acvi.VariableType.BOOLEAN_ARRAY:
-                was_changed = self._set_boolean_array_variable(var_name, value)  # type: ignore
-            elif var_type == acvi.VariableType.STRING_ARRAY:
-                was_changed = self._set_string_array_variable(var_name, value)  # type: ignore
-            else:
-                raise TypeError(f"Incompatible type {var_type}")
-
+            value.accept(VariableValueVisitor(var_name, self._stub))
         except grpc.RpcError as e:
             # How should we handle errors here?
             raise e
-
-    def _set_real_variable(self, var_name: str, new_value: acvi.RealValue) -> bool:
-        target = element_msg.ElementId(var_name)
-        request = var_val_msg.SetDoubleValueRequest(target, float(new_value))
-        response = self._stub.DoubleVariableSetValue(request)
-        return response.was_changed
-
-    def _set_integer_variable(self, var_name: str, new_value: acvi.IntegerValue) -> bool:
-        target = element_msg.ElementId(var_name)
-        request = var_val_msg.SetIntegerValueRequest(target, int(new_value))
-        response = self._stub.IntegerVariableSetValue(request)
-        return response.was_changed
-
-    def _set_boolean_variable(self, var_name: str, new_value: acvi.BooleanValue) -> bool:
-        target = element_msg.ElementId(var_name)
-        request = var_val_msg.SetBooleanValueRequest(target, bool(new_value))
-        response = self._stub.BooleanVariableSetValue(request)
-        return response.was_changed
-
-    def _set_string_variable(self, var_name: str, new_value: acvi.IntegerValue) -> bool:
-        target = element_msg.ElementId(var_name)
-        request = var_val_msg.SetStringValueRequest(target, str(new_value))
-        response = self._stub.StringVariableSetValue(request)
-        return response.was_changed
-
-    def _set_real_array_variable(self, var_name: str, new_value: acvi.RealArrayValue) -> bool:
-        target = element_msg.ElementId(var_name)
-        set_value = var_val_msg.DoubleArrayValue(new_value, self.__dims(new_value))
-        request = var_val_msg.SetDoubleArrayValueRequest(target, set_value)
-        response = self._stub.DoubleArraySetValue(request)
-        return response.was_changed
-
-    def _set_integer_array_variable(self, var_name: str, new_value: acvi.IntegerArrayValue) -> bool:
-        target = element_msg.ElementId(var_name)
-        set_value = var_val_msg.IntegerArrayValue(new_value, self.__dims(new_value))
-        request = var_val_msg.SetIntegerArrayValueRequest(target, set_value)
-        response = self._stub.IntegerArraySetValue(request)
-        return response.was_changed
-
-    def _set_boolean_array_variable(self, var_name: str, new_value: acvi.BooleanArrayValue) -> bool:
-        target = element_msg.ElementId(var_name)
-        set_value = var_val_msg.BooleanArrayValue(new_value, self.__dims(new_value))
-        request = var_val_msg.SetBooleanArrayValueRequest(target, set_value)
-        response = self._stub.BooleanVariableSetValue(request)
-        return response.was_changed
-
-    def _set_string_array_variable(self, var_name: str, new_value: acvi.StringArrayValue) -> bool:
-        target = element_msg.ElementId(var_name)
-        set_value = var_val_msg.StringArrayValue(new_value, self.__dims(new_value))
-        request = var_val_msg.SetStringArrayValueRequest(target, set_value)
-        response = self._stub.StringVariableSetValue(request)
-        return response.was_changed
-
-    @staticmethod
-    def __dims(array: acvi.CommonArrayValue) -> var_val_msg.ArrayDimensions:
-        """Helper method to get array dimensions (protobuf)."""
-        return var_val_msg.ArrayDimensions(array.get_lengths())
