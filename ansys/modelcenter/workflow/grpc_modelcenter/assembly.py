@@ -9,6 +9,7 @@ import ansys.modelcenter.workflow.api as api
 
 from .proto.element_messages_pb2 import ElementId
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .variable import Variable
 
 
 class Assembly(api.Assembly):
@@ -68,6 +69,11 @@ class Assembly(api.Assembly):
             return None
         else:
             return Assembly(result, self._channel)
+
+    @overrides
+    def get_variables(self) -> Sequence[api.IVariable]:
+        result = self._client.RegistryGetVariables(self._element_id)
+        return [Variable(one_element_id, self._channel) for one_element_id in result.ids]
 
     @property  # type: ignore
     @overrides
