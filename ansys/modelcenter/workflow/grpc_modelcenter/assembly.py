@@ -2,12 +2,15 @@
 
 from typing import Optional, Sequence
 
+import ansys.common.variableinterop as acvi
+import ansys.engineeringworkflow.api as base_api
 from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as api
 
 from .group import Group
+from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
 from .proto.element_messages_pb2 import (
     AddAssemblyVariableRequest,
     ElementId,
@@ -15,6 +18,7 @@ from .proto.element_messages_pb2 import (
     RenameRequest,
 )
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 from .variable import Variable
 
 
@@ -106,4 +110,25 @@ class Assembly(api.Assembly):
     def rename(self, name: str) -> None:
         self._client.AssemblyRename(
             RenameRequest(target_assembly=self._element_id, new_name=ElementName(name=name))
+        )
+
+    @overrides
+    def get_property(self, property_name: str) -> base_api.Property:
+        grpc_value = self._client.PropertyOwnerGetPropertyValue(
+            MetadataGetValueRequest(id=self._element_id, property_name=property_name)
+        )
+        acvi_value = convert_grpc_value_to_acvi(grpc_value)
+        return base_api.Property(
+            parent_element_id=self._element_id.id_string,
+            property_name=property_name,
+            property_value=acvi_value,
+        )
+
+    @overrides
+    def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
+        grpc_value = convert_interop_value_to_grpc(property_value)
+        self._client.PropertyOwnerSetPropertyValue(
+            MetadataSetValueRequest(
+                id=self._element_id, property_name=property_name, value=grpc_value
+            )
         )

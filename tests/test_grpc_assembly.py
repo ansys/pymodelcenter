@@ -1,10 +1,17 @@
 from typing import Dict, Optional
 import unittest.mock
 
+import ansys.common.variableinterop as acvi
+import ansys.engineeringworkflow.api.datatypes
 import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
 from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
+    MetadataGetValueRequest,
+    MetadataSetValueRequest,
+    MetadataSetValueResponse,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
     AddAssemblyVariableRequest,
     AddAssemblyVariableResponse,
@@ -14,6 +21,9 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     ElementName,
     RenameRequest,
     RenameResponse,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+    VariableValue,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.variable import Variable
 
@@ -66,6 +76,14 @@ class MockWorkflowClientForAssemblyTest:
 
     def AssemblyRename(self, request: RenameRequest) -> RenameResponse:
         return RenameResponse()
+
+    def PropertyOwnerGetPropertyValue(self, request: MetadataGetValueRequest) -> VariableValue:
+        return VariableValue()
+
+    def PropertyOwnerSetPropertyValue(
+        self, request: MetadataSetValueRequest
+    ) -> MetadataSetValueResponse:
+        return MetadataSetValueResponse()
 
 
 def test_can_get_name(monkeypatch):
@@ -328,5 +346,43 @@ def test_assembly_rename(monkeypatch):
             RenameRequest(
                 target_assembly=ElementId(id_string="ADD_VAR_TARGET"),
                 new_name=ElementName(name="this_is_the_new_assembly_name"),
+            )
+        )
+
+
+def test_assembly_get_int_metadata_property(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = VariableValue(int_value=47)
+    with unittest.mock.patch.object(
+        mock_client, "PropertyOwnerGetPropertyValue", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="GET_METADATA"), None)
+        result = sut.get_property("mock_property_name")
+        mock_method.assert_called_once_with(
+            MetadataGetValueRequest(
+                id=ElementId(id_string="GET_METADATA"), property_name="mock_property_name"
+            )
+        )
+        assert isinstance(result, ansys.engineeringworkflow.api.datatypes.Property)
+        assert result.property_name == "mock_property_name"
+        assert result.parent_element_id == "GET_METADATA"
+        assert result.property_value == acvi.IntegerValue(47)
+
+
+def test_assembly_set_int_metadata_property(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = MetadataSetValueResponse()
+    with unittest.mock.patch.object(
+        mock_client, "PropertyOwnerSetPropertyValue", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="SET_METADATA"), None)
+        sut.set_property("mock_property_name", acvi.IntegerValue(47))
+        mock_method.assert_called_once_with(
+            MetadataSetValueRequest(
+                id=ElementId(id_string="SET_METADATA"),
+                property_name="mock_property_name",
+                value=VariableValue(int_value=47),
             )
         )
