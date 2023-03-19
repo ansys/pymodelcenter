@@ -1,6 +1,6 @@
 """Implementation of Assembly."""
 
-from typing import Optional
+from typing import Optional, Sequence
 
 from grpc import Channel
 from overrides import overrides
@@ -68,3 +68,9 @@ class Assembly(api.Assembly):
             return None
         else:
             return Assembly(result, self._channel)
+
+    @property  # type: ignore
+    @overrides
+    def assemblies(self) -> Sequence[api.Assembly]:
+        result = self._client.RegistryGetAssemblies(self._element_id)
+        return [Assembly(one_element_id, self._channel) for one_element_id in result.ids]

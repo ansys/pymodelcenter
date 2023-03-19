@@ -1,4 +1,5 @@
 from typing import Dict, Optional
+import unittest.mock
 
 import pytest
 
@@ -6,6 +7,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
     AssemblyType,
     ElementId,
+    ElementIdCollection,
     ElementName,
 )
 
@@ -41,6 +43,9 @@ class MockWorkflowClientForAssemblyTest:
 
     def ElementGetParentElement(self, request: ElementId) -> ElementId:
         return ElementId(id_string=self._parent_id_responses[request.id_string])
+
+    def RegistryGetAssemblies(self, request: ElementId) -> ElementIdCollection:
+        return ElementIdCollection()
 
 
 def test_can_get_name(monkeypatch):
@@ -104,3 +109,67 @@ def test_can_get_parent_has_parent(monkeypatch):
 
     assert isinstance(result, Assembly)
     assert result.element_id == parent_id_string
+
+
+def test_get_child_assemblies_empty(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    no_child_assemblies = ElementIdCollection()
+    with unittest.mock.patch.object(
+        mock_client, "RegistryGetAssemblies", return_value=no_child_assemblies
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="LEAF_ASSEMBLY"), None)
+        result = sut.assemblies
+        assert len(result) == 0
+        mock_method.assert_called_once_with(ElementId(id_string="LEAF_ASSEMBLY"))
+
+
+def test_get_child_assemblies_one_child(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    child_id = "CHILD_ID_STRING"
+    one_child_assembly = ElementIdCollection(ids=[ElementId(id_string=child_id)])
+    fake_name = ElementName(name="FAKE_NAME")
+    with unittest.mock.patch.object(
+        mock_client, "RegistryGetAssemblies", return_value=one_child_assembly
+    ) as mock_get_assembly_method:
+        with unittest.mock.patch.object(
+            mock_client, "ElementGetName", return_value=fake_name
+        ) as mock_get_name_method:
+            monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+            sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
+            result = sut.assemblies
+            assert len(result) == 1
+            assert isinstance(result[0], Assembly)
+            mock_get_assembly_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
+            result[0].name
+            mock_get_name_method.assert_called_once_with(ElementId(id_string=child_id))
+
+
+def test_get_child_assemblies_multiple_children(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    one_child_assembly = ElementIdCollection(
+        ids=[ElementId(id_string="LARRY"), ElementId(id_string="MOE"), ElementId(id_string="CURLY")]
+    )
+    fake_name = ElementName(name="FAKE_NAME")
+    with unittest.mock.patch.object(
+        mock_client, "RegistryGetAssemblies", return_value=one_child_assembly
+    ) as mock_get_assembly_method:
+        with unittest.mock.patch.object(
+            mock_client, "ElementGetName", return_value=fake_name
+        ) as mock_get_name_method:
+            monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+            sut = Assembly(ElementId(id_string="STOOGES"), None)
+            result = sut.assemblies
+            assert len(result) == 3
+            assert isinstance(result[0], Assembly)
+            assert isinstance(result[1], Assembly)
+            assert isinstance(result[2], Assembly)
+            mock_get_assembly_method.assert_called_once_with(ElementId(id_string="STOOGES"))
+            result[0].name
+            mock_get_name_method.assert_called_once_with(ElementId(id_string="LARRY"))
+            mock_get_name_method.reset_mock()
+            result[1].name
+            mock_get_name_method.assert_called_once_with(ElementId(id_string="MOE"))
+            mock_get_name_method.reset_mock()
+            result[2].name
+            mock_get_name_method.assert_called_once_with(ElementId(id_string="CURLY"))
