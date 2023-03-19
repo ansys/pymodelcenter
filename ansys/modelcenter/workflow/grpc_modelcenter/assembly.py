@@ -8,7 +8,7 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as api
 
 from .group import Group
-from .proto.element_messages_pb2 import ElementId
+from .proto.element_messages_pb2 import AddAssemblyVariableRequest, ElementId, ElementName
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .variable import Variable
 
@@ -87,3 +87,12 @@ class Assembly(api.Assembly):
     def groups(self) -> Sequence[api.IGroup]:
         result = self._client.RegistryGetGroups(self._element_id)
         return [Group(one_element_id, self._channel) for one_element_id in result.ids]
+
+    @overrides
+    def add_variable(self, name: str, type_: str) -> api.IVariable:
+        result = self._client.AssemblyAddVariable(
+            AddAssemblyVariableRequest(
+                name=ElementName(name=name), target_assembly=self._element_id, variable_type=type_
+            )
+        )
+        return Variable(result.id, self._channel)

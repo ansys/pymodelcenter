@@ -6,6 +6,8 @@ import pytest
 from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
 from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
+    AddAssemblyVariableRequest,
+    AddAssemblyVariableResponse,
     AssemblyType,
     ElementId,
     ElementIdCollection,
@@ -54,6 +56,11 @@ class MockWorkflowClientForAssemblyTest:
 
     def RegistryGetGroups(self, request: ElementId) -> ElementIdCollection:
         return ElementIdCollection()
+
+    def AssemblyAddVariable(
+        self, request: AddAssemblyVariableRequest
+    ) -> AddAssemblyVariableResponse:
+        return AddAssemblyVariableResponse()
 
 
 def test_can_get_name(monkeypatch):
@@ -281,3 +288,23 @@ def test_get_groups_multiple_variables(monkeypatch):
         assert result[1].element_id == "MOE"
         assert isinstance(result[2], Group)
         assert result[2].element_id == "CURLY"
+
+
+def test_assembly_create_variable(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AddAssemblyVariableResponse(id=ElementId(id_string="CREATED_VAR"))
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyAddVariable", return_value=mock_response
+    ) as mock_add_var_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), None)
+        result = sut.add_variable("created_variable_name", "int")
+        mock_add_var_method.assert_called_once_with(
+            AddAssemblyVariableRequest(
+                name=ElementName(name="created_variable_name"),
+                target_assembly=ElementId(id_string="ADD_VAR_TARGET"),
+                variable_type="int",
+            )
+        )
+        assert result.element_id == "CREATED_VAR"
+        assert isinstance(result, Variable)
