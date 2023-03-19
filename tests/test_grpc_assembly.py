@@ -4,6 +4,7 @@ import unittest.mock
 import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
+from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
     AssemblyType,
     ElementId,
@@ -49,6 +50,9 @@ class MockWorkflowClientForAssemblyTest:
         return ElementIdCollection()
 
     def RegistryGetVariables(self, request: ElementId) -> ElementIdCollection:
+        return ElementIdCollection()
+
+    def RegistryGetGroups(self, request: ElementId) -> ElementIdCollection:
         return ElementIdCollection()
 
 
@@ -226,4 +230,54 @@ def test_get_variables_multiple_variables(monkeypatch):
         assert isinstance(result[1], Variable)
         assert result[1].element_id == "MOE"
         assert isinstance(result[2], Variable)
+        assert result[2].element_id == "CURLY"
+
+
+def test_get_groups_empty(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    no_variables = ElementIdCollection()
+    with unittest.mock.patch.object(
+        mock_client, "RegistryGetGroups", return_value=no_variables
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="NO_GROUPS"), None)
+        result = sut.groups
+        assert len(result) == 0
+        mock_method.assert_called_once_with(ElementId(id_string="NO_GROUPS"))
+
+
+def test_get_groups_one_variable(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    group_id = "GRP_ID_STRING"
+    variables = ElementIdCollection(ids=[ElementId(id_string=group_id)])
+    with unittest.mock.patch.object(
+        mock_client, "RegistryGetGroups", return_value=variables
+    ) as mock_get_group_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
+        result = sut.groups
+        mock_get_group_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
+        assert len(result) == 1
+        assert isinstance(result[0], Group)
+        assert result[0].element_id == group_id
+
+
+def test_get_groups_multiple_variables(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    one_child_assembly = ElementIdCollection(
+        ids=[ElementId(id_string="LARRY"), ElementId(id_string="MOE"), ElementId(id_string="CURLY")]
+    )
+    with unittest.mock.patch.object(
+        mock_client, "RegistryGetGroups", return_value=one_child_assembly
+    ) as mock_get_group_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="STOOGES"), None)
+        result = sut.groups
+        mock_get_group_method.assert_called_once_with(ElementId(id_string="STOOGES"))
+        assert len(result) == 3
+        assert isinstance(result[0], Group)
+        assert result[0].element_id == "LARRY"
+        assert isinstance(result[1], Group)
+        assert result[1].element_id == "MOE"
+        assert isinstance(result[2], Group)
         assert result[2].element_id == "CURLY"
