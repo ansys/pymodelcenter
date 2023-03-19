@@ -8,7 +8,12 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as api
 
 from .group import Group
-from .proto.element_messages_pb2 import AddAssemblyVariableRequest, ElementId, ElementName
+from .proto.element_messages_pb2 import (
+    AddAssemblyVariableRequest,
+    ElementId,
+    ElementName,
+    RenameRequest,
+)
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .variable import Variable
 
@@ -96,3 +101,9 @@ class Assembly(api.Assembly):
             )
         )
         return Variable(result.id, self._channel)
+
+    @overrides
+    def rename(self, name: str) -> None:
+        self._client.AssemblyRename(
+            RenameRequest(target_assembly=self._element_id, new_name=ElementName(name=name))
+        )

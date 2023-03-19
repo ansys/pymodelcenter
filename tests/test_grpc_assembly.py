@@ -12,6 +12,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     ElementId,
     ElementIdCollection,
     ElementName,
+    RenameRequest,
+    RenameResponse,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.variable import Variable
 
@@ -61,6 +63,9 @@ class MockWorkflowClientForAssemblyTest:
         self, request: AddAssemblyVariableRequest
     ) -> AddAssemblyVariableResponse:
         return AddAssemblyVariableResponse()
+
+    def AssemblyRename(self, request: RenameRequest) -> RenameResponse:
+        return RenameResponse()
 
 
 def test_can_get_name(monkeypatch):
@@ -308,3 +313,20 @@ def test_assembly_create_variable(monkeypatch):
         )
         assert result.element_id == "CREATED_VAR"
         assert isinstance(result, Variable)
+
+
+def test_assembly_rename(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = RenameResponse()
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyRename", return_value=mock_response
+    ) as mock_rename_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), None)
+        sut.rename("this_is_the_new_assembly_name")
+        mock_rename_method.assert_called_once_with(
+            RenameRequest(
+                target_assembly=ElementId(id_string="ADD_VAR_TARGET"),
+                new_name=ElementName(name="this_is_the_new_assembly_name"),
+            )
+        )
