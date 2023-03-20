@@ -146,3 +146,9 @@ class Assembly(api.Assembly):
         self._client.AssemblySetIcon(
             AssemblyIconSetRequest(target=self._element_id, new_icon_id=value)
         )
+
+    @property  # type: ignore
+    @overrides
+    def index_in_parent(self) -> int:
+        response = self._client.ElementGetIndexInParent(self._element_id)
+        return response.index

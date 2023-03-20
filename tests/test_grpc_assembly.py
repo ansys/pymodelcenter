@@ -21,6 +21,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     AssemblyType,
     ElementId,
     ElementIdCollection,
+    ElementIndexInParentResponse,
     ElementName,
     RenameRequest,
     RenameResponse,
@@ -93,6 +94,9 @@ class MockWorkflowClientForAssemblyTest:
 
     def AssemblySetIcon(self, request: AssemblyIconSetRequest) -> AssemblyIconSetResponse:
         return AssemblyIconSetRequest()
+
+    def ElementGetIndexInParent(self, request: ElementId) -> ElementIndexInParentResponse:
+        return ElementIndexInParentResponse()
 
 
 def test_can_get_name(monkeypatch):
@@ -424,3 +428,16 @@ def test_set_icon_id(monkeypatch):
                 target=ElementId(id_string="SET_ICON_MOCK_TARGET"), new_icon_id=9001
             )
         )
+
+
+def test_get_index_in_parent(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = ElementIndexInParentResponse(index=3)
+    with unittest.mock.patch.object(
+        mock_client, "ElementGetIndexInParent", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="INDEX_IN_PARENT"), None)
+        result = sut.index_in_parent
+        mock_method.assert_called_once_with(ElementId(id_string="INDEX_IN_PARENT"))
+        assert result == 3
