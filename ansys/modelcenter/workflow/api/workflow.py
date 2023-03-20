@@ -15,7 +15,7 @@ from . import DataExplorer
 from .datamonitor import DataMonitor
 from .i18n import i18n
 from .icomponent import IComponent
-from .variable_links import VariableLink, dotnet_links_to_iterable
+from .variable_links import VariableLink
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock  # type: ignore
@@ -229,7 +229,7 @@ class Workflow(IWorkflowInstance):
         Parameters
         ----------
         variable : str
-            Variable to add the link to.
+            The element ID of the variable to add the link to.
         equation : str
             Equation of the link.
         """
@@ -507,7 +507,7 @@ class Workflow(IWorkflowInstance):
 
         return metadata
 
-    def auto_link(self, src_comp: str, dest_comp: str) -> None:
+    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[VariableLink]:
         """
         Automatically links two components.
 
@@ -517,8 +517,12 @@ class Workflow(IWorkflowInstance):
             The source component.
         dest_comp : str
             The destination component.
+
+        Returns
+        -------
+        A collection of the created links.
         """
-        self._instance.autoLink(src_comp, dest_comp)
+        raise NotImplementedError
 
     def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
         """
@@ -533,7 +537,7 @@ class Workflow(IWorkflowInstance):
         -------
         Iterable over variable links.
         """
-        return dotnet_links_to_iterable(self._instance.getLinks(reserved))
+        raise NotImplementedError
 
     def get_workflow_uuid(self) -> str:
         """Get the unique ID string for the current model."""

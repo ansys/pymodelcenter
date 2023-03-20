@@ -1,6 +1,6 @@
 """Implementation of Workflow."""
 import os.path
-from typing import AbstractSet, Iterable, Mapping, Optional, Tuple
+from typing import AbstractSet, Iterable, List, Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import IControlStatement, IElement, WorkflowInstanceState
@@ -15,9 +15,13 @@ from .component import Component
 from .proto.element_messages_pb2 import ElementId, ElementName
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .proto.workflow_messages_pb2 import (
+    WorkflowAutoLinkRequest,
+    WorkflowAutoLinkResponse,
     WorkflowCloseResponse,
     WorkflowCreateComponentRequest,
     WorkflowCreateComponentResponse,
+    WorkflowCreateLinkRequest,
+    WorkflowCreateLinkResponse,
     WorkflowGetDirectoryResponse,
     WorkflowGetRootResponse,
     WorkflowId,
@@ -139,8 +143,9 @@ class Workflow(IWorkflow):
 
     @overrides
     def create_link(self, variable: str, equation: str) -> None:
-        # self._instance.createLink(variable, equation)
-        raise NotImplementedError
+        request = WorkflowCreateLinkRequest(equation=equation)
+        request.target.id_string = variable
+        response: WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
 
     @overrides
     def save_workflow(self) -> None:
@@ -232,9 +237,16 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def auto_link(self, src_comp: str, dest_comp: str) -> None:
-        # self._instance.autoLink(src_comp, dest_comp)
-        raise NotImplementedError
+    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[VariableLink]:
+        request = WorkflowAutoLinkRequest()
+        request.source_comp.id_string = src_comp
+        request.target_comp.id_string = dest_comp
+        response: WorkflowAutoLinkResponse = self._stub.WorkflowAutoLink(request)
+        links: List[VariableLink] = []
+        for entry in response.created_links:
+            link = VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+            links.append(link)
+        return links
 
     @overrides
     def get_links(self, reserved: object = None) -> Iterable[VariableLink]:

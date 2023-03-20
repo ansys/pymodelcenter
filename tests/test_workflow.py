@@ -1,4 +1,6 @@
 """Tests for Workflow."""
+from typing import List
+
 import ansys.engineeringworkflow.api as ewapi
 import pytest
 
@@ -16,6 +18,7 @@ class MockWorkflowClientForWorkflowTest:
         self.was_save_asd = False
         self.was_closed = False
         self.was_component_removed = False
+        self.was_link_created = False
 
     def WorkflowGetRoot(self, request: wkf_msgs.WorkflowId) -> wkf_msgs.WorkflowGetRootResponse:
         response = wkf_msgs.WorkflowGetRootResponse()
@@ -66,6 +69,27 @@ class MockWorkflowClientForWorkflowTest:
     def WorkflowCreateComponent(self, request: wkf_msgs.WorkflowCreateComponentRequest):
         response = wkf_msgs.WorkflowCreateComponentResponse()
         response.created.id_string = "zxcv"
+        return response
+
+    def WorkflowCreateLink(self, request: wkf_msgs.WorkflowCreateLinkRequest):
+        if request.target.id_string != "inputs.var1" or request.equation != "Workflow.comp.output4":
+            raise Exception
+        self.was_link_created = True
+        response = wkf_msgs.WorkflowCreateLinkResponse()
+        return response
+
+    def WorkflowAutoLink(self, request: wkf_msgs.WorkflowAutoLinkRequest):
+        response = wkf_msgs.WorkflowAutoLinkResponse()
+        if (
+            request.source_comp.id_string == "Workflow.source_comp"
+            and request.target_comp.id_string == "Workflow.dest_comp"
+        ):
+            link = response.created_links.add()
+            link.lhs.id_string = "a"
+            link.rhs = "1"
+            link = response.created_links.add()
+            link.lhs.id_string = "b"
+            link.rhs = "2"
         return response
 
 
@@ -732,23 +756,20 @@ def test_get_uuid(setup_function) -> None:
     assert result == "123"
 
 
-# def test_auto_link() -> None:
-#     # Setup
-#     sut_engine = mcapi.Engine()
-#     sut_workflow = sut_engine.new_workflow("workflowName")
-#     assert sut_workflow._instance.getCallCount("autoLink") == 0
-#
-#     # Execute
-#     sut_workflow.auto_link("Workflow.source_comp", "Workflow.dest_comp")
-#
-#     # Verify
-#     assert sut_workflow._instance.getCallCount("autoLink") == 1
-#     assert sut_workflow._instance.getArgumentRecord("autoLink", 0) == [
-#         "Workflow.source_comp",
-#         "Workflow.dest_comp",
-#     ]
-#
-#
+def test_auto_link(setup_function) -> None:
+    # Execute
+    links: List[mcapi.VariableLink] = workflow.auto_link(
+        "Workflow.source_comp", "Workflow.dest_comp"
+    )
+
+    # Verify
+    assert len(links) == 2
+    assert links[0].lhs == "a"
+    assert links[0].rhs == "1"
+    assert links[1].lhs == "b"
+    assert links[1].rhs == "2"
+
+
 # def test_create_assembly() -> None:
 #     # Setup
 #     sut_engine = mcapi.Engine()
@@ -800,22 +821,17 @@ def test_create_component(setup_function):
     assert component.element_id == "zxcv"
 
 
-# def test_create_link() -> None:
-#     # Setup
-#     sut_engine = mcapi.Engine()
-#     sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-#     assert sut_workflow._instance.getCallCount("createLink") == 0
-#     test_var_name = "inputs.var1"
-#     test_eqn = "Workflow.comp.output4"
-#
-#     # Execute
-#     sut_workflow.create_link(test_var_name, test_eqn)
-#
-#     # Verify
-#     assert sut_workflow._instance.getCallCount("createLink") == 1
-#     assert sut_workflow._instance.getArgumentRecord("createLink", 0) == [test_var_name, test_eqn]
-#
-#
+def test_create_link(setup_function) -> None:
+    test_var_name = "inputs.var1"
+    test_eqn = "Workflow.comp.output4"
+
+    # Execute
+    workflow.create_link(test_var_name, test_eqn)
+
+    # Verify
+    assert mock_client.was_link_created is True
+
+
 # def test_get_variable() -> None:
 #     # Setup
 #     sut_engine = mcapi.Engine()
