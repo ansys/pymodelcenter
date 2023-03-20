@@ -1,4 +1,5 @@
 """Implementation of Workflow."""
+import os.path
 from typing import AbstractSet, Iterable, Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
@@ -13,32 +14,48 @@ from .assembly import Assembly
 from .proto.element_messages_pb2 import ElementId
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .proto.workflow_messages_pb2 import (
+    WorkflowCloseResponse,
     WorkflowGetDirectoryResponse,
     WorkflowGetRootResponse,
-    WorkflowId,
+    WorkflowSaveResponse,
+    WorkflowSaveAsRequest,
+    WorkflowId
 )
 
 
 class Workflow(IWorkflow):
-    """Represents a Workflow or Model in ModelCenter."""
+    """Represents a Workflow in ModelCenter."""
 
-    def __init__(self, root_element: ElementId, workflow_id: str):
+    def __init__(self, workflow_id: str, file_path: str):
         """
         Initialize a new Workflow instance.
 
         Parameters
         ----------
-        root_element: element_messages.ElementId
-            The root element of the workflow.
         workflow_id: str
             The workflow's ID.
+        file_path: str
+            The path to the workflow file on disk.
         """
         self._state = WorkflowInstanceState.UNKNOWN
-        self._root = root_element
         self._id = workflow_id
+        self._file_name = os.path.basename(file_path)
         # (MPP): Unsure if we should pass this in from Engine
         self._channel = grpc.insecure_channel("localhost:50051")
-        self._stub = ModelCenterWorkflowServiceStub(self._channel)
+        self._stub = self._create_client(self._channel)
+
+    def __enter__(self):
+        """Initialization when created in a 'with' statement."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Clean up when leaving a 'with' block."""
+        self.close_workflow()
+
+    @staticmethod
+    def _create_client(grpc_channel) -> ModelCenterWorkflowServiceStub:
+        """Create a client from a grpc channel."""
+        return ModelCenterWorkflowServiceStub(grpc_channel)
 
     @overrides
     def get_state(self) -> WorkflowInstanceState:
@@ -75,12 +92,12 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_element_by_id(self, element_id: str) -> IElement:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @property  # type: ignore
     @overrides
     def workflow_directory(self) -> str:
-        # TODO: readonly?
         request = WorkflowId()
         request.id = self._id
         response: WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
@@ -89,8 +106,7 @@ class Workflow(IWorkflow):
     @property  # type: ignore
     @overrides
     def workflow_file_name(self) -> str:
-        # return self._instance.modelFileName
-        raise NotImplementedError
+        return self._file_name
 
     @overrides
     def set_value(self, var_name: str, value: str) -> None:
@@ -126,18 +142,22 @@ class Workflow(IWorkflow):
 
     @overrides
     def save_workflow(self) -> None:
-        # self._instance.saveModel()
-        raise NotImplementedError
+        request = WorkflowId()
+        request.id = self._id
+        response: WorkflowSaveResponse = self._stub.WorkflowSave(request)
 
     @overrides
     def save_workflow_as(self, file_name: str) -> None:
-        # self._instance.saveModelAs(file_name)
-        raise NotImplementedError
+        request = WorkflowSaveAsRequest()
+        request.target.id = self._id
+        request.new_target_path = file_name
+        response: WorkflowSaveResponse = self._stub.WorkflowSaveAs(request)
 
     @overrides
     def close_workflow(self) -> None:
-        # self._instance.closeModel()
-        raise NotImplementedError
+        request = WorkflowId()
+        request.id = self._id
+        response: WorkflowCloseResponse = self._stub.WorkflowClose(request)
 
     @overrides
     def get_variable(self, name: str) -> object:
@@ -252,29 +272,29 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_data_explorer(self, index: int) -> Optional[DataExplorer]:
-        # de_object: object = self._instance.getDataExplorer(index)
-        # if de_object is None:
-        #     return None
-        # else:
-        #     return DataExplorer(de_object)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def move_component(self, component: str, parent: str, index: object) -> None:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_xml_extension(self, xml: str) -> None:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_assembly_style(
         self, assembly_name: str, style: object, width: object = None, height: object = None
     ) -> None:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
@@ -302,27 +322,27 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_macro_script(self, macro_name: str) -> str:
-        # return self._instance.getMacroScript(macro_name)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_macro_script(self, macro_name: str, script: str) -> None:
-        # self._instance.setMacroScript(macro_name, script)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def get_macro_script_language(self, macro_name: str) -> str:
-        # return self._instance.getMacroScriptLanguage(macro_name)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_macro_script_language(self, macro_name: str, language: str) -> None:
-        # self._instance.setMacroScriptLanguage(macro_name, language)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def add_new_macro(self, macro_name: str, is_app_macro: bool) -> None:
-        # self._instance.addNewMacro(macro_name, is_app_macro)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
@@ -391,16 +411,15 @@ class Workflow(IWorkflow):
 
     @overrides
     def create_data_explorer(self, trade_study_type: str, setup: str) -> DataExplorer:
-        # de_object: object = self._instance.createDataExplorer(trade_study_type, setup)
-        # return DataExplorer(de_object)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def get_macro_timeout(self, macro_name: str) -> float:
-        # return self._instance.getMacroTimeout(macro_name)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_macro_timeout(self, macro_name: str, timeout: float) -> None:
-        # self._instance.setMacroTimeout(macro_name, timeout)
+        # TODO: not on grpc api
         raise NotImplementedError
