@@ -23,6 +23,7 @@ from .proto.workflow_messages_pb2 import (
     WorkflowCreateLinkRequest,
     WorkflowCreateLinkResponse,
     WorkflowGetDirectoryResponse,
+    WorkflowGetLinksResponse,
     WorkflowGetRootResponse,
     WorkflowId,
     WorkflowRemoveComponentRequest,
@@ -250,8 +251,13 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
-        # return dotnet_links_to_iterable(self._instance.getLinks(reserved))
-        raise NotImplementedError
+        request = WorkflowId(id=self._id)
+        response: WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(request)
+        links: List[VariableLink] = []
+        for entry in response.links:
+            link = VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+            links.append(link)
+        return links
 
     @overrides
     def get_workflow_uuid(self) -> str:

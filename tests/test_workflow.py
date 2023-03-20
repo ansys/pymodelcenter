@@ -1,5 +1,5 @@
 """Tests for Workflow."""
-from typing import List
+from typing import Iterable, List
 
 import ansys.engineeringworkflow.api as ewapi
 import pytest
@@ -90,6 +90,20 @@ class MockWorkflowClientForWorkflowTest:
             link = response.created_links.add()
             link.lhs.id_string = "b"
             link.rhs = "2"
+        return response
+
+    def WorkflowGetLinksRequest(self, request: wkf_msgs.WorkflowId):
+        response = wkf_msgs.WorkflowGetLinksResponse()
+        if request.id == "12345":
+            link = response.links.add()
+            link.lhs.id_string = "linkTarget1"
+            link.rhs = "a"
+            link = response.links.add()
+            link.lhs.id_string = "linkTarget2"
+            link.rhs = "b"
+            link = response.links.add()
+            link.lhs.id_string = "linkTarget3"
+            link.rhs = "c"
         return response
 
 
@@ -708,33 +722,29 @@ def test_remove_component(setup_function):
 #     # Verify
 #     assert sut_workflow._instance.getCallCount("breakLink") == 1
 #     assert sut_workflow._instance.getArgumentRecord("breakLink", 0) == [link_var_name]
-#
-#
-# @pytest.mark.parametrize(
-#     "link_lhs_values",
-#     [
-#         pytest.param([], id="empty"),
-#         pytest.param(["linkTarget1", "linkTarget2", "linkTarget3"], id="some links"),
-#     ],
-# )
-# def test_get_links(link_lhs_values: Iterable[str]) -> None:
-#     """
-#     Verify that get_links works when there are no links.
-#     """
-#
-#     # Setup
-#     sut_engine = mcapi.Engine()
-#     sut_workflow = sut_engine.new_workflow("workflowName")
-#     for link_lhs in link_lhs_values:
-#         sut_workflow.create_link(link_lhs, "LINKSOURCE")
-#
-#     # Execute
-#     links: Iterable[mcapi.VariableLink] = sut_workflow.get_links()
-#
-#     # Verify
-#     assert [link.lhs for link in links] == link_lhs_values
-#
-#
+
+
+@pytest.mark.parametrize(
+    "workflow_id,link_lhs_values",
+    [
+        pytest.param("54321", [], id="empty"),
+        pytest.param("12345", ["linkTarget1", "linkTarget2", "linkTarget3"], id="some links"),
+    ],
+)
+def test_get_links(setup_function, workflow_id: str, link_lhs_values: Iterable[str]) -> None:
+    """
+    Verify that get_links works when there are no links.
+    """
+    # Setup
+    workflow._id = workflow_id
+
+    # Execute
+    links: Iterable[mcapi.VariableLink] = workflow.get_links()
+
+    # Verify
+    assert [link.lhs for link in links] == link_lhs_values
+
+
 # def test_halt() -> None:
 #     # Setup
 #     sut_engine = mcapi.Engine()
