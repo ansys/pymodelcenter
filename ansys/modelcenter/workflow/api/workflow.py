@@ -197,16 +197,16 @@ class Workflow(IWorkflowInstance):
         server_path: str,
         name: str,
         parent: str,
-        x_pos: Optional[object] = None,
-        y_pos: Optional[object] = None,
-    ) -> None:
+        x_pos: Optional[int] = None,
+        y_pos: Optional[int] = None,
+    ) -> IComponent:
         """
-        Create, or connect, to a new MCRE Component.
+        Create a new component.
 
         Parameters
         ----------
         server_path : str
-            The MCRE source path of the new component.
+            The source path of the new component.
         name : str
             Name of the new component.
         parent : str
@@ -215,16 +215,12 @@ class Workflow(IWorkflowInstance):
             The x-position in pixels in the Analysis View.
         y_pos
             The y-position in pixels in the Analysis View.
+
+        Returns
+        -------
+        The created component.
         """
-        pass
-
-        # LTTODO: The mock expects System.Reflection.Missing.Value for x_pos and y_pos to indicate
-        # that no value was passed, but it's not feasible to actually pass that, since pythonnet
-        # seems to get tripped up while it's using reflection to find a method to actually call
-        # (Missing.Value has a special meaning there, it seems.)
-        # This is something the actual GRPC API will probably have to solve.
-
-        self._instance.createComponent(server_path, name, parent, x_pos, y_pos)
+        raise NotImplementedError
 
     def create_link(self, variable: str, equation: str) -> None:
         """
@@ -680,12 +676,33 @@ class Workflow(IWorkflowInstance):
         server_path: str,
         name: str,
         parent: str,
-        init_string: str,
-        x_pos: object = None,
-        y_pos: object = None,
-    ):
-        """Creates a new component and initializes it from string data."""
-        pass
+        init_string: Optional[str],
+        x_pos: Optional[int] = None,
+        y_pos: Optional[int] = None,
+    ) -> IComponent:
+        """
+        Creates a new component and initializes it from string data.
+
+        Parameters
+        ----------
+        server_path : str
+            The MCRE source path of the new component.
+        name : str
+            Name of the new component.
+        parent : str
+            Parent assembly of the component.
+        init_string: Optional[str]
+            The initialization string.
+        x_pos
+            The x-position in pixels in the Analysis View.
+        y_pos
+            The y-position in pixels in the Analysis View.
+
+        Returns
+        -------
+        The created component.
+        """
+        raise NotImplementedError
 
     def get_macro_script(self, macro_name: str) -> str:
         """

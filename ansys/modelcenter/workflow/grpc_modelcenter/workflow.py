@@ -11,15 +11,20 @@ from ansys.modelcenter.workflow.api import DataExplorer, DataMonitor, IComponent
 from ansys.modelcenter.workflow.api import Workflow as IWorkflow
 
 from .assembly import Assembly
-from .proto.element_messages_pb2 import ElementId
+from .component import Component
+from .proto.element_messages_pb2 import ElementId, ElementName
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .proto.workflow_messages_pb2 import (
     WorkflowCloseResponse,
+    WorkflowCreateComponentRequest,
+    WorkflowCreateComponentResponse,
     WorkflowGetDirectoryResponse,
     WorkflowGetRootResponse,
-    WorkflowSaveResponse,
+    WorkflowId,
+    WorkflowRemoveComponentRequest,
+    WorkflowRemoveComponentResponse,
     WorkflowSaveAsRequest,
-    WorkflowId
+    WorkflowSaveResponse,
 )
 
 
@@ -84,8 +89,7 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_root(self) -> IControlStatement:
-        request = WorkflowId()
-        request.id = self._id
+        request = WorkflowId(id=self._id)
         response: WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
         root: ElementId = response.id
         return Assembly(root)
@@ -98,8 +102,7 @@ class Workflow(IWorkflow):
     @property  # type: ignore
     @overrides
     def workflow_directory(self) -> str:
-        request = WorkflowId()
-        request.id = self._id
+        request = WorkflowId(id=self._id)
         response: WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
         return response.workflow_dir
 
@@ -129,11 +132,10 @@ class Workflow(IWorkflow):
         server_path: str,
         name: str,
         parent: str,
-        x_pos: Optional[object] = None,
-        y_pos: Optional[object] = None,
-    ) -> None:
-        # self._instance.createComponent(server_path, name, parent, x_pos, y_pos)
-        raise NotImplementedError
+        x_pos: Optional[int] = None,
+        y_pos: Optional[int] = None,
+    ) -> IComponent:
+        return self.create_and_init_component(server_path, name, parent, None, x_pos, y_pos)
 
     @overrides
     def create_link(self, variable: str, equation: str) -> None:
@@ -165,13 +167,10 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def get_component(self, name: str) -> IComponent:  # IComponent, IIfComponent, IScriptComponent
-        # mc_i_component: mcapiIComponent = self._instance.getComponent(name)
-        # if mc_i_component is None:
-        #     msg: str = i18n("Exceptions", "ERROR_COMPONENT_NOT_FOUND")
-        #     raise Exception(msg)
-        # return IComponent(mc_i_component)
-        raise NotImplementedError
+    def get_component(self, name: str) -> IComponent:
+        request = ElementName(name=name)
+        response: ElementId = self._stub.WorkflowGetComponentOrAssemblyByName(request)
+        return Component(response.id_string)
 
     @overrides
     def trade_study_end(self) -> None:
@@ -203,8 +202,12 @@ class Workflow(IWorkflow):
 
     @overrides
     def remove_component(self, name: str) -> None:
-        # self._instance.removeComponent(name)
-        raise NotImplementedError
+        comp: Component = self.get_component(name)
+        request = WorkflowRemoveComponentRequest()
+        request.target.id_string = comp.element_id
+        response: WorkflowRemoveComponentResponse = self._stub.WorkflowRemoveComponent(request)
+        if not response.existed:
+            raise ValueError("Component does not exist")
 
     @overrides
     def break_link(self, variable: str) -> None:
@@ -314,11 +317,18 @@ class Workflow(IWorkflow):
         server_path: str,
         name: str,
         parent: str,
-        init_string: str,
-        x_pos: object = None,
-        y_pos: object = None,
-    ):
-        raise NotImplementedError
+        init_string: Optional[str],
+        x_pos: Optional[int] = None,
+        y_pos: Optional[int] = None,
+    ) -> IComponent:
+        # TODO: init_string not on grpc api
+        request = WorkflowCreateComponentRequest(source_path=server_path, name=name)
+        request.parent.id_string = parent
+        if x_pos is not None and y_pos is not None:
+            request.coord.x_pos = x_pos
+            request.coord.y_pos = y_pos
+        response: WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(request)
+        return Component(response.created.id_string)
 
     @overrides
     def get_macro_script(self, macro_name: str) -> str:

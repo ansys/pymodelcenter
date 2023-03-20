@@ -1,16 +1,12 @@
 """Tests for Workflow."""
-from typing import Any, Iterable, List, Optional, Type
-
-import ansys.common.variableinterop as acvi
+import ansys.engineeringworkflow.api as ewapi
 import pytest
 
-import ansys.engineeringworkflow.api as ewapi
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-
-
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs  # noqa: 501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as wkf_msgs  # noqa: 501
+
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
@@ -19,13 +15,16 @@ class MockWorkflowClientForWorkflowTest:
         self.was_saved = False
         self.was_save_asd = False
         self.was_closed = False
+        self.was_component_removed = False
 
     def WorkflowGetRoot(self, request: wkf_msgs.WorkflowId) -> wkf_msgs.WorkflowGetRootResponse:
         response = wkf_msgs.WorkflowGetRootResponse()
         response.id.id_string = "Model"
         return response
 
-    def WorkflowGetDirectory(self, request: wkf_msgs.WorkflowId) -> wkf_msgs.WorkflowGetDirectoryResponse:
+    def WorkflowGetDirectory(
+        self, request: wkf_msgs.WorkflowId
+    ) -> wkf_msgs.WorkflowGetDirectoryResponse:
         response = wkf_msgs.WorkflowGetDirectoryResponse()
         if request.id == "123":
             response.workflow_dir = "D:\\Some\\Path"
@@ -37,7 +36,9 @@ class MockWorkflowClientForWorkflowTest:
         response = wkf_msgs.WorkflowSaveResponse()
         return response
 
-    def WorkflowSaveAs(self, request: wkf_msgs.WorkflowSaveAsRequest) -> wkf_msgs.WorkflowSaveResponse:
+    def WorkflowSaveAs(
+        self, request: wkf_msgs.WorkflowSaveAsRequest
+    ) -> wkf_msgs.WorkflowSaveResponse:
         if request.target.id == "123" and request.new_target_path == "jkl;":
             self.was_save_asd = True
         response = wkf_msgs.WorkflowSaveResponse()
@@ -47,6 +48,24 @@ class MockWorkflowClientForWorkflowTest:
         if request.id == "123":
             self.was_closed = True
         response = wkf_msgs.WorkflowCloseResponse()
+        return response
+
+    def WorkflowGetComponentOrAssemblyByName(self, request: elem_msgs.ElementName):
+        response = elem_msgs.ElementId()
+        if request.name == "a.word":
+            response.id_string = "3457134"
+        return response
+
+    def WorkflowRemoveComponent(self, request: wkf_msgs.WorkflowRemoveComponentRequest):
+        response = wkf_msgs.WorkflowRemoveComponentResponse()
+        if request.target.id_string == "3457134":
+            response.existed = True
+            self.was_component_removed = True
+        return response
+
+    def WorkflowCreateComponent(self, request: wkf_msgs.WorkflowCreateComponentRequest):
+        response = wkf_msgs.WorkflowCreateComponentResponse()
+        response.created.id_string = "zxcv"
         return response
 
 
@@ -84,30 +103,14 @@ def test_get_root(setup_function):
 #     pass
 
 
-# def test_get_component():
-#     # Setup
-#     global workflow, mock_mc
-#     mock_mc.createComponent("a", "word", "a", 0, 0)
-#
-#     # SUT
-#     result: mcapi.IComponent = workflow.get_component("a.word")
-#
-#     # Verification
-#     assert result.name == "word"
-#
-#
-# def test_get_component_missing():
-#     # Setup
-#     global workflow, mock_mc
-#
-#     # SUT
-#     with pytest.raises(Exception) as except_info:
-#         workflow.get_component("a.word")
-#
-#     # Verification
-#     assert except_info.value.args[0] == "Error: A component with the given name was not found."
-#
-#
+def test_get_component(setup_function):
+    # SUT
+    result: mcapi.IComponent = workflow.get_component("a.word")
+
+    # Verification
+    assert result.element_id == "3457134"
+
+
 # def test_trade_study_start():
 #     # Setup
 #     global workflow, mock_mc
@@ -204,7 +207,7 @@ def test_workflow_file_name(setup_function):
 #     pytest.param("root.b_a", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
 #     pytest.param("root.i_a", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
 #     pytest.param("root.r_a", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
-#     pytest.param("root.s_a", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
+#   pytest.param("root.s_a", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
 # ]
 # """Collection of tests for get_value, used in test_get_value."""
 #
@@ -330,22 +333,17 @@ def test_workflow_file_name(setup_function):
 #     args: list = mock_mc.getLastArgumentRecord("setScheduler")
 #     assert len(args) == 1
 #     assert args[0] == schedular
-#
-#
-# def test_remove_component():
-#     """Testing of remove_component method."""
-#     global mock_mc, workflow
-#
-#     # SUT
-#     workflow.remove_component("componentName")
-#
-#     # Verify
-#     assert mock_mc.getCallCount("removeComponent")
-#     args: list = mock_mc.getLastArgumentRecord("removeComponent")
-#     assert len(args) == 1
-#     assert args[0] == "componentName"
-#
-#
+
+
+def test_remove_component(setup_function):
+    """Testing of remove_component method."""
+    # SUT
+    workflow.remove_component("a.word")
+
+    # Verify
+    assert mock_client.was_component_removed
+
+
 # @pytest.mark.parametrize(
 #     "name,get_model_call_count,get_assembly_call_count,result_type",
 #     [
@@ -788,58 +786,20 @@ def test_save_workflow_as(setup_function):
     assert mock_client.was_save_asd
 
 
-# @pytest.mark.parametrize(
-#     "server_path,parent,name,x_pos,y_pos,expected_passed_x_pos,expected_passed_y_pos",
-#     [
-#         pytest.param(
-#             "saserv://tests/add42",
-#             "Adder",
-#             "Workflow.model.workflow.model",
-#             47,
-#             42,
-#             47,
-#             42,
-#             id="fully specified position",
-#         ),
-#         # It's difficult to test these cases, because the mock expects Missing.Value,
-#         # and that really screws with the reflection-based method matching in pythonnet,
-#         # since it seems Missing.Value has special meaning in that case.
-#         # Passing None doesn't work and neither does leaving the method off.
-#         # This is probably something that the real GRPC api will have to solve.
-#         # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', None, 42,
-#         #             Missing.Value, 42, id="missing x value"),
-#         # pytest.param('saserv://tests/add42', 'Adder', 'Workflow.model.workflow.model', 47, None,
-#         #             47, Missing.Value, id="missing y value")
-#     ],
-# )
-# def test_create_component(
-#     server_path: str,
-#     name: str,
-#     parent: str,
-#     x_pos: Optional[object],
-#     y_pos: Optional[object],
-#     expected_passed_x_pos,
-#     expected_passed_y_pos,
-# ) -> None:
-#     # Setup
-#     sut_engine = mcapi.Engine()
-#     sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-#     assert sut_workflow._instance.getCallCount("createComponent") == 0
-#
-#     # Execute
-#     sut_workflow.create_component(server_path, name, parent, x_pos, y_pos)
-#
-#     # Verify
-#     assert sut_workflow._instance.getCallCount("createComponent") == 1
-#     assert sut_workflow._instance.getArgumentRecord("createComponent", 0) == [
-#         server_path,
-#         name,
-#         parent,
-#         expected_passed_x_pos,
-#         expected_passed_y_pos,
-#     ]
-#
-#
+def test_create_component(setup_function):
+    # Execute
+    component: grpcmc.Component = workflow.create_component(
+        server_path="common:\\Functions\\Quadratic",
+        name="二次",
+        parent="Model",
+        x_pos=None,
+        y_pos=None,
+    )
+
+    # Verify
+    assert component.element_id == "zxcv"
+
+
 # def test_create_link() -> None:
 #     # Setup
 #     sut_engine = mcapi.Engine()
@@ -869,7 +829,7 @@ def test_save_workflow_as(setup_function):
 #
 #     # Verify
 #     assert sut_workflow._instance.getCallCount("getVariable") == 1
-#     assert sut_workflow._instance.getArgumentRecord("getVariable", 0) == ["Model.test_assembly_var"]
+#   assert sut_workflow._instance.getArgumentRecord("getVariable", 0) == ["Model.test_assembly_var"]
 #     assert result._variable.getFullName() == "Model.test_assembly_var"
 #
 #
