@@ -152,3 +152,10 @@ class Assembly(api.Assembly):
     def index_in_parent(self) -> int:
         response = self._client.ElementGetIndexInParent(self._element_id)
         return response.index
+
+    @overrides
+    def delete_variable(self, name: str) -> None:
+        assembly_name = self.get_full_name()
+        var_name = f"{assembly_name}.{name}"
+        target_var = self._client.WorkflowGetVariableByName(ElementName(name=var_name))
+        self._client.AssemblyDeleteVariable(target_var)

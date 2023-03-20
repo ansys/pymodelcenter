@@ -19,6 +19,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     AssemblyIconSetRequest,
     AssemblyIconSetResponse,
     AssemblyType,
+    DeleteAssemblyVariableResponse,
     ElementId,
     ElementIdCollection,
     ElementIndexInParentResponse,
@@ -95,8 +96,14 @@ class MockWorkflowClientForAssemblyTest:
     def AssemblySetIcon(self, request: AssemblyIconSetRequest) -> AssemblyIconSetResponse:
         return AssemblyIconSetRequest()
 
+    def AssemblyDeleteVariable(self, request: ElementId) -> DeleteAssemblyVariableResponse:
+        return DeleteAssemblyVariableResponse()
+
     def ElementGetIndexInParent(self, request: ElementId) -> ElementIndexInParentResponse:
         return ElementIndexInParentResponse()
+
+    def WorkflowGetVariableByName(self, request: ElementName) -> ElementId:
+        return ElementId()
 
 
 def test_can_get_name(monkeypatch):
@@ -441,3 +448,24 @@ def test_get_index_in_parent(monkeypatch):
         result = sut.index_in_parent
         mock_method.assert_called_once_with(ElementId(id_string="INDEX_IN_PARENT"))
         assert result == 3
+
+
+def test_delete_variable(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    target_assembly_name = "Model.DeleteVarAssembly"
+    target_assembly_id = "TARGET_ASSEMBLY"
+    mock_client.name_responses[target_assembly_id] = target_assembly_name
+    target_variable_name = "Model.DeleteVarAssembly.VarToDelete"
+    target_variable_id = "TARGET_VARIABLE"
+    target_variable_id_response = ElementId(id_string=target_variable_id)
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowGetVariableByName", return_value=target_variable_id_response
+    ) as mock_get_by_name:
+        with unittest.mock.patch.object(
+            mock_client, "AssemblyDeleteVariable", return_value=DeleteAssemblyVariableResponse()
+        ) as mock_delete:
+            monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+            sut = Assembly(ElementId(id_string=target_assembly_id), None)
+            sut.delete_variable("VarToDelete")
+            mock_get_by_name.assert_called_once_with(ElementName(name=target_variable_name))
+            mock_delete.assert_called_once_with(ElementId(id_string=target_variable_id))
