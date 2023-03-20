@@ -5,6 +5,7 @@ import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
 import grpc
 import numpy as np
+from numpy.typing import ArrayLike
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
@@ -94,8 +95,7 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def get_value(self, var_name: str) -> acvi.IVariableValue:
-        request = element_msg.ElementId()
-        request.id_string = var_name
+        request = element_msg.ElementId(id_string=var_name)
         response: var_val_msg.VariableState
         try:
             response = self._stub.VariableGetState(request)
@@ -103,8 +103,8 @@ class Workflow(wfapi.Workflow):
             # TODO: how to handle?
             raise e
 
-        def convert(val: Iterable, val_type: Type) -> acvi.IVariableValue:
-            return val_type(np.array(val).flatten())
+        def convert(val: ArrayLike, dims: ArrayLike, val_type: Type) -> acvi.IVariableValue:
+            return val_type(shape_=dims, values=np.array(val).flatten())
 
         value = getattr(response.value, response.value.WhichOneof("value"))
         if isinstance(value, float):
@@ -116,13 +116,13 @@ class Workflow(wfapi.Workflow):
         elif isinstance(value, str):
             return acvi.StringValue(value)
         elif isinstance(value, var_val_msg.DoubleArrayValue):
-            return convert(value.values, acvi.RealArrayValue)
+            return convert(value.values, value.dims.dims, acvi.RealArrayValue)
         elif isinstance(value, var_val_msg.IntegerArrayValue):
-            return convert(value.values, acvi.IntegerArrayValue)
+            return convert(value.values, value.dims.dims, acvi.IntegerArrayValue)
         elif isinstance(value, var_val_msg.BooleanArrayValue):
-            return convert(value.values, acvi.BooleanArrayValue)
+            return convert(value.values, value.dims.dims, acvi.BooleanArrayValue)
         elif isinstance(value, var_val_msg.StringArrayValue):
-            return convert(value.values, acvi.StringArrayValue)
+            return convert(value.values, value.dims.dims, acvi.StringArrayValue)
         else:
             # unsupported type (should be impossible)
             raise TypeError(f"Unsupported type was returned: {type(value)}")

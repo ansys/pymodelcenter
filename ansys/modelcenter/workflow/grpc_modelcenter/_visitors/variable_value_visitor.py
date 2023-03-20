@@ -1,8 +1,8 @@
 from typing import Callable, Type
 
 import ansys.common.variableinterop as acvi
-from ansys.common.variableinterop.ivariable_visitor import T
 import numpy as np
+from overrides import overrides
 
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
@@ -12,7 +12,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages
 
 
 class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
-    """Visitor pattern implementation for use with acvi.IVariableValue."""
+    """Visitor for setting variable values via ModelCenter gRPC API."""
 
     def __init__(self, var_name: str, stub: ModelCenterWorkflowServiceStub):
         """
@@ -20,7 +20,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
 
         Parameters
         ----------
-        varname: str
+        var_name: str
             Name of variable to set.
         stub: ModelCenterWorkflowServiceStub
             gRPC stub to use.
@@ -28,30 +28,36 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         self._var_name = var_name
         self._stub = stub
 
-    def visit_integer(self, value: acvi.IntegerValue) -> T:  # noqa D102
+    @overrides
+    def visit_integer(self, value: acvi.IntegerValue) -> bool:
         return self._scalar_request(
             value, var_val_msg.SetIntegerValueRequest, int, self._stub.IntegerVariableSetValue
         )
 
-    def visit_real(self, value: acvi.RealValue) -> T:  # noqa D102
+    @overrides
+    def visit_real(self, value: acvi.RealValue) -> bool:
         return self._scalar_request(
             value, var_val_msg.SetDoubleValueRequest, float, self._stub.DoubleVariableSetValue
         )
 
-    def visit_boolean(self, value: acvi.BooleanValue) -> T:  # noqa D102
+    @overrides
+    def visit_boolean(self, value: acvi.BooleanValue) -> bool:
         return self._scalar_request(
             value, var_val_msg.SetBooleanValueRequest, bool, self._stub.BooleanVariableSetValue
         )
 
-    def visit_string(self, value: acvi.StringValue) -> T:  # noqa D102
+    @overrides
+    def visit_string(self, value: acvi.StringValue) -> bool:
         return self._scalar_request(
             value, var_val_msg.SetStringValueRequest, str, self._stub.StringVariableSetValue
         )
 
-    def visit_file(self, value: acvi.FileValue) -> T:  # noqa D102
+    @overrides
+    def visit_file(self, value: acvi.FileValue) -> bool:
         raise NotImplementedError
 
-    def visit_integer_array(self, value: acvi.IntegerArrayValue) -> T:  # noqa D102
+    @overrides
+    def visit_integer_array(self, value: acvi.IntegerArrayValue) -> bool:
         return self._array_request(
             value,
             var_val_msg.SetIntegerArrayValueRequest,
@@ -59,7 +65,8 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
             self._stub.IntegerArraySetValue,
         )
 
-    def visit_real_array(self, value: acvi.RealArrayValue) -> T:  # noqa D102
+    @overrides
+    def visit_real_array(self, value: acvi.RealArrayValue) -> bool:
         return self._array_request(
             value,
             var_val_msg.SetDoubleArrayValueRequest,
@@ -67,7 +74,8 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
             self._stub.DoubleArraySetValue,
         )
 
-    def visit_boolean_array(self, value: acvi.BooleanArrayValue) -> T:  # noqa D102
+    @overrides
+    def visit_boolean_array(self, value: acvi.BooleanArrayValue) -> bool:
         return self._array_request(
             value,
             var_val_msg.SetBooleanArrayValueRequest,
@@ -75,7 +83,8 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
             self._stub.BooleanArraySetValue,
         )
 
-    def visit_string_array(self, value: acvi.StringArrayValue) -> T:  # noqa D102
+    @overrides
+    def visit_string_array(self, value: acvi.StringArrayValue) -> bool:
         return self._array_request(
             value,
             var_val_msg.SetStringArrayValueRequest,
@@ -83,7 +92,8 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
             self._stub.StringArraySetValue,
         )
 
-    def visit_file_array(self, value: acvi.FileArrayValue) -> T:  # noqa D102
+    @overrides
+    def visit_file_array(self, value: acvi.FileArrayValue) -> bool:
         raise NotImplementedError
 
     def _scalar_request(
@@ -108,11 +118,8 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         bool
             was_changed from the response message.
         """
-        target = element_msg.ElementId()
-        target.id_string = self._var_name
-        request = request_type()
-        request.target = target
-        request.new_value = value_type(value)
+        target = element_msg.ElementId(id_string=self._var_name)
+        request = request_type(target=target, new_value=value_type(value))
         response = grpc_call(request)
         return response.was_changed
 
@@ -142,21 +149,13 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         bool
             was_changed from the response message.
         """
-        target = element_msg.ElementId()
-        target.id_string = self._var_name
-        set_value = value_type()
-        set_value.values = value.flatten()
-        set_value.dims = self._dims(value)
-        request = request_type()
-        request.target = target
-        request.new_value = set_value
+        target = element_msg.ElementId(id_string=self._var_name)
+        set_value = value_type(values=value.flatten(), dims=self._dims(value))
+        request = request_type(target=target, new_value=set_value)
         response = grpc_call(request)
         return response.was_changed
 
     @staticmethod
     def _dims(array: acvi.CommonArrayValue) -> var_val_msg.ArrayDimensions:
         """Helper method to get array dimensions (protobuf)."""
-        lengths = np.array(array.get_lengths()).flatten()
-        dims = var_val_msg.ArrayDimensions()
-        dims.dims = lengths
-        return dims
+        return var_val_msg.ArrayDimensions(dims=np.array(array.get_lengths()).flatten())
