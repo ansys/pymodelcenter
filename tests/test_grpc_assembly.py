@@ -15,6 +15,9 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
     AddAssemblyVariableRequest,
     AddAssemblyVariableResponse,
+    AssemblyIconResponse,
+    AssemblyIconSetRequest,
+    AssemblyIconSetResponse,
     AssemblyType,
     ElementId,
     ElementIdCollection,
@@ -84,6 +87,12 @@ class MockWorkflowClientForAssemblyTest:
         self, request: MetadataSetValueRequest
     ) -> MetadataSetValueResponse:
         return MetadataSetValueResponse()
+
+    def AssemblyGetIcon(self, request: ElementId) -> AssemblyIconResponse:
+        return AssemblyIconResponse()
+
+    def AssemblySetIcon(self, request: AssemblyIconSetRequest) -> AssemblyIconSetResponse:
+        return AssemblyIconSetRequest()
 
 
 def test_can_get_name(monkeypatch):
@@ -384,5 +393,34 @@ def test_assembly_set_int_metadata_property(monkeypatch):
                 id=ElementId(id_string="SET_METADATA"),
                 property_name="mock_property_name",
                 value=VariableValue(int_value=47),
+            )
+        )
+
+
+def test_get_icon_id(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AssemblyIconResponse(id=47)
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyGetIcon", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="GET_ICON_MOCK_TARGET"), None)
+        result = sut.icon_id
+        mock_method.assert_called_once_with(ElementId(id_string="GET_ICON_MOCK_TARGET"))
+        assert result == 47
+
+
+def test_set_icon_id(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AssemblyIconSetResponse
+    with unittest.mock.patch.object(
+        mock_client, "AssemblySetIcon", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="SET_ICON_MOCK_TARGET"), None)
+        sut.icon_id = 9001
+        mock_method.assert_called_once_with(
+            AssemblyIconSetRequest(
+                target=ElementId(id_string="SET_ICON_MOCK_TARGET"), new_icon_id=9001
             )
         )

@@ -13,6 +13,7 @@ from .group import Group
 from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
 from .proto.element_messages_pb2 import (
     AddAssemblyVariableRequest,
+    AssemblyIconSetRequest,
     ElementId,
     ElementName,
     RenameRequest,
@@ -131,4 +132,17 @@ class Assembly(api.Assembly):
             MetadataSetValueRequest(
                 id=self._element_id, property_name=property_name, value=grpc_value
             )
+        )
+
+    @property  # type: ignore
+    @overrides
+    def icon_id(self) -> int:
+        response = self._client.AssemblyGetIcon(self._element_id)
+        return response.id
+
+    @icon_id.setter  # type: ignore
+    @overrides
+    def icon_id(self, value: int) -> None:
+        self._client.AssemblySetIcon(
+            AssemblyIconSetRequest(target=self._element_id, new_icon_id=value)
         )
