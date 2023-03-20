@@ -13,8 +13,11 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_
     MetadataSetValueResponse,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
+    AddAssemblyRequest,
+    AddAssemblyResponse,
     AddAssemblyVariableRequest,
     AddAssemblyVariableResponse,
+    AnalysisViewPosition,
     AssemblyIconResponse,
     AssemblyIconSetRequest,
     AssemblyIconSetResponse,
@@ -104,6 +107,9 @@ class MockWorkflowClientForAssemblyTest:
 
     def WorkflowGetVariableByName(self, request: ElementName) -> ElementId:
         return ElementId()
+
+    def AssemblyAddAssembly(self, request: AddAssemblyRequest) -> AddAssemblyResponse:
+        return AddAssemblyResponse()
 
 
 def test_can_get_name(monkeypatch):
@@ -469,3 +475,24 @@ def test_delete_variable(monkeypatch):
             sut.delete_variable("VarToDelete")
             mock_get_by_name.assert_called_once_with(ElementName(name=target_variable_name))
             mock_delete.assert_called_once_with(ElementId(id_string=target_variable_id))
+
+
+def test_add_assembly(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AddAssemblyResponse(id=ElementId(id_string="BRAND_NEW_ASSEMBLY"))
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyAddAssembly", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
+        result = sut.add_assembly("new_assembly_name", 867, 5309, "Assembly")
+        mock_method.assert_called_once_with(
+            AddAssemblyRequest(
+                name=ElementName(name="new_assembly_name"),
+                parent=ElementId(id_string="TARGET_ASSEMBLY"),
+                assembly_type="Assembly",
+                av_pos=AnalysisViewPosition(x_pos=867, y_pos=5309),
+            )
+        )
+        assert isinstance(result, Assembly)
+        assert result.element_id == "BRAND_NEW_ASSEMBLY"

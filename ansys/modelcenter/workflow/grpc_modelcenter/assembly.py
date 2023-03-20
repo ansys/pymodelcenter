@@ -12,6 +12,7 @@ import ansys.modelcenter.workflow.api as api
 from .group import Group
 from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
 from .proto.element_messages_pb2 import (
+    AddAssemblyRequest,
     AddAssemblyVariableRequest,
     AssemblyIconSetRequest,
     ElementId,
@@ -159,3 +160,20 @@ class Assembly(api.Assembly):
         var_name = f"{assembly_name}.{name}"
         target_var = self._client.WorkflowGetVariableByName(ElementName(name=var_name))
         self._client.AssemblyDeleteVariable(target_var)
+
+    @overrides
+    def add_assembly(
+        self,
+        name: str,
+        x_pos: Optional[int],
+        y_pos: Optional[int],
+        assembly_type: Optional[str] = None,
+    ) -> api.Assembly:
+        request = AddAssemblyRequest(
+            name=ElementName(name=name), parent=self._element_id, assembly_type=assembly_type
+        )
+        if x_pos is not None and y_pos is not None:
+            request.av_pos.x_pos = x_pos
+            request.av_pos.y_pos = y_pos
+        response = self._client.AssemblyAddAssembly(request)
+        return Assembly(response.id, self._channel)
