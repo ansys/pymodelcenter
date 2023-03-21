@@ -123,17 +123,6 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def create_component(
-        self,
-        server_path: str,
-        name: str,
-        parent: str,
-        x_pos: Optional[int] = None,
-        y_pos: Optional[int] = None,
-    ) -> IComponent:
-        return self.create_and_init_component(server_path, name, parent, None, x_pos, y_pos)
-
-    @overrides
     def create_link(self, variable: str, equation: str) -> None:
         request = wkfl_msgs.WorkflowCreateLinkRequest(equation=equation)
         request.target.id_string = variable
@@ -351,17 +340,19 @@ class Workflow(IWorkflow):
         raise NotImplementedError
 
     @overrides
-    def create_and_init_component(
+    def create_component(
         self,
         server_path: str,
         name: str,
         parent: str,
-        init_string: Optional[str],
+        init_string: Optional[str] = None,
         x_pos: Optional[int] = None,
         y_pos: Optional[int] = None,
     ) -> IComponent:
         # TODO: init_string not on grpc api
-        request = wkfl_msgs.WorkflowCreateComponentRequest(source_path=server_path, name=name)
+        request = wkfl_msgs.WorkflowCreateComponentRequest(
+            source_path=server_path, name=name, init_str=init_string
+        )
         request.parent.id_string = parent
         if x_pos is not None and y_pos is not None:
             request.coord.x_pos = x_pos

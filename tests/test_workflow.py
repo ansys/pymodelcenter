@@ -838,6 +838,7 @@ def test_create_component(setup_function):
         server_path="common:\\Functions\\Quadratic",
         name="二次",
         parent="Model",
+        init_string=None,
         x_pos=None,
         y_pos=None,
     )

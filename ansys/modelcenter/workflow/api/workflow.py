@@ -193,36 +193,6 @@ class Workflow(IWorkflowInstance):
         value = self._instance.getValue(var_name)
         return Workflow.value_to_variable_value(value)
 
-    def create_component(
-        self,
-        server_path: str,
-        name: str,
-        parent: str,
-        x_pos: Optional[int] = None,
-        y_pos: Optional[int] = None,
-    ) -> IComponent:
-        """
-        Create a new component.
-
-        Parameters
-        ----------
-        server_path : str
-            The source path of the new component.
-        name : str
-            Name of the new component.
-        parent : str
-            Parent assembly of the component.
-        x_pos
-            The x-position in pixels in the Analysis View.
-        y_pos
-            The y-position in pixels in the Analysis View.
-
-        Returns
-        -------
-        The created component.
-        """
-        raise NotImplementedError
-
     def create_link(self, variable: str, equation: str) -> None:
         """
         Create a link to the specified variable based on the specified equation.
@@ -676,7 +646,7 @@ class Workflow(IWorkflowInstance):
             return None
         return Assembly(assembly)
 
-    def create_and_init_component(
+    def create_component(
         self,
         server_path: str,
         name: str,
@@ -686,7 +656,7 @@ class Workflow(IWorkflowInstance):
         y_pos: Optional[int] = None,
     ) -> IComponent:
         """
-        Creates a new component and initializes it from string data.
+        Creates a new component.
 
         Parameters
         ----------
