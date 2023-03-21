@@ -1,12 +1,14 @@
 """Tests for Workflow."""
 from typing import Iterable, List
 
+import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as ewapi
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs  # noqa: 501
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs  # noqa: 501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
@@ -110,6 +112,56 @@ class MockWorkflowClientForWorkflowTest:
         response = wkf_msgs.WorkflowBreakLinkResponse()
         if request.target_var.id_string == "jkl;":
             response.existed = True
+        return response
+
+    def WorkflowGetVariableByName(self, request: elem_msgs.ElementName):
+        response = elem_msgs.ElementId(id_string=request.name)
+        return response
+
+    def VariableGetType(self, request: elem_msgs.ElementId):
+        response = var_msgs.VariableTypeResponse()
+        if request.id_string == "model.boolean":
+            response.var_type = var_msgs.VARTYPE_BOOLEAN
+        elif request.id_string == "model.booleans":
+            response.var_type = var_msgs.VARTYPE_BOOLEAN_ARRAY
+        elif request.id_string == "model.integer":
+            response.var_type = var_msgs.VARTYPE_INTEGER
+        elif request.id_string == "model.integers":
+            response.var_type = var_msgs.VARTYPE_INTEGER_ARRAY
+        elif request.id_string == "model.double":
+            response.var_type = var_msgs.VARTYPE_REAL
+        elif request.id_string == "model.doubles":
+            response.var_type = var_msgs.VARTYPE_REAL_ARRAY
+        elif request.id_string == "model.string":
+            response.var_type = var_msgs.VARTYPE_STRING
+        elif request.id_string == "model.strings":
+            response.var_type = var_msgs.VARTYPE_STRING_ARRAY
+        elif request.id_string == "model.file":
+            response.var_type = var_msgs.VARTYPE_FILE
+        elif request.id_string == "model.files":
+            response.var_type = var_msgs.VARTYPE_FILE_ARRAY
+        return response
+
+    def DoubleVariableGetMetadata(self, request: elem_msgs.ElementId):
+        response = var_msgs.DoubleVariableMetadata()
+        response.lower_bound = 1.1
+        response.upper_bound = 4.4
+        response.enum_values.extend([1.1, 2.2, 3.3, 4.4])
+        response.enum_aliases.extend(["a", "b", "c", "d"])
+        return response
+
+    def IntegerVariableGetMetadata(self, request: elem_msgs.ElementId):
+        response = var_msgs.IntegerVariableMetadata()
+        response.lower_bound = 1
+        response.upper_bound = 4
+        response.enum_values.extend([1, 2, 3, 4])
+        response.enum_aliases.extend(["a", "b", "c", "d"])
+        return response
+
+    def StringVariableGetMetadata(self, request: elem_msgs.ElementId):
+        response = var_msgs.StringVariableMetadata()
+        response.enum_values.extend(["1", "2", "3", "4"])
+        response.enum_aliases.extend(["a", "b", "c", "d"])
         return response
 
 
@@ -442,126 +494,83 @@ def test_remove_component(setup_function):
 #     # Verification
 #     assert mock_mc.getCallCount("createDataExplorer") == 1
 #     assert de is not None
-#
-#
-# def _setup_variables(mc: MockModelCenter) -> None:
-#     """
-#     Setup various mock variables along with values.
-#
-#     Parameters
-#     ----------
-#     mc : MockModelCenter
-#         MockModelCenter to be set up with variables.
-#     """
-#     variables = DotNetList[DotNetObject]()
-#     values = DotNetList[DotNetObject]()
-#
-#     # Boolean
-#     var = MockBooleanVariable("model.boolean", 0)
-#     var.description = "Boolean value in Model."
-#     variables.Add(var)
-#     values.Add(True)
-#
-#     # Integer
-#     var = MockIntegerVariable("model.integer", 0)
-#     var.lowerBound = 0
-#     var.upperBound = 5
-#     var.units = "persons"
-#     var.description = "Integer value in Model."
-#     var.format = "a format"
-#     var.enumValues = "1, 2, 3"
-#     var.enumAliases = "one, two, three"
-#     variables.Add(var)
-#     values.Add(3)
-#
-#     # Double
-#     var = MockDoubleVariable("model.double", 0)
-#     var.lowerBound = -10
-#     var.upperBound = 15
-#     var.units = "m/s"
-#     var.description = "Double value in Model."
-#     var.format = "mock format"
-#     var.enumValues = "1.0, 2.1, 3.0"
-#     var.enumAliases = "one, more_than_two, three"
-#     variables.Add(var)
-#     values.Add(3.75)
-#
-#     # String
-#     var = MockStringVariable("model.string", 0)
-#     var.description = "String value in Model."
-#     var.enumValues = '"one" "two" "three"'
-#     var.enumAliases = "One Two Three"
-#     variables.Add(var)
-#     values.Add("Capsule 1")
-#
-#     # Boolean[]
-#     var = MockBooleanArray("model.booleans", 0)
-#     var.description = "Boolean array in Model."
-#     variables.Add(var)
-#     values.Add(True)  # ?
-#
-#     # Integer[]
-#     var = MockIntegerArray("model.integers", 0)
-#     var.lowerBound = 0
-#     var.upperBound = 5
-#     var.units = "persons"
-#     var.description = "Integer array in Model."
-#     var.format = "a format"
-#     var.enumValues = "1, 2, 3"
-#     var.enumAliases = "one, two, three"
-#     variables.Add(var)
-#     values.Add(3)
-#
-#     # Double[]
-#     var = MockDoubleArray("model.doubles", 0)
-#     var.lowerBound = -10
-#     var.upperBound = 15
-#     var.units = "m/s"
-#     var.description = "Double array in Model."
-#     var.format = "mock format"
-#     var.enumValues = "1.0, 2.1, 3.0"
-#     var.enumAliases = "one, more_than_two, three"
-#     variables.Add(var)
-#     values.Add(3.75)
-#
-#     # String[]
-#     var = MockStringArray("model.strings", 0)
-#     var.description = "String array in Model."
-#     var.enumValues = '"one" "two" "three"'
-#     var.enumAliases = "One Two Three"
-#     variables.Add(var)
-#     values.Add("Capsule 1")
-#
-#     mc.SetMockVariables(variables, values)
-#
-#
-# def test_get_variable_meta_data() -> None:
-#     # Setup
-#     _setup_variables(mock_mc)
-#
-#     # SUT
-#     boolean_metadata = workflow.get_variable_meta_data("model.boolean")
-#     integer_metadata = workflow.get_variable_meta_data("model.integer")
-#     double_metadata = workflow.get_variable_meta_data("model.double")
-#     string_metadata = workflow.get_variable_meta_data("model.string")
-#     boolean_array_metadata = workflow.get_variable_meta_data("model.booleans")
-#     integer_array_metadata = workflow.get_variable_meta_data("model.integers")
-#     double_array_metadata = workflow.get_variable_meta_data("model.doubles")
-#     string_array_metadata = workflow.get_variable_meta_data("model.strings")
-#
-#     # Verification
-#     assert mock_mc.getCallCount("getVariableMetaData") == 8
-#
-#     assert boolean_metadata.variable_type == acvi.VariableType.BOOLEAN
-#     assert integer_metadata.variable_type == acvi.VariableType.INTEGER
-#     assert double_metadata.variable_type == acvi.VariableType.REAL
-#     assert string_metadata.variable_type == acvi.VariableType.STRING
-#     assert boolean_array_metadata.variable_type == acvi.VariableType.BOOLEAN_ARRAY
-#     assert integer_array_metadata.variable_type == acvi.VariableType.INTEGER_ARRAY
-#     assert double_array_metadata.variable_type == acvi.VariableType.REAL_ARRAY
-#     assert string_array_metadata.variable_type == acvi.VariableType.STRING_ARRAY
-#
-#
+
+
+@pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
+def test_get_bool_meta_data(setup_function, is_array: bool) -> None:
+    # Setup
+    var = "model.booleans" if is_array else "model.boolean"
+    expected_type = acvi.VariableType.BOOLEAN_ARRAY if is_array else acvi.VariableType.BOOLEAN
+
+    # SUT
+    metadata = workflow.get_variable_meta_data(var)
+
+    # Verification
+    assert metadata.variable_type == expected_type
+
+
+@pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
+def test_get_int_meta_data(setup_function, is_array: bool) -> None:
+    # Setup
+    var = "model.integers" if is_array else "model.integer"
+    expected_type = acvi.VariableType.INTEGER_ARRAY if is_array else acvi.VariableType.INTEGER
+
+    # SUT
+    metadata = workflow.get_variable_meta_data(var)
+
+    # Verification
+    assert metadata.variable_type == expected_type
+    assert metadata.lower_bound == 1
+    assert metadata.upper_bound == 4
+    assert metadata.enumerated_values == [1, 2, 3, 4]
+    assert metadata.enumerated_aliases == ["a", "b", "c", "d"]
+
+
+@pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
+def test_get_real_meta_data(setup_function, is_array: bool) -> None:
+    # Setup
+    var = "model.doubles" if is_array else "model.double"
+    expected_type = acvi.VariableType.REAL_ARRAY if is_array else acvi.VariableType.REAL
+
+    # SUT
+    metadata = workflow.get_variable_meta_data(var)
+
+    # Verification
+    assert metadata.variable_type == expected_type
+    assert metadata.lower_bound == 1.1
+    assert metadata.upper_bound == 4.4
+    assert metadata.enumerated_values == [1.1, 2.2, 3.3, 4.4]
+    assert metadata.enumerated_aliases == ["a", "b", "c", "d"]
+
+
+@pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
+def test_get_string_meta_data(setup_function, is_array: bool) -> None:
+    # Setup
+    var = "model.strings" if is_array else "model.string"
+    expected_type = acvi.VariableType.STRING_ARRAY if is_array else acvi.VariableType.STRING
+
+    # SUT
+    metadata = workflow.get_variable_meta_data(var)
+
+    # Verification
+    assert metadata.variable_type == expected_type
+    assert metadata.enumerated_values == ["1", "2", "3", "4"]
+    assert metadata.enumerated_aliases == ["a", "b", "c", "d"]
+
+
+@pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
+def test_get_file_meta_data(setup_function, is_array: bool) -> None:
+    # Setup
+    var = "model.files" if is_array else "model.file"
+    expected_type = acvi.VariableType.FILE_ARRAY if is_array else acvi.VariableType.FILE
+
+    # SUT
+    metadata = workflow.get_variable_meta_data(var)
+
+    # Verification
+    assert metadata.variable_type == expected_type
+
+
 # @pytest.mark.parametrize(
 #     "mc_type,acvi_type",
 #     [

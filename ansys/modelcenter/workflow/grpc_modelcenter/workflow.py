@@ -1,6 +1,6 @@
 """Implementation of Workflow."""
 import os.path
-from typing import AbstractSet, Iterable, List, Mapping, Optional, Tuple
+from typing import AbstractSet, Iterable, List, Mapping, Optional, Tuple, Union
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import IControlStatement, IElement, WorkflowInstanceState
@@ -398,67 +398,102 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
-        # metadata: acvi.CommonVariableMetadata = None
-        # variable = self._instance.getVariableMetaData(name)  # PHXDATAHISTORYLib.IDHVariable
-        # is_array: bool = variable.type.endswith("[]")
-        # type_: str = variable.type[:-2] if is_array else variable.type
-        #
-        # if type_ == "double":
-        #     if is_array:
-        #         metadata = acvi.RealArrayMetadata()
-        #     else:
-        #         metadata = acvi.RealMetadata()
-        #     # TODO: Where do other metadata come from? variable.getMetaData?
-        #     # metadata.description =
-        #     # metadata.units =
-        #     # metadata.display_format =
-        #     metadata.lower_bound = variable.lowerBound
-        #     metadata.upper_bound = variable.upperBound
-        #     metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
-        #     metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
-        #         variable.enumAliases
-        #     )
-        #
-        # elif type_ == "integer":
-        #     if is_array:
-        #         metadata = acvi.IntegerArrayMetadata()
-        #     else:
-        #         metadata = acvi.IntegerMetadata()
-        #     metadata.lower_bound = variable.lowerBound
-        #     metadata.upper_bound = variable.upperBound
-        #     metadata.enumerated_values = acvi.IntegerArrayValue.from_api_string(
-        #       variable.enumValues)
-        #     metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
-        #         variable.enumAliases
-        #     )
-        #
-        # elif type_ == "boolean":
-        #     if is_array:
-        #         metadata = acvi.BooleanArrayMetadata()
-        #     else:
-        #         metadata = acvi.BooleanMetadata()
-        #
-        # elif type_ == "string":
-        #     if is_array:
-        #         metadata = acvi.StringArrayMetadata()
-        #     else:
-        #         metadata = acvi.StringMetadata()
-        #     metadata.enumerated_values = acvi.StringArrayValue.from_api_string(
-        #       variable.enumValues)
-        #     metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
-        #         variable.enumAliases
-        #     )
-        # else:
-        #     raise NotImplementedError
-        #
-        # # TODO: Add remaining types.
-        # if metadata is not None:
-        #     # Copy custom metadata.
-        #     keys = variable.getMetaDataKeys()
-        #     for key in keys:
-        #         metadata.custom_metadata[key] = variable.getMetaData(key)
-        # return metadata
-        raise NotImplementedError
+        metadata: acvi.CommonVariableMetadata = None
+        request = ElementName(name=name)
+        response: ElementId = self._stub.WorkflowGetVariableByName(request)
+        type_response: var_msgs.VariableTypeResponse = self._stub.VariableGetType(response)
+        var_type: var_msgs.VariableType = type_response.var_type
+        if var_type == var_msgs.VARTYPE_BOOLEAN:
+            metadata = acvi.BooleanMetadata()
+            # TODO: description?
+        elif var_type == var_msgs.VARTYPE_INTEGER:
+            metadata = acvi.IntegerMetadata()
+            self._set_int_metadata(response, metadata)
+        elif var_type == var_msgs.VARTYPE_REAL:
+            metadata = acvi.RealMetadata()
+            self._set_real_metadata(response, metadata)
+        elif var_type == var_msgs.VARTYPE_STRING:
+            metadata = acvi.StringMetadata()
+            self._set_string_metadata(response, metadata)
+        elif var_type == var_msgs.VARTYPE_FILE:
+            metadata = acvi.FileMetadata()
+            # TODO: description?
+        elif var_type == var_msgs.VARTYPE_BOOLEAN_ARRAY:
+            metadata = acvi.BooleanArrayMetadata()
+            # TODO: description?
+        elif var_type == var_msgs.VARTYPE_INTEGER_ARRAY:
+            metadata = acvi.IntegerArrayMetadata()
+            self._set_int_metadata(response, metadata)
+        elif var_type == var_msgs.VARTYPE_REAL_ARRAY:
+            metadata = acvi.RealArrayMetadata()
+            self._set_real_metadata(response, metadata)
+        elif var_type == var_msgs.VARTYPE_STRING_ARRAY:
+            metadata = acvi.StringArrayMetadata()
+            self._set_string_metadata(response, metadata)
+        elif var_type == var_msgs.VARTYPE_FILE_ARRAY:
+            metadata = acvi.FileArrayMetadata()
+            # TODO: description?
+        else:
+            raise ValueError("Unknown variable type.")
+        return metadata
+
+    def _set_real_metadata(
+        self, var_id: ElementId, metadata: Union[acvi.RealMetadata, acvi.RealArrayMetadata]
+    ) -> None:
+        """
+        Query grpc for metadata for a real variable, and populate the given metadata object.
+
+        Parameters
+        ----------
+        var_id: ElementId
+        The id of the variable.
+        metadata: Union[acvi.RealMetadata, acvi.RealArrayMetadata]
+        The metadata object to populate.
+        """
+        response: var_msgs.DoubleVariableMetadata = self._stub.DoubleVariableGetMetadata(var_id)
+        # TODO: description, units, display_format?
+        metadata.lower_bound = response.lower_bound
+        metadata.upper_bound = response.upper_bound
+        metadata.enumerated_values.extend(response.enum_values)
+        metadata.enumerated_aliases.extend(response.enum_aliases)
+
+    def _set_int_metadata(
+        self, var_id: ElementId, metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata]
+    ) -> None:
+        """
+        Query grpc for metadata for an integer variable, and populate the given metadata object.
+
+        Parameters
+        ----------
+        var_id: ElementId
+        The id of the variable.
+        metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata]
+        The metadata object to populate.
+        """
+        response: var_msgs.IntegerVariableMetadata = self._stub.IntegerVariableGetMetadata(var_id)
+        # TODO: description, units, display_format?
+        metadata.lower_bound = response.lower_bound
+        metadata.upper_bound = response.upper_bound
+        metadata.enumerated_values.extend(response.enum_values)
+        metadata.enumerated_aliases.extend(response.enum_aliases)
+
+    def _set_string_metadata(
+        self, var_id: ElementId, metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata]
+    ) -> None:
+        """
+        Query grpc for metadata for a string variable, and populate the given metadata object.
+
+        Parameters
+        ----------
+        var_id: ElementId
+        The id of the variable.
+        metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata]
+        The metadata object to populate.
+        """
+        # TODO: description, units, display_format?
+        response: var_msgs.StringVariableMetadata = self._stub.StringVariableGetMetadata(var_id)
+        metadata.enumerated_values.extend(response.enum_values)
+        metadata.enumerated_aliases.extend(response.enum_aliases)
 
     @overrides
     def create_data_explorer(self, trade_study_type: str, setup: str) -> DataExplorer:
