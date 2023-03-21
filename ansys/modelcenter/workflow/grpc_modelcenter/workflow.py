@@ -7,11 +7,18 @@ from ansys.engineeringworkflow.api import IControlStatement, IElement, WorkflowI
 import grpc
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import DataExplorer, DataMonitor, IComponent, VariableLink
+from ansys.modelcenter.workflow.api import (
+    DataExplorer,
+    DataMonitor,
+    IComponent,
+    IVariable,
+    VariableLink,
+)
 from ansys.modelcenter.workflow.api import Workflow as IWorkflow
 
 from .assembly import Assembly
 from .component import Component
+from .proto import variable_value_messages_pb2 as var_msgs
 from .proto import workflow_messages_pb2 as wkfl_msgs
 from .proto.element_messages_pb2 import ElementId, ElementName
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
@@ -152,9 +159,34 @@ class Workflow(IWorkflow):
         response: wkfl_msgs.WorkflowCloseResponse = self._stub.WorkflowClose(request)
 
     @overrides
-    def get_variable(self, name: str) -> object:
-        # return WorkflowVariable(self._instance.getVariable(name))
-        raise NotImplementedError
+    def get_variable(self, name: str) -> IVariable:
+        request = ElementName(name=name)
+        response: ElementId = self._stub.WorkflowGetVariableByName(request)
+        type_response: var_msgs.VariableTypeResponse = self._stub.VariableGetType(response)
+        # TODO: maybe use a visitor here?
+        var_type: var_msgs.VariableType = type_response.var_type
+        if var_type == var_msgs.VARTYPE_BOOLEAN:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_INTEGER:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_REAL:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_STRING:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_FILE:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_BOOLEAN_ARRAY:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_INTEGER_ARRAY:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_REAL_ARRAY:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_STRING_ARRAY:
+            return None  # TODO: need wrapper
+        elif var_type == var_msgs.VARTYPE_FILE_ARRAY:
+            return None  # TODO: need wrapper
+        else:
+            raise ValueError("Unknown variable type.")
 
     @overrides
     def get_component(self, name: str) -> IComponent:

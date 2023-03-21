@@ -15,6 +15,7 @@ from . import DataExplorer
 from .datamonitor import DataMonitor
 from .i18n import i18n
 from .icomponent import IComponent
+from .ivariable import IVariable
 from .variable_links import VariableLink
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
@@ -254,7 +255,7 @@ class Workflow(IWorkflowInstance):
         """Close the current Model."""
         self._instance.closeModel()
 
-    def get_variable(self, name: str) -> object:
+    def get_variable(self, name: str) -> IVariable:
         """
         Get variable of given name.
 
@@ -267,7 +268,7 @@ class Workflow(IWorkflowInstance):
         -------
         The variable.
         """
-        return WorkflowVariable(self._instance.getVariable(name))
+        raise NotImplementedError
 
     def get_component(self, name: str) -> IComponent:  # IComponent, IIfComponent, IScriptComponent
         """
