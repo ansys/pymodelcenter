@@ -106,6 +106,12 @@ class MockWorkflowClientForWorkflowTest:
             link.rhs = "c"
         return response
 
+    def WorkflowBreakLink(self, request: wkf_msgs.WorkflowBreakLinkRequest):
+        response = wkf_msgs.WorkflowBreakLinkResponse()
+        if request.target_var.id_string == "jkl;":
+            response.existed = True
+        return response
+
 
 mock_client: MockWorkflowClientForWorkflowTest
 
@@ -703,25 +709,25 @@ def test_remove_component(setup_function):
 #     # Verification
 #     assert mock_mc.getCallCount("getMacroTimeout") == 1
 #     assert timeout == 25.0  # arbitrary value from MockModelCenter
-#
-#
-# def test_break_link() -> None:
-#     """
-#     Verify that breaking a link works correctly.
-#     """
-#
-#     # Setup
-#     sut_engine = mcapi.Engine()
-#     sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflowName")
-#     link_var_name: str = "Component.dont.link.me"
-#     assert sut_workflow._instance.getCallCount("breakLink") == 0
-#
-#     # Execute
-#     sut_workflow.break_link(link_var_name)
-#
-#     # Verify
-#     assert sut_workflow._instance.getCallCount("breakLink") == 1
-#     assert sut_workflow._instance.getArgumentRecord("breakLink", 0) == [link_var_name]
+
+
+def test_break_link(setup_function) -> None:
+    """
+    Verify that breaking a link works correctly.
+    """
+    # Execute
+    workflow.break_link("jkl;")
+
+    # No exception should be thrown
+
+
+def test_break_link_for_invalid_target(setup_function) -> None:
+    """
+    Verify that breaking an invalid link works correctly.
+    """
+    with pytest.raises(ValueError) as err:
+        workflow.break_link("")
+    assert err.value.args[0] == "Target id does not exist."
 
 
 @pytest.mark.parametrize(

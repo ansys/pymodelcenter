@@ -351,16 +351,16 @@ class Workflow(IWorkflowInstance):
         """
         self._instance.removeComponent(name)
 
-    def break_link(self, variable: str) -> None:
+    def break_link(self, target_id: str) -> None:
         """
         Break the link to a variable.
 
         Parameters
         ----------
-        variable : str
-            The full ModelCenter path of the variable whose link is to be broken.
+        target_id : str
+            The id of the variable whose link is to be broken.
         """
-        self._instance.breakLink(variable)
+        self._instance.breakLink(target_id)
 
     def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
         """

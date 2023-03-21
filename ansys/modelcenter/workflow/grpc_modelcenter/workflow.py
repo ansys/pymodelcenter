@@ -12,25 +12,9 @@ from ansys.modelcenter.workflow.api import Workflow as IWorkflow
 
 from .assembly import Assembly
 from .component import Component
+from .proto import workflow_messages_pb2 as wkfl_msgs
 from .proto.element_messages_pb2 import ElementId, ElementName
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
-from .proto.workflow_messages_pb2 import (
-    WorkflowAutoLinkRequest,
-    WorkflowAutoLinkResponse,
-    WorkflowCloseResponse,
-    WorkflowCreateComponentRequest,
-    WorkflowCreateComponentResponse,
-    WorkflowCreateLinkRequest,
-    WorkflowCreateLinkResponse,
-    WorkflowGetDirectoryResponse,
-    WorkflowGetLinksResponse,
-    WorkflowGetRootResponse,
-    WorkflowId,
-    WorkflowRemoveComponentRequest,
-    WorkflowRemoveComponentResponse,
-    WorkflowSaveAsRequest,
-    WorkflowSaveResponse,
-)
 
 
 class Workflow(IWorkflow):
@@ -94,8 +78,8 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_root(self) -> IControlStatement:
-        request = WorkflowId(id=self._id)
-        response: WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
+        request = wkfl_msgs.WorkflowId(id=self._id)
+        response: wkfl_msgs.WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
         root: ElementId = response.id
         return Assembly(root)
 
@@ -107,8 +91,8 @@ class Workflow(IWorkflow):
     @property  # type: ignore
     @overrides
     def workflow_directory(self) -> str:
-        request = WorkflowId(id=self._id)
-        response: WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
+        request = wkfl_msgs.WorkflowId(id=self._id)
+        response: wkfl_msgs.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
         return response.workflow_dir
 
     @property  # type: ignore
@@ -144,28 +128,28 @@ class Workflow(IWorkflow):
 
     @overrides
     def create_link(self, variable: str, equation: str) -> None:
-        request = WorkflowCreateLinkRequest(equation=equation)
+        request = wkfl_msgs.WorkflowCreateLinkRequest(equation=equation)
         request.target.id_string = variable
-        response: WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
+        response: wkfl_msgs.WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
 
     @overrides
     def save_workflow(self) -> None:
-        request = WorkflowId()
+        request = wkfl_msgs.WorkflowId()
         request.id = self._id
-        response: WorkflowSaveResponse = self._stub.WorkflowSave(request)
+        response: wkfl_msgs.WorkflowSaveResponse = self._stub.WorkflowSave(request)
 
     @overrides
     def save_workflow_as(self, file_name: str) -> None:
-        request = WorkflowSaveAsRequest()
+        request = wkfl_msgs.WorkflowSaveAsRequest()
         request.target.id = self._id
         request.new_target_path = file_name
-        response: WorkflowSaveResponse = self._stub.WorkflowSaveAs(request)
+        response: wkfl_msgs.WorkflowSaveResponse = self._stub.WorkflowSaveAs(request)
 
     @overrides
     def close_workflow(self) -> None:
-        request = WorkflowId()
+        request = wkfl_msgs.WorkflowId()
         request.id = self._id
-        response: WorkflowCloseResponse = self._stub.WorkflowClose(request)
+        response: wkfl_msgs.WorkflowCloseResponse = self._stub.WorkflowClose(request)
 
     @overrides
     def get_variable(self, name: str) -> object:
@@ -209,16 +193,21 @@ class Workflow(IWorkflow):
     @overrides
     def remove_component(self, name: str) -> None:
         comp: Component = self.get_component(name)
-        request = WorkflowRemoveComponentRequest()
+        request = wkfl_msgs.WorkflowRemoveComponentRequest()
         request.target.id_string = comp.element_id
-        response: WorkflowRemoveComponentResponse = self._stub.WorkflowRemoveComponent(request)
+        response: wkfl_msgs.WorkflowRemoveComponentResponse = self._stub.WorkflowRemoveComponent(
+            request
+        )
         if not response.existed:
             raise ValueError("Component does not exist")
 
     @overrides
-    def break_link(self, variable: str) -> None:
-        # self._instance.breakLink(variable)
-        raise NotImplementedError
+    def break_link(self, target_id: str) -> None:
+        request = wkfl_msgs.WorkflowBreakLinkRequest()
+        request.target_var.id_string = target_id
+        response: wkfl_msgs.WorkflowBreakLinkResponse = self._stub.WorkflowBreakLink(request)
+        if not response.existed:
+            raise ValueError("Target id does not exist.")
 
     @overrides
     def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
@@ -239,10 +228,10 @@ class Workflow(IWorkflow):
 
     @overrides
     def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[VariableLink]:
-        request = WorkflowAutoLinkRequest()
+        request = wkfl_msgs.WorkflowAutoLinkRequest()
         request.source_comp.id_string = src_comp
         request.target_comp.id_string = dest_comp
-        response: WorkflowAutoLinkResponse = self._stub.WorkflowAutoLink(request)
+        response: wkfl_msgs.WorkflowAutoLinkResponse = self._stub.WorkflowAutoLink(request)
         links: List[VariableLink] = []
         for entry in response.created_links:
             link = VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
@@ -251,8 +240,8 @@ class Workflow(IWorkflow):
 
     @overrides
     def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
-        request = WorkflowId(id=self._id)
-        response: WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(request)
+        request = wkfl_msgs.WorkflowId(id=self._id)
+        response: wkfl_msgs.WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(request)
         links: List[VariableLink] = []
         for entry in response.links:
             link = VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
@@ -340,12 +329,14 @@ class Workflow(IWorkflow):
         y_pos: Optional[int] = None,
     ) -> IComponent:
         # TODO: init_string not on grpc api
-        request = WorkflowCreateComponentRequest(source_path=server_path, name=name)
+        request = wkfl_msgs.WorkflowCreateComponentRequest(source_path=server_path, name=name)
         request.parent.id_string = parent
         if x_pos is not None and y_pos is not None:
             request.coord.x_pos = x_pos
             request.coord.y_pos = y_pos
-        response: WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(request)
+        response: wkfl_msgs.WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(
+            request
+        )
         return Component(response.created.id_string)
 
     @overrides
