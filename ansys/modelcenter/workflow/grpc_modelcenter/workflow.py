@@ -95,10 +95,12 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def get_value(self, var_name: str) -> acvi.IVariableValue:
-        request = element_msg.ElementId(id_string=var_name)
+        var_id: element_msg.ElementId = self._stub.WorkflowGetVariableByName(
+            element_msg.ElementId(id_string=var_name)
+        )
         response: var_val_msg.VariableState
         try:
-            response = self._stub.VariableGetState(request)
+            response = self._stub.VariableGetState(var_id)
         except grpc.RpcError as e:
             # TODO: how to handle?
             raise e
