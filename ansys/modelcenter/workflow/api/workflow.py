@@ -15,7 +15,8 @@ from . import DataExplorer
 from .datamonitor import DataMonitor
 from .i18n import i18n
 from .icomponent import IComponent
-from .variable_links import VariableLink, dotnet_links_to_iterable
+from .ivariable import IVariable
+from .variable_links import VariableLink
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock  # type: ignore
@@ -192,40 +193,6 @@ class Workflow(IWorkflowInstance):
         value = self._instance.getValue(var_name)
         return Workflow.value_to_variable_value(value)
 
-    def create_component(
-        self,
-        server_path: str,
-        name: str,
-        parent: str,
-        x_pos: Optional[object] = None,
-        y_pos: Optional[object] = None,
-    ) -> None:
-        """
-        Create, or connect, to a new MCRE Component.
-
-        Parameters
-        ----------
-        server_path : str
-            The MCRE source path of the new component.
-        name : str
-            Name of the new component.
-        parent : str
-            Parent assembly of the component.
-        x_pos
-            The x-position in pixels in the Analysis View.
-        y_pos
-            The y-position in pixels in the Analysis View.
-        """
-        pass
-
-        # LTTODO: The mock expects System.Reflection.Missing.Value for x_pos and y_pos to indicate
-        # that no value was passed, but it's not feasible to actually pass that, since pythonnet
-        # seems to get tripped up while it's using reflection to find a method to actually call
-        # (Missing.Value has a special meaning there, it seems.)
-        # This is something the actual GRPC API will probably have to solve.
-
-        self._instance.createComponent(server_path, name, parent, x_pos, y_pos)
-
     def create_link(self, variable: str, equation: str) -> None:
         """
         Create a link to the specified variable based on the specified equation.
@@ -233,7 +200,7 @@ class Workflow(IWorkflowInstance):
         Parameters
         ----------
         variable : str
-            Variable to add the link to.
+            The element ID of the variable to add the link to.
         equation : str
             Equation of the link.
         """
@@ -258,7 +225,7 @@ class Workflow(IWorkflowInstance):
         """Close the current Model."""
         self._instance.closeModel()
 
-    def get_variable(self, name: str) -> object:
+    def get_variable(self, name: str) -> IVariable:
         """
         Get variable of given name.
 
@@ -271,7 +238,7 @@ class Workflow(IWorkflowInstance):
         -------
         The variable.
         """
-        return WorkflowVariable(self._instance.getVariable(name))
+        raise NotImplementedError
 
     def get_component(self, name: str) -> IComponent:  # IComponent, IIfComponent, IScriptComponent
         """
@@ -355,16 +322,16 @@ class Workflow(IWorkflowInstance):
         """
         self._instance.removeComponent(name)
 
-    def break_link(self, variable: str) -> None:
+    def break_link(self, target_id: str) -> None:
         """
         Break the link to a variable.
 
         Parameters
         ----------
-        variable : str
-            The full ModelCenter path of the variable whose link is to be broken.
+        target_id : str
+            The id of the variable whose link is to be broken.
         """
-        self._instance.breakLink(variable)
+        self._instance.breakLink(target_id)
 
     def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
         """
@@ -470,7 +437,7 @@ class Workflow(IWorkflowInstance):
 
         return metadata
 
-    def auto_link(self, src_comp: str, dest_comp: str) -> None:
+    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[VariableLink]:
         """
         Automatically links two components.
 
@@ -480,8 +447,12 @@ class Workflow(IWorkflowInstance):
             The source component.
         dest_comp : str
             The destination component.
+
+        Returns
+        -------
+        A collection of the created links.
         """
-        self._instance.autoLink(src_comp, dest_comp)
+        raise NotImplementedError
 
     def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
         """
@@ -496,7 +467,7 @@ class Workflow(IWorkflowInstance):
         -------
         Iterable over variable links.
         """
-        return dotnet_links_to_iterable(self._instance.getLinks(reserved))
+        raise NotImplementedError
 
     def get_workflow_uuid(self) -> str:
         """Get the unique ID string for the current model."""
@@ -624,17 +595,38 @@ class Workflow(IWorkflowInstance):
             return None
         return Assembly(assembly)
 
-    def create_and_init_component(
+    def create_component(
         self,
         server_path: str,
         name: str,
         parent: str,
-        init_string: str,
-        x_pos: object = None,
-        y_pos: object = None,
-    ):
-        """Creates a new component and initializes it from string data."""
-        pass
+        init_string: Optional[str],
+        x_pos: Optional[int] = None,
+        y_pos: Optional[int] = None,
+    ) -> IComponent:
+        """
+        Creates a new component.
+
+        Parameters
+        ----------
+        server_path : str
+            The MCRE source path of the new component.
+        name : str
+            Name of the new component.
+        parent : str
+            Parent assembly of the component.
+        init_string: Optional[str]
+            The initialization string.
+        x_pos
+            The x-position in pixels in the Analysis View.
+        y_pos
+            The y-position in pixels in the Analysis View.
+
+        Returns
+        -------
+        The created component.
+        """
+        raise NotImplementedError
 
     def get_macro_script(self, macro_name: str) -> str:
         """

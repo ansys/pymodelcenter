@@ -206,6 +206,7 @@ def test_invalidate(sut: mcapi.IVariable) -> None:
 
 
 @pytest.mark.parametrize("sut", __instance_only_tests)
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_dependent_links(sut: mcapi.IVariable) -> None:
     """
     Verify that dependent_links works correctly.
@@ -227,6 +228,7 @@ def test_dependent_links(sut: mcapi.IVariable) -> None:
 
 
 @pytest.mark.parametrize("sut", __instance_only_tests)
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_precedent_links(sut: mcapi.IVariable) -> None:
     """
     Verify that precedent_links works correctly.
