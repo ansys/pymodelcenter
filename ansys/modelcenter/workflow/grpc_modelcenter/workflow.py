@@ -253,20 +253,19 @@ class Workflow(IWorkflow):
         request.source_comp.id_string = src_comp
         request.target_comp.id_string = dest_comp
         response: wkfl_msgs.WorkflowAutoLinkResponse = self._stub.WorkflowAutoLink(request)
-        links: List[VariableLink] = []
-        for entry in response.created_links:
-            link = VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
-            links.append(link)
+        links: List[VariableLink] = [
+            VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+            for entry in response.created_links
+        ]
         return links
 
     @overrides
     def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
         request = wkfl_msgs.WorkflowId(id=self._id)
         response: wkfl_msgs.WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(request)
-        links: List[VariableLink] = []
-        for entry in response.links:
-            link = VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
-            links.append(link)
+        links: List[VariableLink] = [
+            VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs) for entry in response.links
+        ]
         return links
 
     @overrides
