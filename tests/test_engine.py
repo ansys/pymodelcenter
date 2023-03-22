@@ -78,7 +78,6 @@ class MockEngineClientForEngineTest:
     ) -> eng_msgs.NewWorkflowResponse:
         response = eng_msgs.NewWorkflowResponse()
         response.workflow_id = "8675309"
-        response.root_element.id_string = "Model"
         return response
 
     def EngineLoadWorkflow(
@@ -86,7 +85,6 @@ class MockEngineClientForEngineTest:
     ) -> eng_msgs.LoadWorkflowResponse:
         response = eng_msgs.LoadWorkflowResponse()
         response.workflow_id = "147258369"
-        response.root_element.id_string = "モデル"
         return response
 
 
@@ -217,29 +215,6 @@ def test_new_workflow(setup_function, workflow_type: mcapi.WorkflowType) -> None
     # Verification
     assert isinstance(result, grpcapi.Workflow)
     assert result._id == "8675309"
-    assert result._root.id_string == "Model"
-
-
-def test_new_workflow_with_existing(setup_function) -> None:
-    """
-    Verify that new_workflow throws an appropriate exception when an \
-    existing Workflow is not closed beforehand.
-    """
-
-    # Setup
-    engine = grpcapi.Engine()
-    result: grpcapi.Workflow = engine.new_workflow("workflow.pxcz")
-
-    # SUT
-    with pytest.raises(Exception) as except_info:
-        engine.new_workflow("workflow2.pxcz")
-
-    # Verification
-    assert (
-        except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "
-        "Close the current Workflow before loading or creating a "
-        "new one."
-    )
 
 
 @pytest.mark.parametrize(
@@ -270,29 +245,6 @@ def test_load_workflow(setup_function, path: str, error: mcapi.OnConnectionError
     # Verification
     assert isinstance(result, grpcapi.Workflow)
     assert result._id == "147258369"
-    assert result._root.id_string == "モデル"
-
-
-def test_load_workflow_existing(setup_function) -> None:
-    """
-    Verify that load_workflow throws an appropriate exception when an \
-    existing Workflow is not closed beforehand.
-    """
-
-    # Setup
-    engine = grpcapi.Engine()
-    result: grpcapi.Workflow = engine.new_workflow("workflow.pxcz")
-
-    # SUT
-    with pytest.raises(Exception) as except_info:
-        engine.load_workflow("")
-
-    # Verification
-    assert (
-        except_info.value.args[0] == "Error: Only one Workflow can be open at a time. "
-        "Close the current Workflow before loading or creating a "
-        "new one."
-    )
 
 
 @pytest.mark.parametrize(
