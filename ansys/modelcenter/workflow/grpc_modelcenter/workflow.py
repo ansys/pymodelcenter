@@ -1,6 +1,6 @@
 """Implementation of Workflow."""
 import os.path
-from typing import AbstractSet, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import AbstractSet, Iterable, List, Mapping, Optional, Union
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import IControlStatement, IElement, WorkflowInstanceState
@@ -305,18 +305,6 @@ class Workflow(IWorkflow):
 
     @overrides
     def set_xml_extension(self, xml: str) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def set_assembly_style(
-        self, assembly_name: str, style: object, width: object = None, height: object = None
-    ) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         # TODO: not on grpc api
         raise NotImplementedError
 
