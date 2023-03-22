@@ -22,6 +22,7 @@ from .proto import variable_value_messages_pb2 as var_msgs
 from .proto import workflow_messages_pb2 as wkfl_msgs
 from .proto.element_messages_pb2 import ElementId, ElementName
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 
 
 class Workflow(IWorkflow):
@@ -65,6 +66,26 @@ class Workflow(IWorkflow):
         # return self._state
         raise NotImplementedError
 
+    def _create_run_request(
+        self,
+        inputs: Mapping[str, acvi.VariableState],
+        reset: bool,
+        validation_ids: AbstractSet[str],
+    ) -> wkfl_msgs.WorkflowRunRequest:
+        request = wkfl_msgs.WorkflowRunRequest(
+            target=wkfl_msgs.WorkflowId(id=self._id),
+            reset=reset,
+            validation_ids=[val_id for val_id in validation_ids],
+        )
+
+        var_id: str
+        var_state: acvi.VariableState
+        for var_id, var_state in inputs.items():
+            request.inputs[var_id].is_valid = var_state.is_valid
+            request.inputs[var_id].value.MergeFrom(convert_interop_value_to_grpc(var_state.value))
+
+        return request
+
     @overrides
     def run(
         self,
@@ -72,7 +93,19 @@ class Workflow(IWorkflow):
         reset: bool,
         validation_ids: AbstractSet[str],
     ) -> Mapping[str, acvi.VariableState]:
-        raise NotImplementedError
+        request: wkfl_msgs.WorkflowRunRequest = self._create_run_request(
+            inputs, reset, validation_ids
+        )
+        response = self._stub.WorkflowRun(request)
+        elem_id: str
+        response_var_state: var_msgs.VariableState
+        return {
+            elem_id: acvi.VariableState(
+                is_valid=response_var_state.is_valid,
+                value=convert_grpc_value_to_acvi(response_var_state.value),
+            )
+            for elem_id, response_var_state in response.results.items()
+        }
 
     @overrides
     def start_run(
