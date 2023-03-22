@@ -1,11 +1,10 @@
 """Defines classes and functions for working with VariableLinks."""
-from typing import Sequence
 
 
 class VariableLink:
     """Represents a link between two variables in the workflow."""
 
-    def __init__(self, link):
+    def __init__(self, lhs_id: str, rhs: str):
         """
         Construct a new instance.
 
@@ -14,15 +13,20 @@ class VariableLink:
         link :
             Currently, the mock link object to wrap.
         """
-        self._link = link
+        self._lhs_id = lhs_id
+        self._rhs = rhs
+
+    def __str__(self) -> str:
+        """Convert this object to a string."""
+        return "{LHS: " + self._lhs_id + ", RHS: " + self._rhs + "}"
 
     def suspend_link(self) -> None:
         """Causes the link to be suspended."""
-        self._link.suspendLink()
+        raise NotImplementedError
 
     def resume_link(self) -> None:
         """Resumes the link if it was suspended."""
-        self._link.resumeLink()
+        raise NotImplementedError
 
     def break_link(self) -> None:
         """
@@ -31,7 +35,7 @@ class VariableLink:
         Breaking the link removes the dependencies between the left-hand and right-hand side of the
         link. This object becomes invalid and cannot be used after calling this method.
         """
-        self._link.breakLink()
+        raise NotImplementedError
 
     @property
     def lhs(self) -> str:
@@ -42,7 +46,7 @@ class VariableLink:
         side (analogous to a variable assignment in most languages). This will always be
         a simple variable name.
         """
-        return self._link.LHS
+        return self._lhs_id
 
     @property
     def rhs(self) -> str:
@@ -51,39 +55,19 @@ class VariableLink:
 
         You can change the link by changing this value.
         """
-        return self._link.RHS
+        return self._rhs
 
-    @rhs.setter
-    def rhs(self, rhs: str) -> None:
-        """
-        The right-hand side of the link equation.
-
-        You can change the link by changing this value.
-
-        Parameters
-        ----------
-        rhs: str
-            the new value for the link's right-hand side.
-        """
-        self._link.RHS = rhs
-
-
-def dotnet_links_to_iterable(dotnet_links) -> Sequence[VariableLink]:
-    """
-    Convert a list of mock links to a Python iterable.
-
-    This currently just wraps every link in the passed-in list, producing a Python list of wrappers.
-    A more nuanced approach will be necessary when we switch to a real backend.
-
-    Parameters
-    ----------
-    dotnet_links:
-        An IVariableLinks object from the mock ModelCenter.
-
-    Returns
-    -------
-    A sequence of variable link objects.
-    """
-    return [
-        VariableLink(dotnet_links.Item(var_index)) for var_index in range(0, dotnet_links.Count)
-    ]
+    # @rhs.setter
+    # def rhs(self, rhs: str) -> None:
+    #     """
+    #     The right-hand side of the link equation.
+    #
+    #     You can change the link by changing this value.
+    #
+    #     Parameters
+    #     ----------
+    #     rhs: str
+    #         the new value for the link's right-hand side.
+    #     """
+    #     self._rhs = rhs
+    # TODO: not on grpc api, may want to just remove
