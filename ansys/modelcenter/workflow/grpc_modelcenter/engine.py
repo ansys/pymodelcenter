@@ -13,7 +13,6 @@ from ansys.modelcenter.workflow.api import Format as IFormat
 from ansys.modelcenter.workflow.api import OnConnectionErrorMode
 from ansys.modelcenter.workflow.api import Workflow as IWorkflow
 from ansys.modelcenter.workflow.api import WorkflowType
-from ansys.modelcenter.workflow.api.i18n import i18n
 
 from .format import Format
 from .mcd_process import MCDProcess
@@ -84,16 +83,11 @@ class Engine(IEngine):
 
     @overrides
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
-        if self._workflow_id is not None:
-            msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
-            raise Exception(msg)
-        else:
-            request = NewWorkflowRequest()
-            request.path = name
-            request.workflow_type = DATA if workflow_type is WorkflowType.DATA else PROCESS
-            response: NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
-            self._workflow_id = response.workflow_id
-            return Workflow(response.root_element, response.workflow_id)
+        request = NewWorkflowRequest()
+        request.path = name
+        request.workflow_type = DATA if workflow_type is WorkflowType.DATA else PROCESS
+        response: NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
+        return Workflow(response.workflow_id, name)
 
     @overrides
     def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
@@ -105,14 +99,10 @@ class Engine(IEngine):
     ) -> IWorkflow:
         if on_connect_error == OnConnectionErrorMode.DIALOG:
             raise ValueError("This client does not support UI mode.")
-        if self._workflow_id is not None:
-            msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
-            raise Exception(msg)
         request = LoadWorkflowRequest()
         request.path = file_name
         response: LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
-        self._workflow_id = response.workflow_id
-        return Workflow(response.root_element, response.workflow_id)
+        return Workflow(response.workflow_id, file_name)
 
     @overrides
     def get_formatter(self, fmt: str) -> IFormat:

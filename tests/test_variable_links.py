@@ -8,6 +8,7 @@ import pytest
 import ansys.modelcenter.workflow.api as mcapi
 
 
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_suspend_link() -> None:
     # Setup
     dotnet_wrapped: MockVariableLink = MockVariableLink()
@@ -21,6 +22,7 @@ def test_suspend_link() -> None:
     assert dotnet_wrapped.getCallCount("suspendLink") == 1
 
 
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_resume_link() -> None:
     # Setup
     dotnet_wrapped: MockVariableLink = MockVariableLink()
@@ -34,6 +36,7 @@ def test_resume_link() -> None:
     assert dotnet_wrapped.getCallCount("resumeLink") == 1
 
 
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_break_var_link() -> None:
     # Setup
     dotnet_wrapped: MockVariableLink = MockVariableLink()
@@ -47,6 +50,7 @@ def test_break_var_link() -> None:
     assert dotnet_wrapped.getCallCount("breakLink") == 1
 
 
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_lhs_readonly() -> None:
     # Setup
     dotnet_wrapped: MockVariableLink = MockVariableLink()
@@ -63,6 +67,7 @@ def test_lhs_readonly() -> None:
     assert str(except_info.value) == "can't set attribute"
 
 
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_read_lhs() -> None:
     # Setup
     dotnet_wrapped: MockVariableLink = MockVariableLink()
@@ -76,6 +81,7 @@ def test_read_lhs() -> None:
     assert result == "left hand side"
 
 
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_write_rhs() -> None:
     # Setup
     dotnet_wrapped: MockVariableLink = MockVariableLink()
@@ -89,6 +95,7 @@ def test_write_rhs() -> None:
     assert dotnet_wrapped.RHS == "TESTPASS"
 
 
+@pytest.mark.skip(reason="rewrite for grpc api")
 def test_read_rhs() -> None:
     # Setup
     dotnet_wrapped: MockVariableLink = MockVariableLink()
