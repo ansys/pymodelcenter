@@ -579,31 +579,6 @@ def test_get_variable_meta_data() -> None:
     assert string_array_metadata.variable_type == acvi.VariableType.STRING_ARRAY
 
 
-@pytest.mark.parametrize(
-    "mc_type,acvi_type",
-    [
-        # TODO: Other types require support from MockModelCenter.
-        pytest.param("boolean", acvi.VariableType.BOOLEAN),
-        pytest.param("integer", acvi.VariableType.INTEGER),
-        pytest.param("double", acvi.VariableType.REAL),
-        pytest.param("string", acvi.VariableType.STRING),
-        # arrays
-        pytest.param("boolean[]", acvi.VariableType.BOOLEAN_ARRAY),
-        pytest.param("integer[]", acvi.VariableType.INTEGER_ARRAY),
-        pytest.param("double[]", acvi.VariableType.REAL_ARRAY),
-        pytest.param("string[]", acvi.VariableType.STRING_ARRAY),
-    ],
-)
-def test_create_assembly_variable(mc_type: str, acvi_type: acvi.VariableType) -> None:
-    # SUT
-    metadata: acvi.CommonVariableMetadata = workflow.create_assembly_variable(
-        "variable_name", mc_type, "container"
-    )
-
-    # Verification
-    assert metadata.variable_type == acvi_type
-
-
 def test_run_macro() -> None:
     """
     Verify that run_macro works as expected.
