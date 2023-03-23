@@ -1,5 +1,5 @@
 """Implementation of Workflow."""
-from typing import AbstractSet, Iterable, Mapping, Optional, Tuple, Type
+from typing import AbstractSet, Iterable, Mapping, Optional, Tuple, Type, List, Union
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
@@ -7,6 +7,7 @@ import grpc
 import numpy as np
 from numpy.typing import ArrayLike
 from overrides import overrides
+import os
 
 import ansys.modelcenter.workflow.api as wfapi
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
@@ -16,6 +17,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 a
 
 from ._visitors import VariableValueVisitor
 from .assembly import Assembly
+from .component import Component
 
 
 class Workflow(wfapi.Workflow):
@@ -27,17 +29,31 @@ class Workflow(wfapi.Workflow):
 
         Parameters
         ----------
-        root_element: element_messages.ElementId
-            The root element of the workflow.
         workflow_id: str
             The workflow's ID.
+        file_path: str
+            The path to the workflow file on disk.
         """
         self._state = engapi.WorkflowInstanceState.UNKNOWN
         self._root = root_element
         self._id = workflow_id
+        self._file_name = os.path.basename(root_element.id_string)
         # (MPP): Unsure if we should pass this in from Engine
         self._channel = grpc.insecure_channel("localhost:50051")
-        self._stub = grpc_mcd_workflow.ModelCenterWorkflowServiceStub(self._channel)
+        self._stub = self._create_client(self._channel)
+
+    def __enter__(self):
+        """Initialization when created in a 'with' statement."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Clean up when leaving a 'with' block."""
+        self.close_workflow()
+
+    @staticmethod
+    def _create_client(grpc_channel) -> grpc_mcd_workflow.ModelCenterWorkflowServiceStub:
+        """Create a client from a grpc channel."""
+        return grpc_mcd_workflow.ModelCenterWorkflowServiceStub(grpc_channel)
 
     @overrides
     def get_state(self) -> engapi.WorkflowInstanceState:
@@ -66,32 +82,27 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def get_root(self) -> engapi.IControlStatement:
-        request = workflow_msg.WorkflowId()
-        request.id = self._id
+        request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
-        root: element_msg.ElementId = response.id
+        root: ElementId = response.id
         return Assembly(root)
 
     @overrides
     def get_element_by_id(self, element_id: str) -> engapi.IElement:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @property  # type: ignore
     @overrides
     def workflow_directory(self) -> str:
-        # TODO: readonly?
-        request = workflow_msg.WorkflowId()
-        request.id = self._id
-        response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(
-            request
-        )
+        request = workflow_msg.WorkflowId(id=self._id)
+        response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
         return response.workflow_dir
 
     @property  # type: ignore
     @overrides
     def workflow_file_name(self) -> str:
-        # return self._instance.modelFileName
-        raise NotImplementedError
+        return self._file_name
 
     @overrides
     def get_value(self, var_name: str) -> acvi.IVariableValue:
@@ -130,52 +141,65 @@ class Workflow(wfapi.Workflow):
             raise TypeError(f"Unsupported type was returned: {type(value)}")
 
     @overrides
-    def create_component(
-        self,
-        server_path: str,
-        name: str,
-        parent: str,
-        x_pos: Optional[object] = None,
-        y_pos: Optional[object] = None,
-    ) -> None:
-        # self._instance.createComponent(server_path, name, parent, x_pos, y_pos)
-        raise NotImplementedError
-
-    @overrides
     def create_link(self, variable: str, equation: str) -> None:
-        # self._instance.createLink(variable, equation)
-        raise NotImplementedError
+        request = workflow_msg.WorkflowCreateLinkRequest(equation=equation)
+        request.target.id_string = variable
+        response: workflow_msg.WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
 
     @overrides
     def save_workflow(self) -> None:
-        # self._instance.saveModel()
-        raise NotImplementedError
+        request = workflow_msg.WorkflowId()
+        request.id = self._id
+        response: workflow_msg.WorkflowSaveResponse = self._stub.WorkflowSave(request)
 
     @overrides
     def save_workflow_as(self, file_name: str) -> None:
-        # self._instance.saveModelAs(file_name)
-        raise NotImplementedError
+        request = workflow_msg.WorkflowSaveAsRequest()
+        request.target.id = self._id
+        request.new_target_path = file_name
+        response: workflow_msg.WorkflowSaveResponse = self._stub.WorkflowSaveAs(request)
 
     @overrides
     def close_workflow(self) -> None:
-        # self._instance.closeModel()
-        raise NotImplementedError
+        request = workflow_msg.WorkflowId()
+        request.id = self._id
+        response: workflow_msg.WorkflowCloseResponse = self._stub.WorkflowClose(request)
 
     @overrides
-    def get_variable(self, name: str) -> object:
-        # return WorkflowVariable(self._instance.getVariable(name))
-        raise NotImplementedError
+    def get_variable(self, name: str) -> IVariable:
+        request = ElementName(name=name)
+        response: ElementId = self._stub.WorkflowGetVariableByName(request)
+        type_response: var_val_msg.VariableTypeResponse = self._stub.VariableGetType(response)
+        # TODO: maybe use a visitor here?
+        var_type: var_val_msg.VariableType = type_response.var_type
+        if var_type == var_val_msg.VARTYPE_BOOLEAN:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_INTEGER:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_REAL:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_STRING:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_FILE:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
+            return None  # TODO: need wrapper
+        elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
+            return None  # TODO: need wrapper
+        else:
+            raise ValueError("Unknown variable type.")
 
     @overrides
-    def get_component(
-        self, name: str
-    ) -> wfapi.IComponent:  # IComponent, IIfComponent, IScriptComponent
-        # mc_i_component: mcapiIComponent = self._instance.getComponent(name)
-        # if mc_i_component is None:
-        #     msg: str = i18n("Exceptions", "ERROR_COMPONENT_NOT_FOUND")
-        #     raise Exception(msg)
-        # return IComponent(mc_i_component)
-        raise NotImplementedError
+    def get_component(self, name: str) -> IComponent:
+        request = element_msg.ElementName(name=name)
+        response: element_msg.ElementId = self._stub.WorkflowGetComponentOrAssemblyByName(request)
+        return Component(response.id_string)
 
     @overrides
     def trade_study_end(self) -> None:
@@ -207,13 +231,22 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def remove_component(self, name: str) -> None:
-        # self._instance.removeComponent(name)
-        raise NotImplementedError
+        comp: Component = self.get_component(name)
+        request = workflow_msg.WorkflowRemoveComponentRequest()
+        request.target.id_string = comp.element_id
+        response: workflow_msg.WorkflowRemoveComponentResponse = self._stub.WorkflowRemoveComponent(
+            request
+        )
+        if not response.existed:
+            raise ValueError("Component does not exist")
 
     @overrides
-    def break_link(self, variable: str) -> None:
-        # self._instance.breakLink(variable)
-        raise NotImplementedError
+    def break_link(self, target_id: str) -> None:
+        request = workflow_msg.WorkflowBreakLinkRequest()
+        request.target_var.id_string = target_id
+        response: workflow_msg.WorkflowBreakLinkResponse = self._stub.WorkflowBreakLink(request)
+        if not response.existed:
+            raise ValueError("Target id does not exist.")
 
     @overrides
     def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
@@ -233,14 +266,25 @@ class Workflow(wfapi.Workflow):
         raise NotImplementedError
 
     @overrides
-    def auto_link(self, src_comp: str, dest_comp: str) -> None:
-        # self._instance.autoLink(src_comp, dest_comp)
-        raise NotImplementedError
+    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[wfapi.VariableLink]:
+        request = workflow_msg.WorkflowAutoLinkRequest()
+        request.source_comp.id_string = src_comp
+        request.target_comp.id_string = dest_comp
+        response: workflow_msg.WorkflowAutoLinkResponse = self._stub.WorkflowAutoLink(request)
+        links: List[wfapi.VariableLink] = [
+            wfapi.VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+            for entry in response.created_links
+        ]
+        return links
 
     @overrides
     def get_links(self, reserved: object = None) -> Iterable[wfapi.VariableLink]:
-        # return dotnet_links_to_iterable(self._instance.getLinks(reserved))
-        raise NotImplementedError
+        request = workflow_msg.WorkflowId(id=self._id)
+        response: workflow_msg.WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(request)
+        links: List[wfapi.VariableLink] = [
+            wfapi.VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs) for entry in response.links
+        ]
+        return links
 
     @overrides
     def get_workflow_uuid(self) -> str:
@@ -276,29 +320,29 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def get_data_explorer(self, index: int) -> Optional[wfapi.DataExplorer]:
-        # de_object: object = self._instance.getDataExplorer(index)
-        # if de_object is None:
-        #     return None
-        # else:
-        #     return DataExplorer(de_object)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def move_component(self, component: str, parent: str, index: object) -> None:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_xml_extension(self, xml: str) -> None:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_assembly_style(
         self, assembly_name: str, style: object, width: object = None, height: object = None
     ) -> None:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
@@ -313,120 +357,165 @@ class Workflow(wfapi.Workflow):
         raise NotImplementedError
 
     @overrides
-    def create_and_init_component(
+    def create_component(
         self,
         server_path: str,
         name: str,
         parent: str,
-        init_string: str,
-        x_pos: object = None,
-        y_pos: object = None,
-    ):
-        raise NotImplementedError
+        init_string: Optional[str] = None,
+        x_pos: Optional[int] = None,
+        y_pos: Optional[int] = None,
+    ) -> wfapi.IComponent:
+        # TODO: init_string not on grpc api
+        request = workflow_msg.WorkflowCreateComponentRequest(
+            source_path=server_path, name=name, init_str=init_string
+        )
+        request.parent.id_string = parent
+        if x_pos is not None and y_pos is not None:
+            request.coord.x_pos = x_pos
+            request.coord.y_pos = y_pos
+        response: workflow_msg.WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(
+            request
+        )
+        return Component(response.created.id_string)
 
     @overrides
     def get_macro_script(self, macro_name: str) -> str:
-        # return self._instance.getMacroScript(macro_name)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_macro_script(self, macro_name: str, script: str) -> None:
-        # self._instance.setMacroScript(macro_name, script)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def get_macro_script_language(self, macro_name: str) -> str:
-        # return self._instance.getMacroScriptLanguage(macro_name)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_macro_script_language(self, macro_name: str, language: str) -> None:
-        # self._instance.setMacroScriptLanguage(macro_name, language)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def add_new_macro(self, macro_name: str, is_app_macro: bool) -> None:
-        # self._instance.addNewMacro(macro_name, is_app_macro)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
-        # metadata: acvi.CommonVariableMetadata = None
-        # variable = self._instance.getVariableMetaData(name)  # PHXDATAHISTORYLib.IDHVariable
-        # is_array: bool = variable.type.endswith("[]")
-        # type_: str = variable.type[:-2] if is_array else variable.type
-        #
-        # if type_ == "double":
-        #     if is_array:
-        #         metadata = acvi.RealArrayMetadata()
-        #     else:
-        #         metadata = acvi.RealMetadata()
-        #     # TODO: Where do other metadata come from? variable.getMetaData?
-        #     # metadata.description =
-        #     # metadata.units =
-        #     # metadata.display_format =
-        #     metadata.lower_bound = variable.lowerBound
-        #     metadata.upper_bound = variable.upperBound
-        #     metadata.enumerated_values = acvi.RealArrayValue.from_api_string(variable.enumValues)
-        #     metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
-        #         variable.enumAliases
-        #     )
-        #
-        # elif type_ == "integer":
-        #     if is_array:
-        #         metadata = acvi.IntegerArrayMetadata()
-        #     else:
-        #         metadata = acvi.IntegerMetadata()
-        #     metadata.lower_bound = variable.lowerBound
-        #     metadata.upper_bound = variable.upperBound
-        #     metadata.enumerated_values = acvi.IntegerArrayValue.from_api_string(
-        #       variable.enumValues)
-        #     metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
-        #         variable.enumAliases
-        #     )
-        #
-        # elif type_ == "boolean":
-        #     if is_array:
-        #         metadata = acvi.BooleanArrayMetadata()
-        #     else:
-        #         metadata = acvi.BooleanMetadata()
-        #
-        # elif type_ == "string":
-        #     if is_array:
-        #         metadata = acvi.StringArrayMetadata()
-        #     else:
-        #         metadata = acvi.StringMetadata()
-        #     metadata.enumerated_values = acvi.StringArrayValue.from_api_string(
-        #       variable.enumValues)
-        #     metadata.enumerated_aliases = acvi.StringArrayValue.from_api_string(
-        #         variable.enumAliases
-        #     )
-        # else:
-        #     raise NotImplementedError
-        #
-        # # TODO: Add remaining types.
-        # if metadata is not None:
-        #     # Copy custom metadata.
-        #     keys = variable.getMetaDataKeys()
-        #     for key in keys:
-        #         metadata.custom_metadata[key] = variable.getMetaData(key)
-        # return metadata
-        raise NotImplementedError
+        metadata: acvi.CommonVariableMetadata = None
+        request = element_msg.ElementName(name=name)
+        response: element_msg.ElementId = self._stub.WorkflowGetVariableByName(request)
+        type_response: var_val_msg.VariableTypeResponse = self._stub.VariableGetType(response)
+        var_type: var_val_msg.VariableType = type_response.var_type
+        if var_type == var_val_msg.VARTYPE_BOOLEAN:
+            metadata = acvi.BooleanMetadata()
+            # TODO: description?
+        elif var_type == var_val_msg.VARTYPE_INTEGER:
+            metadata = acvi.IntegerMetadata()
+            self._set_int_metadata(response, metadata)
+        elif var_type == var_val_msg.VARTYPE_REAL:
+            metadata = acvi.RealMetadata()
+            self._set_real_metadata(response, metadata)
+        elif var_type == var_val_msg.VARTYPE_STRING:
+            metadata = acvi.StringMetadata()
+            self._set_string_metadata(response, metadata)
+        elif var_type == var_val_msg.VARTYPE_FILE:
+            metadata = acvi.FileMetadata()
+            # TODO: description?
+        elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
+            metadata = acvi.BooleanArrayMetadata()
+            # TODO: description?
+        elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
+            metadata = acvi.IntegerArrayMetadata()
+            self._set_int_metadata(response, metadata)
+        elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
+            metadata = acvi.RealArrayMetadata()
+            self._set_real_metadata(response, metadata)
+        elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
+            metadata = acvi.StringArrayMetadata()
+            self._set_string_metadata(response, metadata)
+        elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
+            metadata = acvi.FileArrayMetadata()
+            # TODO: description?
+        else:
+            raise ValueError("Unknown variable type.")
+        return metadata
+
+    def _set_real_metadata(
+        self, var_id: element_msg.ElementId, metadata: Union[acvi.RealMetadata, acvi.RealArrayMetadata]
+    ) -> None:
+        """
+        Query grpc for metadata for a real variable, and populate the given metadata object.
+
+        Parameters
+        ----------
+        var_id: ElementId
+        The id of the variable.
+        metadata: Union[acvi.RealMetadata, acvi.RealArrayMetadata]
+        The metadata object to populate.
+        """
+        response: var_val_msg.DoubleVariableMetadata = self._stub.DoubleVariableGetMetadata(var_id)
+        # TODO: description, units, display_format?
+        metadata.lower_bound = response.lower_bound
+        metadata.upper_bound = response.upper_bound
+        metadata.enumerated_values.extend(response.enum_values)
+        metadata.enumerated_aliases.extend(response.enum_aliases)
+
+    def _set_int_metadata(
+        self, var_id: element_msg.ElementId, metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata]
+    ) -> None:
+        """
+        Query grpc for metadata for an integer variable, and populate the given metadata object.
+
+        Parameters
+        ----------
+        var_id: ElementId
+        The id of the variable.
+        metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata]
+        The metadata object to populate.
+        """
+        response: var_val_msg.IntegerVariableMetadata = self._stub.IntegerVariableGetMetadata(var_id)
+        # TODO: description, units, display_format?
+        metadata.lower_bound = response.lower_bound
+        metadata.upper_bound = response.upper_bound
+        metadata.enumerated_values.extend(response.enum_values)
+        metadata.enumerated_aliases.extend(response.enum_aliases)
+
+    def _set_string_metadata(
+        self, var_id: element_msg.ElementId, metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata]
+    ) -> None:
+        """
+        Query grpc for metadata for a string variable, and populate the given metadata object.
+
+        Parameters
+        ----------
+        var_id: ElementId
+        The id of the variable.
+        metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata]
+        The metadata object to populate.
+        """
+        # TODO: description, units, display_format?
+        response: var_val_msg.StringVariableMetadata = self._stub.StringVariableGetMetadata(var_id)
+        metadata.enumerated_values.extend(response.enum_values)
+        metadata.enumerated_aliases.extend(response.enum_aliases)
 
     @overrides
     def create_data_explorer(self, trade_study_type: str, setup: str) -> wfapi.DataExplorer:
-        # de_object: object = self._instance.createDataExplorer(trade_study_type, setup)
-        # return DataExplorer(de_object)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def get_macro_timeout(self, macro_name: str) -> float:
-        # return self._instance.getMacroTimeout(macro_name)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides
     def set_macro_timeout(self, macro_name: str, timeout: float) -> None:
-        # self._instance.setMacroTimeout(macro_name, timeout)
+        # TODO: not on grpc api
         raise NotImplementedError
 
     @overrides

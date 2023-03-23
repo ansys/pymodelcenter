@@ -13,7 +13,7 @@ import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 from .custom_metadata_owner import CustomMetadataOwner
 from .i18n import i18n
-from .variable_links import VariableLink, dotnet_links_to_iterable
+from .variable_links import VariableLink
 
 WRAPPED_TYPE = TypeVar("WRAPPED_TYPE")
 
@@ -290,7 +290,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariableLinks object.
         """
-        return dotnet_links_to_iterable(self._wrapped.precedentLinks(reserved))
+        raise NotImplementedError
 
     def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
         """
@@ -308,7 +308,7 @@ class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
         object
             IDispatch* to an IVariableLinks object.
         """
-        return dotnet_links_to_iterable(self._wrapped.dependentLinks(reserved))
+        raise NotImplementedError
 
     def precedents(
         self, follow_suspended: bool = False, reserved: Optional[object] = None
