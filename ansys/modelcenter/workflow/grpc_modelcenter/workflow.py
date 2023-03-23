@@ -18,6 +18,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 a
 from ._visitors import VariableValueVisitor
 from .assembly import Assembly
 from .component import Component
+from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 
 
 class Workflow(wfapi.Workflow):
@@ -61,6 +62,26 @@ class Workflow(wfapi.Workflow):
         # return self._state
         raise NotImplementedError
 
+    def _create_run_request(
+        self,
+        inputs: Mapping[str, acvi.VariableState],
+        reset: bool,
+        validation_ids: AbstractSet[str],
+    ) -> workflow_msg.WorkflowRunRequest:
+        request = workflow_msg.WorkflowRunRequest(
+            target=workflow_msg.WorkflowId(id=self._id),
+            reset=reset,
+            validation_ids=[val_id for val_id in validation_ids],
+        )
+
+        var_id: str
+        var_state: acvi.VariableState
+        for var_id, var_state in inputs.items():
+            request.inputs[var_id].is_valid = var_state.is_valid
+            request.inputs[var_id].value.MergeFrom(convert_interop_value_to_grpc(var_state.value))
+
+        return request
+
     @overrides
     def run(
         self,
@@ -68,7 +89,19 @@ class Workflow(wfapi.Workflow):
         reset: bool,
         validation_ids: AbstractSet[str],
     ) -> Mapping[str, acvi.VariableState]:
-        raise NotImplementedError
+        request: workflow_msg.WorkflowRunRequest = self._create_run_request(
+            inputs, reset, validation_ids
+        )
+        response = self._stub.WorkflowRun(request)
+        elem_id: str
+        response_var_state: workflow_msg.VariableState
+        return {
+            elem_id: acvi.VariableState(
+                is_valid=response_var_state.is_valid,
+                value=convert_grpc_value_to_acvi(response_var_state.value),
+            )
+            for elem_id, response_var_state in response.results.items()
+        }
 
     @overrides
     def start_run(

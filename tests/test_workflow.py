@@ -1,5 +1,5 @@
 """Tests for Workflow."""
-from typing import Iterable, List
+from typing import Iterable, List, Mapping
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as ewapi
@@ -21,6 +21,8 @@ class MockWorkflowClientForWorkflowTest:
         self.was_closed = False
         self.was_component_removed = False
         self.was_link_created = False
+        self.workflow_run_requests: List[wkf_msgs.WorkflowRunRequest] = []
+        self.workflow_run_response = wkf_msgs.WorkflowRunResponse()
 
     def WorkflowGetRoot(self, request: wkf_msgs.WorkflowId) -> wkf_msgs.WorkflowGetRootResponse:
         response = wkf_msgs.WorkflowGetRootResponse()
@@ -163,6 +165,10 @@ class MockWorkflowClientForWorkflowTest:
         response.enum_values.extend(["1", "2", "3", "4"])
         response.enum_aliases.extend(["a", "b", "c", "d"])
         return response
+
+    def WorkflowRun(self, request: wkf_msgs.WorkflowRunRequest) -> wkf_msgs.WorkflowRunResponse:
+        self.workflow_run_requests.append(request)
+        return self.workflow_run_response
 
 
 mock_client: MockWorkflowClientForWorkflowTest
@@ -856,6 +862,54 @@ def test_create_link(setup_function) -> None:
 
     # Verify
     assert mock_client.was_link_created is True
+
+
+@pytest.mark.parametrize("reset", [True, False])
+def test_run_synchronous(setup_function, reset: bool) -> None:
+    # Using a dict as an ordered set
+    validation_ids = {"DESIRED_OUTPUT_VAR_1": None, "DESIRED_OUTPUT_VAR_2": None}
+    inputs: Mapping[str, acvi.VariableState] = {
+        "INPUT_VAR_1": acvi.VariableState(is_valid=True, value=acvi.IntegerValue(47)),
+        "INPUT_VAR_2": acvi.VariableState(is_valid=False, value=acvi.RealValue(-867.5309)),
+        "INPUT_VAR_3": acvi.VariableState(is_valid=True, value=acvi.BooleanValue(True)),
+        "INPUT_VAR_4": acvi.VariableState(
+            is_valid=True, value=acvi.StringValue("this is a test string")
+        ),
+    }
+
+    mock_response = wkf_msgs.WorkflowRunResponse()
+    mock_response.results["DESIRED_OUTPUT_VAR_1"].is_valid = False
+    mock_response.results["DESIRED_OUTPUT_VAR_1"].value.MergeFrom(
+        var_msgs.VariableValue(double_value=9000.1)
+    )
+    mock_response.results["DESIRED_OUTPUT_VAR_2"].is_valid = True
+    mock_response.results["DESIRED_OUTPUT_VAR_1"].value.MergeFrom(
+        var_msgs.VariableValue(int_value=4858)
+    )
+    mock_client.workflow_run_response = wkf_msgs.WorkflowRunResponse()
+
+    result = workflow.run(inputs, reset, validation_ids)
+
+    expected_request = wkf_msgs.WorkflowRunRequest(
+        target=wkf_msgs.WorkflowId(id="123"),
+        reset=reset,
+        validation_ids=["DESIRED_OUTPUT_VAR_1", "DESIRED_OUTPUT_VAR_2"],
+        inputs={
+            "INPUT_VAR_1": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(int_value=47)
+            ),
+            "INPUT_VAR_2": var_msgs.VariableState(
+                is_valid=False, value=var_msgs.VariableValue(double_value=-867.5309)
+            ),
+            "INPUT_VAR_3": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(bool_value=True)
+            ),
+            "INPUT_VAR_4": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(string_value="this is a test string")
+            ),
+        },
+    )
+    assert mock_client.workflow_run_requests == [expected_request]
 
 
 # def test_get_variable() -> None:
