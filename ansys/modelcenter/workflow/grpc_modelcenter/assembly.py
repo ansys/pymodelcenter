@@ -22,9 +22,10 @@ from .proto.element_messages_pb2 import (
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 from .variable import Variable
+from .variable_container import AbstractGRPCVariableContainer
 
 
-class Assembly(api.Assembly):
+class Assembly(AbstractGRPCVariableContainer, api.Assembly):
     """Represents an assembly in ModelCenter."""
 
     def _create_client(self, channel: Channel) -> ModelCenterWorkflowServiceStub:
@@ -39,9 +40,7 @@ class Assembly(api.Assembly):
         element_id : ElementId
             The id of the .
         """
-        self._element_id = element_id
-        self._channel = channel
-        self._client = self._create_client(channel)
+        super(Assembly, self).__init__(element_id=element_id, channel=channel)
 
     @property  # type: ignore
     @overrides
@@ -82,22 +81,15 @@ class Assembly(api.Assembly):
         else:
             return Assembly(result, self._channel)
 
-    @overrides
-    def get_variables(self) -> Sequence[api.IVariable]:
-        result = self._client.RegistryGetVariables(self._element_id)
-        return [Variable(one_element_id, self._channel) for one_element_id in result.ids]
-
     @property  # type: ignore
     @overrides
     def assemblies(self) -> Sequence[api.Assembly]:
         result = self._client.RegistryGetAssemblies(self._element_id)
         return [Assembly(one_element_id, self._channel) for one_element_id in result.ids]
 
-    @property  # type: ignore
     @overrides
-    def groups(self) -> Sequence[api.IGroup]:
-        result = self._client.RegistryGetGroups(self._element_id)
-        return [Group(one_element_id, self._channel) for one_element_id in result.ids]
+    def _create_group(self, element_id: ElementId) -> api.IGroup:
+        return Group(element_id, self._channel)
 
     @overrides
     def add_variable(self, name: str, type_: str) -> api.IVariable:
