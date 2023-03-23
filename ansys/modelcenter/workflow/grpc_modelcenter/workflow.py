@@ -1,6 +1,6 @@
 """Implementation of Workflow."""
 import os
-from typing import AbstractSet, Iterable, List, Mapping, Optional, Tuple, Type, Union
+from typing import AbstractSet, Iterable, List, Mapping, Optional, Type, Union
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
@@ -84,7 +84,7 @@ class Workflow(wfapi.Workflow):
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
         root: element_msg.ElementId = response.id
-        return Assembly(root)
+        return Assembly(root, self._channel)
 
     @overrides
     def get_element_by_id(self, element_id: str) -> engapi.IElement:
@@ -260,13 +260,6 @@ class Workflow(wfapi.Workflow):
         raise NotImplementedError
 
     @overrides
-    def create_assembly_variable(
-        self, name: str, type_: str, parent: str
-    ) -> acvi.CommonVariableMetadata:
-        # return self._convert_variable(self._instance.createAssemblyVariable(name, type_, parent))
-        raise NotImplementedError
-
-    @overrides
     def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[wfapi.VariableLink]:
         request = workflow_msg.WorkflowAutoLinkRequest()
         request.source_comp.id_string = src_comp
@@ -334,18 +327,6 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def set_xml_extension(self, xml: str) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def set_assembly_style(
-        self, assembly_name: str, style: object, width: object = None, height: object = None
-    ) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def get_assembly_style(self, assembly_name: str) -> Tuple[int, int]:
         # TODO: not on grpc api
         raise NotImplementedError
 
