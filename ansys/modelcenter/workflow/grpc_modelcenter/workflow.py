@@ -546,8 +546,11 @@ class Workflow(wfapi.Workflow):
 
     @overrides
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
+        var_id: element_msg.ElementId = self._stub.WorkflowGetVariableByName(
+            element_msg.ElementName(name=var_name)
+        )
         try:
-            value.accept(VariableValueVisitor(var_name, self._stub))
+            value.accept(VariableValueVisitor(var_id, self._stub))
         except grpc.RpcError as e:
             # How should we handle errors here?
             raise e

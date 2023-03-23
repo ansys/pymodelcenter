@@ -14,7 +14,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages
 class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
     """Visitor for setting variable values via ModelCenter gRPC API."""
 
-    def __init__(self, var_name: str, stub: ModelCenterWorkflowServiceStub):
+    def __init__(self, var_id: element_msg.ElementId, stub: ModelCenterWorkflowServiceStub):
         """
         Create a new VariableValueVisitor.
 
@@ -25,7 +25,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         stub: ModelCenterWorkflowServiceStub
             gRPC stub to use.
         """
-        self._var_name = var_name
+        self._var_id = var_id
         self._stub = stub
 
     @overrides
@@ -118,8 +118,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         bool
             was_changed from the response message.
         """
-        target = element_msg.ElementId(id_string=self._var_name)
-        request = request_type(target=target, new_value=value_type(value))
+        request = request_type(target=self._var_id, new_value=value_type(value))
         response = grpc_call(request)
         return response.was_changed
 
@@ -149,9 +148,8 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         bool
             was_changed from the response message.
         """
-        target = element_msg.ElementId(id_string=self._var_name)
         set_value = value_type(values=value.flatten(), dims=self._dims(value))
-        request = request_type(target=target, new_value=set_value)
+        request = request_type(target=self._var_id, new_value=set_value)
         response = grpc_call(request)
         return response.was_changed
 
