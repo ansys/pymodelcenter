@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Collection, Sequence
 
-from ansys.engineeringworkflow.api import IVariable, IVariableContainer
+from ansys.engineeringworkflow.api import IVariableContainer
 import clr
 from overrides import overrides
 
@@ -19,17 +19,12 @@ class IGroup(IVariableContainer):
     """COM Instance."""
 
     @overrides
-    def get_variables(self) -> Collection[IVariable]:
+    def get_variables(self) -> Collection[ivariable.IVariable]:
         return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     def __init__(self, group: mcapiIGroup):
         """Initialize."""
         self._instance = group
-
-    @property
-    def variables(self) -> "Sequence[ivariable.IVariable]":
-        """The variables in the Group."""
-        return Arrayish(self._instance.Variables, utils.from_dot_net_to_ivariable)
 
     @property
     def groups(self) -> "Sequence[IGroup]":
