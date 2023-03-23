@@ -1,5 +1,6 @@
 """Implementation of Workflow."""
-from typing import AbstractSet, Iterable, Mapping, Optional, Tuple, Type, List, Union
+import os
+from typing import AbstractSet, Iterable, List, Mapping, Optional, Tuple, Type, Union
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
@@ -7,7 +8,6 @@ import grpc
 import numpy as np
 from numpy.typing import ArrayLike
 from overrides import overrides
-import os
 
 import ansys.modelcenter.workflow.api as wfapi
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
@@ -84,7 +84,7 @@ class Workflow(wfapi.Workflow):
     def get_root(self) -> engapi.IControlStatement:
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
-        root: ElementId = response.id
+        root: element_msg.ElementId = response.id
         return Assembly(root)
 
     @overrides
@@ -96,7 +96,9 @@ class Workflow(wfapi.Workflow):
     @overrides
     def workflow_directory(self) -> str:
         request = workflow_msg.WorkflowId(id=self._id)
-        response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(request)
+        response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(
+            request
+        )
         return response.workflow_dir
 
     @property  # type: ignore
@@ -166,9 +168,9 @@ class Workflow(wfapi.Workflow):
         response: workflow_msg.WorkflowCloseResponse = self._stub.WorkflowClose(request)
 
     @overrides
-    def get_variable(self, name: str) -> IVariable:
-        request = ElementName(name=name)
-        response: ElementId = self._stub.WorkflowGetVariableByName(request)
+    def get_variable(self, name: str) -> wfapi.IVariable:
+        request = element_msg.ElementName(name=name)
+        response: element_msg.ElementId = self._stub.WorkflowGetVariableByName(request)
         type_response: var_val_msg.VariableTypeResponse = self._stub.VariableGetType(response)
         # TODO: maybe use a visitor here?
         var_type: var_val_msg.VariableType = type_response.var_type
@@ -196,7 +198,7 @@ class Workflow(wfapi.Workflow):
             raise ValueError("Unknown variable type.")
 
     @overrides
-    def get_component(self, name: str) -> IComponent:
+    def get_component(self, name: str) -> wfapi.IComponent:
         request = element_msg.ElementName(name=name)
         response: element_msg.ElementId = self._stub.WorkflowGetComponentOrAssemblyByName(request)
         return Component(response.id_string)
@@ -280,9 +282,12 @@ class Workflow(wfapi.Workflow):
     @overrides
     def get_links(self, reserved: object = None) -> Iterable[wfapi.VariableLink]:
         request = workflow_msg.WorkflowId(id=self._id)
-        response: workflow_msg.WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(request)
+        response: workflow_msg.WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(
+            request
+        )
         links: List[wfapi.VariableLink] = [
-            wfapi.VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs) for entry in response.links
+            wfapi.VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+            for entry in response.links
         ]
         return links
 
@@ -446,7 +451,9 @@ class Workflow(wfapi.Workflow):
         return metadata
 
     def _set_real_metadata(
-        self, var_id: element_msg.ElementId, metadata: Union[acvi.RealMetadata, acvi.RealArrayMetadata]
+        self,
+        var_id: element_msg.ElementId,
+        metadata: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
     ) -> None:
         """
         Query grpc for metadata for a real variable, and populate the given metadata object.
@@ -466,7 +473,9 @@ class Workflow(wfapi.Workflow):
         metadata.enumerated_aliases.extend(response.enum_aliases)
 
     def _set_int_metadata(
-        self, var_id: element_msg.ElementId, metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata]
+        self,
+        var_id: element_msg.ElementId,
+        metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
     ) -> None:
         """
         Query grpc for metadata for an integer variable, and populate the given metadata object.
@@ -478,7 +487,9 @@ class Workflow(wfapi.Workflow):
         metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata]
         The metadata object to populate.
         """
-        response: var_val_msg.IntegerVariableMetadata = self._stub.IntegerVariableGetMetadata(var_id)
+        response: var_val_msg.IntegerVariableMetadata = self._stub.IntegerVariableGetMetadata(
+            var_id
+        )
         # TODO: description, units, display_format?
         metadata.lower_bound = response.lower_bound
         metadata.upper_bound = response.upper_bound
@@ -486,7 +497,9 @@ class Workflow(wfapi.Workflow):
         metadata.enumerated_aliases.extend(response.enum_aliases)
 
     def _set_string_metadata(
-        self, var_id: element_msg.ElementId, metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata]
+        self,
+        var_id: element_msg.ElementId,
+        metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
     ) -> None:
         """
         Query grpc for metadata for a string variable, and populate the given metadata object.
