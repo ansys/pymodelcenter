@@ -23,7 +23,7 @@ from .component import Component
 class Workflow(wfapi.Workflow):
     """Represents a Workflow or Model in ModelCenter."""
 
-    def __init__(self, root_element: element_msg.ElementId, workflow_id: str):
+    def __init__(self, workflow_id: str, file_path: str):
         """
         Initialize a new Workflow instance.
 
@@ -35,9 +35,8 @@ class Workflow(wfapi.Workflow):
             The path to the workflow file on disk.
         """
         self._state = engapi.WorkflowInstanceState.UNKNOWN
-        self._root = root_element
         self._id = workflow_id
-        self._file_name = os.path.basename(root_element.id_string)
+        self._file_name = os.path.basename(file_path)
         # (MPP): Unsure if we should pass this in from Engine
         self._channel = grpc.insecure_channel("localhost:50051")
         self._stub = self._create_client(self._channel)
