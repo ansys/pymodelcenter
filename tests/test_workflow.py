@@ -198,7 +198,7 @@ def test_get_root(setup_function):
     result: ewapi.IControlStatement = workflow.get_root()
 
     # Verification
-    assert result.element_id.id_string == "Model"
+    assert result.element_id == "Model"
 
 
 # def test_get_element_by_id(setup_function):

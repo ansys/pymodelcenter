@@ -1,25 +1,122 @@
 """Tests for Format."""
+from typing import Dict
+
+from numpy import float64, int64
 import pytest
 
-import ansys.modelcenter.workflow.api as mcapi
+import ansys.modelcenter.workflow.grpc_modelcenter as mcapi
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.format_messages_pb2 as format_messages  # noqa: 501
+
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+
+
+class MockEngineClientForFormatTest:
+    def __init__(self):
+        self._str_to_int_responses: Dict[str, int64] = {}
+        self._str_to_real_responses: Dict[str, float64] = {}
+        self._int_to_str_responses: Dict[int64, str] = {}
+        self._real_to_str_responses: Dict[float64, str] = {}
+
+    @property
+    def str_to_int_responses(self):
+        return self._str_to_int_responses
+
+    @property
+    def str_to_real_responses(self):
+        return self._str_to_real_responses
+
+    @property
+    def int_to_str_responses(self):
+        return self._int_to_str_responses
+
+    @property
+    def real_to_str_responses(self):
+        return self._real_to_str_responses
+
+    def FormatStringToInteger(
+        self, request: format_messages.FormatFromStringRequest
+    ) -> format_messages.FormatToIntegerResponse:
+        key: str = request.original
+        if request.format == "mockFormat":
+            key = key.lstrip("ඞ")
+        return format_messages.FormatToIntegerResponse(result=self._str_to_int_responses[key])
+
+    def FormatStringToDouble(
+        self, request: format_messages.FormatFromStringRequest
+    ) -> format_messages.FormatToDoubleResponse:
+        key: str = request.original
+        if request.format == "mockFormat":
+            key = key.lstrip("ඞ")
+        return format_messages.FormatToDoubleResponse(result=self._str_to_real_responses[key])
+
+    def FormatIntegerToString(
+        self, request: format_messages.FormatFromIntegerRequest
+    ) -> format_messages.FormatToStringResponse:
+        result: str = self._int_to_str_responses[request.original]
+        if request.format == "mockFormat":
+            result = "ඞ" + result
+        return format_messages.FormatToStringResponse(result=result)
+
+    def FormatDoubleToString(
+        self, request: format_messages.FormatFromDoubleRequest
+    ) -> format_messages.FormatToStringResponse:
+        result: str = self._real_to_str_responses[request.original]
+        if request.format == "mockFormat":
+            result = "ඞ" + result
+        return format_messages.FormatToStringResponse(result=result)
+
+    def FormatStringToString(
+        self, request: format_messages.FormatFromStringRequest
+    ) -> format_messages.FormatToStringResponse:
+        result: str = request.original
+        if request.format == "mockFormat":
+            result = "ඞ" + result
+        return format_messages.FormatToStringResponse(result=result)
+
+    def FormatIntegerToEditString(
+        self, request: format_messages.FormatFromIntegerRequest
+    ) -> format_messages.FormatToStringResponse:
+        result: str = self._int_to_str_responses[request.original]
+        if request.format == "mockFormat":
+            result = "ඞ" + result
+        return format_messages.FormatToStringResponse(result=result)
+
+    def FormatDoubleToEditString(
+        self, request: format_messages.FormatFromDoubleRequest
+    ) -> format_messages.FormatToStringResponse:
+        result: str = self._real_to_str_responses[request.original]
+        if request.format == "mockFormat":
+            result = "ඞ" + result
+        return format_messages.FormatToStringResponse(result=result)
+
 
 engine: mcapi.Engine
+mock_client: MockEngineClientForFormatTest
 
 
-def setup_function(_):
+@pytest.fixture
+def setup_function(monkeypatch):
     """
     Setup called before each test function in this module.
-
-    Parameters
-    ----------
-    _ :
-        The function about to test.
     """
+
+    def mock_start(self, run_only: bool = False):
+        pass
+
+    def mock_init(self):
+        pass
+
+    monkeypatch.setattr(mcapi.MCDProcess, "start", mock_start)
+    monkeypatch.setattr(mcapi.MCDProcess, "__init__", mock_init)
+    global mock_client
+    mock_client = MockEngineClientForFormatTest()
+    monkeypatch_client_creation(monkeypatch, mcapi.Format, mock_client)
+
     global engine
     engine = mcapi.Engine()
 
 
-def test_get_format() -> None:
+def test_get_format(setup_function) -> None:
     """Verifies the getter of the format property."""
     # Setup
     sut: mcapi.Format = engine.get_formatter("")
@@ -31,7 +128,7 @@ def test_get_format() -> None:
     assert result == "General"
 
 
-def test_set_format() -> None:
+def test_set_format(setup_function) -> None:
     """Verifies the setter of the format property."""
     # Setup
     sut: mcapi.Format = engine.get_formatter("")
@@ -51,10 +148,11 @@ def test_set_format() -> None:
         pytest.param("mockFormat", "ඞ5"),
     ],
 )
-def test_string_to_integer(format_: str, string: str) -> None:
+def test_string_to_integer(setup_function, format_: str, string: str) -> None:
     """Verifies the string_to_integer method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
+    mock_client.str_to_int_responses["5"] = 5
 
     # SUT
     result: int = sut.string_to_integer(string)
@@ -71,10 +169,11 @@ def test_string_to_integer(format_: str, string: str) -> None:
         pytest.param("mockFormat", "ඞ5.5"),
     ],
 )
-def test_string_to_real(format_: str, string: str) -> None:
+def test_string_to_real(setup_function, format_: str, string: str) -> None:
     """Verifies the string_to_real method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
+    mock_client.str_to_real_responses["5.5"] = 5.5
 
     # SUT
     result: float = sut.string_to_real(string)
@@ -91,10 +190,11 @@ def test_string_to_real(format_: str, string: str) -> None:
         pytest.param("mockFormat", "ඞ5"),
     ],
 )
-def test_integer_to_string(format_: str, expected: str) -> None:
+def test_integer_to_string(setup_function, format_: str, expected: str) -> None:
     """Verifies the integer_to_string method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
+    mock_client.int_to_str_responses[5] = "5"
 
     # SUT
     result: str = sut.integer_to_string(5)
@@ -111,10 +211,11 @@ def test_integer_to_string(format_: str, expected: str) -> None:
         pytest.param("mockFormat", "ඞ5.5"),
     ],
 )
-def test_real_to_string(format_: str, expected: str) -> None:
+def test_real_to_string(setup_function, format_: str, expected: str) -> None:
     """Verifies the real_to_string method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
+    mock_client.real_to_str_responses[5.5] = "5.5"
 
     # SUT
     result: str = sut.real_to_string(5.5)
@@ -131,7 +232,7 @@ def test_real_to_string(format_: str, expected: str) -> None:
         pytest.param("mockFormat", "ඞabc"),
     ],
 )
-def test_string_to_string(format_: str, expected: str) -> None:
+def test_string_to_string(setup_function, format_: str, expected: str) -> None:
     """Verifies the string_to_string method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
@@ -151,10 +252,11 @@ def test_string_to_string(format_: str, expected: str) -> None:
         pytest.param("mockFormat", "ඞ5"),
     ],
 )
-def test_integer_to_editable_string(format_: str, expected: str) -> None:
+def test_integer_to_editable_string(setup_function, format_: str, expected: str) -> None:
     """Verifies the integer_to_editable_string method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
+    mock_client.int_to_str_responses[5] = "5"
 
     # SUT
     result: str = sut.integer_to_editable_string(5)
@@ -171,10 +273,11 @@ def test_integer_to_editable_string(format_: str, expected: str) -> None:
         pytest.param("mockFormat", "ඞ5.5"),
     ],
 )
-def test_real_to_editable_string(format_: str, expected: str) -> None:
+def test_real_to_editable_string(setup_function, format_: str, expected: str) -> None:
     """Verifies the real_to_editable_string method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
+    mock_client.real_to_str_responses[5.5] = "5.5"
 
     # SUT
     result: str = sut.real_to_editable_string(5.5)

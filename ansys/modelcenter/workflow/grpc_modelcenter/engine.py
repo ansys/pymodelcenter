@@ -48,7 +48,8 @@ class Engine(IEngine):
         self._process = MCDProcess()
         self._process.start(is_run_only)
         self._channel = grpc.insecure_channel("localhost:50051")
-        self._stub = GRPCModelCenterServiceStub(self._channel)
+        self._stub = self._create_client(self._channel)
+        self._workflow_id: Optional[str] = None
 
     def __enter__(self):
         """Initialization when created in a 'with' statement."""
@@ -68,6 +69,11 @@ class Engine(IEngine):
         self._channel = None
 
         self._process = None
+
+    @staticmethod
+    def _create_client(grpc_channel) -> GRPCModelCenterServiceStub:
+        """Create a client from a grpc channel."""
+        return GRPCModelCenterServiceStub(grpc_channel)
 
     @property  # type: ignore
     @overrides
