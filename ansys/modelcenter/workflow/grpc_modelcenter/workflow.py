@@ -377,8 +377,8 @@ class Workflow(wfapi.Workflow):
         )
         request.parent.id_string = parent
         if x_pos is not None and y_pos is not None:
-            request.coord.x_pos = x_pos
-            request.coord.y_pos = y_pos
+            request.coords.x_pos = x_pos
+            request.coords.y_pos = y_pos
         response: workflow_msg.WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(
             request
         )
