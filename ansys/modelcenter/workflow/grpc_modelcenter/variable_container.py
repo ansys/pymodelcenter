@@ -9,12 +9,12 @@ from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
+from .abstract_workflow_element import AbstractWorkflowElement
 from .proto.element_messages_pb2 import ElementId
-from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .variable import Variable
 
 
-class AbstractGRPCVariableContainer(eng_wkfl_api.IVariableContainer, ABC):
+class AbstractGRPCVariableContainer(AbstractWorkflowElement, eng_wkfl_api.IVariableContainer, ABC):
     """An abstract base class for elements that return child variables and groups."""
 
     @abstractmethod
@@ -30,9 +30,6 @@ class AbstractGRPCVariableContainer(eng_wkfl_api.IVariableContainer, ABC):
         """
         raise NotImplementedError()
 
-    def _create_client(self, channel: grpc.Channel) -> ModelCenterWorkflowServiceStub:
-        return ModelCenterWorkflowServiceStub(channel)
-
     def __init__(self, element_id: ElementId, channel: grpc.Channel):
         """
         Initialize a new instance.
@@ -42,9 +39,7 @@ class AbstractGRPCVariableContainer(eng_wkfl_api.IVariableContainer, ABC):
         element_id: the element ID of the group this object represents in ModelCenter.
         channel: the gRPC channel on which to communicate.
         """
-        self._channel = channel
-        self._client = self._create_client(channel)
-        self._element_id = element_id
+        super(AbstractGRPCVariableContainer, self).__init__(element_id=element_id, channel=channel)
 
     @property  # type: ignore
     def groups(self) -> Sequence[mc_api.IGroup]:

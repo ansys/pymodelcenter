@@ -19,7 +19,6 @@ from .proto.element_messages_pb2 import (
     ElementName,
     RenameRequest,
 )
-from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 from .variable import Variable
 from .variable_container import AbstractGRPCVariableContainer
@@ -27,9 +26,6 @@ from .variable_container import AbstractGRPCVariableContainer
 
 class Assembly(AbstractGRPCVariableContainer, api.Assembly):
     """Represents an assembly in ModelCenter."""
-
-    def _create_client(self, channel: Channel) -> ModelCenterWorkflowServiceStub:
-        return ModelCenterWorkflowServiceStub(channel)
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -58,13 +54,7 @@ class Assembly(AbstractGRPCVariableContainer, api.Assembly):
     @property  # type: ignore
     @overrides
     def name(self):
-        result = self._client.ElementGetName(self._element_id)
-        return result.name
-
-    @overrides
-    def get_full_name(self) -> str:
-        result = self._client.ElementGetFullName(self._element_id)
-        return result.name
+        return self.get_name()
 
     @property  # type: ignore
     @overrides
