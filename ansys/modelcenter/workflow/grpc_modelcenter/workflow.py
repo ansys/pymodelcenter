@@ -141,7 +141,7 @@ class Workflow(wfapi.Workflow):
     @overrides
     def get_value(self, var_name: str) -> acvi.IVariableValue:
         var_id: element_msg.ElementId = self._stub.WorkflowGetVariableByName(
-            element_msg.ElementId(id_string=var_name)
+            element_msg.ElementName(name=var_name)
         )
         response: var_val_msg.VariableState
         try:
