@@ -8,17 +8,17 @@ from ansys.engineeringworkflow.api import Property
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api.arrayish as arrayish
+import ansys.modelcenter.workflow.api.custom_metadata_owner as custom_mo
 import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.icomponent as icomponent
 
-from .custom_metadata_owner import CustomMetadataOwner
 from .i18n import i18n
 from .variable_links import VariableLink
 
 WRAPPED_TYPE = TypeVar("WRAPPED_TYPE")
 
 
-class IVariable(CustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
+class IVariable(custom_mo.ICustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_TYPE]):
     """Represents a variable in the workflow."""
 
     def __init__(self, wrapped: WRAPPED_TYPE):

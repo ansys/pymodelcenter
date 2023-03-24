@@ -35,7 +35,7 @@ class IAssemblyChild(ABC):
         raise NotImplementedError()
 
 
-class IAssembly(IAssemblyChild, custom_mo.CustomMetadataOwner, aew_api.IControlStatement, ABC):
+class IAssembly(IAssemblyChild, custom_mo.ICustomMetadataOwner, aew_api.IControlStatement, ABC):
     """
     A ModelCenter assembly organizes components and other assemblies in a workflow.
 

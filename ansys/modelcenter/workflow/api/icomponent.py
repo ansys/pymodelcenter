@@ -11,16 +11,15 @@ from overrides import overrides
 
 from ansys.modelcenter.workflow.api.arrayish import Arrayish
 import ansys.modelcenter.workflow.api.assembly as assembly
+import ansys.modelcenter.workflow.api.custom_metadata_owner as custom_mo
 from ansys.modelcenter.workflow.api.dot_net_utils import from_dot_net_to_ivariable, to_dot_net_list
 import ansys.modelcenter.workflow.api.igroup as igroup
-
-from .custom_metadata_owner import CustomMetadataOwner
 
 clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent  # type: ignore
 
 
-class IComponent(CustomMetadataOwner, IAnsysComponent):
+class IComponent(custom_mo.ICustomMetadataOwner, IAnsysComponent):
     """A component in a Workflow."""
 
     def __init__(self, instance: mcapiIComponent):
