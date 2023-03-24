@@ -2,7 +2,6 @@
 from .arrayish import Arrayish
 from .assembly import IAssembly
 from .component_metadata import ComponentMetadataAccess
-from .data_explorer import DataExplorer
 from .data_type import VarType
 from .datamonitor import DataMonitor
 from .engine import Engine, OnConnectionErrorMode, WorkflowType

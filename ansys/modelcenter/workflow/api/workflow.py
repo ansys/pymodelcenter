@@ -11,7 +11,6 @@ from ansys.engineeringworkflow.api import (
 import clr
 from overrides import overrides
 
-from . import DataExplorer
 from .datamonitor import DataMonitor
 from .i18n import i18n
 from .icomponent import IComponent
@@ -547,25 +546,6 @@ class Workflow(IWorkflowInstance):
         """
         return self._instance.removeDataMonitor(component, index)
 
-    def get_data_explorer(self, index: int) -> Optional[DataExplorer]:
-        """
-        Get the specified DataExplorer.
-
-        Parameters
-        ----------
-        index: int
-            The index of the DataExplorer.
-
-        Returns
-        -------
-        The DataExplorer at the given index.
-        """
-        de_object: object = self._instance.getDataExplorer(index)
-        if de_object is None:
-            return None
-        else:
-            return DataExplorer(de_object)
-
     def move_component(self, component: str, parent: str, index: object) -> None:
         """
         Move the component to the parent at the given index.
@@ -787,31 +767,6 @@ class Workflow(IWorkflowInstance):
             for key in keys:
                 metadata.custom_metadata[key] = variable.getMetaData(key)
         return metadata
-
-    def create_data_explorer(self, trade_study_type: str, setup: str) -> DataExplorer:
-        """
-        Creates a new Data Explorer.
-
-        This documentation assumes you're creating it for a trade study.
-        If you're not you can pass almost anything in for
-        trade_study_type or setup.
-
-        Parameters
-        ----------
-        trade_study_type : str
-            Registry ID of the Plug-In.
-        setup : str
-            A string that is generated from the Plug-In's ``toString``
-            method that can be restored later by the Plug-In's
-            ``fromString`` method.
-
-        Returns
-        -------
-        object :
-            IDataExplorer object.
-        """
-        de_object: object = self._instance.createDataExplorer(trade_study_type, setup)
-        return DataExplorer(de_object)
 
     def get_macro_timeout(self, macro_name: str) -> float:
         """
