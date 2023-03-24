@@ -1,170 +1,77 @@
 """Contains definitions for assemblies."""
-from enum import IntEnum
-from typing import Any, Collection, Optional, Sequence
+from abc import ABC, abstractmethod
+from typing import Optional, Sequence, Union
 
-from ansys.common.variableinterop import IVariableValue
-from ansys.engineeringworkflow.api import IControlStatement, IElement, IVariable, Property
-import clr
-from overrides import overrides
+import ansys.common.variableinterop as acvi
+import ansys.engineeringworkflow.api as aew_api
 
-from .arrayish import Arrayish
-from .custom_metadata_owner import CustomMetadataOwner
-
-clr.AddReference("phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IAssembly as mcapiIAssembly  # type: ignore
-
-import ansys.modelcenter.workflow.api.dot_net_utils as utils
+import ansys.modelcenter.workflow.api.custom_metadata_owner as custom_mo
 import ansys.modelcenter.workflow.api.igroup as igroup
 
 
-class AssemblyLayout(IntEnum):
-    """Represents the options for an assembly layout."""
+class IAssemblyChild(ABC):
+    """Defines methods related to being the child element of an assembly."""
 
-    COLLAPSED = 0
-    EXPANDED = 1
-    CLASSIC = 100
-    N_SQUARED = 101
-    AUTO_N_SQUARED = 102
-
-
-class AssemblyStyle:
-    """Represents an assembly style."""
-
-    def __init__(self, layout_style: AssemblyLayout, width: Optional[int], height: Optional[int]):
-        """
-        Constructs a new instance.
-
-        @param layout_style: the layout style
-        @param width: the width of the assembly when expanded
-        @param height: the height of the assembly when expanded
-        """
-        self._layout_style = layout_style
-        self._width = width
-        self._height = height
+    # TODO/REDUCE: We need to understand whether this is actually as important as I think.
+    # TODO/REDUCE: Does it actually indicate order for Process models?
+    # TODO/REDUCE: Additionally, we should seek ACE feedback on whether this method is important,
+    # TODO/REDUCE: even if it does that.
+    @property
+    @abstractmethod
+    def index_in_parent(self) -> int:
+        """Get the index of the assembly within its parent assembly."""
+        raise NotImplementedError()
 
     @property
-    def layout_style(self) -> AssemblyLayout:
-        """Get the layout style."""
-        return self._layout_style
-
-    @property
-    def width(self) -> Optional[int]:
-        """Get the width when expanded."""
-        return self._width
-
-    def height(self) -> Optional[int]:
-        """Get the height when expanded."""
-        return self._height
-
-
-class Assembly(CustomMetadataOwner, IControlStatement):
-    """COM Instance."""
-
-    def __init__(self, assembly: mcapiIAssembly):
+    @abstractmethod
+    def parent_assembly(self) -> Optional["IAssembly"]:
         """
-        Initialize a new instance.
+        Get the parent assembly of this assembly.
 
-        Parameters
-        ----------
-        assembly : object
-            The raw IAssembly interface object to use to make direct
-            call to ModelCenter.
+        Returns
+        -------
+        The parent assembly or None if this assembly is the root of the workflow.
         """
-        super().__init__(assembly)
+        raise NotImplementedError()
 
-    # IElement
 
-    @property  # type: ignore
-    @overrides
-    def name(self):
-        return self._wrapped.getName()
+class IAssembly(IAssemblyChild, custom_mo.CustomMetadataOwner, aew_api.IControlStatement, ABC):
+    """
+    A ModelCenter assembly organizes components and other assemblies in a workflow.
 
-    @property  # type: ignore
-    @overrides
-    def element_id(self) -> str:
-        # TODO: Should return UUID of the element probably. Not available via COM.
-        return None  # type: ignore
+    Additionally, assemblies can have variables appended to themselves,
+    allowing them to act as a way to abstract subordinate parts of the model.
 
-    @property  # type: ignore
-    @overrides
-    def parent_element_id(self) -> str:
-        # TODO: Should return UUID of the element probably. Not available via COM.
-        return None  # type: ignore
-
-    @overrides
-    def get_property(self, property_name: str) -> Property:
-        value = super().get_custom_metadata_value(property_name)
-        if value is not None:
-            return Property(self.element_id, property_name, value)
-        raise ValueError("Property not found.")
-
-    @overrides
-    def get_properties(self) -> Collection[Property]:
-        # TODO: Getting collection of metadata is not provided by ModelCenter objects.
-        raise NotImplementedError
-
-    @overrides
-    def set_property(self, property_name: str, property_value: IVariableValue) -> None:
-        super().set_custom_metadata_value(property_name, property_value)
-
-    # IVariableContainer
-
-    @overrides
-    def get_variables(self) -> Collection[IVariable]:
-        return Arrayish(self._wrapped.Variables, utils.from_dot_net_to_ivariable)
-
-    # IControlStatement
-
-    @property  # type: ignore
-    @overrides
-    def control_type(self) -> str:
-        """Gets the type of the Assembly (Sequence, Assembly, etc)."""
-        return self._wrapped.AssemblyType
-
-    @overrides
-    def get_components(self) -> Collection[IElement]:
-        dotnet_mock_mc_components = self._wrapped.Components
-        from .icomponent import IComponent
-
-        return [
-            IComponent(dotnet_mock_mc_components.Item(mock_index))
-            for mock_index in range(0, dotnet_mock_mc_components.Count)
-        ]
+    Each ModelCenter workflow has an assembly as its root element, containing all other assemblies.
+    """
 
     # ModelCenter specific
 
     @property
-    def groups(self) -> Sequence["igroup.IGroup"]:
+    @abstractmethod
+    def groups(self) -> Sequence[igroup.IGroup]:
         """
-        Get a list of variable groups in the Assembly.
+        Get a list of variable groups in the assembly.
 
         Returns
         -------
         A list of variable groups in the assembly.
         """
-        return Arrayish(self._wrapped.Groups, igroup.IGroup)
+        raise NotImplementedError()
 
     @property
-    def assemblies(self) -> Sequence["Assembly"]:
-        """
-        Pointer to the Assemblies in the Assembly.
+    @abstractmethod
+    def assemblies(self) -> Sequence["IAssembly"]:
+        """Get a list of child assemblies of this assembly."""
+        raise NotImplementedError()
 
-        Returns
-        -------
-        IAssemblies object.
-        """
-        # VARIANT Assemblies;
-        dotnet_mock_mc_assemblies = self._wrapped.Assemblies
-        return [
-            Assembly(dotnet_mock_mc_assemblies.Item(mock_index))
-            for mock_index in range(0, dotnet_mock_mc_assemblies.Count)
-        ]
-
+    # TODO/REDUCE: Consider cutting this method entirely.
     @property
     def icon_id(self) -> int:
         """The ID number of the icon to use for the Assembly."""
         return self._wrapped.iconID
 
+    # TODO/REDUCE: Consider cutting this method entirely.
     @icon_id.setter
     def icon_id(self, value: int) -> None:
         """
@@ -177,70 +84,14 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         """
         self._wrapped.iconID = value
 
-    @property
-    def index_in_parent(self) -> int:
-        """Gets the position of the Assembly within the parent."""
-        return self._wrapped.IndexInParent
-
-    @property
-    def parent_assembly(self) -> Optional["Assembly"]:  # IAssembly:
-        """
-        Gets the parent of assembly of this assembly.
-
-        Returns
-        -------
-        IAssembly object.
-
-        """
-        to_wrap = self._wrapped.ParentAssembly
-        return None if to_wrap is None else Assembly(to_wrap)
-
-    @property
-    def user_data(self) -> object:
-        """
-        An arbitrary Variant which is not used internally by \
-        ModelCenter but can store data for programmatic purposes.
-
-        Value is not stored across file save/load.
-        """
-        return self._wrapped.userData
-
-    @user_data.setter
-    def user_data(self, value: Any) -> None:
-        """
-        An arbitrary Variant which is not used internally by \
-        ModelCenter but can store data for programmatic purposes.
-
-        Value is not stored across file save/load.
-        """
-        # LTTODO: It's difficult to know exactly what to do here, since
-        # the user_data type is defined as a VARIANT on the MC API, and MC itself allows any
-        # VARIANT to be set.
-        # The documentation suggests that the restriction to VARIANT is not actually important
-        # but is probably a consequence of the restrictions of the COM API; that is, there's nothing
-        # wrong with allowing this to be any data type, since the receiving application (MCD) is
-        # not actually supposed to do anything with this data but store it (allowing the client
-        # script to "tag" assemblies, etc, with arbitrary data).
-        # It's likely that we'll need to do some input validation here
-        # to conform to the particulars of the actual API "transport" winds up being used
-        # (i.e. GRPC as opposed to COM) and then also allow whatever is on the receiving
-        # end to decide whether it has other restrictions.
-        # For now, we do nothing and just pass the unmodified value in, and let pythonnet
-        # decide whether it can set it into the user data field.
-        self._wrapped.userData = value
-
-    def get_full_name(self) -> str:
-        """Get the Full ModelCenter path of the Assembly."""
-        # BSTR getFullName();
-        return self._wrapped.getFullName()
-
+    @abstractmethod
     def add_assembly(
         self,
         name: str,
         x_pos: Optional[int],
         y_pos: Optional[int],
         assembly_type: Optional[str] = None,
-    ) -> "Assembly":  # IAssembly
+    ) -> "IAssembly":
         """
         This method creates a sub-Assembly in the current Assembly \
         with a specific type and position.
@@ -257,50 +108,75 @@ class Assembly(CustomMetadataOwner, IControlStatement):
 
         Returns
         -------
-        IAssembly object.
+        The created assembly object.
         """
-        if x_pos is not None and y_pos is not None:
-            return Assembly(self._wrapped.addAssembly2(name, x_pos, y_pos, assembly_type))
-        else:
-            return Assembly(self._wrapped.addAssembly(name, assembly_type))
+        raise NotImplementedError()
 
-    def add_variable(self, name: str, type_: str) -> object:  # IVariable
-        # IDispatch* addVariable(BSTR name, BSTR type);
+    # TODO: why no add_group? Could be helpful. Might not be worthwhile for Phase II.
+
+    # TODO: add constants / enum for ModelCenter type strings?
+    def add_variable(self, name: str, mc_type: Union[acvi.VariableType, str]) -> aew_api.IVariable:
         """
-        Creates a variable for the current Assembly.
+        Create a variable on this assembly.
 
         Parameters
         ----------
         name : str
             Name of the new variable to create.
-        type_ : str
-            Type of the new variable. Possible types are:
-                           - double
-                           - int
-                           - boolean
-                           - string
-                           - file
-                           - double[]
-                           - int[]
-                           - boolean[]
-                           - string[]
-                           - quadfacet
-                           - surfaceofrevolution
-                           - nurbs
-                           - bspline
-                           - ruled
-                           - skinned
-                           - vrml
-                           - node
+
+        mc_type
+            The type for the new variable.
+            The caller may either specify a type from the Ansys Common Variable Interop library,
+            or a string for a particular ModelCenter type.
+            In addition to the standard Ansys Common Variable Interop types
+            ModelCenter supports some additional internal geometry types.
+            The following string values are acceptable:
+               - double
+               - int
+               - boolean
+               - string
+               - file
+               - double[]
+               - int[]
+               - boolean[]
+               - string[]
+               - quadfacet
+               - surfaceofrevolution
+               - nurbs
+               - bspline
+               - ruled
+               - skinned
+               - vrml
+               - node
 
         Returns
         -------
-        IVariable object.
+        An object representing the created variable.
         """
-        # TODO: Wrap and return when variable wrappers are available
-        self._wrapped.addVariable(name, type_)
-        return None
+        raise NotImplementedError()
 
+    @abstractmethod
+    def delete_variable(self, name: str) -> bool:
+        """
+        Delete the specified variable.
+
+        Variable objects that represent the specified variable will become invalid.
+        If there is no variable with the specified name, no error will be thrown.
+
+        Parameters
+        ----------
+        name : str
+            Name of the variable to be deleted.
+
+        Returns
+        -------
+        True if the specified variable was located and deleted,
+        False if it was not and no action was taken.
+        """
+        raise NotImplementedError()
+
+    # TODO: move to a base class.
+    @abstractmethod
     def rename(self, name: str) -> None:
         """
         Renames the current Assembly.
@@ -310,37 +186,4 @@ class Assembly(CustomMetadataOwner, IControlStatement):
         name :
             New name of the Assembly.
         """
-        # void rename(BSTR name);
-        self._wrapped.rename(name)
-
-    def delete_variable(self, name: str) -> None:
-        """
-        Delete the variable.
-
-        Parameters
-        ----------
-        name : str
-            Name of the variable to be deleted.
-        """
-        self._wrapped.deleteVariable(name)
-
-    def set_style(self, style: AssemblyStyle) -> None:
-        """
-        Set the style for the assembly.
-
-        Parameters
-        ----------
-        style:
-            The new assembly style.
-        """
-        raise NotImplementedError
-
-    def get_style(self) -> AssemblyStyle:
-        """
-        Get the style of the assembly.
-
-        Returns
-        ----------
-        The current style of the assembly.
-        """
-        raise NotImplementedError
+        raise NotImplementedError()

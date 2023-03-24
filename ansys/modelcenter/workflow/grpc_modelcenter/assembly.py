@@ -24,7 +24,7 @@ from .variable import Variable
 from .variable_container import AbstractGRPCVariableContainer
 
 
-class Assembly(AbstractGRPCVariableContainer, api.Assembly):
+class Assembly(AbstractGRPCVariableContainer, api.IAssembly):
     """Represents an assembly in ModelCenter."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -150,7 +150,7 @@ class Assembly(AbstractGRPCVariableContainer, api.Assembly):
         x_pos: Optional[int],
         y_pos: Optional[int],
         assembly_type: Optional[str] = None,
-    ) -> api.Assembly:
+    ) -> api.IAssembly:
         request = AddAssemblyRequest(
             name=ElementName(name=name), parent=self._element_id, assembly_type=assembly_type
         )
