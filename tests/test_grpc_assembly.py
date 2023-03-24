@@ -5,6 +5,9 @@ import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api.datatypes
 import pytest
 
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
 from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
@@ -115,7 +118,7 @@ class MockWorkflowClientForAssemblyTest:
 def test_can_get_name(monkeypatch):
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_client.name_responses["TEST_ID_SHOULD_MATCH"] = "expected_name"
-    monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
     sut = Assembly(ElementId(id_string="TEST_ID_SHOULD_MATCH"), None)
 
     result = sut.name
@@ -126,7 +129,7 @@ def test_can_get_name(monkeypatch):
 def test_can_get_full_name(monkeypatch):
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_client.name_responses["TEST_ID_SHOULD_MATCH"] = "model.expected_name"
-    monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
     sut = Assembly(ElementId(id_string="TEST_ID_SHOULD_MATCH"), None)
 
     result = sut.get_full_name()
@@ -137,7 +140,7 @@ def test_can_get_full_name(monkeypatch):
 def test_can_get_control_type(monkeypatch):
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_client.control_type_responses["TEST_ID_SHOULD_MATCH"] = "Sequence"
-    monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
 
     sut = Assembly(ElementId(id_string="TEST_ID_SHOULD_MATCH"), None)
 
@@ -151,7 +154,7 @@ def test_can_get_parent_no_parent(monkeypatch, returned_id: Optional[str]):
     mock_client = MockWorkflowClientForAssemblyTest()
     test_id_string = "TEST_ID_SHOULD_MATCH"
     mock_client.parent_id_responses[test_id_string] = returned_id
-    monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
 
     sut = Assembly(ElementId(id_string=test_id_string), None)
 
@@ -165,7 +168,7 @@ def test_can_get_parent_has_parent(monkeypatch):
     test_id_string = "TEST_ID_SHOULD_MATCH"
     parent_id_string = "PARENT_ID"
     mock_client.parent_id_responses[test_id_string] = parent_id_string
-    monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
 
     sut = Assembly(ElementId(id_string=test_id_string), None)
 
@@ -181,7 +184,7 @@ def test_get_child_assemblies_empty(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "RegistryGetAssemblies", return_value=no_child_assemblies
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="LEAF_ASSEMBLY"), None)
         result = sut.assemblies
         assert len(result) == 0
@@ -199,7 +202,7 @@ def test_get_child_assemblies_one_child(monkeypatch):
         with unittest.mock.patch.object(
             mock_client, "ElementGetName", return_value=fake_name
         ) as mock_get_name_method:
-            monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
             result = sut.assemblies
             assert len(result) == 1
@@ -221,7 +224,7 @@ def test_get_child_assemblies_multiple_children(monkeypatch):
         with unittest.mock.patch.object(
             mock_client, "ElementGetName", return_value=fake_name
         ) as mock_get_name_method:
-            monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = Assembly(ElementId(id_string="STOOGES"), None)
             result = sut.assemblies
             assert len(result) == 3
@@ -245,7 +248,7 @@ def test_get_variables_empty(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "RegistryGetVariables", return_value=no_variables
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="NO_VARIABLES"), None)
         result = sut.get_variables()
         assert len(result) == 0
@@ -259,7 +262,7 @@ def test_get_variables_one_variable(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "RegistryGetVariables", return_value=variables
     ) as mock_get_variable_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
         result = sut.get_variables()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
@@ -276,7 +279,7 @@ def test_get_variables_multiple_variables(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "RegistryGetVariables", return_value=one_child_assembly
     ) as mock_get_variable_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="STOOGES"), None)
         result = sut.get_variables()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="STOOGES"))
@@ -295,7 +298,7 @@ def test_get_groups_empty(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "RegistryGetGroups", return_value=no_variables
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="NO_GROUPS"), None)
         result = sut.groups
         assert len(result) == 0
@@ -309,7 +312,7 @@ def test_get_groups_one_variable(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "RegistryGetGroups", return_value=variables
     ) as mock_get_group_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
         result = sut.groups
         mock_get_group_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
@@ -326,7 +329,7 @@ def test_get_groups_multiple_variables(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "RegistryGetGroups", return_value=one_child_assembly
     ) as mock_get_group_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="STOOGES"), None)
         result = sut.groups
         mock_get_group_method.assert_called_once_with(ElementId(id_string="STOOGES"))
@@ -345,7 +348,7 @@ def test_assembly_create_variable(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "AssemblyAddVariable", return_value=mock_response
     ) as mock_add_var_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), None)
         result = sut.add_variable("created_variable_name", "int")
         mock_add_var_method.assert_called_once_with(
@@ -365,7 +368,7 @@ def test_assembly_rename(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "AssemblyRename", return_value=mock_response
     ) as mock_rename_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), None)
         sut.rename("this_is_the_new_assembly_name")
         mock_rename_method.assert_called_once_with(
@@ -382,7 +385,7 @@ def test_assembly_get_int_metadata_property(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "PropertyOwnerGetPropertyValue", return_value=mock_response
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="GET_METADATA"), None)
         result = sut.get_property("mock_property_name")
         mock_method.assert_called_once_with(
@@ -402,7 +405,7 @@ def test_assembly_set_int_metadata_property(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "PropertyOwnerSetPropertyValue", return_value=mock_response
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="SET_METADATA"), None)
         sut.set_property("mock_property_name", acvi.IntegerValue(47))
         mock_method.assert_called_once_with(
@@ -420,7 +423,7 @@ def test_get_icon_id(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "AssemblyGetIcon", return_value=mock_response
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="GET_ICON_MOCK_TARGET"), None)
         result = sut.icon_id
         mock_method.assert_called_once_with(ElementId(id_string="GET_ICON_MOCK_TARGET"))
@@ -433,7 +436,7 @@ def test_set_icon_id(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "AssemblySetIcon", return_value=mock_response
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="SET_ICON_MOCK_TARGET"), None)
         sut.icon_id = 9001
         mock_method.assert_called_once_with(
@@ -449,7 +452,7 @@ def test_get_index_in_parent(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "ElementGetIndexInParent", return_value=mock_response
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="INDEX_IN_PARENT"), None)
         result = sut.index_in_parent
         mock_method.assert_called_once_with(ElementId(id_string="INDEX_IN_PARENT"))
@@ -470,7 +473,7 @@ def test_delete_variable(monkeypatch):
         with unittest.mock.patch.object(
             mock_client, "AssemblyDeleteVariable", return_value=DeleteAssemblyVariableResponse()
         ) as mock_delete:
-            monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = Assembly(ElementId(id_string=target_assembly_id), None)
             sut.delete_variable("VarToDelete")
             mock_get_by_name.assert_called_once_with(ElementName(name=target_variable_name))
@@ -483,7 +486,7 @@ def test_add_assembly(monkeypatch):
     with unittest.mock.patch.object(
         mock_client, "AssemblyAddAssembly", return_value=mock_response
     ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, Assembly, mock_client)
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
         result = sut.add_assembly("new_assembly_name", 867, 5309, "Assembly")
         mock_method.assert_called_once_with(
