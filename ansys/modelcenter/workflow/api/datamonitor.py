@@ -1,26 +1,16 @@
 """Definition of DataMonitor."""
+from abc import ABC, abstractmethod
 from typing import Tuple
 
-import clr
 
-clr.AddReference(r"phoenix-mocks/Interop.ModelCenter")
-from ModelCenter import IDataMonitor as mcIDataMonitor
+# TODO/REDUCE: We almost certainly don't want to support this for Phase II.
+# TODO/REDUCE: We should ask if we want this on the API at all.
+class IDataMonitor(ABC):
+    """Represents a data monitor on the ModelCenter Analysis View."""
 
+    # TODO: are rows zero-indexed? How do you know how many there are?
 
-class DataMonitor:
-    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
-
-    def __init__(self, monitor: mcIDataMonitor):
-        """
-        Initialize.
-
-        Parameters
-        ----------
-        monitor: phxmock.MockDataMonitor
-            The COM DataMonitor to wrap.
-        """
-        self._instance: mcIDataMonitor = monitor
-
+    @abstractmethod
     def get_name(self, row: int) -> str:
         """
         Get the name of a row in the DataMonitor.
@@ -34,8 +24,9 @@ class DataMonitor:
         -------
         The name of the row.
         """
-        return self._instance.getName(row)
+        raise NotImplementedError()
 
+    @abstractmethod
     def set_name(self, row: int, name: str) -> None:
         """
         Set the display name of the specified row in the DataMonitor.
@@ -47,8 +38,9 @@ class DataMonitor:
         name : str
             The new display name.
         """
-        self._instance.setName(row, name)
+        raise NotImplementedError()
 
+    @abstractmethod
     def is_renamed(self, row: int) -> bool:
         """
         Determine whether the name of a row in the DataMonitor lines \
@@ -63,8 +55,9 @@ class DataMonitor:
         -------
         True or False
         """
-        return self._instance.isRenamed(row)
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_link(self, row: int) -> str:
         """
         Retrieve the variable associated with a row in the DataMonitor.
@@ -81,8 +74,9 @@ class DataMonitor:
         -------
         The full name of the variable, or a blank string.
         """
-        return self._instance.getLink(row)
+        raise NotImplementedError()
 
+    @abstractmethod
     def set_link(self, row: int, link: str) -> bool:
         """
         Set the variable associated with a given row in the DataMonitor.
@@ -100,8 +94,9 @@ class DataMonitor:
         True if the link was set, False if the variable or row was not
         valid.
         """
-        return self._instance.setLink(row, link)
+        raise NotImplementedError()
 
+    @abstractmethod
     def add_item(self, name: str, link: str) -> int:
         """
         Add an item to the DataMonitor that links to a variable in \
@@ -118,8 +113,9 @@ class DataMonitor:
         -------
         The index of the new item in the DataMonitor.
         """
-        return self._instance.addItem(name, link)
+        raise NotImplementedError()
 
+    @abstractmethod
     def add_unlinked_item(self, name: str) -> int:
         """
         Add an item to the DataMonitor that does not link to a \
@@ -134,8 +130,9 @@ class DataMonitor:
         -------
             The index of the new item in the DataMonitor.
         """
-        return self._instance.addUnlinkedItem(name)
+        raise NotImplementedError()
 
+    @abstractmethod
     def remove_item(self, row: int) -> None:
         """
         Remove the selected row from the DataMonitor.
@@ -145,8 +142,9 @@ class DataMonitor:
         row : int
             The row in the DataMonitor of interest.
         """
-        return self._instance.removeItem(row)
+        raise NotImplementedError()
 
+    @abstractmethod
     def remove_link(self, row: int) -> None:
         """
         Remove the associated link from the row specified in the \
@@ -157,38 +155,45 @@ class DataMonitor:
         row :
             The row in the DataMonitor of interest.
         """
-        return self._instance.removeLink(row)
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def display_full_names(self) -> bool:
         """Get the status of the "Display Full Names" option."""
-        return self._instance.getDisplayFullNames()
+        raise NotImplementedError()
 
     @display_full_names.setter
+    @abstractmethod
     def display_full_names(self, display_full_names: bool) -> None:
         """Set the "Display Full Names" option."""
-        self._instance.setDisplayFullNames(display_full_names)
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def auto_delete(self) -> bool:
         """Get the status of the Auto Delete option."""
-        return self._instance.getAutoDelete()
+        raise NotImplementedError()
 
     @auto_delete.setter
+    @abstractmethod
     def auto_delete(self, auto_delete: bool) -> None:
         """Set the status of the Auto Delete option."""
-        self._instance.setAutoDelete(auto_delete)
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def display_units(self) -> bool:
         """Get the status of the "Display Units" option."""
-        return self._instance.getDisplayUnits()
+        raise NotImplementedError()
 
     @display_units.setter
+    @abstractmethod
     def display_units(self, display_units) -> None:
         """Set the "Display Units" option."""
-        self._instance.setDisplayUnits(display_units)
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_col_width(self, col: int) -> int:
         """
         Get the column width for the specified column.
@@ -202,8 +207,9 @@ class DataMonitor:
         -------
         The column width.
         """
-        return self._instance.getColWidth(col)
+        raise NotImplementedError()
 
+    @abstractmethod
     def set_col_width(self, col: int, width: int) -> None:
         """
         Set the width of the specified column.
@@ -215,19 +221,22 @@ class DataMonitor:
         width :
             The new width for the column.
         """
-        self._instance.setColWidth(col, width)
+        raise NotImplementedError()
 
+    @property
+    @abstractmethod
     def is_valid(self) -> bool:
         """Determine whether all the items in the DataMonitor are \
         valid or not."""
-        return self._instance.isValid()
+        raise NotImplementedError()
 
     @property
     def title(self) -> str:
         """Get the title of the DataMonitor."""
-        return self._instance.getTitle()
+        raise NotImplementedError()
 
     @title.setter
+    @abstractmethod
     def title(self, title: str) -> None:
         """
         Set the title of the DataMonitor.
@@ -237,9 +246,10 @@ class DataMonitor:
         title: str
             The new title.
         """
-        self._instance.setTitle(title)
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def size(self) -> Tuple[int, int]:
         """
         Get the size of the DataMonitor.
@@ -248,9 +258,10 @@ class DataMonitor:
         -------
         A Tuple containing the (width, height) of the DataMonitor.
         """
-        return self._instance.getWidth(), self._instance.getHeight()
+        raise NotImplementedError()
 
     @size.setter
+    @abstractmethod
     def size(self, size: Tuple[int, int]) -> None:
         """
         Set the size of the DataMonitor.
@@ -260,9 +271,10 @@ class DataMonitor:
         size: Tuple[int, int]
             The new (width, height) of the DataMonitor.
         """
-        self._instance.setSize(size[0], size[1])
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def location(self) -> Tuple[int, int]:
         """
         Get the location of the DataMonitor in the Analysis View.
@@ -271,9 +283,10 @@ class DataMonitor:
         -------
         A tuple containing the (x,y) position of the DataMonitor.
         """
-        return self._instance.getX(), self._instance.getY()
+        raise NotImplementedError()
 
     @location.setter
+    @abstractmethod
     def location(self, location: Tuple[int, int]) -> None:
         """
         Set the location of the DataMonitor in the Analysis View.
@@ -283,4 +296,4 @@ class DataMonitor:
         location: Tuple[int, int]
             The new (x,y) location.
         """
-        self._instance.setLocation(location[0], location[1])
+        raise NotImplementedError()

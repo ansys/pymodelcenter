@@ -11,7 +11,7 @@ from ansys.engineeringworkflow.api import (
 import clr
 from overrides import overrides
 
-from .datamonitor import DataMonitor
+from .datamonitor import IDataMonitor
 from .i18n import i18n
 from .icomponent import IComponent
 from .ivariable import IVariable
@@ -24,13 +24,6 @@ clr.AddReference("phoenix-mocks/Interop.ModelCenter")
 from ModelCenter import IComponent as mcapiIComponent  # type: ignore
 
 from ansys.modelcenter.workflow.api.assembly import Assembly
-
-
-class MockDataMonitorWrapper(DataMonitor):
-    """Maps a COM MockDataMonitor to the IDataMonitor interface."""
-
-    def __init__(self, monitor: phxmock.MockDataMonitor):
-        """Initialize."""
 
 
 class WorkflowVariable:
@@ -489,7 +482,7 @@ class Workflow(IWorkflowInstance):
         """
         self._instance.run(variable_array or "")
 
-    def get_data_monitor(self, component: str, index: int) -> DataMonitor:
+    def get_data_monitor(self, component: str, index: int) -> IDataMonitor:
         """
         Get the DataMonitor at the given index for the given component.
 
@@ -504,8 +497,7 @@ class Workflow(IWorkflowInstance):
         -------
         The component's DataMonitor at the given index.
         """
-        dm_object: phxmock.MockDataMonitor = self._instance.getDataMonitor(component, index)
-        return DataMonitor(dm_object)
+        raise NotImplementedError()
 
     def create_data_monitor(self, component: str, name: str, x: int, y: int) -> object:
         """
@@ -526,8 +518,7 @@ class Workflow(IWorkflowInstance):
         -------
         The created DataMonitor.
         """
-        dm_object: phxmock.MockDataMonitor = self._instance.createDataMonitor(component, name, x, y)
-        return DataMonitor(dm_object)
+        raise NotImplementedError()
 
     def remove_data_monitor(self, component: str, index: int) -> bool:
         """
@@ -544,7 +535,7 @@ class Workflow(IWorkflowInstance):
         -------
         True if the component had a DataMonitor at the given index.
         """
-        return self._instance.removeDataMonitor(component, index)
+        raise NotImplementedError()
 
     def move_component(self, component: str, parent: str, index: object) -> None:
         """
