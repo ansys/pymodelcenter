@@ -1,7 +1,7 @@
 """Definition of Engine and associated classes."""
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Union
+from typing import Collection, Mapping, Union
 
 from ansys.engineeringworkflow.api import IFileBasedWorkflowEngine
 
@@ -163,73 +163,17 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     # TODO: No set_preference? Does this exist on the COM API?
 
-    # TODO: All unit methods feel kinda clunky.
-    #   At minimum we could probably just make these return string collections instead.
-    #   We can also consider creating some kind of object for this and allowing for string indexing.
     @abstractmethod
-    def get_num_unit_categories(self) -> int:
+    def get_units(self) -> Mapping[str, Collection[str]]:
         """
-        Get the number of unit categories in the IModelCenter object.
+        Get available units by category.
 
         Returns
         -------
-        int
-            The number for unit categories, or -1 if there is an error.
+        A mapping representing the units available in the engine.
+        The keys in the map are the names of unit categories,
+        and the values are collections containing all the unit names for that category.
         """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def get_unit_category_name(self, index: int) -> str:
-        """
-        Get the name of the category of a unit.
-
-        Parameters
-        ----------
-        index : int
-            Index of the unit.
-
-        Returns
-        -------
-        str
-            The name of the category, or empty string if there is an error.
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def get_num_units(self, category: str) -> int:
-        """
-        Get the number of units inside a specified category.
-
-        Parameters
-        ----------
-        category : str
-            Specified category of units.
-
-        Returns
-        -------
-        int
-            The number of units, or -1 if there is an error.
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def get_unit_name(self, category: str, index: int) -> str:
-        """
-        Get the name of the unit.
-
-        Parameters
-        ----------
-        category : str
-            Category to retrieve the unit.
-        index : int
-            Index of the element in the category.
-
-        Returns
-        -------
-        str
-            The name of the unit, or empty string if there is an error.
-        """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_run_only_mode(self) -> bool:
