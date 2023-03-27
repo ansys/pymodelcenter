@@ -26,5 +26,5 @@ from .iscript_component import IScriptComponent
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
 from .ivariable import FormattableVariable, IVariable
-from .variable_links import VariableLink
+from .variable_links import IVariableLink
 from .workflow import Workflow

@@ -13,7 +13,7 @@ import ansys.modelcenter.workflow.api.dot_net_utils as utils
 import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 from .i18n import i18n
-from .variable_links import VariableLink
+from .variable_links import IVariableLink
 
 WRAPPED_TYPE = TypeVar("WRAPPED_TYPE")
 
@@ -273,7 +273,7 @@ class IVariable(custom_mo.ICustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_
             self._wrapped.directDependents(follow_suspended), utils.from_dot_net_to_ivariable
         )
 
-    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
+    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[IVariableLink]:
         """
         Returns a list of links that are immediate precedents to the value of this variable.
 
@@ -292,7 +292,7 @@ class IVariable(custom_mo.ICustomMetadataOwner, IAnsysVariable, Generic[WRAPPED_
         """
         raise NotImplementedError
 
-    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
+    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[IVariableLink]:
         """
         Returns a list of links that immediately depend on the value of this variable.
 

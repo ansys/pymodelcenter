@@ -293,7 +293,7 @@ class Workflow(wfapi.Workflow):
         raise NotImplementedError
 
     @overrides
-    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[wfapi.VariableLink]:
+    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[wfapi.IVariableLink]:
         request = workflow_msg.WorkflowAutoLinkRequest()
         request.source_comp.id_string = src_comp
         request.target_comp.id_string = dest_comp
@@ -305,7 +305,7 @@ class Workflow(wfapi.Workflow):
         return links
 
     @overrides
-    def get_links(self, reserved: object = None) -> Iterable[wfapi.VariableLink]:
+    def get_links(self, reserved: object = None) -> Iterable[wfapi.IVariableLink]:
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(
             request

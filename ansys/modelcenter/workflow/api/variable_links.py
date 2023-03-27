@@ -1,33 +1,22 @@
-"""Defines classes and functions for working with VariableLinks."""
+"""Defines classes and functions for working with links between variables in the workflow."""
+
+from abc import ABC, abstractmethod
 
 
-class VariableLink:
+class IVariableLink(ABC):
     """Represents a link between two variables in the workflow."""
 
-    def __init__(self, lhs_id: str, rhs: str):
-        """
-        Construct a new instance.
-
-        Parameters
-        ----------
-        link :
-            Currently, the mock link object to wrap.
-        """
-        self._lhs_id = lhs_id
-        self._rhs = rhs
-
-    def __str__(self) -> str:
-        """Convert this object to a string."""
-        return "{LHS: " + self._lhs_id + ", RHS: " + self._rhs + "}"
-
+    @abstractmethod
     def suspend_link(self) -> None:
         """Causes the link to be suspended."""
-        raise NotImplementedError
+        raise NotImplementedError()
 
+    @abstractmethod
     def resume_link(self) -> None:
         """Resumes the link if it was suspended."""
-        raise NotImplementedError
+        raise NotImplementedError()
 
+    @abstractmethod
     def break_link(self) -> None:
         """
         Break the link.
@@ -35,39 +24,36 @@ class VariableLink:
         Breaking the link removes the dependencies between the left-hand and right-hand side of the
         link. This object becomes invalid and cannot be used after calling this method.
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def lhs(self) -> str:
         """
         The left-hand side of the link.
 
         The left-hand side receives a value from the right-hand
         side (analogous to a variable assignment in most languages). This will always be
-        a simple variable name.
+        a simple variable name, except in cases where the link targets a single array index,
+        in which case it will be the name of the variable plus an array index.
         """
-        return self._lhs_id
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def rhs(self) -> str:
         """
-        The right-hand side of the link equation.
+        Get the right-hand side (source) of the link equation.
 
-        You can change the link by changing this value.
+        This will be a simple equation containing the names of
+        the other variables on which this link depends.
         """
-        return self._rhs
+        raise NotImplementedError()
 
-    # @rhs.setter
-    # def rhs(self, rhs: str) -> None:
-    #     """
-    #     The right-hand side of the link equation.
-    #
-    #     You can change the link by changing this value.
-    #
-    #     Parameters
-    #     ----------
-    #     rhs: str
-    #         the new value for the link's right-hand side.
-    #     """
-    #     self._rhs = rhs
-    # TODO: not on grpc api, may want to just remove
+    @rhs.setter
+    @abstractmethod
+    def rhs(self, new_rhs: str) -> None:
+        """Set the right-hand side (source) of the link equation."""
+        raise NotImplementedError()
+
+    # TODO: need a getter for suspension state?

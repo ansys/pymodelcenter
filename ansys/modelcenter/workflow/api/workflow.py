@@ -15,7 +15,7 @@ from .datamonitor import IDataMonitor
 from .i18n import i18n
 from .icomponent import IComponent
 from .ivariable import IVariable
-from .variable_links import VariableLink
+from .variable_links import IVariableLink
 
 clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
 import Phoenix.Mock as phxmock  # type: ignore
@@ -429,7 +429,7 @@ class Workflow(IWorkflowInstance):
 
         return metadata
 
-    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[VariableLink]:
+    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[IVariableLink]:
         """
         Automatically links two components.
 
@@ -446,7 +446,7 @@ class Workflow(IWorkflowInstance):
         """
         raise NotImplementedError
 
-    def get_links(self, reserved: object = None) -> Iterable[VariableLink]:
+    def get_links(self, reserved: object = None) -> Iterable[IVariableLink]:
         """
         Get a list of all links in the model.
 
