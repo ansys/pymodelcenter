@@ -1,20 +1,15 @@
 """Definition of Format."""
-import clr
+from abc import ABC, abstractmethod
+
 from numpy import float64, int64
 
-clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockFormatter
 
-
-class Format:
+class IFormat(ABC):
     """Class for formatting values in various string formats \
     (percentage, currency, etc.)."""
 
-    def __init__(self, instance: MockFormatter):
-        """Initialize."""
-        self._instance = instance
-
     @property
+    @abstractmethod
     def format(self) -> str:
         """
         Style to use for formatting.
@@ -165,13 +160,15 @@ class Format:
         -------
         The format string used to format values.
         """
-        return self._instance.getFormat()
+        raise NotImplementedError()
 
     @format.setter
+    @abstractmethod
     def format(self, fmt: str) -> None:
         """Setter for format property."""
-        self._instance.setFormat(fmt)
+        raise NotImplementedError()
 
+    @abstractmethod
     def string_to_integer(self, string: str) -> int64:
         """
         Convert a formatted string to an integer.
@@ -188,8 +185,9 @@ class Format:
         -------
         The value of the string.
         """
-        return self._instance.stringToLong(string)
+        raise NotImplementedError()
 
+    @abstractmethod
     def string_to_real(self, string: str) -> float64:
         """
         Convert a formatted string to a real.
@@ -206,8 +204,9 @@ class Format:
         -------
         The value of the string.
         """
-        return self._instance.stringToDouble(string)
+        raise NotImplementedError()
 
+    @abstractmethod
     def integer_to_string(self, integer: int64) -> str:
         """
         Convert an integer to a formatted string.
@@ -221,8 +220,9 @@ class Format:
         -------
         The formatted string.
         """
-        return self._instance.longToString(integer)
+        raise NotImplementedError()
 
+    @abstractmethod
     def real_to_string(self, real: float64) -> str:
         """
         Convert a real to a formatted string.
@@ -236,8 +236,9 @@ class Format:
         -------
         The formatted string.
         """
-        return self._instance.doubleToString(real)
+        raise NotImplementedError()
 
+    @abstractmethod
     def string_to_string(self, string: str) -> str:
         """
         Convert an unformatted string into a formatted string.
@@ -251,8 +252,9 @@ class Format:
         -------
         The formatted string.
         """
-        return self._instance.stringToString(string)
+        raise NotImplementedError()
 
+    @abstractmethod
     def integer_to_editable_string(self, integer: int64) -> str:
         """
         Convert an integer to its formatted string representation, but \
@@ -267,8 +269,9 @@ class Format:
         -------
         The formatted string.
         """
-        return self._instance.longToEditableString(integer)
+        raise NotImplementedError()
 
+    @abstractmethod
     def real_to_editable_string(self, real: float64) -> str:
         """
         Convert a real to its formatted string representation, but \
@@ -283,4 +286,4 @@ class Format:
         -------
         The formatted string.
         """
-        return self._instance.doubleToEditableString(real)
+        raise NotImplementedError()

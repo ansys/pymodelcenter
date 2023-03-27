@@ -5,7 +5,7 @@ from typing import Collection, Mapping, Union
 
 from ansys.engineeringworkflow.api import IFileBasedWorkflowEngine
 
-from .format import Format
+from .format import IFormat
 from .workflow import Workflow
 
 
@@ -98,7 +98,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_formatter(self, fmt: str) -> Format:
+    def get_formatter(self, fmt: str) -> IFormat:
         """
         Create an instance of a formatter that can be used to format \
         numbers to and from a particular string style.

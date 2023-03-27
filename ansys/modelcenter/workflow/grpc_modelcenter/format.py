@@ -3,7 +3,7 @@ import grpc
 from numpy import float64, int64
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.format import Format as IFormat
+from ansys.modelcenter.workflow.api.format import IFormat
 
 from .proto.format_messages_pb2 import (
     FormatFromDoubleRequest,
