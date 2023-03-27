@@ -8,9 +8,8 @@ import grpc
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import DataExplorer
-from ansys.modelcenter.workflow.api import Engine as IEngine
 from ansys.modelcenter.workflow.api import Format as IFormat
-from ansys.modelcenter.workflow.api import OnConnectionErrorMode
+from ansys.modelcenter.workflow.api import IEngine, OnConnectionErrorMode
 from ansys.modelcenter.workflow.api import Workflow as IWorkflow
 from ansys.modelcenter.workflow.api import WorkflowType
 

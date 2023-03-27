@@ -1,24 +1,12 @@
 """Definition of Engine and associated classes."""
+from abc import ABC, abstractmethod
 from enum import Enum
-from os import PathLike
-from string import Template
 from typing import Union
 
-from ansys.engineeringworkflow.api import (
-    IFileBasedWorkflowEngine,
-    IWorkflowInstance,
-    WorkflowEngineInfo,
-)
-import clr
-from overrides import overrides
+from ansys.engineeringworkflow.api import IFileBasedWorkflowEngine
 
-from .data_explorer import DataExplorer
 from .format import Format
-from .i18n import i18n
 from .workflow import Workflow
-
-clr.AddReference(r"phoenix-mocks\Phoenix.Mock.v45")
-from Phoenix.Mock import MockModelCenter  # type: ignore
 
 
 class WorkflowType(Enum):
@@ -37,20 +25,23 @@ class OnConnectionErrorMode(Enum):
 
     ERROR = (3,)
     """Abort loading and throw the error back to the caller."""
+    # TODO: If we continue to allow connecting without errors,
+    #       we need a method on IComponent that allows verifying component connection state.
     IGNORE = (1,)
     """Ignore the error and continue loading."""
+    # TODO: This should probably not be allowed on this API.
     DIALOG = -1
     """(UI mode only) Show an error dialog."""
 
 
-class Engine(IFileBasedWorkflowEngine):
+class IEngine(IFileBasedWorkflowEngine, ABC):
     """Engine class used to wrap around MockModelCenter class."""
 
-    def __init__(self):
-        """Initialize a new Engine instance."""
-        self._instance = MockModelCenter()
-
+    # TODO: We should consider dropping this,
+    #     or making it a particular method on
+    #     the current gRPC implementation.
     @property
+    @abstractmethod
     def process_id(self) -> int:
         """
         The process identifier of the ModelCenter process.
@@ -63,8 +54,9 @@ class Engine(IFileBasedWorkflowEngine):
         int
             The process identifier.
         """
-        return int(self._instance.ProcessID)
+        raise NotImplementedError()
 
+    @abstractmethod
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         """
         Create a new workflow.
@@ -80,18 +72,12 @@ class Engine(IFileBasedWorkflowEngine):
         -------
         A new Workflow instance.
         """
-        if self._instance.getModel() is not None:
-            msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
-            raise Exception(msg)
-        else:
-            self._instance.newModel(workflow_type.value)
-            self._instance.saveModelAs(name)
-            return Workflow(self._instance)
+        raise NotImplementedError()
 
-    @overrides
-    def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
-        return self.load_workflow_ex(str(file_name))
-
+    # TODO: this probably doesn't need to be a separate method;
+    #     on_connect_error can be an optional kwarg on
+    #     the existing load_workflow
+    @abstractmethod
     def load_workflow_ex(
         self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
     ) -> Workflow:
@@ -109,20 +95,13 @@ class Engine(IFileBasedWorkflowEngine):
         -------
         A new Workflow instance.
         """
-        if self._instance.getModel() is not None:
-            msg: str = i18n("Exceptions", "ERROR_WORKFLOW_ALREADY_OPEN")
-            raise Exception(msg)
-        else:
-            self._instance.loadModel(file_name, on_connect_error.value)
-            return Workflow(self._instance)
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_formatter(self, fmt: str) -> Format:
         """
         Create an instance of a formatter that can be used to format \
         numbers to and from a particular string style.
-
-        See documentation on Format.format for more information on
-        available styles.
 
         Parameters
         ----------
@@ -133,9 +112,12 @@ class Engine(IFileBasedWorkflowEngine):
         -------
         A Format object that formats in the given style.
         """
-        formatter: Format = Format(self._instance.getFormatter(fmt))
-        return formatter
+        raise NotImplementedError()
 
+    # TODO: We may want to revisit these two methods as well.
+    #     In general, users might want a new way of loading these secrets from a file
+    #     or environment variable. At minimum these could be unified into a single method.
+    @abstractmethod
     def set_user_name(self, user_name: str) -> None:
         """
         Set the username used for authentication.
@@ -145,8 +127,9 @@ class Engine(IFileBasedWorkflowEngine):
         user_name: str
             The username.
         """
-        self._instance.setUserName(user_name)
+        raise NotImplementedError()
 
+    @abstractmethod
     def set_password(self, password: str) -> None:
         """
         Set the password used for authentication.
@@ -156,8 +139,9 @@ class Engine(IFileBasedWorkflowEngine):
         password: str
             The password.
         """
-        self._instance.setPassword(password)
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
         """
         Get the value of a preference.
@@ -175,8 +159,14 @@ class Engine(IFileBasedWorkflowEngine):
         -------
         The value of the given preference.
         """
-        return self._instance.getPreference(pref)
+        raise NotImplementedError()
 
+    # TODO: No set_preference? Does this exist on the COM API?
+
+    # TODO: All unit methods feel kinda clunky.
+    #   At minimum we could probably just make these return string collections instead.
+    #   We can also consider creating some kind of object for this and allowing for string indexing.
+    @abstractmethod
     def get_num_unit_categories(self) -> int:
         """
         Get the number of unit categories in the IModelCenter object.
@@ -186,8 +176,9 @@ class Engine(IFileBasedWorkflowEngine):
         int
             The number for unit categories, or -1 if there is an error.
         """
-        return self._instance.getNumUnitCategories()
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_unit_category_name(self, index: int) -> str:
         """
         Get the name of the category of a unit.
@@ -202,8 +193,9 @@ class Engine(IFileBasedWorkflowEngine):
         str
             The name of the category, or empty string if there is an error.
         """
-        return self._instance.getUnitCategoryName(index)
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_num_units(self, category: str) -> int:
         """
         Get the number of units inside a specified category.
@@ -218,8 +210,9 @@ class Engine(IFileBasedWorkflowEngine):
         int
             The number of units, or -1 if there is an error.
         """
-        return self._instance.getNumUnits(category)
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_unit_name(self, category: str, index: int) -> str:
         """
         Get the name of the unit.
@@ -236,8 +229,9 @@ class Engine(IFileBasedWorkflowEngine):
         str
             The name of the unit, or empty string if there is an error.
         """
-        return self._instance.getUnitName(category, index)
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_run_only_mode(self) -> bool:
         """
         Get whether the engine is in Run-Only mode.
@@ -249,50 +243,4 @@ class Engine(IFileBasedWorkflowEngine):
         -------
         True if in Run-Only mode; otherwise, False.
         """
-        return self._instance.getRunOnlyMode()
-
-    def save_trade_study(self, uri: str, data_explorer: DataExplorer) -> None:
-        """
-        Save the trade study currently loaded in the DataExplorer to \
-        the given URI.
-
-        The file will be overwritten if it exists.
-
-        Parameters
-        ----------
-        uri: str
-            The uri to which to write the trade study.
-        data_explorer: DataExplorer
-            The data explorer whose plots and data should be saved.
-        """
-        self._instance.saveTradeStudy(uri, 3, data_explorer)
-
-    # TODO: Rename to get_engine_info?
-    @overrides
-    def get_server_info(self) -> WorkflowEngineInfo:
-        """
-        Get information about the engine.
-
-        Returns
-        -------
-        A `WorkflowEngineInfo` object with information about the Engine.
-        """
-        version = {
-            "major": self._instance.get_version(0),
-            "minor": self._instance.get_version(1),
-            "patch": self._instance.get_version(2),
-        }
-        version_str: str = Template("${major}.${minor}.${patch}").safe_substitute(version)
-        install_location: str = self._instance.getModelCenterPath()  # or self._instance.appFullPath
-        info = WorkflowEngineInfo(
-            release_year=version["major"],
-            release_id=version["minor"],
-            build=version["patch"],
-            is_release_build=False,
-            build_type="dev",
-            version_as_string=version_str,
-            server_type="MockModelCenter",
-            install_location=install_location,
-            base_url=None,
-        )
-        return info
+        raise NotImplementedError()
