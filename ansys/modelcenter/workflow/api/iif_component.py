@@ -1,20 +1,16 @@
 """Definition of IfComponent."""
-import clr
+from abc import ABC, abstractmethod
 
 from .icomponent import IComponent
 
-clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
-from Phoenix.Mock import MockIfComponent
 
-
-class IIfComponent(IComponent):
+# TODO: This API seems incomplete. How do you add a branch,
+#       or ensure that a component is added to a particular if branch?
+class IIfComponent(IComponent, ABC):
     """Component for creating branching paths in a process workflow."""
 
-    def __init__(self, instance: MockIfComponent):
-        """Initialize."""
-        super().__init__(instance)
-
     @property
+    @abstractmethod
     def exclusive(self) -> bool:
         """
         Whether the branching condition is exclusive.
@@ -27,9 +23,10 @@ class IIfComponent(IComponent):
         -------
         True if in exclusive mode, False if in inclusive mode.
         """
-        return self._wrapped.exclusive
+        raise NotImplementedError()
 
     @exclusive.setter
+    @abstractmethod
     def exclusive(self, value: bool) -> None:
         """
         Setter for the exclusive property.
@@ -39,9 +36,10 @@ class IIfComponent(IComponent):
         value : bool
             The new value.
         """
-        self._wrapped.exclusive = value
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def run_last_branch_by_default(self) -> bool:
         """
         Whether there is an else branch that is run if no conditions \
@@ -51,9 +49,10 @@ class IIfComponent(IComponent):
         -------
         True if there is an else branch, False otherwise.
         """
-        return self._wrapped.runLastBranchByDefault
+        raise NotImplementedError()
 
     @run_last_branch_by_default.setter
+    @abstractmethod
     def run_last_branch_by_default(self, value: bool) -> None:
         """
         Setter for run_last_branch_by_default property.
@@ -63,13 +62,15 @@ class IIfComponent(IComponent):
         value : bool
             The new value.
         """
-        self._wrapped.runLastBranchByDefault = value
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def num_branches(self) -> int:
         """Get the number of branches."""
-        return self._wrapped.getNumBranches()
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_branch_condition(self, index: int) -> str:
         """
              Get the branch condition.
@@ -84,8 +85,9 @@ class IIfComponent(IComponent):
         str :
              The branch condition.
         """
-        return self._wrapped.getBranchCondition(index)
+        raise NotImplementedError()
 
+    @abstractmethod
     def set_branch_condition(self, index: int, condition: str) -> None:
         """
         Set the branch condition.
@@ -97,8 +99,9 @@ class IIfComponent(IComponent):
         condition : str
             The new condition.
         """
-        self._wrapped.setBranchCondition(index, condition)
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_branch_name(self, index: int) -> str:
         """
         Return the name of the branch.
@@ -112,8 +115,9 @@ class IIfComponent(IComponent):
         -------
         The name of the branch.
         """
-        return self._wrapped.getBranchName(index)
+        raise NotImplementedError()
 
+    @abstractmethod
     def rename_branch(self, index: int, name: str) -> None:
         """
         Rename the branch to the given name.
@@ -125,4 +129,4 @@ class IIfComponent(IComponent):
         name : str
             New name of the branch.
         """
-        return self._wrapped.renameBranch(index, name)
+        raise NotImplementedError()
