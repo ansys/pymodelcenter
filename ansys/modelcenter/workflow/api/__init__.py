@@ -21,10 +21,10 @@ from .iintegerarray import IIntegerArray
 from .iintegervariable import IIntegerVariable
 from .ireference_array import IReferenceArray
 from .ireference_variable import IReferenceVariable
-from .irefprop import IRefArrayProp, IRefProp
+from .irefprop import IReferenceArrayProperty, IReferencePropertyOwner
 from .iscript_component import IScriptComponent
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
-from .ivariable import FormattableVariable, IVariable
+from .ivariable import IVariable
 from .variable_links import IVariableLink
 from .workflow import Workflow

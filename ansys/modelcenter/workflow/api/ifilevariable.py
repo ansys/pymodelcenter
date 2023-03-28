@@ -1,103 +1,17 @@
 """Definitions of file variable."""
-from typing import Optional
+from abc import ABC, abstractmethod
 
 import ansys.common.variableinterop as acvi
-import clr
 from overrides import overrides
 
-from .i18n import i18n
-from .ivariable import IVariable
-
-clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
-from Phoenix.Mock import MockFileVariable  # type: ignore
+from ansys.modelcenter.workflow.api.iarray import IVariable
 
 
-class IFileVariable(IVariable[MockFileVariable]):
-    """Represents a file variable in the workflow."""
-
-    @overrides
-    def __init__(self, wrapped: MockFileVariable):
-        super().__init__(wrapped)
-        self._standard_metadata: acvi.CommonVariableMetadata = acvi.FileMetadata()
-
-    @overrides
-    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
-        if hid is not None:
-            raise NotImplementedError(i18n("Exceptions", "ERROR_METADATA_TYPE_NOT_ALLOWED"))
-
-        return None
-        # return acvi.VariableState(self.value, self._wrapped.isValid())
-
-    @overrides
-    def set_value(self, value: acvi.VariableState) -> None:
-        if value is None:
-            self._wrapped.value = None
-        else:
-            # TODO: MyPy complains here about read-only property. Check when files implemented.
-            self.value = value.value  # type: ignore
-
-    @property  # type: ignore
-    @overrides
-    def value(self) -> acvi.FileValue:
-        """
-        Value of the variable.
-
-        Returns
-        -------
-        FileValue :
-            Value of the file variable.
-        """
-        contents: str = self._wrapped.value
-        mime: str = acvi.FileValue.BINARY_MIMETYPE
-        encoding = None
-        # Create FileValue from string.
-        # if not self._wrapped.isBinary:
-        #     mime: str = acvi.FileValue.TEXT_MIMETYPE
-        #     encoding: str = "utf-8"
-        return None
-        # TODO: Implement acvi.FileValue.from_api_string().
-        # return acvi.FileValue.from_api_string(self._wrapped.toString())
-        # Or:
-        # TODO: Actual implementation might require async.
-        # This should not be a property then, according to PEP8:
-        #   Avoid using properties for computationally expensive operations;
-        #   the attribute notation makes the caller believe that access is (relatively) cheap.
-        # TODO: Implement FileScope.read_from_string()
-        # return acvi.FileScope.read_from_string(contents, mime, encoding)
-
-    @value.setter  # type: ignore
-    @overrides
-    def value(self, new_value: acvi.FileValue) -> None:
-        """
-        Set value of the variable.
-
-        Parameters
-        ----------
-        new_value : FileValue
-            Value of the file variable.
-        """
-        if new_value is None:
-            self._wrapped.value = None
-        else:
-            # TODO: Get save context.
-            self._wrapped.fromString(new_value.to_api_string(None))
-        # Or:
-        # TODO: Actual implementation might require async.
-        # See notes for the get property.
-        # self._wrapped.value = await new_value.get_contents(new_value.file_encoding)
-
-    @property  # type: ignore
-    @overrides
-    def value_absolute(self) -> acvi.FileValue:
-        return self.value
-
-    @value_absolute.setter  # type: ignore
-    @overrides
-    def value_absolute(self, value: acvi.FileValue) -> None:
-        # TODO: MyPy complains here about read-only property. Check when files implemented.
-        self.value = value  # type: ignore
+class IFileVariableBase(ABC):
+    """Defines methods beyond the IVariable / IArray for both scalar and array file variables."""
 
     @property
+    @abstractmethod
     def save_with_model(self) -> bool:
         """
         Flag to indicate whether the file content to be saved with the Model file.
@@ -105,11 +19,12 @@ class IFileVariable(IVariable[MockFileVariable]):
         Returns
         -------
         bool :
-            `True` if the file content to be saved with the Model file.
+            `True` if the file content is to be saved with the Model file.
         """
-        return self._wrapped.saveWithModel
+        raise NotImplementedError()
 
     @save_with_model.setter
+    @abstractmethod
     def save_with_model(self, value: bool) -> None:
         """
         Flag to indicate whether the file content to be saved with the Model file.
@@ -119,9 +34,10 @@ class IFileVariable(IVariable[MockFileVariable]):
         value : bool
             Set to `True` if the file content is to be saved with the Model file.
         """
-        self._wrapped.saveWithModel = value
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def direct_transfer(self) -> bool:
         """
         Flag to indicate whether direct file transfer is used for incoming link.
@@ -131,9 +47,10 @@ class IFileVariable(IVariable[MockFileVariable]):
         bool :
             `True` if direct file transfer is used for incoming link.
         """
-        return self._wrapped.directTransfer
+        raise NotImplementedError()
 
     @direct_transfer.setter
+    @abstractmethod
     def direct_transfer(self, value: bool) -> None:
         """
         Flag to indicate whether direct file transfer is used for incoming link.
@@ -143,19 +60,14 @@ class IFileVariable(IVariable[MockFileVariable]):
         value : bool
             Set to `True` if direct file transfer is used for incoming link.
         """
-        self._wrapped.directTransfer = value
+        raise NotImplementedError()
 
-    @property  # type: ignore
-    @overrides
-    def standard_metadata(self) -> acvi.FileMetadata:
-        return self._standard_metadata
 
-    @standard_metadata.setter  # type: ignore
+# TODO/REDUCE: Consider dropping for Phase II.
+class IFileVariable(IFileVariableBase, IVariable, ABC):
+    """Represents a file variable in the workflow."""
+
     @overrides
-    def standard_metadata(self, new_metadata: acvi.FileMetadata) -> None:
-        if not isinstance(new_metadata, acvi.FileMetadata):
-            raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
-            )
-        else:
-            self._standard_metadata = new_metadata
+    @abstractmethod
+    def get_metadata(self) -> acvi.FileMetadata:
+        raise NotImplementedError()

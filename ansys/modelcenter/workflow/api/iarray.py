@@ -1,42 +1,25 @@
 """Definitions of common array functionality."""
-from abc import ABC
-from typing import Generic, TypeVar
-
-from overrides import overrides
+from abc import ABC, abstractmethod
 
 from .ivariable import IVariable
 
-WRAPPED_TYPE = TypeVar("WRAPPED_TYPE")
 
-
-class IArray(IVariable[WRAPPED_TYPE], ABC, Generic[WRAPPED_TYPE]):
-    """
-    Base class for all array types.
-
-    Has common functionality for getting/setting array
-    sizes and getting/setting values as strings.
-
-    Arrays start at 0 length by default.  So you must set the size before you can
-    assign individual array elements.
-
-    Implements IVariable
-    """
-
-    @overrides
-    def __init__(self, wrapped):
-        super().__init__(wrapped)
+class IArray(IVariable, ABC):
+    """Base class for all array types."""
 
     @property
+    @abstractmethod
     def auto_size(self) -> bool:
         """
         Whether the array is set to automatically size itself.
 
-        If false and the array is linked from upstream, the upstream
+        If False and the array is the left-hand side of a link, the upstream
         array must be exactly the same size or an error ensues.
-        If true, the array will resize itself when the link is validated.
+        If True, the array will resize itself when such link is validated.
         """
-        return self._wrapped.autoSize
+        raise NotImplementedError()
 
     @auto_size.setter
+    @abstractmethod
     def auto_size(self, value: bool) -> None:
-        self._wrapped.autoSize = value
+        raise NotImplementedError()

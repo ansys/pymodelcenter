@@ -1,87 +1,142 @@
 """Contains definitions for array variable that references other variables."""
-import clr
+from abc import ABC, abstractmethod
+from typing import Generic, Literal, TypeVar, Union
 
-clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
-from Phoenix.Mock import MockRefArrayProp  # type: ignore
+import ansys.common.variableinterop as acvi
+
+RefPropValueTypes = Literal[
+    acvi.VariableType.BOOLEAN,
+    acvi.VariableType.INTEGER,
+    acvi.VariableType.REAL,
+    acvi.VariableType.STRING,
+]
+
+RefPropertyValue = Union[acvi.BooleanValue, acvi.IntegerValue, acvi.RealValue, acvi.StringValue]
 
 
-class IRefArrayProp:
-    """Array variable that references other variables without creating a full link relationship."""
-
-    def __init__(self, instance: MockRefArrayProp):
-        """Initialize."""
-        self._wrapped = instance
+# TODO: Need to better understand use cases for reference properties
+#       & potentially revisit this interface.
+class IReferencePropertyBase(ABC):
+    """Common methods for reference properties on scalar and array reference variables."""
 
     @property
+    @abstractmethod
     def enum_values(self) -> str:
-        """Enumerated values of the reference array property."""
-        return self._wrapped.enumValues
+        """Get the property's enumerated values."""
+        raise NotImplementedError()
 
     @enum_values.setter
+    @abstractmethod
     def enum_values(self, value: str) -> None:
-        """Enumerated values of the reference array property."""
-        self._wrapped.enumValues = value
+        """Set the property's enumerated values."""
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def is_input(self) -> bool:
-        """A flag that is true if this property is an input."""
-        # boolean isInput;
-        return self._wrapped.isInput
+        """Get whether the property is an input."""
+        raise NotImplementedError()
 
     @is_input.setter
     def is_input(self, value):
-        """A flag that is true if this property is an input."""
-        self._wrapped.isInput = value
+        """Set whether the property is an input."""
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def title(self) -> str:
-        """Title of the reference array property."""
-        return self._wrapped.title
+        """Get the title of the property."""
+        raise NotImplementedError()
 
     @title.setter
+    @abstractmethod
     def title(self, value: str) -> None:
-        """Title of the reference array property."""
-        self._wrapped.title = value
+        """Set the title of the property."""
+        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def description(self) -> str:
-        """Description of the reference array property."""
-        return self._wrapped.description
+        """Get the description of the property."""
+        raise NotImplementedError()
 
     @description.setter
+    @abstractmethod
     def description(self, value):
-        """Description of the reference array property."""
-        self._wrapped.description = value
+        """Set the description of the property."""
+        raise NotImplementedError()
 
+    @abstractmethod
     def get_name(self) -> str:
         """
-        Name of the reference array property.
+        Get the name of the property.
 
         Returns
         -------
-        str
-            The name of the reference array property.
+        The name of the reference array property.
         """
-        return self._wrapped.getName()
+        raise NotImplementedError()
 
-    def get_type(self) -> str:
+    @abstractmethod
+    def get_type(self) -> RefPropValueTypes:
         """
-        Type of the reference array property.
+        Get the value type of the property.
 
         Returns
         -------
-        str
-            The type of the reference array property.
+        The value type of the reference array property.
         """
-        return self._wrapped.getType()
+        raise NotImplementedError()
 
 
-class IRefProp(IRefArrayProp):
-    """
-    Variable that references other variables without creating a full \
-    link relationship.
+class IReferenceProperty(IReferencePropertyBase, ABC):
+    """Represents a reference property of a scalar reference variable."""
 
-    Implements IRefArrayProp.
-    """
+    @abstractmethod
+    def set_value(
+        self, value: Union[acvi.BooleanValue, acvi.IntegerValue, acvi.RealValue, acvi.StringValue]
+    ):
+        """Set the value of the reference property."""
+        raise NotImplementedError()
 
-    pass
+    @abstractmethod
+    def get_value(self) -> RefPropValueTypes:
+        """Get the value of the reference property."""
+        raise NotImplementedError()
+
+
+class IReferenceArrayProperty(IReferencePropertyBase, ABC):
+    """Represents a reference property of a scalar reference variable."""
+
+    @abstractmethod
+    def set_value(
+        self,
+        index: int,
+        value: Union[acvi.BooleanValue, acvi.IntegerValue, acvi.RealValue, acvi.StringValue],
+    ):
+        """Set the value of the reference property at the specified index."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_value(self, index: int) -> RefPropValueTypes:
+        """Get the value of the reference property at the specified index."""
+        raise NotImplementedError()
+
+
+REF_PROPERTY_RETURN = TypeVar(
+    "REF_PROPERTY_RETURN", bound=Union[IReferenceProperty, IReferenceArrayProperty]
+)
+
+
+class IReferencePropertyOwner(ABC, Generic[REF_PROPERTY_RETURN]):
+    """Defines common methods for variables with reference properties."""
+
+    def create_reference_prop(
+        self, name: str, prop_value_type: RefPropValueTypes
+    ) -> REF_PROPERTY_RETURN:
+        """Create a reference property with the specified name and type."""
+        raise NotImplementedError()
+
+    def get_reference_prop(self, name: str) -> REF_PROPERTY_RETURN:
+        """Get a reference property with the specified name."""
+        raise NotImplementedError()

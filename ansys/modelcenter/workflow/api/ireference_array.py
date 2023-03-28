@@ -1,188 +1,32 @@
 """Definition of array reference."""
+from abc import ABC, abstractmethod
 from typing import Sequence
 
-import ansys.common.variableinterop as acvi
-import clr
-from overrides import overrides
-
-from .dot_net_utils import from_dot_net_list, from_dot_net_to_ivariable
 from .iarray import IArray
-from .idoublearray import IDoubleArray
-from .irefprop import IRefArrayProp
-
-clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
-import Phoenix.Mock as mocks  # type: ignore
+from .irefprop import IReferenceArrayProperty, IReferencePropertyOwner
+from .ivariable import IVariable
 
 
-class IReferenceArray(IArray[mocks.MockReferenceArray]):
-    """
-    Hold a reference to an array.
+# TODO/REDUCE: Consider dropping this for Phase II.
+# TODO: Need to understand use requirements for reference variables / arrays in general.
+class IReferenceArray(IArray, IReferencePropertyOwner[IReferenceArrayProperty], ABC):
+    """Represents a reference array variable in a ModelCenter workflow."""
 
-    Currently, only valid for real (double) arrays.
+    # TODO: consider creating a type to implement indexing, iteration semantics for references?
 
-    Implements IVariable.
-    """
+    @abstractmethod
+    def get_reference(self, index: int) -> str:
+        """Get the reference equation for this variable at the specified index."""
+        raise NotImplementedError()
 
-    def __init__(self, wrapped: mocks.MockReferenceArray):
+    @abstractmethod
+    def set_reference(self, index: int, new_reference: str):
+        """Set the reference equation for this variable at the specified index."""
+
+    @abstractmethod
+    def referenced_variables(self, index: int) -> Sequence[IVariable]:
         """
-        Initialize.
-
-        Parameters
-        ----------
-        wrapped : mocks.MockReferenceArray
-            The MockReferenceArray to be wrapped.
-        """
-        self._wrapped: mocks.MockReferenceArray = wrapped
-        self._standard_metadata: acvi.RealArrayMetadata = acvi.RealArrayMetadata()
-
-    ################################################################################################
-    # region Inherited from IVariable
-
-    @property  # type: ignore
-    @overrides
-    def value(self) -> acvi.RealArrayValue:
-        return acvi.RealArrayValue.from_api_string(self._wrapped.toString())
-
-    @value.setter  # type: ignore
-    @overrides
-    def value(self, new_value: acvi.RealArrayValue):
-        self._wrapped.fromString(new_value.to_api_string())
-
-    @property  # type: ignore
-    @overrides
-    def value_absolute(self) -> acvi.RealArrayValue:
-        return self.value
-
-    @property  # type: ignore
-    @overrides
-    def standard_metadata(self) -> acvi.CommonVariableMetadata:
-        return self._standard_metadata
-
-    @standard_metadata.setter  # type: ignore
-    @overrides
-    def standard_metadata(self, new_metadata: acvi.RealArrayMetadata) -> None:
-        if not isinstance(new_metadata, acvi.RealArrayMetadata):
-            raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
-            )
-        else:
-            self._standard_metadata = new_metadata
-
-    # endregion
-    ################################################################################################
-
-    @property
-    def auto_grow(self) -> bool:
-        """Whether the reference array is set to automatically grow."""
-        return self._wrapped.autoGrow
-
-    @auto_grow.setter
-    def auto_grow(self, value: bool) -> None:
-        self._wrapped.autoGrow = value
-
-    def get_element_value(self, index: int) -> acvi.RealValue:
-        """
-        Gets the value of an array element.
-
-        Parameters
-        ----------
-        index
-            Index of the array element (0-based index).
-
-        Returns
-        -------
-        acvi.RealValue
-            The value.
-        """
-        return acvi.RealValue(self._wrapped.get_value(index))
-
-    def set_element_value(self, value: float, index: int) -> acvi.RealValue:
-        """
-        Sets the value of an array element.
-
-        Parameters
-        ----------
-        value
-            New value.
-        index
-            Index of the array element (0-based index).
-        """
-        return acvi.RealValue(self._wrapped.setValue(value, index))
-
-    def create_real_ref_prop(self, name: str, type_: str) -> IRefArrayProp:
-        """
-        Creates a reference property for the array.
-
-        Parameters
-        ----------
-        name :
-            Name of the reference property.
-        type_ :
-            Type of reference property to create. Allowed types are:
-            double, long, boolean, and string.
-
-        Returns
-        -------
-        IRefArrayProp
-        """
-        return IRefArrayProp(self._wrapped.createRefProp(name, type_))
-
-    def get_real_ref_prop_value(self, name: str, index: int) -> IDoubleArray:
-        """
-        Gets the value of a specified reference property for the \
-        variable.
-
-        Parameters
-        ----------
-        name :
-            Name of the reference property.
-        index :
-            Index of the array element (0-based index).
-
-        Returns
-        -------
-        IRefArrayProp
-        """
-        return from_dot_net_to_ivariable(self._wrapped.getRefPropValue(name, index))
-
-    def set_real_ref_prop_value(self, name: str, index: int, value: IDoubleArray) -> None:
-        """
-        Sets the value of a specified reference property for an \
-        element in the array.
-
-        Parameters
-        ----------
-        name
-            Name of the reference property.
-        index
-            Index of the array element (0-based index).
-        value
-            New value.
-        """
-        self._wrapped.setRefPropValue(name, index, value.value.to_api_string())
-
-    def get_real_ref_prop_value_absolute(self, name: str, index: int) -> IDoubleArray:
-        """
-        Get the value of a specified reference property for an \
-        element in the array without running to validate.
-
-        Parameters
-        ----------
-        name
-            Name of the reference property.
-        index
-            Index of the array element (0-based index).
-
-        Returns
-        -------
-        object
-            The value as a variant.
-        """
-        return from_dot_net_to_ivariable(self._wrapped.getRefPropValueAbsolute(name, index))
-
-    def referenced_variables(self, index: int) -> Sequence[IDoubleArray]:
-        """
-        Gets the reference variables of the index element of the array.
+        Get the referenced variables at the specified index.
 
         Parameters
         ----------
@@ -194,40 +38,4 @@ class IReferenceArray(IArray[mocks.MockReferenceArray]):
         object
             The references variables of the element.
         """
-        return from_dot_net_list(
-            self._wrapped.get_referencedVariables(index), IDoubleArray
-        )  # type: ignore
-
-    def referenced_variable(self, index: int) -> IDoubleArray:
-        """
-        Gets the reference variable of the index element of the array.
-
-        Convenience method for if the indexed variable only has one reference.
-
-        Parameters
-        ----------
-        index
-            Index of the array element (0-based index).
-
-        Returns
-        -------
-        IDoubleArray
-            The reference variable of the index element.
-        """
-        return from_dot_net_to_ivariable(self._wrapped.get_referencedVariable(index))
-
-    def get_value_absolute(self, index: int) -> acvi.RealValue:
-        """
-        Get the value of the variable at a specific location without validating.
-
-        Parameters
-        ----------
-        index
-            The array element index (0-based index).
-
-        Returns
-        -------
-        float
-            The reference value.
-        """
-        return acvi.RealValue(self._wrapped.getValueAbsolute(index))
+        raise NotImplementedError()
