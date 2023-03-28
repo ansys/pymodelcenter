@@ -27,4 +27,4 @@ from .istringarray import IStringArray
 from .istringvariable import IStringVariable
 from .ivariable import IVariable
 from .variable_links import IVariableLink
-from .workflow import Workflow
+from .workflow import IWorkflow

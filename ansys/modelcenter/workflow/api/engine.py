@@ -6,7 +6,7 @@ from typing import Collection, Mapping, Union
 from ansys.engineeringworkflow.api import IFileBasedWorkflowEngine
 
 from .format import IFormat
-from .workflow import Workflow
+from .workflow import IWorkflow
 
 
 class WorkflowType(Enum):
@@ -57,7 +57,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
+    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
         """
         Create a new workflow.
 
@@ -80,7 +80,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
     @abstractmethod
     def load_workflow_ex(
         self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
-    ) -> Workflow:
+    ) -> IWorkflow:
         """
         Load a saved workflow from a file.
 

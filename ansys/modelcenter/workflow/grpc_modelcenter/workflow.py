@@ -21,7 +21,7 @@ from .component import Component
 from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 
 
-class Workflow(wfapi.Workflow):
+class Workflow(wfapi.IWorkflow):
     """Represents a Workflow or Model in ModelCenter."""
 
     def __init__(self, workflow_id: str, file_path: str):
