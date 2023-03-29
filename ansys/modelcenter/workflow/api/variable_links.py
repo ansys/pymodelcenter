@@ -6,11 +6,14 @@ from abc import ABC, abstractmethod
 class IVariableLink(ABC):
     """Represents a link between two variables in the workflow."""
 
+    # TODO/REDUCE: consider dropping link suspension for Phase II.
+    #              When it is implemented, we need to add a getter for suspension state.
     @abstractmethod
     def suspend_link(self) -> None:
         """Causes the link to be suspended."""
         raise NotImplementedError()
 
+    # TODO/REDUCE: consider dropping link suspension for Phase II.
     @abstractmethod
     def resume_link(self) -> None:
         """Resumes the link if it was suspended."""
@@ -55,5 +58,3 @@ class IVariableLink(ABC):
     def rhs(self, new_rhs: str) -> None:
         """Set the right-hand side (source) of the link equation."""
         raise NotImplementedError()
-
-    # TODO: need a getter for suspension state?
