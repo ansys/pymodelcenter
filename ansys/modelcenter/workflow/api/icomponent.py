@@ -10,17 +10,16 @@ import ansys.modelcenter.workflow.api.igroup as igroup
 import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 
-class IComponent(assembly.IAssemblyChild, custom_mo.ICustomMetadataOwner, aew_api.IComponent, ABC):
+class IComponent(
+    assembly.IAssemblyChild,
+    igroup.IGroupOwner,
+    custom_mo.ICustomMetadataOwner,
+    aew_api.IComponent,
+    ABC,
+):
     """A component in a Workflow."""
 
     # ModelCenter
-
-    # TODO: Shared with assembly, groups
-    @property
-    @abstractmethod
-    def groups(self) -> Collection[igroup.IGroup]:
-        """All groups in the component."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod

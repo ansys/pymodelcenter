@@ -7,11 +7,16 @@ from typing import Collection
 from ansys.engineeringworkflow.api import IVariableContainer
 
 
-class IGroup(IVariableContainer, ABC):
-    """Represents a variable group in ModelCenter."""
+class IGroupOwner(IVariableContainer, ABC):
+    """Represents a workflow element which has groups in ModelCenter."""
 
     @property
     @abstractmethod
     def groups(self) -> Collection["IGroup"]:
-        """The groups that this group contains."""
-        raise NotImplementedError()
+        """The groups that this item contains."""
+
+
+class IGroup(IGroupOwner, ABC):
+    """Represents a variable group in ModelCenter."""
+
+    pass

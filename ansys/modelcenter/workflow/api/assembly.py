@@ -31,7 +31,13 @@ class IAssemblyChild(ABC):
         raise NotImplementedError()
 
 
-class IAssembly(IAssemblyChild, custom_mo.ICustomMetadataOwner, aew_api.IControlStatement, ABC):
+class IAssembly(
+    IAssemblyChild,
+    igroup.IGroupOwner,
+    custom_mo.ICustomMetadataOwner,
+    aew_api.IControlStatement,
+    ABC,
+):
     """
     A ModelCenter assembly organizes components and other assemblies in a workflow.
 
@@ -42,18 +48,6 @@ class IAssembly(IAssemblyChild, custom_mo.ICustomMetadataOwner, aew_api.IControl
     """
 
     # ModelCenter specific
-
-    @property
-    @abstractmethod
-    def groups(self) -> Sequence[igroup.IGroup]:
-        """
-        Get a list of variable groups in the assembly.
-
-        Returns
-        -------
-        A list of variable groups in the assembly.
-        """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
