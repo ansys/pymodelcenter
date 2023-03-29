@@ -12,10 +12,6 @@ import ansys.modelcenter.workflow.api.igroup as igroup
 class IAssemblyChild(ABC):
     """Defines methods related to being the child element of an assembly."""
 
-    # TODO/REDUCE: We need to understand whether this is actually as important as I think.
-    # TODO/REDUCE: Does it actually indicate order for Process models?
-    # TODO/REDUCE: Additionally, we should seek ACE feedback on whether this method is important,
-    # TODO/REDUCE: even if it does that.
     @property
     @abstractmethod
     def index_in_parent(self) -> int:
@@ -64,25 +60,6 @@ class IAssembly(IAssemblyChild, custom_mo.ICustomMetadataOwner, aew_api.IControl
     def assemblies(self) -> Sequence["IAssembly"]:
         """Get a list of child assemblies of this assembly."""
         raise NotImplementedError()
-
-    # TODO/REDUCE: Consider cutting this method entirely.
-    @property
-    def icon_id(self) -> int:
-        """The ID number of the icon to use for the Assembly."""
-        return self._wrapped.iconID
-
-    # TODO/REDUCE: Consider cutting this method entirely.
-    @icon_id.setter
-    def icon_id(self, value: int) -> None:
-        """
-        Set the ID number of the icon to use for the Assembly.
-
-        Parameters
-        ----------
-        value: int
-            The new value.
-        """
-        self._wrapped.iconID = value
 
     @abstractmethod
     def add_assembly(

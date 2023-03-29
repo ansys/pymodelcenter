@@ -7,7 +7,6 @@ from .ivariable import IVariable
 
 
 # TODO/REDUCE: Consider dropping this for Phase II.
-# TODO: Need to understand use requirements for reference variables / arrays in general.
 class IReferenceVariable(IVariable, IReferencePropertyOwner[IReferenceProperty], ABC):
     """Represents a reference variable in a ModelCenter workflow."""
 

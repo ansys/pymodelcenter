@@ -22,10 +22,6 @@ class IComponent(assembly.IAssemblyChild, custom_mo.ICustomMetadataOwner, aew_ap
         """All groups in the component."""
         raise NotImplementedError()
 
-    # TODO: Deleted "user data" field - although this does exist separately on the COM API,
-    #       the functionality seems to be no better than the custom metadata feature;
-    #       need to see if this is critical to users for some reason.
-
     @property
     @abstractmethod
     def associated_files(self) -> Collection[str]:

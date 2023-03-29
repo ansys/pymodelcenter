@@ -4,7 +4,6 @@ from typing import Tuple
 
 
 # TODO/REDUCE: We almost certainly don't want to support this for Phase II.
-# TODO/REDUCE: We should ask if we want this on the API at all.
 class IDataMonitor(ABC):
     """Represents a data monitor on the ModelCenter Analysis View."""
 

@@ -26,53 +26,6 @@ class IVariable(custom_mo.ICustomMetadataOwner, aew_api.IVariable, ABC):
         """Get the standard metadata for this variable."""
         raise NotImplementedError()
 
-    # TODO/REDUCE: Do we need or want this on the Python API?
-    # TODO/REDUCE: Probably not supported for Phase II.
-    @property
-    @abstractmethod
-    def has_changed(self) -> bool:
-        """
-        Indicates if the variable has changed since the last time it was reset.
-
-        Typically, used only by Plug-Ins for their own variables (to avoid conflicting use
-        by different Plug-Ins, macros, or tools). Set the value to `False`, and it will
-        automatically flip to `True` any time the variable value changes.
-
-        Returns
-        -------
-        bool :
-            `True` if the variable has changed since the last time the property was reset.
-        """
-        raise NotImplementedError()
-
-    @has_changed.setter
-    def has_changed(self, value: bool) -> None:
-        """Setter for the `has_changed` property."""
-        raise NotImplementedError()
-
-    # TODO/REDUCE: Do we need or want this on the Python API?
-    # TODO/REDUCE: Probably not supported for Phase II.
-    @property
-    @abstractmethod
-    def hide(self) -> bool:
-        """
-        Hide the variable from the User Interface.
-
-        Variable will not be visible in Component Tree, Data Explorer, or Data Monitors.
-
-        Returns
-        -------
-        bool :
-            `True` if the variable is hidden.
-        """
-        raise NotImplementedError()
-
-    @hide.setter
-    @abstractmethod
-    def hide(self, value: bool) -> None:
-        """Setter for the `hide` property."""
-        raise NotImplementedError()
-
     @property
     @abstractmethod
     def owning_component(self) -> "icomponent.IComponent":
@@ -96,7 +49,6 @@ class IVariable(custom_mo.ICustomMetadataOwner, aew_api.IVariable, ABC):
         """
         raise NotImplementedError()
 
-    # TODO: Should we continue even supporting the geom-specific types that make this necessary?
     @property
     @abstractmethod
     def get_modelcenter_type(self) -> str:
@@ -243,9 +195,3 @@ class IVariable(custom_mo.ICustomMetadataOwner, aew_api.IVariable, ABC):
         A linked input returns ``False`` (Output).
         """
         return self._wrapped.isInputToModel()
-
-    # TODO: removed format subinterface b/c its on the metadata, but I can see this being something
-    #       worth a convenience method to set / get individually -- evaluate demand
-
-    # TODO: removed set_initial_value -- doesn't seem to have a use if you're not a component.
-    #       Confirm this is OK, otherwise it should be redefined here.

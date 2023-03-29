@@ -37,25 +37,6 @@ class OnConnectionErrorMode(Enum):
 class IEngine(IFileBasedWorkflowEngine, ABC):
     """Engine class used to wrap around MockModelCenter class."""
 
-    # TODO: We should consider dropping this,
-    #     or making it a particular method on
-    #     the current gRPC implementation.
-    @property
-    @abstractmethod
-    def process_id(self) -> int:
-        """
-        The process identifier of the ModelCenter process.
-
-        Useful for cases where ModelCenter is running in COM server mode and a client process
-        needs to grant it permission to do something (like move a window to the foreground).
-
-        Returns
-        -------
-        int
-            The process identifier.
-        """
-        raise NotImplementedError()
-
     @abstractmethod
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
         """

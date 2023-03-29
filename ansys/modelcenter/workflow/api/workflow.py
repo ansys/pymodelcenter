@@ -163,8 +163,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
         self._instance.setScheduler(schedular)
 
-    # TODO/REDUCE: macro facilities removed, confirm that this is OK
-
     @abstractmethod
     def remove_component(self, name: str) -> None:
         """
