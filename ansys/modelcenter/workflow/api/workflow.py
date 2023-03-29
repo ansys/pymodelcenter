@@ -331,8 +331,16 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_assembly(self, name: str = None) -> IAssembly:
-        """Gets the named assembly or the top level assembly."""
+    def get_assembly(self, name: Optional[str] = None) -> IAssembly:
+        """
+        Gets the named assembly or the top level assembly.
+
+        Parameters
+        ----------
+        name : Optional[str]
+            The full name of the desired assembly.
+            If None is passed, the root assembly of the workflow is returned.
+        """
         raise NotImplementedError()
 
     @abstractmethod
