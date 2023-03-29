@@ -30,7 +30,6 @@ packages = [
 python = ">=3.8,<3.11"
 numpy = "^1.22.3"
 overrides = "^6.1"
-pythonnet = "^2.5.2"
 
 # This is the closest version to what we're using in C++.
 # It's probably not strictly necessary to keep these exactly in sync,
@@ -51,9 +50,7 @@ pytest-cov = {version="^3.0", optional=true}
 pre-commit = {version="^2.17.0", optional=true}
 mypy = {version="^0.940", optional=true}
 
-# TODO: temporarily disabling until PyAnsys build boxes have credentials for these.
 ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "f97aeb6"}
-phoenix-mocks = {git = "https://github.com/Phoenix-Integration-Inc/phx-mocks.git", rev = "7be65b0"}
 ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "3c0a8f7"}
 
 [tool.poetry.extras]
