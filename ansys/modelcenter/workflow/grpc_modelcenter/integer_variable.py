@@ -1,11 +1,9 @@
 """Contains definition for IntegerVariable."""
-from typing import Collection, Optional, Sequence
 
-from ansys.engineeringworkflow.api import Property
+import ansys.common.variableinterop as acvi
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
-from ansys.modelcenter.workflow.api import VariableLink
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
@@ -23,23 +21,12 @@ class IntegerVariable(wfapi.IIntegerVariable):
 
     @property  # type: ignore
     @overrides
-    def value(self) -> int:
+    def value(self) -> acvi.IntegerValue:
         response: var_val_msg.VariableState = self._stub.VariableGetState(self._id)
-        return response.value.int_value
+        return acvi.IntegerValue(response.value.int_value)
 
     @value.setter  # type: ignore
     @overrides
-    def value(self, new_value: var_val_msg.DoubleValue):
-        raise NotImplementedError
-
-    @overrides
-    def get_properties(self) -> Collection[Property]:
-        raise NotImplementedError
-
-    @overrides
-    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        raise NotImplementedError
-
-    @overrides
-    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        raise NotImplementedError
+    def value(self, new_value: acvi.IntegerValue):
+        request = var_val_msg.SetIntegerValueRequest(target=self._id, new_value=new_value)
+        self._stub.IntegerVariableSetValue(request)

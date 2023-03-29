@@ -1,11 +1,9 @@
 """Contains definition for DoubleVariable."""
-from typing import Collection, Optional, Sequence
 
-from ansys.engineeringworkflow.api import Property
+import ansys.common.variableinterop as acvi
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
-from ansys.modelcenter.workflow.api import VariableLink
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
@@ -23,23 +21,12 @@ class DoubleVariable(wfapi.IDoubleVariable):
 
     @property  # type: ignore
     @overrides
-    def value(self) -> float:
+    def value(self) -> acvi.RealValue:
         response: var_val_msg.VariableState = self._stub.VariableGetState(self._id)
-        return response.value.double_value
+        return acvi.RealValue(response.value.double_value)
 
     @value.setter  # type: ignore
     @overrides
-    def value(self, new_value: var_val_msg.DoubleValue):
-        raise NotImplementedError
-
-    @overrides
-    def get_properties(self) -> Collection[Property]:
-        raise NotImplementedError
-
-    @overrides
-    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        raise NotImplementedError
-
-    @overrides
-    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        raise NotImplementedError
+    def value(self, new_value: acvi.RealValue):
+        request = var_val_msg.SetDoubleValueRequest(target=self._id, new_value=new_value)
+        self._stub.DoubleVariableSetValue(request)
