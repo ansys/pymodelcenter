@@ -12,7 +12,6 @@ class ICustomMetadataOwner(ABC):
     # TODO/REDUCE: Consider removing the XMLElement support.
     # TODO/REDUCE: Consider removing ComponentMetadataAccess field
     #   - only allow creating / setting public metadata.
-    # TODO: I'm pretty sure the archive property is not correctly documented here.
     @abstractmethod
     def set_custom_metadata(
         self,
@@ -33,7 +32,8 @@ class ICustomMetadataOwner(ABC):
         access : ComponentMetadataAccess
             The level of access allowed to the metadata.
         archive : bool
-            Whether the metadata should be considered archived.
+            True to store the specified property when the workflow is saved to a file
+            or otherwise serialized.
         """
         raise NotImplementedError()
 
