@@ -22,7 +22,6 @@ from .iintegervariable import IIntegerVariable
 from .ireference_array import IReferenceArray
 from .ireference_variable import IReferenceVariable
 from .irefprop import IReferenceArrayProperty, IReferencePropertyOwner
-from .iscript_component import IScriptComponent
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
 from .ivariable import IVariable
