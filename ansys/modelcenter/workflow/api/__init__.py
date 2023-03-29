@@ -1,5 +1,4 @@
 """ansys.modelcenter.workflow.api module initialization."""
-from .arrayish import Arrayish
 from .assembly import IAssembly
 from .component_metadata import ComponentMetadataAccess
 from .data_type import VarType
