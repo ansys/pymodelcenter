@@ -4,6 +4,7 @@ from typing import Collection, Optional, Sequence
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import Property
+import grpc
 import numpy as np
 from overrides import overrides
 
@@ -22,9 +23,11 @@ class BooleanVariable(wfapi.IBooleanVariable):
     """Represents a gRPC boolean variable on the workflow."""
 
     @overrides
-    def __init__(self, id: element_msg.ElementId, stub: ModelCenterWorkflowServiceStub):
+    @overrides
+    def __init__(self, id: element_msg.ElementId, channel: grpc.Channel):
         self._id = id
-        self._stub = stub
+        self._channel = channel
+        self._stub = ModelCenterWorkflowServiceStub(channel)
 
     @property  # type: ignore
     @overrides
@@ -54,9 +57,10 @@ class BooleanArray(wfapi.IBooleanArray):
     """Represents a gRPC boolean array variable on the workflow."""
 
     @overrides
-    def __init__(self, id: element_msg.ElementId, stub: ModelCenterWorkflowServiceStub):
+    def __init__(self, id: element_msg.ElementId, channel: grpc.Channel):
         self._id = id
-        self._stub = stub
+        self._channel = channel
+        self._stub = ModelCenterWorkflowServiceStub(channel)
 
     @property  # type: ignore
     @overrides

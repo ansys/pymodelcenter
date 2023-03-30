@@ -1,9 +1,10 @@
-"""Contains definition for IntegerVariable."""
+"""Contains definition for IntegerVariable and IntegerArray."""
 
 from typing import Collection, Optional, Sequence
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import Property
+import grpc
 import numpy as np
 from overrides import overrides
 
@@ -22,9 +23,10 @@ class IntegerVariable(wfapi.IIntegerVariable):
     """Represents a gRPC integer variable on the workflow."""
 
     @overrides
-    def __init__(self, id: element_msg.ElementId, stub: ModelCenterWorkflowServiceStub):
+    def __init__(self, id: element_msg.ElementId, channel: grpc.Channel):
         self._id = id
-        self._stub = stub
+        self._channel = channel
+        self._stub = ModelCenterWorkflowServiceStub(channel)
 
     @property  # type: ignore
     @overrides
@@ -54,9 +56,10 @@ class IntegerArray(wfapi.IIntegerArray):
     """Represents a gRPC double / real array variable on the workflow."""
 
     @overrides
-    def __init__(self, id: element_msg.ElementId, stub: ModelCenterWorkflowServiceStub):
+    def __init__(self, id: element_msg.ElementId, channel: grpc.Channel):
         self._id = id
-        self._stub = stub
+        self._channel = channel
+        self._stub = ModelCenterWorkflowServiceStub(channel)
 
     @property  # type: ignore
     @overrides
