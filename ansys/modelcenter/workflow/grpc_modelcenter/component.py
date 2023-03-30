@@ -1,10 +1,11 @@
 """Definition of Component."""
-from typing import Any, Collection, List, Sequence, Union
+from typing import Collection, List, Sequence, Union
 
-from ansys.common.variableinterop import IVariableValue
-from ansys.engineeringworkflow.api import IVariable, Property
+import ansys.common.variableinterop as acvi
+import ansys.engineeringworkflow.api as aew_api
 from overrides import overrides
 
+import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.api import IComponent, assembly, igroup
 
 
@@ -39,7 +40,7 @@ class Component(IComponent):
         raise NotImplementedError
 
     @overrides
-    def get_property(self, property_name: str) -> Property:
+    def get_property(self, property_name: str) -> aew_api.Property:
         # value = super().get_custom_metadata_value(property_name)
         # if value is not None:
         #     return Property(self.element_id, property_name, value)
@@ -47,15 +48,15 @@ class Component(IComponent):
         raise NotImplementedError
 
     @overrides
-    def get_properties(self) -> Collection[Property]:
+    def get_properties(self) -> Collection[aew_api.Property]:
         raise NotImplementedError
 
     @overrides
-    def set_property(self, property_name: str, property_value: IVariableValue) -> None:
+    def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
         super().set_custom_metadata_value(property_name, property_value)
 
     @overrides
-    def get_variables(self) -> Collection[IVariable]:
+    def get_variables(self) -> Collection[mc_api.IVariable]:
         # variables = self._wrapped.Variables
         # return Arrayish(variables, from_dot_net_to_ivariable)
         raise NotImplementedError
@@ -71,22 +72,6 @@ class Component(IComponent):
     @overrides
     def groups(self) -> "Sequence[igroup.IGroup]":
         # return Arrayish(self._wrapped.Groups, igroup.IGroup)
-        raise NotImplementedError
-
-    @property  # type: ignore
-    @overrides
-    def user_data(self) -> Any:
-        # return self._wrapped.userData
-        raise NotImplementedError
-
-    @user_data.setter  # type: ignore
-    @overrides
-    def user_data(self, source: Any) -> None:
-        # if isinstance(source, list):
-        #     dot_net_source = to_dot_net_list(source, DotNetObject)
-        # else:
-        #     dot_net_source = source
-        # self._wrapped.userData = dot_net_source
         raise NotImplementedError
 
     @property  # type: ignore
@@ -116,14 +101,9 @@ class Component(IComponent):
 
     @property  # type: ignore
     @overrides
-    def parent_assembly(self) -> "assembly.Assembly":
+    def parent_assembly(self) -> "assembly.IAssembly":
         # parent_assembly = self._wrapped.ParentAssembly
         # return assembly.Assembly(parent_assembly)
-        raise NotImplementedError
-
-    @overrides
-    def get_full_name(self) -> str:
-        # return self._wrapped.getFullName()
         raise NotImplementedError
 
     @overrides
@@ -132,7 +112,7 @@ class Component(IComponent):
         raise NotImplementedError
 
     @overrides
-    def get_variable(self, name: str) -> "IVariable":
+    def get_variable(self, name: str) -> mc_api.IVariable:
         # mcapi_variable = self._wrapped.getVariable(name)
         # return from_dot_net_to_ivariable(mcapi_variable)
         raise NotImplementedError
@@ -170,19 +150,4 @@ class Component(IComponent):
     @overrides
     def rename(self, name: str) -> None:
         # self._wrapped.rename(name)
-        raise NotImplementedError
-
-    @overrides
-    def get_position_x(self) -> int:
-        # return self._wrapped.getPositionX()
-        raise NotImplementedError
-
-    @overrides
-    def get_position_y(self) -> int:
-        # return self._wrapped.getPositionY()
-        raise NotImplementedError
-
-    @overrides
-    def show(self) -> None:
-        # self._wrapped.show()
         raise NotImplementedError

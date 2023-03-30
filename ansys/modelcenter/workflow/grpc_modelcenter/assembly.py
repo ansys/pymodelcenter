@@ -1,30 +1,29 @@
 """Implementation of Assembly."""
 
-from typing import Optional, Sequence
+from typing import Collection, Optional, Sequence, Union
+from xml.etree.ElementTree import Element as XMLElement
 
 import ansys.common.variableinterop as acvi
-import ansys.engineeringworkflow.api as base_api
 from grpc import Channel
 from overrides import overrides
 
-import ansys.modelcenter.workflow.api as api
+import ansys.modelcenter.workflow.api as mc_api
 
+from .component import Component
+from .create_variable import create_variable
 from .group import Group
-from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
 from .proto.element_messages_pb2 import (
     AddAssemblyRequest,
     AddAssemblyVariableRequest,
-    AssemblyIconSetRequest,
     ElementId,
     ElementName,
     RenameRequest,
 )
-from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
-from .variable import Variable
+from .var_value_convert import interop_type_to_mc_type_string
 from .variable_container import AbstractGRPCVariableContainer
 
 
-class Assembly(AbstractGRPCVariableContainer, api.IAssembly):
+class Assembly(AbstractGRPCVariableContainer, mc_api.IAssembly):
     """Represents an assembly in ModelCenter."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -53,18 +52,13 @@ class Assembly(AbstractGRPCVariableContainer, api.IAssembly):
 
     @property  # type: ignore
     @overrides
-    def name(self):
-        return self.get_name()
-
-    @property  # type: ignore
-    @overrides
     def control_type(self) -> str:
         result = self._client.RegistryGetControlType(self._element_id)
         return result.type
 
     @property  # type: ignore
     @overrides
-    def parent_assembly(self) -> Optional[api.Assembly]:
+    def parent_assembly(self) -> Optional[mc_api.IAssembly]:
         result = self._client.ElementGetParentElement(self._element_id)
         if result.id_string is None or result.id_string == "":
             return None
@@ -73,61 +67,39 @@ class Assembly(AbstractGRPCVariableContainer, api.IAssembly):
 
     @property  # type: ignore
     @overrides
-    def assemblies(self) -> Sequence[api.Assembly]:
+    def assemblies(self) -> Sequence[mc_api.IAssembly]:
         result = self._client.RegistryGetAssemblies(self._element_id)
         return [Assembly(one_element_id, self._channel) for one_element_id in result.ids]
 
     @overrides
-    def _create_group(self, element_id: ElementId) -> api.IGroup:
+    def get_components(self) -> Collection[mc_api.IComponent]:
+        result = self._client.AssemblyGetComponents(self._element_id)
+        one_element_id: ElementId
+        # TODO: test when component wrapper is actually ready
+        return [Component(one_element_id) for one_element_id in result.ids]
+
+    @overrides
+    def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return Group(element_id, self._channel)
 
     @overrides
-    def add_variable(self, name: str, type_: str) -> api.IVariable:
+    def add_variable(self, name: str, mc_type: Union[acvi.VariableType, str]) -> mc_api.IVariable:
+        type_in_request: str = (
+            mc_type if isinstance(mc_type, str) else interop_type_to_mc_type_string(mc_type)
+        )
         result = self._client.AssemblyAddVariable(
             AddAssemblyVariableRequest(
-                name=ElementName(name=name), target_assembly=self._element_id, variable_type=type_
+                name=ElementName(name=name),
+                target_assembly=self._element_id,
+                variable_type=type_in_request,
             )
         )
-        return Variable(result.id, self._channel)
+        return create_variable(acvi.VariableType.UNKNOWN, result.id, self._channel)
 
     @overrides
     def rename(self, name: str) -> None:
         self._client.AssemblyRename(
             RenameRequest(target_assembly=self._element_id, new_name=ElementName(name=name))
-        )
-
-    @overrides
-    def get_property(self, property_name: str) -> base_api.Property:
-        grpc_value = self._client.PropertyOwnerGetPropertyValue(
-            MetadataGetValueRequest(id=self._element_id, property_name=property_name)
-        )
-        acvi_value = convert_grpc_value_to_acvi(grpc_value)
-        return base_api.Property(
-            parent_element_id=self._element_id.id_string,
-            property_name=property_name,
-            property_value=acvi_value,
-        )
-
-    @overrides
-    def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
-        grpc_value = convert_interop_value_to_grpc(property_value)
-        self._client.PropertyOwnerSetPropertyValue(
-            MetadataSetValueRequest(
-                id=self._element_id, property_name=property_name, value=grpc_value
-            )
-        )
-
-    @property  # type: ignore
-    @overrides
-    def icon_id(self) -> int:
-        response = self._client.AssemblyGetIcon(self._element_id)
-        return response.id
-
-    @icon_id.setter  # type: ignore
-    @overrides
-    def icon_id(self, value: int) -> None:
-        self._client.AssemblySetIcon(
-            AssemblyIconSetRequest(target=self._element_id, new_icon_id=value)
         )
 
     @property  # type: ignore
@@ -137,11 +109,12 @@ class Assembly(AbstractGRPCVariableContainer, api.IAssembly):
         return response.index
 
     @overrides
-    def delete_variable(self, name: str) -> None:
-        assembly_name = self.get_full_name()
+    def delete_variable(self, name: str) -> bool:
+        assembly_name = self.name
         var_name = f"{assembly_name}.{name}"
         target_var = self._client.WorkflowGetVariableByName(ElementName(name=var_name))
-        self._client.AssemblyDeleteVariable(target_var)
+        # TODO: fix gRPC API here to optionally just take the name in the first place
+        return self._client.AssemblyDeleteVariable(target_var).existed
 
     @overrides
     def add_assembly(
@@ -150,7 +123,7 @@ class Assembly(AbstractGRPCVariableContainer, api.IAssembly):
         x_pos: Optional[int],
         y_pos: Optional[int],
         assembly_type: Optional[str] = None,
-    ) -> api.IAssembly:
+    ) -> mc_api.IAssembly:
         request = AddAssemblyRequest(
             name=ElementName(name=name), parent=self._element_id, assembly_type=assembly_type
         )
@@ -159,3 +132,19 @@ class Assembly(AbstractGRPCVariableContainer, api.IAssembly):
             request.av_pos.y_pos = y_pos
         response = self._client.AssemblyAddAssembly(request)
         return Assembly(response.id, self._channel)
+
+    @overrides
+    def set_custom_metadata(
+        self,
+        name: str,
+        value: Union[str, int, float, bool, XMLElement],
+        access: mc_api.ComponentMetadataAccess,
+        archive: bool,
+    ) -> None:
+        # TODO: skipping implementation for now, debating collapsing into AEW property methods.
+        return None
+
+    @overrides
+    def get_custom_metadata(self, name: str) -> Union[str, int, float, bool, XMLElement]:
+        # TODO: skipping implementation for now, debating collapsing into AEW property methods.
+        return ""

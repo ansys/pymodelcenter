@@ -1,20 +1,20 @@
 """Defines an abstract base class for elements that return child variables and groups."""
 
 from abc import ABC, abstractmethod
-from typing import Collection, Sequence
+from typing import Collection
 
-import ansys.engineeringworkflow.api as eng_wkfl_api
+import ansys.common.variableinterop as acvi
 import grpc
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
 from .abstract_workflow_element import AbstractWorkflowElement
+from .create_variable import create_variable
 from .proto.element_messages_pb2 import ElementId
-from .variable import Variable
 
 
-class AbstractGRPCVariableContainer(AbstractWorkflowElement, eng_wkfl_api.IVariableContainer, ABC):
+class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner, ABC):
     """An abstract base class for elements that return child variables and groups."""
 
     @abstractmethod
@@ -41,8 +41,9 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, eng_wkfl_api.IVaria
         """
         super(AbstractGRPCVariableContainer, self).__init__(element_id=element_id, channel=channel)
 
-    @property  # type: ignore
-    def groups(self) -> Sequence[mc_api.IGroup]:
+    @property
+    @overrides
+    def groups(self) -> Collection[mc_api.IGroup]:
         """Get the child groups of this element."""
         result = self._client.RegistryGetGroups(self._element_id)
         one_element_id: ElementId
@@ -52,4 +53,7 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, eng_wkfl_api.IVaria
     def get_variables(self) -> Collection[mc_api.IVariable]:
         result = self._client.RegistryGetVariables(self._element_id)
         one_element_id: ElementId
-        return [Variable(one_element_id, self._channel) for one_element_id in result.ids]
+        return [
+            create_variable(acvi.VariableType.UNKNOWN, one_element_id, self._channel)
+            for one_element_id in result.ids
+        ]

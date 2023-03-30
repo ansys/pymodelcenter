@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 import unittest.mock
 
 import ansys.common.variableinterop as acvi
@@ -36,7 +36,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     VariableValue,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.variable import Variable
+from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
@@ -126,17 +126,6 @@ def test_can_get_name(monkeypatch):
     assert result == "expected_name"
 
 
-def test_can_get_full_name(monkeypatch):
-    mock_client = MockWorkflowClientForAssemblyTest()
-    mock_client.name_responses["TEST_ID_SHOULD_MATCH"] = "model.expected_name"
-    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-    sut = Assembly(ElementId(id_string="TEST_ID_SHOULD_MATCH"), None)
-
-    result = sut.get_full_name()
-
-    assert result == "model.expected_name"
-
-
 def test_can_get_control_type(monkeypatch):
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_client.control_type_responses["TEST_ID_SHOULD_MATCH"] = "Sequence"
@@ -200,7 +189,7 @@ def test_get_child_assemblies_one_child(monkeypatch):
         mock_client, "RegistryGetAssemblies", return_value=one_child_assembly
     ) as mock_get_assembly_method:
         with unittest.mock.patch.object(
-            mock_client, "ElementGetName", return_value=fake_name
+            mock_client, "ElementGetFullName", return_value=fake_name
         ) as mock_get_name_method:
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
@@ -222,7 +211,7 @@ def test_get_child_assemblies_multiple_children(monkeypatch):
         mock_client, "RegistryGetAssemblies", return_value=one_child_assembly
     ) as mock_get_assembly_method:
         with unittest.mock.patch.object(
-            mock_client, "ElementGetName", return_value=fake_name
+            mock_client, "ElementGetFullName", return_value=fake_name
         ) as mock_get_name_method:
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = Assembly(ElementId(id_string="STOOGES"), None)
@@ -267,7 +256,7 @@ def test_get_variables_one_variable(monkeypatch):
         result = sut.get_variables()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
         assert len(result) == 1
-        assert isinstance(result[0], Variable)
+        assert isinstance(result[0], BaseVariable)
         assert result[0].element_id == variable_id
 
 
@@ -284,11 +273,11 @@ def test_get_variables_multiple_variables(monkeypatch):
         result = sut.get_variables()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="STOOGES"))
         assert len(result) == 3
-        assert isinstance(result[0], Variable)
+        assert isinstance(result[0], BaseVariable)
         assert result[0].element_id == "LARRY"
-        assert isinstance(result[1], Variable)
+        assert isinstance(result[1], BaseVariable)
         assert result[1].element_id == "MOE"
-        assert isinstance(result[2], Variable)
+        assert isinstance(result[2], BaseVariable)
         assert result[2].element_id == "CURLY"
 
 
@@ -342,7 +331,26 @@ def test_get_groups_multiple_variables(monkeypatch):
         assert result[2].element_id == "CURLY"
 
 
-def test_assembly_create_variable(monkeypatch):
+@pytest.mark.parametrize(
+    "var_type,expected_var_type_in_request",
+    [
+        ("int", "int"),
+        ("real", "real"),
+        (acvi.VariableType.INTEGER, "int"),
+        (acvi.VariableType.REAL, "real"),
+        (acvi.VariableType.BOOLEAN, "bool"),
+        (acvi.VariableType.STRING, "string"),
+        (acvi.VariableType.FILE, "file"),
+        (acvi.VariableType.INTEGER_ARRAY, "int[]"),
+        (acvi.VariableType.REAL_ARRAY, "real[]"),
+        (acvi.VariableType.BOOLEAN_ARRAY, "bool[]"),
+        (acvi.VariableType.STRING_ARRAY, "string[]"),
+        (acvi.VariableType.FILE_ARRAY, "file[]"),
+    ],
+)
+def test_assembly_create_variable(
+    monkeypatch, var_type: Union[str, acvi.VariableType], expected_var_type_in_request: str
+):
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = AddAssemblyVariableResponse(id=ElementId(id_string="CREATED_VAR"))
     with unittest.mock.patch.object(
@@ -350,16 +358,31 @@ def test_assembly_create_variable(monkeypatch):
     ) as mock_add_var_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), None)
-        result = sut.add_variable("created_variable_name", "int")
+        result = sut.add_variable("created_variable_name", var_type)
         mock_add_var_method.assert_called_once_with(
             AddAssemblyVariableRequest(
                 name=ElementName(name="created_variable_name"),
                 target_assembly=ElementId(id_string="ADD_VAR_TARGET"),
-                variable_type="int",
+                variable_type=expected_var_type_in_request,
             )
         )
         assert result.element_id == "CREATED_VAR"
-        assert isinstance(result, Variable)
+        assert isinstance(result, BaseVariable)
+
+
+def test_assembly_create_variable_unknown_type(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AddAssemblyVariableResponse(id=ElementId(id_string="CREATED_VAR"))
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyAddVariable", return_value=mock_response
+    ) as mock_add_var_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), None)
+        with pytest.raises(
+            ValueError, match="Cannot determine a ModelCenter type for an unknown variable type."
+        ):
+            sut.add_variable("created_variable_name", acvi.VariableType.UNKNOWN)
+        mock_add_var_method.assert_not_called()
 
 
 def test_assembly_rename(monkeypatch):
@@ -413,35 +436,6 @@ def test_assembly_set_int_metadata_property(monkeypatch):
                 id=ElementId(id_string="SET_METADATA"),
                 property_name="mock_property_name",
                 value=VariableValue(int_value=47),
-            )
-        )
-
-
-def test_get_icon_id(monkeypatch):
-    mock_client = MockWorkflowClientForAssemblyTest()
-    mock_response = AssemblyIconResponse(id=47)
-    with unittest.mock.patch.object(
-        mock_client, "AssemblyGetIcon", return_value=mock_response
-    ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Assembly(ElementId(id_string="GET_ICON_MOCK_TARGET"), None)
-        result = sut.icon_id
-        mock_method.assert_called_once_with(ElementId(id_string="GET_ICON_MOCK_TARGET"))
-        assert result == 47
-
-
-def test_set_icon_id(monkeypatch):
-    mock_client = MockWorkflowClientForAssemblyTest()
-    mock_response = AssemblyIconSetResponse
-    with unittest.mock.patch.object(
-        mock_client, "AssemblySetIcon", return_value=mock_response
-    ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Assembly(ElementId(id_string="SET_ICON_MOCK_TARGET"), None)
-        sut.icon_id = 9001
-        mock_method.assert_called_once_with(
-            AssemblyIconSetRequest(
-                target=ElementId(id_string="SET_ICON_MOCK_TARGET"), new_icon_id=9001
             )
         )
 

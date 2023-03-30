@@ -15,6 +15,46 @@ from .proto.variable_value_messages_pb2 import (
 )
 
 
+class _ModelCenterTypeStringConverter(acvi.IVariableTypePseudoVisitor):
+    def visit_unknown(self) -> T:
+        raise ValueError("Cannot determine a ModelCenter type for an unknown variable type.")
+
+    def visit_int(self) -> T:
+        return "int"
+
+    def visit_real(self) -> T:
+        return "real"
+
+    def visit_boolean(self) -> T:
+        return "bool"
+
+    def visit_string(self) -> T:
+        return "string"
+
+    def visit_file(self) -> T:
+        return "file"
+
+    def visit_int_array(self) -> T:
+        return "int[]"
+
+    def visit_real_array(self) -> T:
+        return "real[]"
+
+    def visit_bool_array(self) -> T:
+        return "bool[]"
+
+    def visit_string_array(self) -> T:
+        return "string[]"
+
+    def visit_file_array(self) -> T:
+        return "file[]"
+
+
+def interop_type_to_mc_type_string(original: acvi.VariableType) -> str:
+    """Given an acvi interop type, create the corresponding ModelCenter type string."""
+    return acvi.vartype_accept(_ModelCenterTypeStringConverter(), original)
+
+
 def convert_grpc_value_to_acvi(original: VariableValue) -> acvi.IVariableValue:
     """
     Produce an equivalent IVariableValue from Ansys Common Variable Interop from a gRPC message.
