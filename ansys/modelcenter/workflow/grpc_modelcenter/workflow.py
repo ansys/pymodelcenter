@@ -17,7 +17,11 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 a
 
 from ._visitors import VariableValueVisitor
 from .assembly import Assembly
+from .boolean_variable import BooleanVariable
 from .component import Component
+from .double_variable import DoubleVariable
+from .integer_variable import IntegerVariable
+from .string_variable import StringVariable
 from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 
 
@@ -207,13 +211,13 @@ class Workflow(wfapi.IWorkflow):
         # TODO: maybe use a visitor here?
         var_type: var_val_msg.VariableType = type_response.var_type
         if var_type == var_val_msg.VARTYPE_BOOLEAN:
-            return None  # TODO: need wrapper
+            return BooleanVariable(response, self._stub)
         elif var_type == var_val_msg.VARTYPE_INTEGER:
-            return None  # TODO: need wrapper
+            return IntegerVariable(response, self._stub)
         elif var_type == var_val_msg.VARTYPE_REAL:
-            return None  # TODO: need wrapper
+            return DoubleVariable(response, self._stub)
         elif var_type == var_val_msg.VARTYPE_STRING:
-            return None  # TODO: need wrapper
+            return StringVariable(response, self._stub)
         elif var_type == var_val_msg.VARTYPE_FILE:
             return None  # TODO: need wrapper
         elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
