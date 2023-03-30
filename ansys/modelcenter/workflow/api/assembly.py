@@ -33,9 +33,9 @@ class IAssemblyChild(ABC):
 
 class IAssembly(
     IAssemblyChild,
-    igroup.IGroupOwner,
     custom_mo.ICustomMetadataOwner,
     aew_api.IControlStatement,
+    igroup.IGroupOwner,
     ABC,
 ):
     """
