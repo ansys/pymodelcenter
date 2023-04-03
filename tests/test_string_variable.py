@@ -315,7 +315,13 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
 
 
 @pytest.mark.parametrize(
-    "set_value", [acvi.RealArrayValue(), acvi.BooleanArrayValue(), acvi.StringArrayValue()]
+    "set_value",
+    [
+        acvi.IntegerArrayValue(),
+        acvi.RealArrayValue(),
+        acvi.BooleanArrayValue(),
+        acvi.StringArrayValue(),
+    ],
 )
 def test_scalar_set_disallowed(monkeypatch, set_value):
     # Set up
@@ -358,6 +364,12 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
                 dims=ArrayDimensions(dims=[2, 2]), values=["47", "9001", "1337", "-9999"]
             ),
         ),
+        (
+            acvi.RealArrayValue(shape_=(2, 2), values=[[4.7, 9000.1], [13.37, -1.0]]),
+            StringArrayValue(
+                dims=ArrayDimensions(dims=[2, 2]), values=["4.7", "9000.1", "13.37", "-1.0"]
+            ),
+        ),
     ],
 )
 def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
@@ -382,7 +394,15 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-@pytest.mark.parametrize("set_value", [acvi.IntegerValue(0), acvi.StringValue("0.0")])
+@pytest.mark.parametrize(
+    "set_value",
+    [
+        acvi.IntegerValue(0),
+        acvi.RealValue(0.0),
+        acvi.BooleanValue(True),
+        acvi.StringValue("scalar"),
+    ],
+)
 def test_array_set_disallowed(monkeypatch, set_value):
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()

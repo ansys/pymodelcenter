@@ -389,7 +389,17 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-@pytest.mark.parametrize("set_value", [acvi.IntegerValue(0), acvi.StringValue("0.0")])
+@pytest.mark.parametrize(
+    "set_value",
+    [
+        acvi.IntegerValue(0),
+        acvi.StringValue("0.0"),
+        acvi.IntegerArrayValue(),
+        acvi.RealArrayValue(),
+        acvi.BooleanArrayValue(),
+        acvi.StringArrayValue(),
+    ],
+)
 def test_scalar_set_disallowed(monkeypatch, set_value):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -458,7 +468,17 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-@pytest.mark.parametrize("set_value", [acvi.IntegerValue(0), acvi.StringValue("0.0")])
+@pytest.mark.parametrize(
+    "set_value",
+    [
+        acvi.IntegerValue(0),
+        acvi.RealValue(0.0),
+        acvi.BooleanValue(True),
+        acvi.StringValue("0.0"),
+        acvi.IntegerArrayValue(),
+        acvi.StringArrayValue(),
+    ],
+)
 def test_array_set_disallowed(monkeypatch, set_value):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()

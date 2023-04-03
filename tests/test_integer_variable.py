@@ -433,11 +433,12 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
 @pytest.mark.parametrize(
     "set_value",
     [
-        acvi.RealArrayValue(),
-        acvi.BooleanArrayValue(),
-        acvi.IntegerArrayValue(),
         acvi.RealValue(4.0),
         acvi.StringValue("47"),
+        acvi.IntegerArrayValue(),
+        acvi.RealArrayValue(),
+        acvi.BooleanArrayValue(),
+        acvi.StringArrayValue(),
     ],
 )
 def test_scalar_set_disallowed(monkeypatch, set_value):
@@ -496,7 +497,15 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
 
 
 @pytest.mark.parametrize(
-    "set_value", [acvi.IntegerValue(0), acvi.RealArrayValue(), acvi.StringArrayValue()]
+    "set_value",
+    [
+        acvi.IntegerValue(0),
+        acvi.RealValue(0.0),
+        acvi.BooleanValue(True),
+        acvi.StringValue("0"),
+        acvi.RealArrayValue(),
+        acvi.StringArrayValue(),
+    ],
 )
 def test_array_set_disallowed(monkeypatch, set_value):
     # Set up
