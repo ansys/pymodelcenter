@@ -90,14 +90,14 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
     @property
     @overrides
     def is_input_to_component(self) -> bool:
-        # TODO: Currently missing a gRPC endpoint
-        return True
+        response = self._client.VariableGetIsInput(self._element_id)
+        return response.is_input_in_component
 
     @property
     @overrides
     def is_input_to_model(self) -> bool:
-        # TODO: Currently missing a gRPC endpoint
-        return True
+        response = self._client.VariableGetIsInput(self._element_id)
+        return response.is_input_in_workflow
 
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:

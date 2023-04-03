@@ -31,7 +31,12 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
 )
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
-from .test_variable import do_get_state_test, do_get_type_test
+from .test_variable import (
+    do_get_state_test,
+    do_get_type_test,
+    do_test_is_input_component,
+    do_test_is_input_workflow,
+)
 
 
 class MockWorkflowClientForBooleanVarTest:
@@ -440,3 +445,29 @@ def test_array_get_state(monkeypatch, value_in_response, validity_in_response, e
         ),
         expected_acvi_state,
     )
+
+
+@pytest.mark.parametrize(
+    "sut_type, flag_in_response",
+    [
+        (BooleanVariable, True),
+        (BooleanVariable, False),
+        (BooleanArray, True),
+        (BooleanArray, False),
+    ],
+)
+def test_is_input_component(monkeypatch, sut_type, flag_in_response):
+    do_test_is_input_component(monkeypatch, sut_type, flag_in_response)
+
+
+@pytest.mark.parametrize(
+    "sut_type, flag_in_response",
+    [
+        (BooleanVariable, True),
+        (BooleanVariable, False),
+        (BooleanArray, True),
+        (BooleanArray, False),
+    ],
+)
+def test_is_input_workflow(monkeypatch, sut_type, flag_in_response):
+    do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response)
