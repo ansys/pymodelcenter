@@ -23,6 +23,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     SetIntegerVariableMetadataRequest,
     SetMetadataResponse,
     SetVariableValueResponse,
+    VariableState,
+    VariableType,
     VariableValue,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
@@ -30,6 +32,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
 )
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .test_variable import do_get_state_test, do_get_type_test
 
 
 class MockWorkflowClientForIntegerVarTest:
@@ -508,3 +511,70 @@ def test_array_set_disallowed(monkeypatch, set_value):
 
         # Verify
         mock_grpc_method.assert_not_called()
+
+
+def test_scalar_get_type(monkeypatch):
+    do_get_type_test(
+        monkeypatch, IntegerVariable, VariableType.VARTYPE_INTEGER, acvi.VariableType.INTEGER
+    )
+
+
+def test_array_get_type(monkeypatch):
+    do_get_type_test(
+        monkeypatch,
+        IntegerArray,
+        VariableType.VARTYPE_INTEGER_ARRAY,
+        acvi.VariableType.INTEGER_ARRAY,
+    )
+
+
+@pytest.mark.parametrize(
+    "value_in_response,validity_in_response,expected_acvi_state",
+    [
+        (47, True, acvi.VariableState(acvi.IntegerValue(47), True)),
+        (-8675309, False, acvi.VariableState(acvi.IntegerValue(-8675309), False)),
+        (0, True, acvi.VariableState(acvi.IntegerValue(0), True)),
+        (1, False, acvi.VariableState(acvi.IntegerValue(1), False)),
+    ],
+)
+def test_scalar_get_state(
+    monkeypatch, value_in_response, validity_in_response, expected_acvi_state
+):
+    do_get_state_test(
+        monkeypatch,
+        IntegerVariable,
+        VariableState(
+            is_valid=validity_in_response, value=VariableValue(int_value=value_in_response)
+        ),
+        expected_acvi_state,
+    )
+
+
+@pytest.mark.parametrize(
+    "value_in_response,validity_in_response,expected_acvi_state",
+    [
+        (
+            IntegerArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[-8675309, 47, -1, 0]),
+            True,
+            acvi.VariableState(
+                acvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]), True
+            ),
+        ),
+        (
+            IntegerArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[101, 102, 201, 202]),
+            False,
+            acvi.VariableState(
+                acvi.IntegerArrayValue(shape_=(2, 2), values=[[101, 102], [201, 202]]), False
+            ),
+        ),
+    ],
+)
+def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
+    do_get_state_test(
+        monkeypatch,
+        IntegerArray,
+        VariableState(
+            is_valid=validity_in_response, value=VariableValue(int_array_value=value_in_response)
+        ),
+        expected_acvi_state,
+    )

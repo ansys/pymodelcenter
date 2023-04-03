@@ -19,10 +19,13 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     SetDoubleVariableMetadataRequest,
     SetMetadataResponse,
     SetVariableValueResponse,
+    VariableState,
+    VariableType,
     VariableValue,
 )
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .test_variable import do_get_state_test, do_get_type_test
 
 
 class MockWorkflowClientForDoubleVarTest:
@@ -469,3 +472,65 @@ def test_array_set_disallowed(monkeypatch, set_value):
 
         # Verify
         mock_grpc_method.assert_not_called()
+
+
+def test_scalar_get_type(monkeypatch):
+    do_get_type_test(monkeypatch, DoubleVariable, VariableType.VARTYPE_REAL, acvi.VariableType.REAL)
+
+
+def test_array_get_type(monkeypatch):
+    do_get_type_test(
+        monkeypatch, DoubleArray, VariableType.VARTYPE_REAL_ARRAY, acvi.VariableType.REAL_ARRAY
+    )
+
+
+@pytest.mark.parametrize(
+    "value_in_response,validity_in_response,expected_acvi_state",
+    [
+        (-867.5309, True, acvi.VariableState(acvi.RealValue(-867.5309), True)),
+        (47.47, False, acvi.VariableState(acvi.RealValue(47.47), False)),
+    ],
+)
+def test_scalar_get_state(
+    monkeypatch, value_in_response, validity_in_response, expected_acvi_state
+):
+    do_get_state_test(
+        monkeypatch,
+        DoubleVariable,
+        VariableState(
+            is_valid=validity_in_response, value=VariableValue(double_value=value_in_response)
+        ),
+        expected_acvi_state,
+    )
+
+
+@pytest.mark.parametrize(
+    "value_in_response,validity_in_response,expected_acvi_state",
+    [
+        (
+            DoubleArrayValue(
+                dims=ArrayDimensions(dims=[2, 2]), values=[-867.5309, 9000.1, -1.0, 1.0]
+            ),
+            True,
+            acvi.VariableState(
+                acvi.RealArrayValue(shape_=(2, 2), values=[[-867.5309, 9000.1], [-1.0, 1.0]]), True
+            ),
+        ),
+        (
+            DoubleArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[1.0, 1.1, 2.0, 2.1]),
+            False,
+            acvi.VariableState(
+                acvi.RealArrayValue(shape_=(2, 2), values=[[1.0, 1.1], [2.0, 2.1]]), False
+            ),
+        ),
+    ],
+)
+def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
+    do_get_state_test(
+        monkeypatch,
+        DoubleArray,
+        VariableState(
+            is_valid=validity_in_response, value=VariableValue(double_array_value=value_in_response)
+        ),
+        expected_acvi_state,
+    )

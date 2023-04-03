@@ -18,6 +18,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     SetVariableValueResponse,
     StringArrayValue,
     StringVariableMetadata,
+    VariableState,
+    VariableType,
     VariableValue,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.string_variable import StringArray, StringVariable
@@ -26,6 +28,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
 )
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .test_variable import do_get_state_test, do_get_type_test
 
 
 class MockWorkflowClientForStringVarTest:
@@ -393,3 +396,75 @@ def test_array_set_disallowed(monkeypatch, set_value):
 
         # Verify
         mock_grpc_method.assert_not_called()
+
+
+def test_scalar_get_type(monkeypatch):
+    do_get_type_test(
+        monkeypatch, StringVariable, VariableType.VARTYPE_STRING, acvi.VariableType.STRING
+    )
+
+
+def test_array_get_type(monkeypatch):
+    do_get_type_test(
+        monkeypatch, StringArray, VariableType.VARTYPE_STRING_ARRAY, acvi.VariableType.STRING_ARRAY
+    )
+
+
+@pytest.mark.parametrize(
+    "value_in_response,validity_in_response,expected_acvi_state",
+    [
+        ("", True, acvi.VariableState(acvi.StringValue(""), True)),
+        ("test string", False, acvi.VariableState(acvi.StringValue("test string"), False)),
+        ("(╯°□°）╯︵ ┻━┻", True, acvi.VariableState(acvi.StringValue("(╯°□°）╯︵ ┻━┻"), True)),
+    ],
+)
+def test_scalar_get_state(
+    monkeypatch, value_in_response, validity_in_response, expected_acvi_state
+):
+    do_get_state_test(
+        monkeypatch,
+        StringVariable,
+        VariableState(
+            is_valid=validity_in_response, value=VariableValue(string_value=value_in_response)
+        ),
+        expected_acvi_state,
+    )
+
+
+@pytest.mark.parametrize(
+    "value_in_response,validity_in_response,expected_acvi_state",
+    [
+        (
+            StringArrayValue(
+                dims=ArrayDimensions(dims=[2, 2]),
+                values=["primary", "secondary", "first", "second"],
+            ),
+            True,
+            acvi.VariableState(
+                acvi.StringArrayValue(
+                    shape_=(2, 2), values=[["primary", "secondary"], ["first", "second"]]
+                ),
+                True,
+            ),
+        ),
+        (
+            StringArrayValue(
+                dims=ArrayDimensions(dims=[2, 2]), values=["one", "two", "three", "four"]
+            ),
+            False,
+            acvi.VariableState(
+                acvi.StringArrayValue(shape_=(2, 2), values=[["one", "two"], ["three", "four"]]),
+                False,
+            ),
+        ),
+    ],
+)
+def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
+    do_get_state_test(
+        monkeypatch,
+        StringArray,
+        VariableState(
+            is_valid=validity_in_response, value=VariableValue(string_array_value=value_in_response)
+        ),
+        expected_acvi_state,
+    )

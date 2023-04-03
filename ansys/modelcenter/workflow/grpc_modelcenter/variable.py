@@ -42,7 +42,7 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
     @overrides
     def interop_type(self) -> acvi.VariableType:
         response = self._client.VariableGetType(self._element_id)
-        return grpc_type_enum_to_interop_type(response.VariableType)
+        return grpc_type_enum_to_interop_type(response.var_type)
 
     @property
     @overrides

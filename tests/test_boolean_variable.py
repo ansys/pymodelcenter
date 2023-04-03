@@ -22,6 +22,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     SetBooleanVariableMetadataRequest,
     SetMetadataResponse,
     SetVariableValueResponse,
+    VariableState,
+    VariableType,
     VariableValue,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
@@ -29,6 +31,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
 )
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .test_variable import do_get_state_test, do_get_type_test
 
 
 class MockWorkflowClientForBooleanVarTest:
@@ -370,3 +373,70 @@ def test_array_set_disallowed(monkeypatch, set_value):
 
         # Verify
         mock_grpc_method.assert_not_called()
+
+
+def test_scalar_get_type(monkeypatch):
+    do_get_type_test(
+        monkeypatch, BooleanVariable, VariableType.VARTYPE_BOOLEAN, acvi.VariableType.BOOLEAN
+    )
+
+
+def test_array_get_type(monkeypatch):
+    do_get_type_test(
+        monkeypatch,
+        BooleanArray,
+        VariableType.VARTYPE_BOOLEAN_ARRAY,
+        acvi.VariableType.BOOLEAN_ARRAY,
+    )
+
+
+@pytest.mark.parametrize(
+    "value_in_response,validity_in_response,expected_acvi_state",
+    [
+        (True, True, acvi.VariableState(acvi.BooleanValue(True), True)),
+        (True, False, acvi.VariableState(acvi.BooleanValue(True), False)),
+        (False, True, acvi.VariableState(acvi.BooleanValue(False), True)),
+        (False, False, acvi.VariableState(acvi.BooleanValue(False), False)),
+    ],
+)
+def test_scalar_get_state(
+    monkeypatch, value_in_response, validity_in_response, expected_acvi_state
+):
+    do_get_state_test(
+        monkeypatch,
+        BooleanVariable,
+        VariableState(
+            is_valid=validity_in_response, value=VariableValue(bool_value=value_in_response)
+        ),
+        expected_acvi_state,
+    )
+
+
+@pytest.mark.parametrize(
+    "value_in_response,validity_in_response,expected_acvi_state",
+    [
+        (
+            BooleanArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]),
+            True,
+            acvi.VariableState(
+                acvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), True
+            ),
+        ),
+        (
+            BooleanArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[False, True, True, False]),
+            False,
+            acvi.VariableState(
+                acvi.BooleanArrayValue(shape_=(2, 2), values=[[False, True], [True, False]]), False
+            ),
+        ),
+    ],
+)
+def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
+    do_get_state_test(
+        monkeypatch,
+        BooleanArray,
+        VariableState(
+            is_valid=validity_in_response, value=VariableValue(bool_array_value=value_in_response)
+        ),
+        expected_acvi_state,
+    )
