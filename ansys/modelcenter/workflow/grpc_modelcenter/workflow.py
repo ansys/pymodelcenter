@@ -204,7 +204,6 @@ class Workflow(wfapi.IWorkflow):
         else:
             request.target.id_string = variable.element_id
         response: workflow_msg.WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
-        # TODO: (MPP) need tests for new types
 
     @overrides
     def save_workflow(self) -> None:

@@ -77,7 +77,7 @@ class MockWorkflowClientForWorkflowTest:
 
     def WorkflowCreateLink(self, request: wkf_msgs.WorkflowCreateLinkRequest):
         if request.target.id_string != "inputs.var1" or request.equation != "Workflow.comp.output4":
-            raise Exception
+            raise Exception()
         self.was_link_created = True
         response = wkf_msgs.WorkflowCreateLinkResponse()
         return response
@@ -187,6 +187,9 @@ class MockWorkflowClientForWorkflowTest:
         self.workflow_run_requests.append(request)
         return self.workflow_run_response
 
+    def ElementGetFullName(self, request: elem_msgs.ElementId) -> elem_msgs.ElementName:
+        return elem_msgs.ElementName(name=request.id_string)
+
 
 mock_client: MockWorkflowClientForWorkflowTest
 
@@ -205,6 +208,7 @@ def setup_function(monkeypatch):
     global mock_client
     mock_client = MockWorkflowClientForWorkflowTest()
     monkeypatch_client_creation(monkeypatch, grpcmc.Workflow, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.DoubleVariable, mock_client)
 
     global workflow
     workflow = grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz")
@@ -680,6 +684,19 @@ def test_create_link(setup_function) -> None:
 
     # Execute
     workflow.create_link(test_var_name, test_eqn)
+
+    # Verify
+    assert mock_client.was_link_created is True
+
+
+def test_create_link_with_objects(setup_function) -> None:
+    lhs = elem_msgs.ElementId(id_string="inputs.var1")
+    test_var = grpcmc.DoubleVariable(lhs, workflow._channel)
+    rhs = elem_msgs.ElementId(id_string="Workflow.comp.output4")
+    test_eqn_var = grpcmc.DoubleVariable(rhs, workflow._channel)
+
+    # Execute
+    workflow.create_link(test_var, test_eqn_var)
 
     # Verify
     assert mock_client.was_link_created is True
