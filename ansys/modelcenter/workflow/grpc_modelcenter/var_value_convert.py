@@ -11,8 +11,13 @@ from .proto.variable_value_messages_pb2 import (
     DoubleArrayValue,
     IntegerArrayValue,
     StringArrayValue,
+    VariableType,
     VariableValue,
 )
+
+
+class ValueTypeNotSupportedError(ValueError):
+    """Indicates that an attempt was made to convert a value with a known but unsupported type."""
 
 
 class _ModelCenterTypeStringConverter(acvi.IVariableTypePseudoVisitor):
@@ -55,6 +60,29 @@ def interop_type_to_mc_type_string(original: acvi.VariableType) -> str:
     return acvi.vartype_accept(_ModelCenterTypeStringConverter(), original)
 
 
+__GRPC_TO_INTEROP_TYPE_MAP = {
+    VariableType.VARTYPE_INTEGER: acvi.VariableType.INTEGER,
+    VariableType.VARTYPE_REAL: acvi.VariableType.REAL,
+    VariableType.VARTYPE_BOOLEAN: acvi.VariableType.BOOLEAN,
+    VariableType.VARTYPE_STRING: acvi.VariableType.STRING,
+    VariableType.VARTYPE_FILE: acvi.VariableType.FILE,
+    VariableType.VARTYPE_INTEGER_ARRAY: acvi.VariableType.INTEGER_ARRAY,
+    VariableType.VARTYPE_REAL_ARRAY: acvi.VariableType.REAL_ARRAY,
+    VariableType.VARTYPE_BOOLEAN_ARRAY: acvi.VariableType.BOOLEAN_ARRAY,
+    VariableType.VARTYPE_STRING_ARRAY: acvi.VariableType.STRING_ARRAY,
+    VariableType.VARTYPE_FILE_ARRAY: acvi.VariableType.FILE_ARRAY,
+}
+
+
+def grpc_type_enum_to_interop_type(original: VariableType) -> acvi.VariableType:
+    """Given a value of the GRPC type enumeration, return the appropriate value of the ACVI enum."""
+    return (
+        __GRPC_TO_INTEROP_TYPE_MAP[original]
+        if original in __GRPC_TO_INTEROP_TYPE_MAP
+        else acvi.VariableType.UNKNOWN
+    )
+
+
 def convert_grpc_value_to_acvi(original: VariableValue) -> acvi.IVariableValue:
     """
     Produce an equivalent IVariableValue from Ansys Common Variable Interop from a gRPC message.
@@ -90,6 +118,16 @@ def convert_grpc_value_to_acvi(original: VariableValue) -> acvi.IVariableValue:
             original.string_array_value.dims.dims,
             np.reshape(original.string_array_value.values, original.string_array_value.dims.dims),
         )
+    # TODO: FileValue missing from gRPC API, need to add, update this case
+    elif original.HasField("file_value"):
+        raise ValueTypeNotSupportedError(
+            "The provided gRPC value has a file type, "
+            "but this is not yet supported by the pyModelCenter API."
+        )
+    else:
+        raise ValueError(
+            "The provided gRPC value could not be converted to a common variable " "interop value."
+        )
 
 
 class ToGRPCVisitor(acvi.IVariableValueVisitor[VariableValue]):
@@ -121,7 +159,9 @@ class ToGRPCVisitor(acvi.IVariableValueVisitor[VariableValue]):
 
     @overrides
     def visit_file(self, value: acvi.FileValue) -> T:
-        raise NotImplementedError()
+        raise ValueTypeNotSupportedError(
+            "A file value was provided, but pyModelCenter currently does not support this type."
+        )
 
     @overrides
     def visit_real_array(self, value: acvi.RealArrayValue) -> T:
@@ -149,7 +189,10 @@ class ToGRPCVisitor(acvi.IVariableValueVisitor[VariableValue]):
 
     @overrides
     def visit_file_array(self, value: acvi.FileArrayValue) -> T:
-        raise NotImplementedError()
+        raise ValueTypeNotSupportedError(
+            "A file array value was provided, but pyModelCenter currently does not support this "
+            "type."
+        )
 
 
 def convert_interop_value_to_grpc(original: acvi.IVariableValue) -> VariableValue:
