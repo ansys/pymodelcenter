@@ -9,4 +9,5 @@ from .component import Component
 from .engine import Engine
 from .format import Format
 from .mcd_process import MCDProcess
+from .variable_link import VariableLink
 from .workflow import Workflow

@@ -52,7 +52,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Returns
         -------
-        The value as one of the IVariableValue types.
+        The value as a VariableState.
         """
         raise NotImplementedError()
 
@@ -88,7 +88,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
             or its full name.
         equation : Union[str, IVariable]
             Equation of the link. You may also pass an IVariable object here,
-            and its value will become the equation.
+            and its name will become the equation.
         """
         raise NotImplementedError()
 

@@ -11,7 +11,7 @@ from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_clie
 
 
 class MockEngineClientForEngineTest:
-    def __init__(self):
+    def __init__(self) -> None:
         self.username: str = ""
         self.password: str = ""
 

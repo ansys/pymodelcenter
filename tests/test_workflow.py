@@ -15,12 +15,12 @@ from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_clie
 
 
 class MockWorkflowClientForWorkflowTest:
-    def __init__(self):
-        self.was_saved = False
-        self.was_save_asd = False
-        self.was_closed = False
-        self.was_component_removed = False
-        self.was_link_created = False
+    def __init__(self) -> None:
+        self.was_saved: bool = False
+        self.was_save_asd: bool = False
+        self.was_closed: bool = False
+        self.was_component_removed: bool = False
+        self.was_link_created: bool = False
         self.workflow_run_requests: List[wkf_msgs.WorkflowRunRequest] = []
         self.workflow_run_response = wkf_msgs.WorkflowRunResponse()
 
@@ -144,8 +144,16 @@ class MockWorkflowClientForWorkflowTest:
             response.var_type = var_msgs.VARTYPE_FILE_ARRAY
         return response
 
+    def BooleanVariableGetMetadata(self, request: elem_msgs.ElementId):
+        response = var_msgs.BooleanVariableMetadata()
+        response.base_metadata.description = "☯"
+        return response
+
     def DoubleVariableGetMetadata(self, request: elem_msgs.ElementId):
         response = var_msgs.DoubleVariableMetadata()
+        response.base_metadata.description = "☯"
+        response.numeric_metadata.units = "§"
+        response.numeric_metadata.display_format = "※"
         response.lower_bound = 1.1
         response.upper_bound = 4.4
         response.enum_values.extend([1.1, 2.2, 3.3, 4.4])
@@ -154,6 +162,9 @@ class MockWorkflowClientForWorkflowTest:
 
     def IntegerVariableGetMetadata(self, request: elem_msgs.ElementId):
         response = var_msgs.IntegerVariableMetadata()
+        response.base_metadata.description = "☯"
+        response.numeric_metadata.units = "§"
+        response.numeric_metadata.display_format = "※"
         response.lower_bound = 1
         response.upper_bound = 4
         response.enum_values.extend([1, 2, 3, 4])
@@ -162,8 +173,14 @@ class MockWorkflowClientForWorkflowTest:
 
     def StringVariableGetMetadata(self, request: elem_msgs.ElementId):
         response = var_msgs.StringVariableMetadata()
+        response.base_metadata.description = "☯"
         response.enum_values.extend(["1", "2", "3", "4"])
         response.enum_aliases.extend(["a", "b", "c", "d"])
+        return response
+
+    def FileVariableGetMetadata(self, request: elem_msgs.ElementId):
+        response = var_msgs.FileVariableMetadata()
+        response.base_metadata.description = "☯"
         return response
 
     def WorkflowRun(self, request: wkf_msgs.WorkflowRunRequest) -> wkf_msgs.WorkflowRunResponse:
@@ -173,7 +190,7 @@ class MockWorkflowClientForWorkflowTest:
 
 mock_client: MockWorkflowClientForWorkflowTest
 
-workflow: mcapi.Workflow
+workflow: grpcmc.Workflow
 """
 Workflow object under test.
 """
@@ -193,7 +210,7 @@ def setup_function(monkeypatch):
     workflow = grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz")
 
 
-def test_get_root(setup_function):
+def test_get_root(setup_function) -> None:
     # SUT
     result: ewapi.IControlStatement = workflow.get_root()
 
@@ -205,7 +222,7 @@ def test_get_root(setup_function):
 #     pass
 
 
-def test_get_component(setup_function):
+def test_get_component(setup_function) -> None:
     # SUT
     result: mcapi.IComponent = workflow.get_component("a.word")
 
@@ -213,29 +230,7 @@ def test_get_component(setup_function):
     assert result.element_id == "3457134"
 
 
-# def test_trade_study_start():
-#     # Setup
-#     global workflow, mock_mc
-#
-#     # SUT
-#     workflow.trade_study_start()
-#
-#     # Verification
-#     assert mock_mc.getCallCount("tradeStudyStart") == 1
-#
-#
-# def test_trade_study_end():
-#     # Setup
-#     global workflow, mock_mc
-#
-#     # SUT
-#     workflow.trade_study_end()
-#
-#     # Verification
-#     assert mock_mc.getCallCount("tradeStudyEnd") == 1
-
-
-def test_workflow_close(setup_function):
+def test_workflow_close(setup_function) -> None:
     # Setup
     # Execute
     workflow.close_workflow()
@@ -485,21 +480,6 @@ def test_remove_component(setup_function):
 #     # MockModelCenter.getAssembly doesn't have call tracking enabled
 #     # assert mock_mc.getCallCount("getAssembly") == get_assembly_call_count
 #     assert mock_mc.getCallCount("getModel") == get_model_call_count
-#
-#
-# def test_create_data_explorer():
-#     """
-#     Verify that create_data_explorer works as expected.
-#     """
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     de: mcapi.DataExplorer = workflow.create_data_explorer("MockTradeStudyType", "Mock Setup")
-#
-#     # Verification
-#     assert mock_mc.getCallCount("createDataExplorer") == 1
-#     assert de is not None
 
 
 @pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
@@ -513,6 +493,7 @@ def test_get_bool_meta_data(setup_function, is_array: bool) -> None:
 
     # Verification
     assert metadata.variable_type == expected_type
+    assert metadata.description == "☯"
 
 
 @pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
@@ -526,6 +507,9 @@ def test_get_int_meta_data(setup_function, is_array: bool) -> None:
 
     # Verification
     assert metadata.variable_type == expected_type
+    assert metadata.description == "☯"
+    assert metadata.units == "§"
+    assert metadata.display_format == "※"
     assert metadata.lower_bound == 1
     assert metadata.upper_bound == 4
     assert metadata.enumerated_values == [1, 2, 3, 4]
@@ -543,6 +527,9 @@ def test_get_real_meta_data(setup_function, is_array: bool) -> None:
 
     # Verification
     assert metadata.variable_type == expected_type
+    assert metadata.description == "☯"
+    assert metadata.units == "§"
+    assert metadata.display_format == "※"
     assert metadata.lower_bound == 1.1
     assert metadata.upper_bound == 4.4
     assert metadata.enumerated_values == [1.1, 2.2, 3.3, 4.4]
@@ -560,6 +547,7 @@ def test_get_string_meta_data(setup_function, is_array: bool) -> None:
 
     # Verification
     assert metadata.variable_type == expected_type
+    assert metadata.description == "☯"
     assert metadata.enumerated_values == ["1", "2", "3", "4"]
     assert metadata.enumerated_aliases == ["a", "b", "c", "d"]
 
@@ -575,174 +563,7 @@ def test_get_file_meta_data(setup_function, is_array: bool) -> None:
 
     # Verification
     assert metadata.variable_type == expected_type
-
-
-# @pytest.mark.parametrize(
-#     "mc_type,acvi_type",
-#     [
-#         # TODO: Other types require support from MockModelCenter.
-#         pytest.param("boolean", acvi.VariableType.BOOLEAN),
-#         pytest.param("integer", acvi.VariableType.INTEGER),
-#         pytest.param("double", acvi.VariableType.REAL),
-#         pytest.param("string", acvi.VariableType.STRING),
-#         # arrays
-#         pytest.param("boolean[]", acvi.VariableType.BOOLEAN_ARRAY),
-#         pytest.param("integer[]", acvi.VariableType.INTEGER_ARRAY),
-#         pytest.param("double[]", acvi.VariableType.REAL_ARRAY),
-#         pytest.param("string[]", acvi.VariableType.STRING_ARRAY),
-#     ],
-# )
-# def test_create_assembly_variable(mc_type: str, acvi_type: acvi.VariableType) -> None:
-#     # SUT
-#     metadata: acvi.CommonVariableMetadata = workflow.create_assembly_variable(
-#         "variable_name", mc_type, "container"
-#     )
-#
-#     # Verification
-#     assert metadata.variable_type == acvi_type
-#
-#
-# def test_run_macro() -> None:
-#     """
-#     Verify that run_macro works as expected.
-#     """
-#
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     result: object = workflow.run_macro("macro", False)
-#
-#     # Verification
-#     assert mock_mc.getCallCount("runMacro") == 1
-#     assert result is None  # arbitrary value from MockModelCenter
-#
-#
-# def test_add_new_macro() -> None:
-#     """
-#     Verify that add_new_macro works as expected.
-#     """
-#
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     workflow.add_new_macro("macro", False)
-#
-#     # Verification
-#     assert mock_mc.getCallCount("addNewMacro") == 1
-#
-#
-# def test_set_macro_script() -> None:
-#     """
-#     Verify that set_macro_script works as expected.
-#     """
-#
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     workflow.set_macro_script("macro", "a script to run")
-#
-#     # Verification
-#     assert mock_mc.getCallCount("setMacroScript") == 1
-#
-#
-# def test_get_macro_script() -> None:
-#     """
-#     Verify that get_macro_script works as expected.
-#     """
-#
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     script: str = workflow.get_macro_script("macro")
-#
-#     # Verification
-#     assert mock_mc.getCallCount("getMacroScript") == 1
-#     assert script == "ここには何もない！目を逸らしてください！"  # arbitrary value from MockModelCenter
-#
-#
-# def test_set_macro_script_language() -> None:
-#     """
-#     Verify that set_macro_script_language works as expected.
-#     """
-#
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     workflow.set_macro_script_language("macro", "JavaScript")
-#
-#     # Verification
-#     assert mock_mc.getCallCount("setMacroScriptLanguage") == 1
-#
-#
-# def test_get_macro_script_language() -> None:
-#     """
-#     Verify that get_macro_script_language works as expected.
-#     """
-#
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     script: str = workflow.get_macro_script_language("macro")
-#
-#     # Verification
-#     assert mock_mc.getCallCount("getMacroScriptLanguage") == 1
-#     assert script == "いろいろなブランドの美味しさが楽しめます"  # arbitrary value from MockModelCenter
-#
-#
-# def test_set_macro_timeout() -> None:
-#     """
-#     Verify that set_macro_timeout works as expected.
-#     """
-#
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     workflow.set_macro_timeout("macro", 3.5)
-#
-#     # Verification
-#     assert mock_mc.getCallCount("setMacroTimeout") == 1
-#
-#
-# def test_get_macro_timeout() -> None:
-#     """
-#     Verify that get_macro_timeout works as expected.
-#     """
-#
-#     # Setup
-#     global mock_mc, workflow
-#
-#     # SUT
-#     timeout: float = workflow.get_macro_timeout("macro")
-#
-#     # Verification
-#     assert mock_mc.getCallCount("getMacroTimeout") == 1
-#     assert timeout == 25.0  # arbitrary value from MockModelCenter
-
-
-def test_break_link(setup_function) -> None:
-    """
-    Verify that breaking a link works correctly.
-    """
-    # Execute
-    workflow.break_link("jkl;")
-
-    # No exception should be thrown
-
-
-def test_break_link_for_invalid_target(setup_function) -> None:
-    """
-    Verify that breaking an invalid link works correctly.
-    """
-    with pytest.raises(ValueError) as err:
-        workflow.break_link("")
-    assert err.value.args[0] == "Target id does not exist."
+    assert metadata.description == "☯"
 
 
 @pytest.mark.parametrize(
@@ -760,7 +581,7 @@ def test_get_links(setup_function, workflow_id: str, link_lhs_values: Iterable[s
     workflow._id = workflow_id
 
     # Execute
-    links: Iterable[mcapi.VariableLink] = workflow.get_links()
+    links: Iterable[mcapi.IVariableLink] = workflow.get_links()
 
     # Verify
     assert [link.lhs for link in links] == link_lhs_values
@@ -789,7 +610,7 @@ def test_get_uuid(setup_function) -> None:
 
 def test_auto_link(setup_function) -> None:
     # Execute
-    links: List[mcapi.VariableLink] = workflow.auto_link(
+    links: List[mcapi.IVariableLink] = workflow.auto_link(
         "Workflow.source_comp", "Workflow.dest_comp"
     )
 
@@ -838,15 +659,15 @@ def test_save_workflow_as(setup_function):
     assert mock_client.was_save_asd
 
 
-def test_create_component(setup_function):
+def test_create_component(setup_function) -> None:
     # Execute
     component: grpcmc.Component = workflow.create_component(
         server_path="common:\\Functions\\Quadratic",
         name="二次",
         parent="Model",
         init_string=None,
-        x_pos=None,
-        y_pos=None,
+        av_position=None,
+        insert_before=None,
     )
 
     # Verify
@@ -1003,25 +824,3 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
 #     assert result is False
 #
 #
-# def test_get_data_explorer() -> None:
-#     # Setup
-#     global workflow
-#     workflow.create_data_explorer("", "")
-#
-#     # SUT
-#     result: mcapi.DataExplorer = workflow.get_data_explorer(0)
-#
-#     # Verification
-#     assert result is not None
-#     # TODO: more verification when DE is fleshed out
-#
-#
-# def test_get_data_explorer_invalid_index() -> None:
-#     # Setup
-#     global workflow
-#
-#     # SUT
-#     result: mcapi.DataExplorer = workflow.get_data_explorer(0)
-#
-#     # Verification
-#     assert result is None
