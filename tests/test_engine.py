@@ -1,3 +1,6 @@
+from typing import Collection, Mapping
+
+from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
@@ -103,97 +106,25 @@ def setup_function(monkeypatch):
     def mock_init(self):
         pass
 
-    def mock_get_id(self) -> int:
-        return 4294967290
-
     monkeypatch.setattr(grpcapi.MCDProcess, "start", mock_start)
     monkeypatch.setattr(grpcapi.MCDProcess, "__init__", mock_init)
-    monkeypatch.setattr(grpcapi.MCDProcess, "get_process_id", mock_get_id)
     global mock_client
     mock_client = MockEngineClientForEngineTest()
     monkeypatch_client_creation(monkeypatch, grpcapi.Engine, mock_client)
 
 
-def test_process_id(setup_function) -> None:
+def test_get_units(setup_function) -> None:
     # Setup
     sut: grpcapi.Engine = grpcapi.Engine()
 
     # Execute
-    result: int = sut.process_id
+    result: Mapping[str, Collection[str]] = sut.get_units()
 
     # Verify
-    assert result == 4294967290
-
-
-def test_get_num_unit_categories(setup_function) -> None:
-    # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
-
-    # Execute
-    result: int = sut.get_num_unit_categories()
-
-    # Verify
-    assert result == 3
-
-
-@pytest.mark.parametrize(
-    "category,expected_result",
-    [
-        pytest.param("001_empty_category", 0, id="empty category"),
-        pytest.param("002_length", 4, id="four units"),
-        pytest.param("003_seconds", 1, id="one unit"),
-    ],
-)
-def test_get_num_units(setup_function, category: str, expected_result: int) -> None:
-    # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
-
-    # Execute
-    result: int = sut.get_num_units(category)
-
-    # Verify
-    assert result == expected_result
-
-
-@pytest.mark.parametrize(
-    "category_index,expected_result",
-    [
-        pytest.param(0, "001_empty_category"),
-        pytest.param(1, "002_length"),
-        pytest.param(2, "003_seconds"),
-    ],
-)
-def test_get_unit_category_name(setup_function, category_index: int, expected_result: str) -> None:
-    # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
-
-    # Execute
-    result: str = sut.get_unit_category_name(category_index)
-
-    # Verify
-    assert result == expected_result
-
-
-@pytest.mark.parametrize(
-    "category,unit_index,expected_result",
-    [
-        pytest.param("002_length", 0, "inches", id="inches"),
-        pytest.param("002_length", 1, "feet", id="feet"),
-        pytest.param("002_length", 2, "mm", id="cm"),
-        pytest.param("002_length", 3, "cm", id="mm"),
-    ],
-)
-def test_get_unit_name(
-    setup_function, category: str, unit_index: int, expected_result: str
-) -> None:
-    # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
-
-    # Execute
-    result: str = sut.get_unit_name(category, unit_index)
-
-    # Verify
-    assert result == expected_result
+    assert len(result.keys()) == 3
+    assert len(result["001_empty_category"]) == 0
+    assert len(result["002_length"]) == 4
+    assert len(result["003_seconds"]) == 1
 
 
 @pytest.mark.parametrize("workflow_type", [mcapi.WorkflowType.DATA, mcapi.WorkflowType.PROCESS])
@@ -343,7 +274,7 @@ def test_get_engine_info(setup_function) -> None:
     engine = grpcapi.Engine()
 
     # SUT
-    info: mcapi.WorkflowEngineInfo = engine.get_server_info()
+    info: WorkflowEngineInfo = engine.get_server_info()
 
     # Verification
     assert info.release_year == 1

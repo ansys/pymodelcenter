@@ -1,15 +1,19 @@
 """Implementation of Engine."""
 from os import PathLike
 from string import Template
-from typing import Optional, Union
+from typing import Collection, Dict, List, Mapping, Optional, Union
 
 from ansys.engineeringworkflow.api import IWorkflowInstance, WorkflowEngineInfo
 import grpc
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import DataExplorer, IEngine, IFormat, OnConnectionErrorMode
-from ansys.modelcenter.workflow.api import Workflow as IWorkflow
-from ansys.modelcenter.workflow.api import WorkflowType
+from ansys.modelcenter.workflow.api import (
+    IEngine,
+    IFormat,
+    IWorkflow,
+    OnConnectionErrorMode,
+    WorkflowType,
+)
 
 from .format import Format
 from .mcd_process import MCDProcess
@@ -72,9 +76,9 @@ class Engine(IEngine):
         """Create a client from a grpc channel."""
         return GRPCModelCenterServiceStub(grpc_channel)
 
-    @property  # type: ignore
-    @overrides
+    @property
     def process_id(self) -> int:
+        """Get the id of the connected process; useful for debugging."""
         # Can also get this via grpc if we want.
         return self._process.get_process_id()
 
@@ -130,38 +134,24 @@ class Engine(IEngine):
             raise Exception("Server did not return a value.")
 
     @overrides
-    def get_num_unit_categories(self) -> int:
-        request = GetUnitCategoriesRequest()
-        response: GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(request)
-        return len(response.names)
-
-    @overrides
-    def get_unit_category_name(self, index: int) -> str:
-        request = GetUnitCategoriesRequest()
-        response: GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(request)
-        return response.names[index]
-
-    @overrides
-    def get_num_units(self, category: str) -> int:
-        request = GetUnitNamesRequest()
-        request.category = category
-        response: GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
-        return len(response.names)
-
-    @overrides
-    def get_unit_name(self, category: str, index: int) -> str:
-        request = GetUnitNamesRequest()
-        request.category = category
-        response: GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
-        return response.names[index]
+    def get_units(self) -> Mapping[str, Collection[str]]:
+        result: Dict[str, List[str]] = {}
+        category_request = GetUnitCategoriesRequest()
+        category_response: GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(
+            category_request
+        )
+        for category in category_response.names:
+            result[category] = []
+            request = GetUnitNamesRequest()
+            request.category = category
+            response: GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
+            for unit in response.names:
+                result[category].append(unit)
+        return result
 
     @overrides
     def get_run_only_mode(self) -> bool:
         return self._is_run_only
-
-    @overrides
-    def save_trade_study(self, uri: str, data_explorer: DataExplorer) -> None:
-        raise NotImplementedError
 
     @overrides
     def get_server_info(self) -> WorkflowEngineInfo:
