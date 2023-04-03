@@ -215,6 +215,7 @@ def fill_string_metadata_message(
         target.enum_values.append(str(source_enum_value))
     for source_enum_alias in source.enumerated_aliases:
         target.enum_aliases.append(source_enum_alias)
+    _fill_base_metadata(source, target.base_metadata)
 
 
 def convert_grpc_string_metadata(source: StringVariableMetadata) -> acvi.StringMetadata:
