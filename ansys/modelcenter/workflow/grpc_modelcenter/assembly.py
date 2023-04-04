@@ -39,19 +39,6 @@ class Assembly(AbstractGRPCVariableContainer, mc_api.IAssembly):
 
     @property  # type: ignore
     @overrides
-    def element_id(self) -> str:
-        """
-        TODO.
-
-        Returns
-        -------
-        TODO.
-        """
-        # TODO: readonly?
-        return self._element_id.id_string
-
-    @property  # type: ignore
-    @overrides
     def control_type(self) -> str:
         result = self._client.RegistryGetControlType(self._element_id)
         return result.type
