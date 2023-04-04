@@ -36,8 +36,6 @@ def _extract_base_metadata(
                 source_custom_value
             )
         except ValueTypeNotSupportedError as custom_metadata_value_error:
-            # TODO: Do we actually want this to raise?
-            #       Investigate using warnings for this case.
             raise CustomMetadataValueNotSupportedError(
                 "The variable's custom metadata " "contains a value with an unsupported type."
             ) from custom_metadata_value_error
