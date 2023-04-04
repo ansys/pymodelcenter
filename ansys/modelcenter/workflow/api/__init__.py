@@ -24,5 +24,6 @@ from .irefprop import IReferenceArrayProperty, IReferencePropertyOwner
 from .istringarray import IStringArray
 from .istringvariable import IStringVariable
 from .ivariable import IVariable
+from .renamable_element import IRenamableElement
 from .variable_links import IVariableLink
 from .workflow import IWorkflow

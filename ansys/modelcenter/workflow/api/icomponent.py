@@ -8,9 +8,11 @@ import ansys.modelcenter.workflow.api.assembly as assembly
 import ansys.modelcenter.workflow.api.custom_metadata_owner as custom_mo
 import ansys.modelcenter.workflow.api.igroup as igroup
 import ansys.modelcenter.workflow.api.ivariable as ivariable
+import ansys.modelcenter.workflow.api.renamable_element as renamable_element
 
 
 class IComponent(
+    renamable_element.IRenamableElement,
     assembly.IAssemblyChild,
     igroup.IGroupOwner,
     custom_mo.ICustomMetadataOwner,
@@ -110,19 +112,6 @@ class IComponent(
         """Download the component's variable values from the server if\
         it is a ModelCenter Remote Execution component."""
         raise NotImplementedError()
-
-    # TODO: Shared with at least assembly, possibly anything with a name
-    @abstractmethod
-    def rename(self, name: str) -> None:
-        """
-        Rename the current component.
-
-        Parameters
-        ----------
-        name: str
-            The new name of the component.
-        """
-        self._wrapped.rename(name)
 
     @abstractmethod
     def get_analysis_view_position(self) -> Tuple[int, int]:

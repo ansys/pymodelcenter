@@ -8,8 +8,10 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.api import IComponent, assembly, igroup
 
+from .abstract_renamable import AbstractRenamableElement
 
-class Component(IComponent):
+
+class Component(AbstractRenamableElement, IComponent):
     """A component in a Workflow."""
 
     def __init__(self, elem_id: str):
@@ -140,9 +142,4 @@ class Component(IComponent):
     @overrides
     def download_values(self) -> None:
         # self._wrapped.downloadValues()
-        raise NotImplementedError
-
-    @overrides
-    def rename(self, name: str) -> None:
-        # self._wrapped.rename(name)
         raise NotImplementedError

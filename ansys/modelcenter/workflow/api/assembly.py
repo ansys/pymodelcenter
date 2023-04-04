@@ -7,6 +7,7 @@ import ansys.engineeringworkflow.api as aew_api
 
 import ansys.modelcenter.workflow.api.custom_metadata_owner as custom_mo
 import ansys.modelcenter.workflow.api.igroup as igroup
+import ansys.modelcenter.workflow.api.renamable_element as renamable_element
 
 
 class IAssemblyChild(ABC):
@@ -32,6 +33,7 @@ class IAssemblyChild(ABC):
 
 
 class IAssembly(
+    renamable_element.IRenamableElement,
     IAssemblyChild,
     custom_mo.ICustomMetadataOwner,
     aew_api.IControlStatement,
@@ -143,18 +145,5 @@ class IAssembly(
         -------
         True if the specified variable was located and deleted,
         False if it was not and no action was taken.
-        """
-        raise NotImplementedError()
-
-    # TODO: move to a base class.
-    @abstractmethod
-    def rename(self, name: str) -> None:
-        """
-        Renames the current Assembly.
-
-        Parameters
-        ----------
-        name :
-            New name of the Assembly.
         """
         raise NotImplementedError()

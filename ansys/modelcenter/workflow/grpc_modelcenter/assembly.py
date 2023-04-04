@@ -9,6 +9,7 @@ from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
+from .abstract_renamable import AbstractRenamableElement
 from .component import Component
 from .create_variable import create_variable
 from .group import Group
@@ -17,13 +18,12 @@ from .proto.element_messages_pb2 import (
     AddAssemblyVariableRequest,
     ElementId,
     ElementName,
-    RenameRequest,
 )
 from .var_value_convert import interop_type_to_mc_type_string
 from .variable_container import AbstractGRPCVariableContainer
 
 
-class Assembly(AbstractGRPCVariableContainer, mc_api.IAssembly):
+class Assembly(AbstractGRPCVariableContainer, AbstractRenamableElement, mc_api.IAssembly):
     """Represents an assembly in ModelCenter."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -82,12 +82,6 @@ class Assembly(AbstractGRPCVariableContainer, mc_api.IAssembly):
             )
         )
         return create_variable(acvi.VariableType.UNKNOWN, result.id, self._channel)
-
-    @overrides
-    def rename(self, name: str) -> None:
-        self._client.AssemblyRename(
-            RenameRequest(target_assembly=self._element_id, new_name=ElementName(name=name))
-        )
 
     @property  # type: ignore
     @overrides
