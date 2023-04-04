@@ -97,33 +97,6 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         """
         raise NotImplementedError()
 
-    # TODO: We may want to revisit these two methods as well.
-    #     In general, users might want a new way of loading these secrets from a file
-    #     or environment variable. At minimum these could be unified into a single method.
-    @abstractmethod
-    def set_user_name(self, user_name: str) -> None:
-        """
-        Set the username used for authentication.
-
-        Parameters
-        ----------
-        user_name: str
-            The username.
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def set_password(self, password: str) -> None:
-        """
-        Set the password used for authentication.
-
-        Parameters
-        ----------
-        password: str
-            The password.
-        """
-        raise NotImplementedError()
-
     @abstractmethod
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
         """

@@ -200,34 +200,6 @@ def test_get_formatter(setup_function, fmt: str) -> None:
     assert result.format == fmt
 
 
-def test_set_user_name(setup_function) -> None:
-    """
-    Verify set_user_name works as expected.
-    """
-    # Setup
-    engine = grpcapi.Engine()
-
-    # SUT
-    engine.set_user_name("Bob")
-
-    # Verification
-    assert mock_client.username == "Bob"
-
-
-def test_set_password(setup_function) -> None:
-    """
-    Verify set_user_name works as expected.
-    """
-    # Setup
-    engine = grpcapi.Engine()
-
-    # SUT
-    engine.set_password("12345")
-
-    # Verification
-    assert mock_client.password == "12345"
-
-
 @pytest.mark.parametrize("key, value", [("a", True), ("b", 1), ("c", 2.3), ("d", "e")])
 def test_get_preference(setup_function, key: str, value: object) -> None:
     """

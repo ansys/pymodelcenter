@@ -32,8 +32,6 @@ from .proto.engine_messages_pb2 import (
     LoadWorkflowResponse,
     NewWorkflowRequest,
     NewWorkflowResponse,
-    SetPasswordRequest,
-    SetUserNameRequest,
     ShutdownRequest,
 )
 from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
@@ -109,18 +107,6 @@ class Engine(IEngine):
     def get_formatter(self, fmt: str) -> IFormat:
         formatter: Format = Format(fmt)
         return formatter
-
-    @overrides
-    def set_user_name(self, user_name: str) -> None:
-        request = SetUserNameRequest()
-        request.user_name = user_name
-        self._stub.EngineSetUserName(request)
-
-    @overrides
-    def set_password(self, password: str) -> None:
-        request = SetPasswordRequest()
-        request.password = password
-        self._stub.EngineSetPassword(request)
 
     @overrides
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
