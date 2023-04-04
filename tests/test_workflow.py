@@ -24,6 +24,13 @@ class MockWorkflowClientForWorkflowTest:
         self.workflow_run_requests: List[wkf_msgs.WorkflowRunRequest] = []
         self.workflow_run_response = wkf_msgs.WorkflowRunResponse()
 
+    def AssemblyAddAssembly(
+        self, request: elem_msgs.AddAssemblyRequest
+    ) -> elem_msgs.AddAssemblyResponse:
+        el_id = elem_msgs.ElementId(id_string=request.parent.id_string + "." + request.name.name)
+        response = elem_msgs.AddAssemblyResponse(id=el_id)
+        return response
+
     def WorkflowGetRoot(self, request: wkf_msgs.WorkflowId) -> wkf_msgs.WorkflowGetRootResponse:
         response = wkf_msgs.WorkflowGetRootResponse()
         response.id.id_string = "Model"
@@ -118,6 +125,10 @@ class MockWorkflowClientForWorkflowTest:
 
     def WorkflowGetVariableByName(self, request: elem_msgs.ElementName):
         response = elem_msgs.ElementId(id_string=request.name)
+        return response
+
+    def WorkflowHalt(self, request: wkf_msgs.WorkflowHaltRequest):
+        response = wkf_msgs.WorkflowHaltResponse()
         return response
 
     def VariableGetType(self, request: elem_msgs.ElementId):
@@ -363,24 +374,6 @@ def test_workflow_file_name(setup_function):
 #     assert mock_mc.getCallCount("getValue")
 #
 #
-# @pytest.mark.parametrize(
-#     "halted", [pytest.param(False, id="running"), pytest.param(True, id="halted")]
-# )
-# def test_get_halt_status(halted: bool):
-#     """Testing of get_halt_status method."""
-#     global mock_mc, workflow
-#     if halted:
-#         mock_mc.halt()
-#
-#     # SUT
-#     result = workflow.get_halt_status()
-#
-#     # Verify
-#     assert result == halted
-#     assert type(result) == bool
-#     assert mock_mc.getCallCount("getHaltStatus")
-#
-#
 # value_absolute_tests = get_value_tests.copy()
 # """Collection of test for get_value_absolute.
 #
@@ -445,45 +438,12 @@ def test_remove_component(setup_function):
     assert mock_client.was_component_removed
 
 
-# @pytest.mark.parametrize(
-#     "name,get_model_call_count,get_assembly_call_count,result_type",
-#     [
-#         pytest.param(None, 2, 0, mcapi.Assembly, id="root"),
-#         pytest.param("root.aName", 1, 1, mcapi.Assembly, id="named"),
-#         pytest.param("root.noExist", 1, 1, None, id="missing"),
-#     ],
-# )
-# def test_get_assembly(
-#     name: str, get_model_call_count: int, get_assembly_call_count: int, result_type: Type
-# ):
-#     """
-#     Testing of get_assembly.
-#
-#     Parameters
-#     ----------
-#     name : str
-#         name of assembly to request.
-#     get_model_call_count : int
-#         expected call count of IModelCenter.getModel
-#     get_assembly_call_count : int
-#         expected call count of IModelCenter.getAssembly
-#     result_type : Type or None
-#         expected type of result, or None is expected to return None
-#     """
-#     global mock_mc, workflow
-#     mock_mc.createAssembly("aName", "root", "aType")
-#
-#     # SUT
-#     result = workflow.get_assembly(name)
-#
-#     # Verify
-#     if result_type is None:
-#         assert result is None
-#     else:
-#         assert type(result) == result_type
-#     # MockModelCenter.getAssembly doesn't have call tracking enabled
-#     # assert mock_mc.getCallCount("getAssembly") == get_assembly_call_count
-#     assert mock_mc.getCallCount("getModel") == get_model_call_count
+def test_get_assembly(setup_function):
+    # SUT
+    result = workflow.get_assembly("a.word")
+
+    # Verify
+    assert type(result) == grpcmc.Assembly
 
 
 @pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
@@ -591,19 +551,6 @@ def test_get_links(setup_function, workflow_id: str, link_lhs_values: Iterable[s
     assert [link.lhs for link in links] == link_lhs_values
 
 
-# def test_halt() -> None:
-#     # Setup
-#     sut_engine = mcapi.Engine()
-#     sut_workflow = sut_engine.new_workflow("workflowName")
-#     assert sut_workflow._instance.getCallCount("halt") == 0
-#
-#     # Execute
-#     sut_workflow.halt()
-#
-#     # Verify
-#     assert sut_workflow._instance.getCallCount("halt") == 1
-
-
 def test_get_uuid(setup_function) -> None:
     # Execute
     result: str = workflow.get_workflow_uuid()
@@ -626,25 +573,12 @@ def test_auto_link(setup_function) -> None:
     assert links[1].rhs == "2"
 
 
-# def test_create_assembly() -> None:
-#     # Setup
-#     sut_engine = mcapi.Engine()
-#     sut_workflow = sut_engine.new_workflow("workflowName")
-#     assert sut_workflow._instance.getCallCount("createAssembly") == 0
-#     test_assembly_name = "test_assembly"
-#     test_assembly_parent = "Workflow"
-#     test_assembly_type = "DataAssembly"
-#
-#     # Execute
-#     sut_workflow.create_assembly(test_assembly_name, test_assembly_parent, test_assembly_type)
-#
-#     # Verify
-#     assert sut_workflow._instance.getCallCount("createAssembly") == 1
-#     assert sut_workflow._instance.getArgumentRecord("createAssembly", 0) == [
-#         test_assembly_name,
-#         test_assembly_parent,
-#         test_assembly_type,
-#     ]
+def test_create_assembly(setup_function) -> None:
+    # Execute
+    result: grpcmc.Assembly = workflow.create_assembly("newAssembly", "Model")
+
+    # Verify
+    assert result.element_id == "Model.newAssembly"
 
 
 def test_save_workflow(setup_function):

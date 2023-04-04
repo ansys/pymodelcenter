@@ -5,6 +5,7 @@ This implementation will find a local installation of ModelCenter, launch it,
 and attempt to communicate with it via gRPC.
 """
 
+from .assembly import Assembly
 from .boolean_variable import BooleanArray, BooleanVariable
 from .component import Component
 from .double_variable import DoubleArray, DoubleVariable

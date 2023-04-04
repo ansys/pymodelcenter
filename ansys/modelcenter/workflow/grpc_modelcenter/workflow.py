@@ -279,7 +279,16 @@ class Workflow(wfapi.IWorkflow):
     def create_assembly(
         self, name: str, parent: Union[wfapi.IAssembly, str], assembly_type: Optional[str] = None
     ):
-        raise NotImplementedError()
+        request = element_msg.AddAssemblyRequest(
+            name=element_msg.ElementName(name=name), av_pos=None, assembly_type=assembly_type
+        )
+        if parent is not None:
+            if isinstance(parent, str):
+                request.parent.id_string = parent
+            else:
+                request.parent.id_string = parent.element_id
+        response: element_msg.AddAssemblyResponse = self._stub.AssemblyAddAssembly(request)
+        return Assembly(response.id, self._channel)
 
     @overrides
     def auto_link(self, src_comp: str, dest_comp: str) -> Collection[wfapi.IVariableLink]:
@@ -311,7 +320,8 @@ class Workflow(wfapi.IWorkflow):
 
     @overrides
     def halt(self) -> None:
-        raise NotImplementedError()
+        request = workflow_msg.WorkflowHaltRequest()
+        response: workflow_msg.WorkflowHaltResponse = self._stub.WorkflowHalt(request)
 
     @overrides
     def get_data_monitor(
@@ -341,7 +351,14 @@ class Workflow(wfapi.IWorkflow):
 
     @overrides
     def get_assembly(self, name: Optional[str] = None) -> wfapi.IAssembly:
-        raise NotImplementedError()
+        if name is None:
+            return self.get_root()
+        else:
+            request = element_msg.ElementName(name=name)
+            response: element_msg.ElementId = self._stub.WorkflowGetComponentOrAssemblyByName(
+                request
+            )
+            return Assembly(element_msg.ElementId(id_string=response.id_string), self._channel)
 
     @overrides
     def create_component(
