@@ -17,11 +17,11 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 a
 
 from ._visitors import VariableValueVisitor
 from .assembly import Assembly
-from .boolean_variable import BooleanVariable
+from .boolean_variable import BooleanArray, BooleanVariable
 from .component import Component
-from .double_variable import DoubleVariable
-from .integer_variable import IntegerVariable
-from .string_variable import StringVariable
+from .double_variable import DoubleArray, DoubleVariable
+from .integer_variable import IntegerArray, IntegerVariable
+from .string_variable import StringArray, StringVariable
 from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 from .variable_link import VariableLink
 
@@ -229,7 +229,6 @@ class Workflow(wfapi.IWorkflow):
         request = element_msg.ElementName(name=name)
         response: element_msg.ElementId = self._stub.WorkflowGetVariableByName(request)
         type_response: var_val_msg.VariableTypeResponse = self._stub.VariableGetType(response)
-        # TODO: maybe use a visitor here?
         var_type: var_val_msg.VariableType = type_response.var_type
         if var_type == var_val_msg.VARTYPE_BOOLEAN:
             return BooleanVariable(response, self._stub)
@@ -242,13 +241,13 @@ class Workflow(wfapi.IWorkflow):
         elif var_type == var_val_msg.VARTYPE_FILE:
             raise NotImplementedError()
         elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
-            raise NotImplementedError()
+            return BooleanArray(response, self._stub)
         elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
-            raise NotImplementedError()
+            return IntegerArray(response, self._stub)
         elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
-            raise NotImplementedError()
+            return DoubleArray(response, self._stub)
         elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
-            raise NotImplementedError()
+            return StringArray(response, self._stub)
         elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
             raise NotImplementedError()
         else:

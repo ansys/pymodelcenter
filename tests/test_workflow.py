@@ -1,5 +1,5 @@
 """Tests for Workflow."""
-from typing import Iterable, List, Mapping
+from typing import Iterable, List, Mapping, Type
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as ewapi
@@ -219,7 +219,14 @@ def setup_function(monkeypatch):
     global mock_client
     mock_client = MockWorkflowClientForWorkflowTest()
     monkeypatch_client_creation(monkeypatch, grpcmc.Workflow, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.BooleanVariable, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.BooleanArray, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.DoubleVariable, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.DoubleArray, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.IntegerVariable, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.IntegerArray, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.StringVariable, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.StringArray, mock_client)
 
     global workflow
     workflow = grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz")
@@ -684,23 +691,27 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
     assert mock_client.workflow_run_requests == [expected_request]
 
 
-# def test_get_variable() -> None:
-#     # Setup
-#     sut_engine = mcapi.Engine()
-#     sut_workflow: mcapi.Workflow = sut_engine.new_workflow("workflow.pxcz")
-#     test_var_name = "test_assembly_var"
-#     sut_workflow._instance.createAssemblyVariable(test_var_name, "Input", "Model")
-#     assert sut_workflow._instance.getCallCount("getVariable") == 0
-#
-#     # Execute
-#     result = sut_workflow.get_variable("Model.test_assembly_var")
-#
-#     # Verify
-#     assert sut_workflow._instance.getCallCount("getVariable") == 1
-#   assert sut_workflow._instance.getArgumentRecord("getVariable", 0) == ["Model.test_assembly_var"]
-#     assert result._variable.getFullName() == "Model.test_assembly_var"
-#
-#
+@pytest.mark.parametrize(
+    "name,expected_type",
+    [
+        pytest.param("model.boolean", grpcmc.BooleanVariable),
+        pytest.param("model.booleans", grpcmc.BooleanArray),
+        pytest.param("model.double", grpcmc.DoubleVariable),
+        pytest.param("model.doubles", grpcmc.DoubleArray),
+        pytest.param("model.integer", grpcmc.IntegerVariable),
+        pytest.param("model.integers", grpcmc.IntegerArray),
+        pytest.param("model.string", grpcmc.StringVariable),
+        pytest.param("model.strings", grpcmc.StringArray),
+    ],
+)
+def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
+    # Execute
+    result: mcapi.IVariable = workflow.get_variable(name)
+
+    # Verify
+    assert type(result) == expected_type
+
+
 # @pytest.mark.parametrize(
 #     "variables",
 #     [
