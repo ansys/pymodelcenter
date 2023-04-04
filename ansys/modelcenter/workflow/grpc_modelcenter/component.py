@@ -123,11 +123,6 @@ class Component(IComponent):
         raise NotImplementedError
 
     @overrides
-    def run(self) -> None:
-        # self._wrapped.run()
-        raise NotImplementedError
-
-    @overrides
     def invoke_method(self, method: str) -> None:
         # self._wrapped.invokeMethod(method)
         raise NotImplementedError

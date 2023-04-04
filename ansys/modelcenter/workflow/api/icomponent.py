@@ -83,12 +83,6 @@ class IComponent(
         """
         return self._wrapped.getType()
 
-    # TODO: Do we want to continue to support running individual components like this?
-    @abstractmethod
-    def run(self) -> None:
-        """Run the component."""
-        raise NotImplementedError()
-
     @abstractmethod
     def invoke_method(self, method: str) -> None:
         """
