@@ -4,8 +4,6 @@ from abc import ABC, abstractmethod
 from .icomponent import IComponent
 
 
-# TODO: This API seems incomplete. How do you add a branch,
-#       or ensure that a component is added to a particular if branch?
 class IIfComponent(IComponent, ABC):
     """Component for creating branching paths in a process workflow."""
 
