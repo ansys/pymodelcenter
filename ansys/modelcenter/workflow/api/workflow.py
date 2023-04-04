@@ -322,12 +322,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
         raise NotImplementedError()
 
-    # TODO / REDUCE: Consider dropping XML extension support?
-    @abstractmethod
-    def set_xml_extension(self, xml: str) -> None:
-        """Adds the XML as an XML extension node to the model file."""
-        raise NotImplementedError()
-
     @abstractmethod
     def get_assembly(self, name: Optional[str] = None) -> IAssembly:
         """

@@ -340,11 +340,6 @@ class Workflow(wfapi.IWorkflow):
         raise NotImplementedError()
 
     @overrides
-    def set_xml_extension(self, xml: str) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError()
-
-    @overrides
     def get_assembly(self, name: Optional[str] = None) -> wfapi.IAssembly:
         raise NotImplementedError()
 
