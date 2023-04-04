@@ -1,6 +1,6 @@
 """Definition of IComponent."""
 from abc import ABC, abstractmethod
-from typing import Collection, List, Tuple, Union
+from typing import Collection, Tuple
 
 import ansys.engineeringworkflow.api as aew_api
 
@@ -31,7 +31,7 @@ class IComponent(
 
     @associated_files.setter
     @abstractmethod
-    def associated_files(self, source: Union[str, List[str]]):
+    def associated_files(self, source: Collection[str]):
         """Set of files associated with the component."""
         raise NotImplementedError()
 
