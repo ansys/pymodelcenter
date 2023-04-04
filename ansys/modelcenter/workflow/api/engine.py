@@ -55,6 +55,8 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         """
         raise NotImplementedError()
 
+    # TODO/REDUCE: Drop ignoring connection errors for Phase II.
+    #              Will need a connection state getter when implemented as noted below.
     # TODO: this probably doesn't need to be a separate method;
     #     on_connect_error can be an optional kwarg on
     #     the existing load_workflow
