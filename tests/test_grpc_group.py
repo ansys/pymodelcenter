@@ -1,6 +1,7 @@
 from typing import Dict
 import unittest.mock
 
+import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
@@ -10,7 +11,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     ElementIdCollection,
     ElementName,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.variable import Variable
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
@@ -61,7 +61,7 @@ def test_get_variables_one_variable(monkeypatch):
         result = sut.get_variables()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
         assert len(result) == 1
-        assert isinstance(result[0], Variable)
+        assert isinstance(result[0], mc_api.IVariable)
         assert result[0].element_id == variable_id
 
 
@@ -78,11 +78,11 @@ def test_get_variables_multiple_variables(monkeypatch):
         result = sut.get_variables()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="STOOGES"))
         assert len(result) == 3
-        assert isinstance(result[0], Variable)
+        assert isinstance(result[0], mc_api.IVariable)
         assert result[0].element_id == "LARRY"
-        assert isinstance(result[1], Variable)
+        assert isinstance(result[1], mc_api.IVariable)
         assert result[1].element_id == "MOE"
-        assert isinstance(result[2], Variable)
+        assert isinstance(result[2], mc_api.IVariable)
         assert result[2].element_id == "CURLY"
 
 
@@ -142,17 +142,6 @@ def test_can_get_name(monkeypatch):
     monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
     sut = Group(ElementId(id_string="TEST_ID_SHOULD_MATCH"), None)
 
-    result = sut.get_name()
+    result = sut.name
 
     assert result == "expected_name"
-
-
-def test_can_get_full_name(monkeypatch):
-    mock_client = MockWorkflowClientForAssemblyTest()
-    mock_client.name_responses["TEST_ID_SHOULD_MATCH"] = "model.expected_name"
-    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-    sut = Group(ElementId(id_string="TEST_ID_SHOULD_MATCH"), None)
-
-    result = sut.get_full_name()
-
-    assert result == "model.expected_name"
