@@ -8,6 +8,7 @@ from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
 from .abstract_renamable import AbstractRenamableElement
 from .component import Component
@@ -93,9 +94,11 @@ class Assembly(AbstractGRPCVariableContainer, AbstractRenamableElement, mc_api.I
     def delete_variable(self, name: str) -> bool:
         assembly_name = self.name
         var_name = f"{assembly_name}.{name}"
-        target_var = self._client.WorkflowGetVariableByName(ElementName(name=var_name))
+        response: workflow_msg.WorkflowGetElementByNameResponse = (
+            self._client.WorkflowGetElementByName(ElementName(name=var_name))
+        )
         # TODO: fix gRPC API here to optionally just take the name in the first place
-        return self._client.AssemblyDeleteVariable(target_var).existed
+        return self._client.AssemblyDeleteVariable(response.id).existed
 
     @overrides
     def add_assembly(

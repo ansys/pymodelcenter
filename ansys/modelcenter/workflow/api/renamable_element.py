@@ -1,5 +1,6 @@
 """Defines an interface for workflow elements that can be renamed."""
 from abc import ABC, abstractmethod
+
 import ansys.engineeringworkflow.api as aew_api
 
 

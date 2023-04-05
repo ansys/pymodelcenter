@@ -1,6 +1,5 @@
 """Definition of Component."""
-from typing import Collection, Sequence, Tuple, Union
-from xml.etree.ElementTree import Element as XMLElement
+from typing import Collection, Sequence
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api

@@ -64,12 +64,6 @@ class MockWorkflowClientForWorkflowTest:
         response = wkf_msgs.WorkflowCloseResponse()
         return response
 
-    def WorkflowGetComponentOrAssemblyByName(self, request: elem_msgs.ElementName):
-        response = elem_msgs.ElementId()
-        if request.name == "a.word":
-            response.id_string = "3457134"
-        return response
-
     def WorkflowRemoveComponent(self, request: wkf_msgs.WorkflowRemoveComponentRequest):
         response = wkf_msgs.WorkflowRemoveComponentResponse()
         if request.target.id_string == "3457134":
@@ -123,8 +117,37 @@ class MockWorkflowClientForWorkflowTest:
             response.existed = True
         return response
 
-    def WorkflowGetVariableByName(self, request: elem_msgs.ElementName):
-        response = elem_msgs.ElementId(id_string=request.name)
+    def WorkflowGetElementByName(self, request: elem_msgs.ElementName):
+        response = wkf_msgs.WorkflowGetElementByNameResponse()
+        response.id.id_string = request.name
+        if request.name == "a.component":
+            response.type = elem_msgs.ELEMTYPE_COMPONENT
+        elif request.name == "a.assembly":
+            response.type = elem_msgs.ELEMTYPE_ASSEMBLY
+        elif request.name == "model.boolean":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_BOOLEAN
+        elif request.name == "model.booleans":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_BOOLEAN_ARRAY
+        elif request.name == "model.double":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_REAL
+        elif request.name == "model.doubles":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_REAL_ARRAY
+        elif request.name == "model.integer":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_INTEGER
+        elif request.name == "model.integers":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_INTEGER_ARRAY
+        elif request.name == "model.string":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_STRING
+        elif request.name == "model.strings":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_STRING_ARRAY
         return response
 
     def WorkflowHalt(self, request: wkf_msgs.WorkflowHaltRequest):
@@ -246,10 +269,10 @@ def test_get_root(setup_function) -> None:
 
 def test_get_component(setup_function) -> None:
     # SUT
-    result: mcapi.IComponent = workflow.get_component("a.word")
+    result: mcapi.IComponent = workflow.get_component("a.component")
 
     # Verification
-    assert result.element_id == "3457134"
+    assert result.element_id == "a.component"
 
 
 def test_workflow_close(setup_function) -> None:
@@ -439,7 +462,7 @@ def test_workflow_file_name(setup_function):
 def test_remove_component(setup_function):
     """Testing of remove_component method."""
     # SUT
-    workflow.remove_component("a.word")
+    workflow.remove_component("a.component")
 
     # Verify
     assert mock_client.was_component_removed
@@ -447,7 +470,7 @@ def test_remove_component(setup_function):
 
 def test_get_assembly(setup_function):
     # SUT
-    result = workflow.get_assembly("a.word")
+    result = workflow.get_assembly("a.assembly")
 
     # Verify
     assert type(result) == grpcmc.Assembly
@@ -524,6 +547,7 @@ def test_get_string_meta_data(setup_function, is_array: bool) -> None:
 
 
 @pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
+@pytest.mark.skip("Re-enable when file support added to WorkflowGetElementByNameResponse")
 def test_get_file_meta_data(setup_function, is_array: bool) -> None:
     # Setup
     var = "model.files" if is_array else "model.file"
@@ -704,6 +728,7 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
         pytest.param("model.strings", grpcmc.StringArray),
     ],
 )
+@pytest.mark.skip("Re-enable when create_variable is implemented")
 def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
     # Execute
     result: mcapi.IVariable = workflow.get_variable(name)

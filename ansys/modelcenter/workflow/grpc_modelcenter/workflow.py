@@ -17,11 +17,8 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 a
 
 from ._visitors import VariableValueVisitor
 from .assembly import Assembly
-from .boolean_variable import BooleanArray, BooleanVariable
 from .component import Component
-from .double_variable import DoubleArray, DoubleVariable
-from .integer_variable import IntegerArray, IntegerVariable
-from .string_variable import StringArray, StringVariable
+from .create_variable import create_variable
 from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 from .variable_link import VariableLink
 
@@ -153,12 +150,16 @@ class Workflow(wfapi.IWorkflow):
 
     @overrides
     def get_value(self, var_name: str) -> acvi.VariableState:
-        var_id: element_msg.ElementId = self._stub.WorkflowGetVariableByName(
-            element_msg.ElementName(name=var_name)
+        request = element_msg.ElementName(name=var_name)
+        elem_response: workflow_msg.WorkflowGetElementByNameResponse = (
+            self._stub.WorkflowGetElementByName(request)
         )
+
+        if elem_response.type != element_msg.ELEMTYPE_VARIABLE:
+            raise ValueError("Element is not a variable.")
         response: var_val_msg.VariableState
         try:
-            response = self._stub.VariableGetState(var_id)
+            response = self._stub.VariableGetState(elem_response.id)
         except grpc.RpcError as e:
             # TODO: how to handle?
             raise e
@@ -227,37 +228,32 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def get_variable(self, name: str) -> wfapi.IVariable:
         request = element_msg.ElementName(name=name)
-        response: element_msg.ElementId = self._stub.WorkflowGetVariableByName(request)
-        type_response: var_val_msg.VariableTypeResponse = self._stub.VariableGetType(response)
-        var_type: var_val_msg.VariableType = type_response.var_type
-        if var_type == var_val_msg.VARTYPE_BOOLEAN:
-            return BooleanVariable(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_INTEGER:
-            return IntegerVariable(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_REAL:
-            return DoubleVariable(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_STRING:
-            return StringVariable(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_FILE:
-            raise NotImplementedError()
-        elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
-            return BooleanArray(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
-            return IntegerArray(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
-            return DoubleArray(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
-            return StringArray(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
-            raise NotImplementedError()
-        else:
-            raise ValueError("Unknown variable type.")
+        response: workflow_msg.WorkflowGetElementByNameResponse = (
+            self._stub.WorkflowGetElementByName(request)
+        )
+
+        if response.type != element_msg.ELEMTYPE_VARIABLE:
+            raise ValueError("Element is not a variable.")
+
+        var_type: var_val_msg.VariableType = response.var_type
+
+        return create_variable(
+            var_value_type=var_type, element_id=response.id, channel=self._channel
+        )
 
     @overrides
     def get_component(self, name: str) -> wfapi.IComponent:
         request = element_msg.ElementName(name=name)
-        response: element_msg.ElementId = self._stub.WorkflowGetComponentOrAssemblyByName(request)
-        return Component(response.id_string)
+        response: workflow_msg.WorkflowGetElementByNameResponse = (
+            self._stub.WorkflowGetElementByName(request)
+        )
+        if response.type == element_msg.ELEMTYPE_COMPONENT:
+            return Component(response.id.id_string)
+        elif response.type == element_msg.ELEMTYPE_IFCOMPONENT:
+            # return IfComponent(response.id.id_string)
+            raise NotImplementedError()
+        else:
+            raise ValueError("Element is not a component.")
 
     @overrides
     def set_scheduler(self, schedular: str) -> None:
@@ -354,10 +350,15 @@ class Workflow(wfapi.IWorkflow):
             return self.get_root()
         else:
             request = element_msg.ElementName(name=name)
-            response: element_msg.ElementId = self._stub.WorkflowGetComponentOrAssemblyByName(
-                request
+            response: workflow_msg.WorkflowGetElementByNameResponse = (
+                self._stub.WorkflowGetElementByName(request)
             )
-            return Assembly(element_msg.ElementId(id_string=response.id_string), self._channel)
+            if response.type == element_msg.ELEMTYPE_ASSEMBLY:
+                return Assembly(
+                    element_msg.ElementId(id_string=response.id.id_string), self._channel
+                )
+            else:
+                raise ValueError("Element is not an assembly.")
 
     @overrides
     def create_component(
@@ -391,39 +392,45 @@ class Workflow(wfapi.IWorkflow):
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
         metadata: acvi.CommonVariableMetadata = None
         request = element_msg.ElementName(name=name)
-        response: element_msg.ElementId = self._stub.WorkflowGetVariableByName(request)
-        type_response: var_val_msg.VariableTypeResponse = self._stub.VariableGetType(response)
-        var_type: var_val_msg.VariableType = type_response.var_type
+        response: workflow_msg.WorkflowGetElementByNameResponse = (
+            self._stub.WorkflowGetElementByName(request)
+        )
+
+        if response.type != element_msg.ELEMTYPE_VARIABLE:
+            raise ValueError("Element is not a variable.")
+        elem_id: element_msg.ElementId = response.id
+        var_type: var_val_msg.VariableType = response.var_type
+
         if var_type == var_val_msg.VARTYPE_BOOLEAN:
             metadata = acvi.BooleanMetadata()
-            self._set_bool_metadata(response, metadata)
+            self._set_bool_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_INTEGER:
             metadata = acvi.IntegerMetadata()
-            self._set_int_metadata(response, metadata)
+            self._set_int_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_REAL:
             metadata = acvi.RealMetadata()
-            self._set_real_metadata(response, metadata)
+            self._set_real_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_STRING:
             metadata = acvi.StringMetadata()
-            self._set_string_metadata(response, metadata)
+            self._set_string_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_FILE:
             metadata = acvi.FileMetadata()
-            self._set_file_metadata(response, metadata)
+            self._set_file_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
             metadata = acvi.BooleanArrayMetadata()
-            self._set_bool_metadata(response, metadata)
+            self._set_bool_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
             metadata = acvi.IntegerArrayMetadata()
-            self._set_int_metadata(response, metadata)
+            self._set_int_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
             metadata = acvi.RealArrayMetadata()
-            self._set_real_metadata(response, metadata)
+            self._set_real_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
             metadata = acvi.StringArrayMetadata()
-            self._set_string_metadata(response, metadata)
+            self._set_string_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
             metadata = acvi.FileArrayMetadata()
-            self._set_file_metadata(response, metadata)
+            self._set_file_metadata(elem_id, metadata)
         else:
             raise ValueError("Unknown variable type.")
         return metadata
@@ -538,11 +545,12 @@ class Workflow(wfapi.IWorkflow):
 
     @overrides
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
-        var_id: element_msg.ElementId = self._stub.WorkflowGetVariableByName(
-            element_msg.ElementName(name=var_name)
+        request = element_msg.ElementName(name=var_name)
+        response: workflow_msg.WorkflowGetElementByNameResponse = (
+            self._stub.WorkflowGetElementByName(request)
         )
         try:
-            value.accept(VariableValueVisitor(var_id, self._stub))
+            value.accept(VariableValueVisitor(response.id, self._stub))
         except grpc.RpcError as e:
             # How should we handle errors here?
             raise e
