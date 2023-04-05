@@ -3,7 +3,6 @@
 from abc import ABC, abstractmethod
 from typing import Collection
 
-import ansys.common.variableinterop as acvi
 import grpc
 from overrides import overrides
 
@@ -12,6 +11,8 @@ import ansys.modelcenter.workflow.api as mc_api
 from .abstract_workflow_element import AbstractWorkflowElement
 from .create_variable import create_variable
 from .proto.element_messages_pb2 import ElementId
+from .proto.variable_value_messages_pb2 import VariableInfo
+from .var_value_convert import grpc_type_enum_to_interop_type
 
 
 class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner, ABC):
@@ -52,8 +53,12 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
     @overrides
     def get_variables(self) -> Collection[mc_api.IVariable]:
         result = self._client.RegistryGetVariables(self._element_id)
-        one_element_id: ElementId
+        one_var_info: VariableInfo
         return [
-            create_variable(acvi.VariableType.UNKNOWN, one_element_id, self._channel)
-            for one_element_id in result.ids
+            create_variable(
+                grpc_type_enum_to_interop_type(one_var_info.value_type),
+                one_var_info.id,
+                self._channel,
+            )
+            for one_var_info in result.variables
         ]
