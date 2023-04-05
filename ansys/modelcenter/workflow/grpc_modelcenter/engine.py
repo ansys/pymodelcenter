@@ -7,18 +7,14 @@ from ansys.engineeringworkflow.api import IWorkflowInstance, WorkflowEngineInfo
 import grpc
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import (
-    IEngine,
-    IFormat,
-    IWorkflow,
-    OnConnectionErrorMode,
-    WorkflowType,
-)
+from ansys.modelcenter.workflow.api import IEngine, IFormat, IWorkflow, WorkflowType
 
 from .format import Format
 from .mcd_process import MCDProcess
 from .proto.engine_messages_pb2 import (
     DATA,
+    ERROR,
+    IGNORE,
     PROCESS,
     GetPreferenceRequest,
     GetPreferenceResponse,
@@ -89,19 +85,14 @@ class Engine(IEngine):
         return Workflow(response.workflow_id, name)
 
     @overrides
-    def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
-        return self.load_workflow_ex(file_name)
-
-    @overrides
-    def load_workflow_ex(
-        self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
-    ) -> IWorkflow:
-        if on_connect_error == OnConnectionErrorMode.DIALOG:
-            raise ValueError("This client does not support UI mode.")
+    def load_workflow(
+        self, file_name: Union[PathLike, str], ignore_connection_errors: Optional[bool] = None
+    ) -> IWorkflowInstance:
         request = LoadWorkflowRequest()
-        request.path = file_name
+        request.path = str(file_name)
+        request.connect_err_mode = IGNORE if ignore_connection_errors else ERROR
         response: LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
-        return Workflow(response.workflow_id, file_name)
+        return Workflow(response.workflow_id, request.path)
 
     @overrides
     def get_formatter(self, fmt: str) -> IFormat:

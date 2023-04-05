@@ -148,30 +148,16 @@ def test_new_workflow(setup_function, workflow_type: mcapi.WorkflowType) -> None
     assert result._id == "8675309"
 
 
-@pytest.mark.parametrize(
-    "path, error",
-    [
-        ("", mcapi.OnConnectionErrorMode.ERROR),
-        # TODO: More cases when we have a real backend
-    ],
-)
-def test_load_workflow(setup_function, path: str, error: mcapi.OnConnectionErrorMode) -> None:
+def test_load_workflow(setup_function) -> None:
     """
     Verify that load_workflow works as expected.
-
-    Parameters
-    ----------
-    path: str
-        The path to the file to load.
-    error: mcapi.OnConnectionErrorMode
-        The error handling mode to use.
     """
 
     # Setup
     engine = grpcapi.Engine()
 
     # SUT
-    result: grpcapi.Workflow = engine.load_workflow_ex(path, error)
+    result: grpcapi.Workflow = engine.load_workflow("", False)
 
     # Verification
     assert isinstance(result, grpcapi.Workflow)

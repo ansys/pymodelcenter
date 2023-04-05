@@ -106,6 +106,14 @@ class Component(AbstractRenamableElement, mc_api.IComponent):
         raise NotImplementedError()
 
     @overrides
+    def is_connected(self) -> bool:
+        # request = element_msg.ElementId(id_string=self._id)
+        # response: element_msg.ComponentIsConnectedResponse = \
+        #   self._stub.ComponentIsConnected(request)
+        # return response.is_connected
+        raise NotImplementedError()
+
+    @overrides
     def reconnect(self) -> None:
         raise NotImplementedError()
 

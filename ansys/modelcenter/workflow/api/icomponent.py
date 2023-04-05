@@ -102,6 +102,12 @@ class IComponent(
         """Invalidate the component and all of its variables."""
         raise NotImplementedError()
 
+    @property
+    @abstractmethod
+    def is_connected(self) -> bool:
+        """Is this component connected to its source."""
+        raise NotImplementedError()
+
     @abstractmethod
     def reconnect(self) -> None:
         """Reload this component from its source."""

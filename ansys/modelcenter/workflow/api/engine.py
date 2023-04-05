@@ -20,20 +20,6 @@ class WorkflowType(Enum):
     by the user using flow components."""
 
 
-class OnConnectionErrorMode(Enum):
-    """Enumeration of actions to take on connection error."""
-
-    ERROR = (3,)
-    """Abort loading and throw the error back to the caller."""
-    # TODO: If we continue to allow connecting without errors,
-    #       we need a method on IComponent that allows verifying component connection state.
-    IGNORE = (1,)
-    """Ignore the error and continue loading."""
-    # TODO: This should probably not be allowed on this API.
-    DIALOG = -1
-    """(UI mode only) Show an error dialog."""
-
-
 class IEngine(IFileBasedWorkflowEngine, ABC):
     """Engine class used to wrap around MockModelCenter class."""
 
@@ -48,31 +34,6 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
             A filename or path where the new workflow will be made.
         workflow_type: WorkflowType
             The type of workflow to create. Defaults to a data workflow.
-
-        Returns
-        -------
-        A new Workflow instance.
-        """
-        raise NotImplementedError()
-
-    # TODO/REDUCE: Drop ignoring connection errors for Phase II.
-    #              Will need a connection state getter when implemented as noted below.
-    # TODO: this probably doesn't need to be a separate method;
-    #     on_connect_error can be an optional kwarg on
-    #     the existing load_workflow
-    @abstractmethod
-    def load_workflow_ex(
-        self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
-    ) -> IWorkflow:
-        """
-        Load a saved workflow from a file.
-
-        Parameters
-        ----------
-        file_name: str
-            The path to the file to load.
-        on_connect_error: OnConnectionErrorMode
-            What to do in the event of an error.
 
         Returns
         -------
