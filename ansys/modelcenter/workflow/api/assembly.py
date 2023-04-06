@@ -85,8 +85,6 @@ class IAssembly(
         """
         raise NotImplementedError()
 
-    # TODO: why no add_group? Could be helpful. Might not be worthwhile for Phase II.
-
     # TODO: add constants / enum for ModelCenter type strings?
     def add_variable(self, name: str, mc_type: Union[acvi.VariableType, str]) -> aew_api.IVariable:
         """
