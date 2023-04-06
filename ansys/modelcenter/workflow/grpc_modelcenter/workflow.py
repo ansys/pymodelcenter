@@ -254,7 +254,7 @@ class Workflow(wfapi.IWorkflow):
             self._stub.WorkflowGetElementByName(request)
         )
         if response.type == element_msg.ELEMTYPE_COMPONENT:
-            return Component(response.id.id_string)
+            return Component(response.id, self._channel)
         elif response.type == element_msg.ELEMTYPE_IFCOMPONENT:
             # return IfComponent(response.id.id_string)
             raise NotImplementedError()
@@ -270,11 +270,7 @@ class Workflow(wfapi.IWorkflow):
         comp: Component = self.get_component(name)
         request = workflow_msg.WorkflowRemoveComponentRequest()
         request.target.id_string = comp.element_id
-        response: workflow_msg.WorkflowRemoveComponentResponse = self._stub.WorkflowRemoveComponent(
-            request
-        )
-        if not response.existed:
-            raise ValueError("Component does not exist")
+        self._stub.WorkflowRemoveComponent(request)
 
     @overrides
     def create_assembly(
@@ -392,7 +388,7 @@ class Workflow(wfapi.IWorkflow):
         response: workflow_msg.WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(
             request
         )
-        return Component(response.created.id_string)
+        return Component(response.created, self._channel)
 
     @overrides
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:

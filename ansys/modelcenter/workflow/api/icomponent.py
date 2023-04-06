@@ -13,16 +13,17 @@ import ansys.modelcenter.workflow.api.renamable_element as renamable_element
 
 class IComponent(
     renamable_element.IRenamableElement,
-    assembly.IAssemblyChild,
-    igroup.IGroupOwner,
     custom_mo.ICustomMetadataOwner,
     aew_api.IComponent,
+    igroup.IGroupOwner,
+    assembly.IAssemblyChild,
     ABC,
 ):
     """A component in a Workflow."""
 
     # ModelCenter
 
+    # TODO/REDUCE: Drop associated files for Phase II.
     @property
     @abstractmethod
     def associated_files(self) -> Collection[str]:
@@ -64,9 +65,13 @@ class IComponent(
         """
         raise NotImplementedError()
 
-    # TODO: shared with assembly
+    # TODO: This item is shared with Assembly on the ModelCenter API,
+    #       but on the Ansys Engineering Workflow API, it's defined by IControlStatement
+    #       which is not an ancestor of IComponent, but is the equivalent to IAssembly.
+    #       NPS is considering making IComponent an IControlStatement, need to follow up.
+    @property
     @abstractmethod
-    def get_type(self) -> str:
+    def control_type(self) -> str:
         """
         Get the type of the component.
 
@@ -83,7 +88,7 @@ class IComponent(
         -------
         The type of the component.
         """
-        return self._wrapped.getType()
+        raise NotImplementedError()
 
     @abstractmethod
     def invoke_method(self, method: str) -> None:

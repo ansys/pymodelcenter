@@ -10,7 +10,6 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from .abstract_workflow_element import AbstractWorkflowElement
-from .component import Component
 from .proto.element_messages_pb2 import ElementId
 from .var_value_convert import convert_grpc_value_to_acvi, grpc_type_enum_to_interop_type
 
@@ -32,11 +31,8 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
     @property
     @overrides
     def owning_component(self) -> mc_api.IComponent:
-        # TODO: this implementation is probably not going to work without some changes to the
-        #       gRPC API: the parent element is not necessarily the owning component.
-        # TODO: revisit, test when component wrapper is ready.
-        response = self._client.ElementGetParentElement(self._element_id)
-        return Component(response.id_string)
+        # TODO/REDUCE: Skipping implementation, will drop for Phase II.
+        raise NotImplementedError()
 
     @property
     @overrides

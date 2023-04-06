@@ -112,6 +112,9 @@ class MockWorkflowClientForAssemblyTest:
     def AssemblyDeleteVariable(self, request: ElementId) -> DeleteAssemblyVariableResponse:
         return DeleteAssemblyVariableResponse()
 
+    def AssemblyGetComponents(self, request: ElementId) -> ElementIdCollection:
+        return ElementIdCollection()
+
     def ElementGetIndexInParent(self, request: ElementId) -> ElementIndexInParentResponse:
         return ElementIndexInParentResponse()
 
@@ -446,3 +449,35 @@ def test_add_assembly(monkeypatch) -> None:
         )
         assert isinstance(result, Assembly)
         assert result.element_id == "BRAND_NEW_ASSEMBLY"
+
+
+@pytest.mark.parametrize(
+    "ids_in_response,expected_ids",
+    [
+        ([], []),
+        ([ElementId(id_string="SINGLE_COMP")], ["SINGLE_COMP"]),
+        (
+            [
+                ElementId(id_string="FIRST_COMP"),
+                ElementId(id_string="SECOND_COMP"),
+                ElementId(id_string="THIRD_COMP"),
+            ],
+            ["FIRST_COMP", "SECOND_COMP", "THIRD_COMP"],
+        ),
+    ],
+)
+def test_get_components(monkeypatch, ids_in_response, expected_ids) -> None:
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = ElementIdCollection(ids=ids_in_response)
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyGetComponents", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
+
+        result = sut.get_components()
+
+        mock_method.assert_called_once_with(ElementId(id_string="TARGET_ASSEMBLY"))
+        item: mc_api.IComponent
+        assert all([isinstance(item, mc_api.IComponent) for item in result])
+        assert [item.element_id for item in result] == expected_ids

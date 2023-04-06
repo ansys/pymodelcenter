@@ -66,7 +66,7 @@ class MockWorkflowClientForWorkflowTest:
 
     def WorkflowRemoveComponent(self, request: wkf_msgs.WorkflowRemoveComponentRequest):
         response = wkf_msgs.WorkflowRemoveComponentResponse()
-        if request.target.id_string == "3457134":
+        if request.target.id_string == "a.component":
             response.existed = True
             self.was_component_removed = True
         return response

@@ -8,10 +8,11 @@ from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
+import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
+import ansys.modelcenter.workflow.grpc_modelcenter.component as component
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
 from .abstract_renamable import AbstractRenamableElement
-from .component import Component
 from .create_variable import create_variable
 from .group import Group
 from .proto.element_messages_pb2 import (
@@ -25,7 +26,12 @@ from .var_value_convert import interop_type_to_mc_type_string
 from .variable_container import AbstractGRPCVariableContainer
 
 
-class Assembly(AbstractGRPCVariableContainer, AbstractRenamableElement, mc_api.IAssembly):
+class Assembly(
+    AbstractRenamableElement,
+    AbstractGRPCVariableContainer,
+    aachild.AbstractAssemblyChild,
+    mc_api.IAssembly,
+):
     """Represents an assembly in ModelCenter."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -41,21 +47,6 @@ class Assembly(AbstractGRPCVariableContainer, AbstractRenamableElement, mc_api.I
 
     @property  # type: ignore
     @overrides
-    def control_type(self) -> str:
-        result = self._client.RegistryGetControlType(self._element_id)
-        return result.type
-
-    @property  # type: ignore
-    @overrides
-    def parent_assembly(self) -> Optional[mc_api.IAssembly]:
-        result = self._client.ElementGetParentElement(self._element_id)
-        if result.id_string is None or result.id_string == "":
-            return None
-        else:
-            return Assembly(result, self._channel)
-
-    @property  # type: ignore
-    @overrides
     def assemblies(self) -> Sequence[mc_api.IAssembly]:
         result = self._client.RegistryGetAssemblies(self._element_id)
         return [Assembly(one_element_id, self._channel) for one_element_id in result.ids]
@@ -65,7 +56,7 @@ class Assembly(AbstractGRPCVariableContainer, AbstractRenamableElement, mc_api.I
         result = self._client.AssemblyGetComponents(self._element_id)
         one_element_id: ElementId
         # TODO: test when component wrapper is actually ready
-        return [Component(one_element_id) for one_element_id in result.ids]
+        return [component.Component(one_element_id, self._channel) for one_element_id in result.ids]
 
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
@@ -84,12 +75,6 @@ class Assembly(AbstractGRPCVariableContainer, AbstractRenamableElement, mc_api.I
             )
         )
         return create_variable(acvi.VariableType.UNKNOWN, result.id, self._channel)
-
-    @property  # type: ignore
-    @overrides
-    def index_in_parent(self) -> int:
-        response = self._client.ElementGetIndexInParent(self._element_id)
-        return response.index
 
     @overrides
     def delete_variable(self, name: str) -> bool:

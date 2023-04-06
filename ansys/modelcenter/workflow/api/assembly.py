@@ -34,10 +34,10 @@ class IAssemblyChild(ABC):
 
 class IAssembly(
     renamable_element.IRenamableElement,
-    IAssemblyChild,
     custom_mo.ICustomMetadataOwner,
     aew_api.IControlStatement,
     igroup.IGroupOwner,
+    IAssemblyChild,
     ABC,
 ):
     """
