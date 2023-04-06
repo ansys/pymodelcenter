@@ -1,4 +1,4 @@
-from typing import Collection, Mapping
+from typing import Collection, Mapping, Optional, Union
 
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import pytest
@@ -14,6 +14,7 @@ class MockEngineClientForEngineTest:
     def __init__(self) -> None:
         self.username: str = ""
         self.password: str = ""
+        self.pref_value: Optional[Union[bool, int, float, str]] = None
 
     def GetEngineInfo(
         self, request: eng_msgs.GetServerInfoRequest
@@ -53,6 +54,14 @@ class MockEngineClientForEngineTest:
         elif request.preference_name == "d":
             response.str_value = "e"
         return response
+
+    def EngineSetPreference(
+        self, request: eng_msgs.SetPreferenceRequest
+    ) -> eng_msgs.SetPreferenceResponse:
+        attr: Optional[str] = request.WhichOneof("value")
+        if attr is not None:
+            self.pref_value = getattr(request, attr)
+        return eng_msgs.SetPreferenceResponse()
 
     def EngineGetUnitCategories(
         self, request: eng_msgs.GetUnitCategoriesRequest
@@ -209,18 +218,16 @@ def test_get_preference(setup_function, key: str, value: object) -> None:
     assert result == value
 
 
-# def test_save_trade_study(setup_function) -> None:
-#     """Verify that save_trade_study works as expected."""
-#
-#     # Setup
-#     engine = grpcapi.Engine()
-#
-#     # SUT
-#     mock_de = MockDataExplorer("MockTradeStudyType")
-#     engine.save_trade_study("uri", mcapi.DataExplorer(mock_de))
-#
-#     # Verification
-#     assert engine._instance.getCallCount("saveTradeStudy") == 1
+@pytest.mark.parametrize("value", [True, 1, 2.3, "e"])
+def test_set_preference(setup_function, value: Union[bool, int, float, str]) -> None:
+    # Setup
+    engine = grpcapi.Engine()
+
+    # SUT
+    engine.set_preference("key", value)
+
+    # Verification
+    assert mock_client.pref_value == value
 
 
 def test_get_engine_info(setup_function) -> None:

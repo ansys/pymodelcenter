@@ -78,7 +78,22 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         """
         raise NotImplementedError()
 
-    # TODO: No set_preference? Does this exist on the COM API?
+    @abstractmethod
+    def set_preference(self, pref: str, value: Union[bool, int, float, str]) -> None:
+        """
+        Set the value of a preference.
+
+        Preferences control how the engine behaves in various ways.
+        The value may be boolean, integer, real, or string typed.
+
+        Parameters
+        ----------
+        pref: str
+            The name of the preference to set.
+        value: Union[bool, int, float, str]
+            The value to set.
+        """
+        raise NotImplementedError()
 
     @abstractmethod
     def get_units(self) -> Mapping[str, Collection[str]]:

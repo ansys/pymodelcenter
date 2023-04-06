@@ -8,28 +8,10 @@ import grpc
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import IEngine, IFormat, IWorkflow, WorkflowType
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 
 from .format import Format
 from .mcd_process import MCDProcess
-from .proto.engine_messages_pb2 import (
-    DATA,
-    ERROR,
-    IGNORE,
-    PROCESS,
-    GetPreferenceRequest,
-    GetPreferenceResponse,
-    GetServerInfoRequest,
-    GetServerInfoResponse,
-    GetUnitCategoriesRequest,
-    GetUnitCategoriesResponse,
-    GetUnitNamesRequest,
-    GetUnitNamesResponse,
-    LoadWorkflowRequest,
-    LoadWorkflowResponse,
-    NewWorkflowRequest,
-    NewWorkflowResponse,
-    ShutdownRequest,
-)
 from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
 
@@ -56,7 +38,7 @@ class Engine(IEngine):
 
     def close(self):
         """Shuts down the grpc server and clear out all objects."""
-        request = ShutdownRequest()
+        request = eng_msg.ShutdownRequest()
         self._stub.Shutdown(request)
         self._stub = None
 
@@ -78,20 +60,22 @@ class Engine(IEngine):
 
     @overrides
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
-        request = NewWorkflowRequest()
-        request.path = name
-        request.workflow_type = DATA if workflow_type is WorkflowType.DATA else PROCESS
-        response: NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
+        request = eng_msg.NewWorkflowRequest(
+            path=name,
+            workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
+        )
+        response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
         return Workflow(response.workflow_id, name)
 
     @overrides
     def load_workflow(
         self, file_name: Union[PathLike, str], ignore_connection_errors: Optional[bool] = None
     ) -> IWorkflowInstance:
-        request = LoadWorkflowRequest()
-        request.path = str(file_name)
-        request.connect_err_mode = IGNORE if ignore_connection_errors else ERROR
-        response: LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
+        request = eng_msg.LoadWorkflowRequest(
+            path=str(file_name),
+            connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
+        )
+        response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
         return Workflow(response.workflow_id, request.path)
 
     @overrides
@@ -101,9 +85,8 @@ class Engine(IEngine):
 
     @overrides
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
-        request = GetPreferenceRequest()
-        request.preference_name = pref
-        response: GetPreferenceResponse = self._stub.EngineGetPreference(request)
+        request = eng_msg.GetPreferenceRequest(preference_name=pref)
+        response: eng_msg.GetPreferenceResponse = self._stub.EngineGetPreference(request)
         attr: Optional[str] = response.WhichOneof("value")
         if attr is not None:
             return getattr(response, attr)
@@ -111,17 +94,30 @@ class Engine(IEngine):
             raise Exception("Server did not return a value.")
 
     @overrides
+    def set_preference(self, pref: str, value: Union[bool, int, float, str]) -> None:
+        request = eng_msg.SetPreferenceRequest(preference_name=pref)
+        if isinstance(value, bool):
+            request.bool_value = value
+        elif isinstance(value, int):
+            request.int_value = value
+        elif isinstance(value, float):
+            request.double_value = value
+        else:
+            request.str_value = value
+        response: eng_msg.SetPreferenceResponse = self._stub.EngineSetPreference(request)
+
+    @overrides
     def get_units(self) -> Mapping[str, Collection[str]]:
         result: Dict[str, List[str]] = {}
-        category_request = GetUnitCategoriesRequest()
-        category_response: GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(
+        category_request = eng_msg.GetUnitCategoriesRequest()
+        category_response: eng_msg.GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(
             category_request
         )
         for category in category_response.names:
             result[category] = []
-            request = GetUnitNamesRequest()
+            request = eng_msg.GetUnitNamesRequest()
             request.category = category
-            response: GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
+            response: eng_msg.GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
             for unit in response.names:
                 result[category].append(unit)
         return result
@@ -132,8 +128,8 @@ class Engine(IEngine):
 
     @overrides
     def get_server_info(self) -> WorkflowEngineInfo:
-        request = GetServerInfoRequest()
-        response: GetServerInfoResponse = self._stub.GetEngineInfo(request)
+        request = eng_msg.GetServerInfoRequest()
+        response: eng_msg.GetServerInfoResponse = self._stub.GetEngineInfo(request)
 
         version = {
             "major": response.version.major,
