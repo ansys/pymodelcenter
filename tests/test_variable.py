@@ -31,7 +31,7 @@ class MockWorkflowClientForVariableTest:
         return VariableIsInputResponse()
 
 
-def do_get_type_test(monkeypatch, sut_type, type_in_response, expected_acvi_type):
+def do_get_type_test(monkeypatch, sut_type, type_in_response, expected_acvi_type) -> None:
     """Perform a test of interop_type on a particular base variable."""
 
     mock_client = MockWorkflowClientForVariableTest()
@@ -51,7 +51,7 @@ def do_get_type_test(monkeypatch, sut_type, type_in_response, expected_acvi_type
         assert result == expected_acvi_type, "The type returned by interop_type should be correct."
 
 
-def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state):
+def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state) -> None:
     """Perform a test of get_state on a particular base variable."""
 
     mock_client = MockWorkflowClientForVariableTest()
@@ -69,7 +69,7 @@ def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state)
         assert result.is_valid == expected_acvi_state.is_valid
 
 
-def do_test_is_input_component(monkeypatch, sut_type, flag_in_response):
+def do_test_is_input_component(monkeypatch, sut_type, flag_in_response) -> None:
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response = VariableIsInputResponse(
@@ -81,13 +81,13 @@ def do_test_is_input_component(monkeypatch, sut_type, flag_in_response):
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(element_id=sut_element_id, channel=None)
 
-        result = sut.is_input_to_component
+        result: bool = sut.is_input_to_component
 
         mock_grpc_method.assert_called_once_with(sut_element_id)
         assert result == flag_in_response
 
 
-def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response):
+def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response = VariableIsInputResponse(
@@ -99,7 +99,7 @@ def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response):
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(element_id=sut_element_id, channel=None)
 
-        result = sut.is_input_to_model
+        result: bool = sut.is_input_to_model
 
         mock_grpc_method.assert_called_once_with(sut_element_id)
         assert result == flag_in_response

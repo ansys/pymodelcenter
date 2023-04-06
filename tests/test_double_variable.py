@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Optional, Union
 import unittest
 
 import ansys.common.variableinterop as acvi
@@ -64,8 +64,8 @@ class MockWorkflowClientForDoubleVarTest:
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
-    sut_type: Literal[DoubleVariable, DoubleArray],
-    expected_metadata_type: Literal[acvi.RealMetadata, acvi.RealArrayMetadata],
+    sut_type: Union[DoubleVariable, DoubleArray],
+    expected_metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -95,8 +95,8 @@ def test_retrieved_metadata_should_include_description(
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Literal[DoubleVariable, DoubleArray],
-    expected_metadata_type: Literal[acvi.RealMetadata, acvi.RealArrayMetadata],
+    sut_type: Union[DoubleVariable, DoubleArray],
+    expected_metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -127,8 +127,8 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Literal[DoubleVariable, DoubleArray],
-    expected_metadata_type: Literal[acvi.RealMetadata, acvi.RealArrayMetadata],
+    sut_type: Union[DoubleVariable, DoubleArray],
+    expected_metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -179,8 +179,8 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 )
 def test_retrieved_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Literal[DoubleVariable, DoubleArray],
-    expected_metadata_type: Literal[acvi.RealMetadata, acvi.RealArrayMetadata],
+    sut_type: Union[DoubleVariable, DoubleArray],
+    expected_metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
     upper_bound: float,
     set_upper_bound: bool,
     expected_upper_bound: Optional[float],
@@ -230,8 +230,8 @@ def test_retrieved_metadata_should_convert_bounds(
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Literal[DoubleVariable, DoubleArray],
-    metadata_type: Literal[acvi.RealMetadata, acvi.RealArrayMetadata],
+    sut_type: Union[DoubleVariable, DoubleArray],
+    metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -269,8 +269,8 @@ def test_set_metadata_empty_custom_metadata(
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Literal[DoubleVariable, DoubleArray],
-    metadata_type: Literal[acvi.RealMetadata, acvi.RealArrayMetadata],
+    sut_type: Union[DoubleVariable, DoubleArray],
+    metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -320,8 +320,8 @@ def test_set_metadata_populated_custom_metadata(
 )
 def test_set_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Literal[DoubleVariable, DoubleArray],
-    metadata_type: Literal[acvi.RealMetadata, acvi.RealArrayMetadata],
+    sut_type: Union[DoubleVariable, DoubleArray],
+    metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
     original_lower_bound: Optional[float],
     expected_lower_bound: float,
     expected_lower_bound_set: bool,

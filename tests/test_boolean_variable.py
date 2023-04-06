@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Union
 import unittest
 
 import ansys.common.variableinterop as acvi
@@ -70,8 +70,8 @@ class MockWorkflowClientForBooleanVarTest:
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
-    sut_type: Literal[BooleanVariable, BooleanArray],
-    expected_metadata_type: Literal[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    sut_type: Union[BooleanVariable, BooleanArray],
+    expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -103,8 +103,8 @@ def test_retrieved_metadata_should_include_description(
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Literal[BooleanVariable, BooleanArray],
-    expected_metadata_type: Literal[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    sut_type: Union[BooleanVariable, BooleanArray],
+    expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -135,8 +135,8 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Literal[BooleanVariable, BooleanArray],
-    expected_metadata_type: Literal[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    sut_type: Union[BooleanVariable, BooleanArray],
+    expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -177,8 +177,8 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
-    sut_type: Literal[BooleanVariable, BooleanArray],
-    expected_metadata_type: Literal[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    sut_type: Union[BooleanVariable, BooleanArray],
+    expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -213,8 +213,8 @@ def test_retrieved_metadata_includes_unsupported_type(
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Literal[BooleanVariable, BooleanArray],
-    metadata_type: Literal[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    sut_type: Union[BooleanVariable, BooleanArray],
+    metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -249,8 +249,8 @@ def test_set_metadata_empty_custom_metadata(
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Literal[BooleanVariable, BooleanArray],
-    metadata_type: Literal[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    sut_type: Union[BooleanVariable, BooleanArray],
+    metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()

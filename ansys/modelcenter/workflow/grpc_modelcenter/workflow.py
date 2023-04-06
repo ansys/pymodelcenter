@@ -19,7 +19,11 @@ from ._visitors import VariableValueVisitor
 from .assembly import Assembly
 from .component import Component
 from .create_variable import create_variable
-from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
+from .var_value_convert import (
+    convert_grpc_value_to_acvi,
+    convert_interop_value_to_grpc,
+    grpc_type_enum_to_interop_type,
+)
 from .variable_link import VariableLink
 
 
@@ -238,7 +242,9 @@ class Workflow(wfapi.IWorkflow):
         var_type: var_val_msg.VariableType = response.var_type
 
         return create_variable(
-            var_value_type=var_type, element_id=response.id, channel=self._channel
+            var_value_type=grpc_type_enum_to_interop_type(var_type),
+            element_id=response.id,
+            channel=self._channel,
         )
 
     @overrides

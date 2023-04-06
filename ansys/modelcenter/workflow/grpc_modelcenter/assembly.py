@@ -17,6 +17,7 @@ from .group import Group
 from .proto.element_messages_pb2 import (
     AddAssemblyRequest,
     AddAssemblyVariableRequest,
+    DeleteAssemblyVariableRequest,
     ElementId,
     ElementName,
 )
@@ -98,7 +99,8 @@ class Assembly(AbstractGRPCVariableContainer, AbstractRenamableElement, mc_api.I
             self._client.WorkflowGetElementByName(ElementName(name=var_name))
         )
         # TODO: fix gRPC API here to optionally just take the name in the first place
-        return self._client.AssemblyDeleteVariable(response.id).existed
+        request = DeleteAssemblyVariableRequest(target=response.id)
+        return self._client.AssemblyDeleteVariable(request).existed
 
     @overrides
     def add_assembly(

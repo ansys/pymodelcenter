@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Optional, Union
 import unittest
 
 import ansys.common.variableinterop as acvi
@@ -73,8 +73,8 @@ class MockWorkflowClientForIntegerVarTest:
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
-    sut_type: Literal[IntegerVariable, IntegerArray],
-    expected_metadata_type: Literal[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    sut_type: Union[IntegerVariable, IntegerArray],
+    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -106,8 +106,8 @@ def test_retrieved_metadata_should_include_description(
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Literal[IntegerVariable, IntegerArray],
-    expected_metadata_type: Literal[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    sut_type: Union[IntegerVariable, IntegerArray],
+    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -138,8 +138,8 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Literal[IntegerVariable, IntegerArray],
-    expected_metadata_type: Literal[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    sut_type: Union[IntegerVariable, IntegerArray],
+    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -180,8 +180,8 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
-    sut_type: Literal[IntegerVariable, IntegerArray],
-    expected_metadata_type: Literal[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    sut_type: Union[IntegerVariable, IntegerArray],
+    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -220,8 +220,8 @@ def test_retrieved_metadata_includes_unsupported_type(
 )
 def test_retrieved_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Literal[IntegerVariable, IntegerArray],
-    expected_metadata_type: Literal[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    sut_type: Union[IntegerVariable, IntegerArray],
+    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
     upper_bound: int,
     set_upper_bound: bool,
     expected_upper_bound: Optional[int],
@@ -271,8 +271,8 @@ def test_retrieved_metadata_should_convert_bounds(
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Literal[IntegerVariable, IntegerArray],
-    metadata_type: Literal[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    sut_type: Union[IntegerVariable, IntegerArray],
+    metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -310,8 +310,8 @@ def test_set_metadata_empty_custom_metadata(
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Literal[IntegerVariable, IntegerArray],
-    metadata_type: Literal[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    sut_type: Union[IntegerVariable, IntegerArray],
+    metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -361,8 +361,8 @@ def test_set_metadata_populated_custom_metadata(
 )
 def test_set_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Literal[IntegerVariable, IntegerArray],
-    metadata_type: Literal[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    sut_type: Union[IntegerVariable, IntegerArray],
+    metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
     original_lower_bound: Optional[int],
     expected_lower_bound: int,
     expected_lower_bound_set: bool,

@@ -5,10 +5,10 @@ from typing import Generic, Literal, TypeVar, Union
 import ansys.common.variableinterop as acvi
 
 RefPropValueTypes = Literal[
-    acvi.VariableType.BOOLEAN,
-    acvi.VariableType.INTEGER,
-    acvi.VariableType.REAL,
-    acvi.VariableType.STRING,
+    3,  # acvi.VariableType.BOOLEAN,
+    1,  # acvi.VariableType.INTEGER,
+    2,  # acvi.VariableType.REAL,
+    4,  # acvi.VariableType.STRING,
 ]
 
 RefPropertyValue = Union[acvi.BooleanValue, acvi.IntegerValue, acvi.RealValue, acvi.StringValue]

@@ -263,10 +263,6 @@ def test_get_root(setup_function) -> None:
     assert result.element_id == "Model"
 
 
-# def test_get_element_by_id(setup_function):
-#     pass
-
-
 def test_get_component(setup_function) -> None:
     # SUT
     result: mcapi.IComponent = workflow.get_component("a.component")
@@ -728,7 +724,6 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
         pytest.param("model.strings", grpcmc.StringArray),
     ],
 )
-@pytest.mark.skip("Re-enable when create_variable is implemented")
 def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
     # Execute
     result: mcapi.IVariable = workflow.get_variable(name)

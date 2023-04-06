@@ -21,11 +21,11 @@ from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_clie
 
 
 class MockWorkflowClientForAbstractVariableContainerTest:
-    def __init__(self):
+    def __init__(self) -> None:
         self._name_responses: Dict[str, str] = {}
 
     @property
-    def name_responses(self):
+    def name_responses(self) -> Dict[str, str]:
         return self._name_responses
 
     def ElementGetName(self, request: ElementId) -> ElementName:
@@ -41,7 +41,7 @@ class MockWorkflowClientForAbstractVariableContainerTest:
         return ElementIdCollection()
 
 
-def do_test_get_variables_empty(monkeypatch, sut_type):
+def do_test_get_variables_empty(monkeypatch, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     no_variables = VariableInfoCollection()
     with unittest.mock.patch.object(
@@ -54,7 +54,9 @@ def do_test_get_variables_empty(monkeypatch, sut_type):
         mock_method.assert_called_once_with(ElementId(id_string="NO_VARIABLES"))
 
 
-def do_test_get_variables_one_variable(monkeypatch, sut_type, var_type, expected_wrapper_type):
+def do_test_get_variables_one_variable(
+    monkeypatch, sut_type, var_type, expected_wrapper_type
+) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     variable_id = ElementId(id_string="VAR_ID_STRING")
     variables = VariableInfoCollection(
@@ -72,7 +74,7 @@ def do_test_get_variables_one_variable(monkeypatch, sut_type, var_type, expected
         assert result[0].element_id == variable_id.id_string
 
 
-def do_test_get_variables_multiple_variables(monkeypatch, sut_type):
+def do_test_get_variables_multiple_variables(monkeypatch, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     one_child_assembly = VariableInfoCollection(
         variables=[
@@ -97,7 +99,7 @@ def do_test_get_variables_multiple_variables(monkeypatch, sut_type):
         assert result[2].element_id == "CURLY"
 
 
-def do_test_get_groups_empty(monkeypatch, sut_type):
+def do_test_get_groups_empty(monkeypatch, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     no_variables = ElementIdCollection()
     with unittest.mock.patch.object(
@@ -110,7 +112,7 @@ def do_test_get_groups_empty(monkeypatch, sut_type):
         mock_method.assert_called_once_with(ElementId(id_string="NO_GROUPS"))
 
 
-def do_test_get_groups_one_group(monkeypatch, sut_type):
+def do_test_get_groups_one_group(monkeypatch, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     group_id = "GRP_ID_STRING"
     variables = ElementIdCollection(ids=[ElementId(id_string=group_id)])
@@ -126,7 +128,7 @@ def do_test_get_groups_one_group(monkeypatch, sut_type):
         assert result[0].element_id == group_id
 
 
-def do_test_get_groups_multiple_groups(monkeypatch, sut_type):
+def do_test_get_groups_multiple_groups(monkeypatch, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     one_child_assembly = ElementIdCollection(
         ids=[ElementId(id_string="LARRY"), ElementId(id_string="MOE"), ElementId(id_string="CURLY")]

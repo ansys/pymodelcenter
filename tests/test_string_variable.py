@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Union
 import unittest
 
 import ansys.common.variableinterop as acvi
@@ -67,9 +67,9 @@ class MockWorkflowClientForStringVarTest:
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
-    sut_type: Literal[StringVariable, StringArray],
-    expected_metadata_type: Literal[acvi.StringMetadata, acvi.StringArrayMetadata],
-):
+    sut_type: Union[StringVariable, StringArray],
+    expected_metadata_type: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
+) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = StringVariableMetadata()
@@ -100,9 +100,9 @@ def test_retrieved_metadata_should_include_description(
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Literal[StringVariable, StringArray],
-    expected_metadata_type: Literal[acvi.StringMetadata, acvi.StringArrayMetadata],
-):
+    sut_type: Union[StringVariable, StringArray],
+    expected_metadata_type: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
+) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = StringVariableMetadata()
@@ -132,9 +132,9 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Literal[StringVariable, StringArray],
-    expected_metadata_type: Literal[acvi.StringMetadata, acvi.StringArrayMetadata],
-):
+    sut_type: Union[StringVariable, StringArray],
+    expected_metadata_type: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
+) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = StringVariableMetadata()
@@ -174,9 +174,9 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
-    sut_type: Literal[StringVariable, StringArray],
-    expected_metadata_type: Literal[acvi.StringMetadata, acvi.StringArrayMetadata],
-):
+    sut_type: Union[StringVariable, StringArray],
+    expected_metadata_type: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
+) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = StringVariableMetadata()
@@ -210,9 +210,9 @@ def test_retrieved_metadata_includes_unsupported_type(
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Literal[StringVariable, StringArray],
-    metadata_type: Literal[acvi.StringMetadata, acvi.StringArrayMetadata],
-):
+    sut_type: Union[StringVariable, StringArray],
+    metadata_type: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
+) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetMetadataResponse()
@@ -246,9 +246,9 @@ def test_set_metadata_empty_custom_metadata(
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Literal[StringVariable, StringArray],
-    metadata_type: Literal[acvi.StringMetadata, acvi.StringArrayMetadata],
-):
+    sut_type: Union[StringVariable, StringArray],
+    metadata_type: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
+) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetMetadataResponse()
@@ -292,7 +292,7 @@ def test_set_metadata_populated_custom_metadata(
         (acvi.BooleanValue(True), "True"),
     ],
 )
-def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
+def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetVariableValueResponse()
@@ -323,7 +323,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
         acvi.StringArrayValue(),
     ],
 )
-def test_scalar_set_disallowed(monkeypatch, set_value):
+def test_scalar_set_disallowed(monkeypatch, set_value) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetVariableValueResponse()
@@ -372,7 +372,7 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
         ),
     ],
 )
-def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
+def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetVariableValueResponse()
@@ -403,7 +403,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         acvi.StringValue("scalar"),
     ],
 )
-def test_array_set_disallowed(monkeypatch, set_value):
+def test_array_set_disallowed(monkeypatch, set_value) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetVariableValueResponse()
@@ -423,13 +423,13 @@ def test_array_set_disallowed(monkeypatch, set_value):
         mock_grpc_method.assert_not_called()
 
 
-def test_scalar_get_type(monkeypatch):
+def test_scalar_get_type(monkeypatch) -> None:
     do_get_type_test(
         monkeypatch, StringVariable, VariableType.VARTYPE_STRING, acvi.VariableType.STRING
     )
 
 
-def test_array_get_type(monkeypatch):
+def test_array_get_type(monkeypatch) -> None:
     do_get_type_test(
         monkeypatch, StringArray, VariableType.VARTYPE_STRING_ARRAY, acvi.VariableType.STRING_ARRAY
     )
@@ -445,7 +445,7 @@ def test_array_get_type(monkeypatch):
 )
 def test_scalar_get_state(
     monkeypatch, value_in_response, validity_in_response, expected_acvi_state
-):
+) -> None:
     do_get_state_test(
         monkeypatch,
         StringVariable,
@@ -484,7 +484,9 @@ def test_scalar_get_state(
         ),
     ],
 )
-def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
+def test_array_get_state(
+    monkeypatch, value_in_response, validity_in_response, expected_acvi_state
+) -> None:
     do_get_state_test(
         monkeypatch,
         StringArray,
@@ -504,7 +506,7 @@ def test_array_get_state(monkeypatch, value_in_response, validity_in_response, e
         (StringArray, False),
     ],
 )
-def test_is_input_component(monkeypatch, sut_type, flag_in_response):
+def test_is_input_component(monkeypatch, sut_type, flag_in_response) -> None:
     do_test_is_input_component(monkeypatch, sut_type, flag_in_response)
 
 
@@ -517,5 +519,5 @@ def test_is_input_component(monkeypatch, sut_type, flag_in_response):
         (StringArray, False),
     ],
 )
-def test_is_input_workflow(monkeypatch, sut_type, flag_in_response):
+def test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
     do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response)

@@ -26,6 +26,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     AssemblyIconSetRequest,
     AssemblyIconSetResponse,
     AssemblyType,
+    DeleteAssemblyVariableRequest,
     DeleteAssemblyVariableResponse,
     ElementId,
     ElementIdCollection,
@@ -38,6 +39,9 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableType,
     VariableValue,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import (
+    WorkflowGetElementByNameResponse,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeVariable
 from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
@@ -45,21 +49,21 @@ import tests.test_variable_container as base_tests
 
 
 class MockWorkflowClientForAssemblyTest:
-    def __init__(self):
+    def __init__(self) -> None:
         self._name_responses: Dict[str, str] = {}
         self._parent_id_responses: Dict[str, str] = {}
         self._control_type_responses: Dict[str, str] = {}
 
     @property
-    def name_responses(self):
+    def name_responses(self) -> Dict[str, str]:
         return self._name_responses
 
     @property
-    def parent_id_responses(self):
+    def parent_id_responses(self) -> Dict[str, str]:
         return self._parent_id_responses
 
     @property
-    def control_type_responses(self):
+    def control_type_responses(self) -> Dict[str, str]:
         return self._control_type_responses
 
     def ElementGetName(self, request: ElementId) -> ElementName:
@@ -111,14 +115,14 @@ class MockWorkflowClientForAssemblyTest:
     def ElementGetIndexInParent(self, request: ElementId) -> ElementIndexInParentResponse:
         return ElementIndexInParentResponse()
 
-    def WorkflowGetVariableByName(self, request: ElementName) -> ElementId:
+    def WorkflowGetElementByName(self, request: ElementName) -> ElementId:
         return ElementId()
 
     def AssemblyAddAssembly(self, request: AddAssemblyRequest) -> AddAssemblyResponse:
         return AddAssemblyResponse()
 
 
-def test_can_get_name(monkeypatch):
+def test_can_get_name(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_client.name_responses["TEST_ID_SHOULD_MATCH"] = "expected_name"
     monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
@@ -129,7 +133,7 @@ def test_can_get_name(monkeypatch):
     assert result == "expected_name"
 
 
-def test_can_get_control_type(monkeypatch):
+def test_can_get_control_type(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_client.control_type_responses["TEST_ID_SHOULD_MATCH"] = "Sequence"
     monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
@@ -142,20 +146,20 @@ def test_can_get_control_type(monkeypatch):
 
 
 @pytest.mark.parametrize("returned_id", [None, ""])
-def test_can_get_parent_no_parent(monkeypatch, returned_id: Optional[str]):
+def test_can_get_parent_no_parent(monkeypatch, returned_id: Optional[str]) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     test_id_string = "TEST_ID_SHOULD_MATCH"
-    mock_client.parent_id_responses[test_id_string] = returned_id
+    mock_client.parent_id_responses[test_id_string] = returned_id if returned_id is not None else ""
     monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
 
     sut = Assembly(ElementId(id_string=test_id_string), None)
 
-    result = sut.parent_assembly
+    result: Assembly = sut.parent_assembly
 
     assert result is None
 
 
-def test_can_get_parent_has_parent(monkeypatch):
+def test_can_get_parent_has_parent(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     test_id_string = "TEST_ID_SHOULD_MATCH"
     parent_id_string = "PARENT_ID"
@@ -170,7 +174,7 @@ def test_can_get_parent_has_parent(monkeypatch):
     assert result.element_id == parent_id_string
 
 
-def test_get_child_assemblies_empty(monkeypatch):
+def test_get_child_assemblies_empty(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     no_child_assemblies = ElementIdCollection()
     with unittest.mock.patch.object(
@@ -183,7 +187,7 @@ def test_get_child_assemblies_empty(monkeypatch):
         mock_method.assert_called_once_with(ElementId(id_string="LEAF_ASSEMBLY"))
 
 
-def test_get_child_assemblies_one_child(monkeypatch):
+def test_get_child_assemblies_one_child(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     child_id = "CHILD_ID_STRING"
     one_child_assembly = ElementIdCollection(ids=[ElementId(id_string=child_id)])
@@ -204,7 +208,7 @@ def test_get_child_assemblies_one_child(monkeypatch):
             mock_get_name_method.assert_called_once_with(ElementId(id_string=child_id))
 
 
-def test_get_child_assemblies_multiple_children(monkeypatch):
+def test_get_child_assemblies_multiple_children(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     one_child_assembly = ElementIdCollection(
         ids=[ElementId(id_string="LARRY"), ElementId(id_string="MOE"), ElementId(id_string="CURLY")]
@@ -234,7 +238,7 @@ def test_get_child_assemblies_multiple_children(monkeypatch):
             mock_get_name_method.assert_called_once_with(ElementId(id_string="CURLY"))
 
 
-def test_get_variables_empty(monkeypatch):
+def test_get_variables_empty(monkeypatch) -> None:
     base_tests.do_test_get_variables_empty(monkeypatch, Group)
 
 
@@ -254,25 +258,25 @@ def test_get_variables_empty(monkeypatch):
         (VariableType.VARTYPE_UNKNOWN, UnsupportedTypeVariable),
     ],
 )
-def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type):
+def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type) -> None:
     base_tests.do_test_get_variables_one_variable(
         monkeypatch, Group, var_type, expected_wrapper_type
     )
 
 
-def test_get_variables_multiple_variables(monkeypatch):
+def test_get_variables_multiple_variables(monkeypatch) -> None:
     base_tests.do_test_get_variables_multiple_variables(monkeypatch, Group)
 
 
-def test_get_groups_empty(monkeypatch):
+def test_get_groups_empty(monkeypatch) -> None:
     base_tests.do_test_get_groups_empty(monkeypatch, Group)
 
 
-def test_get_groups_one_group(monkeypatch):
+def test_get_groups_one_group(monkeypatch) -> None:
     base_tests.do_test_get_groups_one_group(monkeypatch, Group)
 
 
-def test_get_groups_multiple_groups(monkeypatch):
+def test_get_groups_multiple_groups(monkeypatch) -> None:
     base_tests.do_test_get_groups_multiple_groups(monkeypatch, Group)
 
 
@@ -295,7 +299,7 @@ def test_get_groups_multiple_groups(monkeypatch):
 )
 def test_assembly_create_variable(
     monkeypatch, var_type: Union[str, acvi.VariableType], expected_var_type_in_request: str
-):
+) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = AddAssemblyVariableResponse(id=ElementId(id_string="CREATED_VAR"))
     with unittest.mock.patch.object(
@@ -315,7 +319,7 @@ def test_assembly_create_variable(
         assert isinstance(result, BaseVariable)
 
 
-def test_assembly_create_variable_unknown_type(monkeypatch):
+def test_assembly_create_variable_unknown_type(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = AddAssemblyVariableResponse(id=ElementId(id_string="CREATED_VAR"))
     with unittest.mock.patch.object(
@@ -330,7 +334,7 @@ def test_assembly_create_variable_unknown_type(monkeypatch):
         mock_add_var_method.assert_not_called()
 
 
-def test_assembly_rename(monkeypatch):
+def test_assembly_rename(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = RenameResponse()
     with unittest.mock.patch.object(
@@ -347,7 +351,7 @@ def test_assembly_rename(monkeypatch):
         )
 
 
-def test_assembly_get_int_metadata_property(monkeypatch):
+def test_assembly_get_int_metadata_property(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = VariableValue(int_value=47)
     with unittest.mock.patch.object(
@@ -367,7 +371,7 @@ def test_assembly_get_int_metadata_property(monkeypatch):
         assert result.property_value == acvi.IntegerValue(47)
 
 
-def test_assembly_set_int_metadata_property(monkeypatch):
+def test_assembly_set_int_metadata_property(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = MetadataSetValueResponse()
     with unittest.mock.patch.object(
@@ -385,7 +389,7 @@ def test_assembly_set_int_metadata_property(monkeypatch):
         )
 
 
-def test_get_index_in_parent(monkeypatch):
+def test_get_index_in_parent(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = ElementIndexInParentResponse(index=3)
     with unittest.mock.patch.object(
@@ -398,16 +402,18 @@ def test_get_index_in_parent(monkeypatch):
         assert result == 3
 
 
-def test_delete_variable(monkeypatch):
+def test_delete_variable(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     target_assembly_name = "Model.DeleteVarAssembly"
     target_assembly_id = "TARGET_ASSEMBLY"
     mock_client.name_responses[target_assembly_id] = target_assembly_name
     target_variable_name = "Model.DeleteVarAssembly.VarToDelete"
     target_variable_id = "TARGET_VARIABLE"
-    target_variable_id_response = ElementId(id_string=target_variable_id)
+    target_variable_id_response = WorkflowGetElementByNameResponse(
+        id=ElementId(id_string=target_variable_id)
+    )
     with unittest.mock.patch.object(
-        mock_client, "WorkflowGetVariableByName", return_value=target_variable_id_response
+        mock_client, "WorkflowGetElementByName", return_value=target_variable_id_response
     ) as mock_get_by_name:
         with unittest.mock.patch.object(
             mock_client, "AssemblyDeleteVariable", return_value=DeleteAssemblyVariableResponse()
@@ -416,10 +422,12 @@ def test_delete_variable(monkeypatch):
             sut = Assembly(ElementId(id_string=target_assembly_id), None)
             sut.delete_variable("VarToDelete")
             mock_get_by_name.assert_called_once_with(ElementName(name=target_variable_name))
-            mock_delete.assert_called_once_with(ElementId(id_string=target_variable_id))
+            mock_delete.assert_called_once_with(
+                DeleteAssemblyVariableRequest(target=ElementId(id_string=target_variable_id))
+            )
 
 
-def test_add_assembly(monkeypatch):
+def test_add_assembly(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = AddAssemblyResponse(id=ElementId(id_string="BRAND_NEW_ASSEMBLY"))
     with unittest.mock.patch.object(
