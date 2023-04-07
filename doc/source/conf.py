@@ -1,7 +1,7 @@
 """Sphinx documentation configuration file."""
 from datetime import datetime
 
-from pyansys_sphinx_theme import pyansys_logo_black
+from ansys_sphinx_theme import ansys_logo_black
 
 from ansys.modelcenter.workflow import __version__
 
@@ -11,13 +11,13 @@ copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "Ansys, Inc."
 release = version = __version__
 
-# use the default pyansys logo
-html_logo = pyansys_logo_black
-html_theme = "pyansys_sphinx_theme"
+# use the default ansys logo
+html_logo = ansys_logo_black
+html_theme = "ansys_sphinx_theme"
 
 # specify the location of your github repo
 html_theme_options = {
-    "github_url": "https://github.com/pyansys/pyansys-sphinx-theme",
+    "github_url": "https://github.com/ansys/ansys-sphinx-theme",
     "show_prev_next": False,
 }
 
