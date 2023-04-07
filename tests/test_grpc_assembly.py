@@ -30,6 +30,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     DeleteAssemblyVariableResponse,
     ElementId,
     ElementIdCollection,
+    ElementIdOrName,
     ElementIndexInParentResponse,
     ElementName,
     RenameRequest,
@@ -38,9 +39,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     VariableType,
     VariableValue,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import (
-    WorkflowGetElementByNameResponse,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeVariable
 from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
@@ -410,24 +408,16 @@ def test_delete_variable(monkeypatch) -> None:
     target_assembly_name = "Model.DeleteVarAssembly"
     target_assembly_id = "TARGET_ASSEMBLY"
     mock_client.name_responses[target_assembly_id] = target_assembly_name
-    target_variable_name = "Model.DeleteVarAssembly.VarToDelete"
-    target_variable_id = "TARGET_VARIABLE"
-    target_variable_id_response = WorkflowGetElementByNameResponse(
-        id=ElementId(id_string=target_variable_id)
-    )
+    target_variable_name = ElementName(name="Model.DeleteVarAssembly.VarToDelete")
     with unittest.mock.patch.object(
-        mock_client, "WorkflowGetElementByName", return_value=target_variable_id_response
-    ) as mock_get_by_name:
-        with unittest.mock.patch.object(
-            mock_client, "AssemblyDeleteVariable", return_value=DeleteAssemblyVariableResponse()
-        ) as mock_delete:
-            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-            sut = Assembly(ElementId(id_string=target_assembly_id), None)
-            sut.delete_variable("VarToDelete")
-            mock_get_by_name.assert_called_once_with(ElementName(name=target_variable_name))
-            mock_delete.assert_called_once_with(
-                DeleteAssemblyVariableRequest(target=ElementId(id_string=target_variable_id))
-            )
+        mock_client, "AssemblyDeleteVariable", return_value=DeleteAssemblyVariableResponse()
+    ) as mock_delete:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(ElementId(id_string=target_assembly_id), None)
+        sut.delete_variable("VarToDelete")
+        mock_delete.assert_called_once_with(
+            DeleteAssemblyVariableRequest(target=ElementIdOrName(target_name=target_variable_name))
+        )
 
 
 def test_add_assembly(monkeypatch) -> None:

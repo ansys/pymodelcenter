@@ -154,16 +154,10 @@ class Workflow(wfapi.IWorkflow):
 
     @overrides
     def get_value(self, var_name: str) -> acvi.VariableState:
-        request = element_msg.ElementName(name=var_name)
-        elem_response: workflow_msg.WorkflowGetElementByNameResponse = (
-            self._stub.WorkflowGetElementByName(request)
-        )
-
-        if elem_response.type != element_msg.ELEMTYPE_VARIABLE:
-            raise ValueError("Element is not a variable.")
+        request = element_msg.ElementIdOrName(target_name=element_msg.ElementName(name=var_name))
         response: var_val_msg.VariableState
         try:
-            response = self._stub.VariableGetState(elem_response.id)
+            response = self._stub.VariableGetState(request)
         except grpc.RpcError as e:
             # TODO: how to handle?
             raise e

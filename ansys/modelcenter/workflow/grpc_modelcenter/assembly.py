@@ -10,7 +10,6 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
 import ansys.modelcenter.workflow.grpc_modelcenter.component as component
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
 from .abstract_renamable import AbstractRenamableElement
 from .create_variable import create_variable
@@ -20,6 +19,7 @@ from .proto.element_messages_pb2 import (
     AddAssemblyVariableRequest,
     DeleteAssemblyVariableRequest,
     ElementId,
+    ElementIdOrName,
     ElementName,
 )
 from .var_value_convert import interop_type_to_mc_type_string
@@ -80,11 +80,9 @@ class Assembly(
     def delete_variable(self, name: str) -> bool:
         assembly_name = self.name
         var_name = f"{assembly_name}.{name}"
-        response: workflow_msg.WorkflowGetElementByNameResponse = (
-            self._client.WorkflowGetElementByName(ElementName(name=var_name))
+        request = DeleteAssemblyVariableRequest(
+            target=ElementIdOrName(target_name=ElementName(name=var_name))
         )
-        # TODO: fix gRPC API here to optionally just take the name in the first place
-        request = DeleteAssemblyVariableRequest(target=response.id)
         return self._client.AssemblyDeleteVariable(request).existed
 
     @overrides
