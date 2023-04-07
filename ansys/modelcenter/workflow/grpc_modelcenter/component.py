@@ -1,6 +1,5 @@
 """Definition of Component."""
-from typing import Collection, Tuple, Union
-from xml.etree.ElementTree import Element as XMLElement
+from typing import Collection, Tuple
 
 from grpc import Channel
 from overrides import overrides
@@ -95,19 +94,3 @@ class Component(
         # TODO: Need a more reliable gRPC call than just trying to parse source string
         # TODO: Upstream merge will include actual return type
         pass
-
-    @overrides
-    def set_custom_metadata(
-        self,
-        name: str,
-        value: Union[str, int, float, bool, XMLElement],
-        access: mc_api.ComponentMetadataAccess,
-        archive: bool,
-    ) -> None:
-        # TODO: skipping implementation for now, will be dropped soon.
-        pass
-
-    @overrides
-    def get_custom_metadata(self, name: str) -> Union[str, int, float, bool, XMLElement]:
-        # TODO: skipping implementation for now, will be dropped soon.
-        return ""

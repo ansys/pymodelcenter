@@ -5,22 +5,16 @@ from typing import Collection, Sequence
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
-import ansys.modelcenter.workflow.api.custom_metadata_owner as custom_mo
 import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 from .variable_links import IVariableLink
 
 
 # TODO: What from this interface can be elevated to the aew_api?
-class IVariable(custom_mo.ICustomMetadataOwner, aew_api.IVariable, ABC):
+class IVariable(aew_api.IVariable, ABC):
     """Represents a variable in the workflow."""
 
     # TODO: Should the upstream get_value, set_value be renamed / changed to properties?
-    # TODO: How useful is the ability to set metadata?
-    #       You shouldn't be allowed to override metadata from the Python API
-    #       on a regular component,
-    #       so this is only useful on created assembly variables, I think.
-    #       (AFAIK this is not enforced by the COM API).
     @abstractmethod
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         """Get the standard metadata for this variable."""

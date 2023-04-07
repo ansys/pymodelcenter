@@ -5,7 +5,6 @@ from typing import Optional, Sequence, Union
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
-import ansys.modelcenter.workflow.api.custom_metadata_owner as custom_mo
 import ansys.modelcenter.workflow.api.igroup as igroup
 import ansys.modelcenter.workflow.api.renamable_element as renamable_element
 
@@ -34,7 +33,6 @@ class IAssemblyChild(ABC):
 
 class IAssembly(
     renamable_element.IRenamableElement,
-    custom_mo.ICustomMetadataOwner,
     aew_api.IControlStatement,
     igroup.IGroupOwner,
     IAssemblyChild,

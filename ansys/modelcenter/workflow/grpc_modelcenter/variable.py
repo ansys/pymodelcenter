@@ -1,7 +1,6 @@
 """Provides an object-oriented way to interact with ModelCenter variables via gRPC."""
 from abc import ABC
-from typing import Collection, Optional, Sequence, Union
-from xml.etree.ElementTree import Element as XMLElement
+from typing import Collection, Optional, Sequence
 
 import ansys.common.variableinterop as acvi
 from grpc import Channel
@@ -107,22 +106,6 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
                 "Unexpected failure converting gRPC value response"
             ) from convert_failure
         return acvi.VariableState(value=interop_value, is_valid=response.is_valid)
-
-    @overrides
-    def set_custom_metadata(
-        self,
-        name: str,
-        value: Union[str, int, float, bool, XMLElement],
-        access: mc_api.ComponentMetadataAccess,
-        archive: bool,
-    ) -> None:
-        # TODO: skipping implementation for now, debating collapsing into AEW property methods.
-        return None
-
-    @overrides
-    def get_custom_metadata(self, name: str) -> Union[str, int, float, bool, XMLElement]:
-        # TODO: skipping implementation for now, debating collapsing into AEW property methods.
-        return ""
 
 
 class BaseArray(BaseVariable, mc_api.IArray, ABC):

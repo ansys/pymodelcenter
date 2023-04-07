@@ -60,6 +60,29 @@ def interop_type_to_mc_type_string(original: acvi.VariableType) -> str:
     return acvi.vartype_accept(_ModelCenterTypeStringConverter(), original)
 
 
+__MCDSTR_TO_INTEROP_TYPE_MAP = {
+    "int": acvi.VariableType.INTEGER,
+    "real": acvi.VariableType.REAL,
+    "bool": acvi.VariableType.BOOLEAN,
+    "string": acvi.VariableType.STRING,
+    "file": acvi.VariableType.FILE,
+    "int[]": acvi.VariableType.INTEGER_ARRAY,
+    "real[]": acvi.VariableType.REAL_ARRAY,
+    "bool[]": acvi.VariableType.BOOLEAN_ARRAY,
+    "string[]": acvi.VariableType.STRING_ARRAY,
+    "file[]": acvi.VariableType.FILE_ARRAY,
+}
+
+
+def mc_type_string_to_interop_type(original: str) -> acvi.VariableType:
+    """Given a ModelCenter type string, create the corresponding acvi interop type."""
+    return (
+        __MCDSTR_TO_INTEROP_TYPE_MAP[original]
+        if original in __MCDSTR_TO_INTEROP_TYPE_MAP
+        else acvi.VariableType.UNKNOWN
+    )
+
+
 __GRPC_TO_INTEROP_TYPE_MAP = {
     VariableType.VARTYPE_INTEGER: acvi.VariableType.INTEGER,
     VariableType.VARTYPE_REAL: acvi.VariableType.REAL,

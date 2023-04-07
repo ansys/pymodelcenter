@@ -5,7 +5,6 @@ from typing import Collection, Tuple
 import ansys.engineeringworkflow.api as aew_api
 
 import ansys.modelcenter.workflow.api.assembly as assembly
-import ansys.modelcenter.workflow.api.custom_metadata_owner as custom_mo
 import ansys.modelcenter.workflow.api.igroup as igroup
 import ansys.modelcenter.workflow.api.ivariable as ivariable
 import ansys.modelcenter.workflow.api.renamable_element as renamable_element
@@ -13,7 +12,6 @@ import ansys.modelcenter.workflow.api.renamable_element as renamable_element
 
 class IComponent(
     renamable_element.IRenamableElement,
-    custom_mo.ICustomMetadataOwner,
     aew_api.IComponent,
     igroup.IGroupOwner,
     assembly.IAssemblyChild,

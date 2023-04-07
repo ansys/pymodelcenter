@@ -1,7 +1,6 @@
 """Implementation of Assembly."""
 
 from typing import Collection, Optional, Sequence, Union
-from xml.etree.ElementTree import Element as XMLElement
 
 import ansys.common.variableinterop as acvi
 from grpc import Channel
@@ -17,12 +16,13 @@ from .group import Group
 from .proto.element_messages_pb2 import (
     AddAssemblyRequest,
     AddAssemblyVariableRequest,
+    AddAssemblyVariableResponse,
     DeleteAssemblyVariableRequest,
     ElementId,
     ElementIdOrName,
     ElementName,
 )
-from .var_value_convert import interop_type_to_mc_type_string
+from .var_value_convert import interop_type_to_mc_type_string, mc_type_string_to_interop_type
 from .variable_container import AbstractGRPCVariableContainer
 
 
@@ -67,14 +67,16 @@ class Assembly(
         type_in_request: str = (
             mc_type if isinstance(mc_type, str) else interop_type_to_mc_type_string(mc_type)
         )
-        result = self._client.AssemblyAddVariable(
+        result: AddAssemblyVariableResponse = self._client.AssemblyAddVariable(
             AddAssemblyVariableRequest(
                 name=ElementName(name=name),
                 target_assembly=self._element_id,
                 variable_type=type_in_request,
             )
         )
-        return create_variable(acvi.VariableType.UNKNOWN, result.id, self._channel)
+        return create_variable(
+            mc_type_string_to_interop_type(type_in_request), result.id, self._channel
+        )
 
     @overrides
     def delete_variable(self, name: str) -> bool:
@@ -101,19 +103,3 @@ class Assembly(
             request.av_pos.y_pos = y_pos
         response = self._client.AssemblyAddAssembly(request)
         return Assembly(response.id, self._channel)
-
-    @overrides
-    def set_custom_metadata(
-        self,
-        name: str,
-        value: Union[str, int, float, bool, XMLElement],
-        access: mc_api.ComponentMetadataAccess,
-        archive: bool,
-    ) -> None:
-        # TODO: skipping implementation for now, debating collapsing into AEW property methods.
-        return None
-
-    @overrides
-    def get_custom_metadata(self, name: str) -> Union[str, int, float, bool, XMLElement]:
-        # TODO: skipping implementation for now, debating collapsing into AEW property methods.
-        return ""
