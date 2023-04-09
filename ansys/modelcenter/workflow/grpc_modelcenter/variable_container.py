@@ -1,7 +1,7 @@
 """Defines an abstract base class for elements that return child variables and groups."""
 
 from abc import ABC, abstractmethod
-from typing import Collection
+from typing import Mapping
 
 import grpc
 from overrides import overrides
@@ -44,17 +44,21 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
 
     @property
     @overrides
-    def groups(self) -> Collection[mc_api.IGroup]:
+    def groups(self) -> Mapping[str, mc_api.IGroup]:
+        # TODO: alter gRPC response so that short names are included in the first place.
         """Get the child groups of this element."""
         result = self._client.RegistryGetGroups(self._element_id)
         one_element_id: ElementId
-        return [self._create_group(one_element_id) for one_element_id in result.ids]
+        groups = [self._create_group(one_element_id) for one_element_id in result.ids]
+        one_group: mc_api.IGroup
+        return {one_group.name: one_group for one_group in groups}
 
     @overrides
-    def get_variables(self) -> Collection[mc_api.IVariable]:
+    def get_variables(self) -> Mapping[str, mc_api.IVariable]:
+        # TODO: alter gRPC response so that short names are included in the first place.
         result = self._client.RegistryGetVariables(self._element_id)
         one_var_info: VariableInfo
-        return [
+        variables = [
             create_variable(
                 grpc_type_enum_to_interop_type(one_var_info.value_type),
                 one_var_info.id,
@@ -62,3 +66,5 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
             )
             for one_var_info in result.variables
         ]
+        one_variable: mc_api.IVariable
+        return {one_variable.name: one_variable for one_variable in variables}

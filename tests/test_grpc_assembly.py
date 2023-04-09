@@ -10,6 +10,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
     AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
+from ansys.modelcenter.workflow.grpc_modelcenter.component import Component
 from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
     MetadataGetValueRequest,
@@ -33,6 +34,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     ElementIdOrName,
     ElementIndexInParentResponse,
     ElementName,
+    ElementType,
     RenameRequest,
     RenameResponse,
 )
@@ -40,9 +42,14 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableType,
     VariableValue,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import (
+    ElementInfo,
+    ElementInfoCollection,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeVariable
 from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+import tests.test_abstract_workflow_element as awe_tests
 import tests.test_variable_container as base_tests
 
 
@@ -76,9 +83,6 @@ class MockWorkflowClientForAssemblyTest:
     def ElementGetParentElement(self, request: ElementId) -> ElementId:
         return ElementId(id_string=self._parent_id_responses[request.id_string])
 
-    def RegistryGetAssemblies(self, request: ElementId) -> ElementIdCollection:
-        return ElementIdCollection()
-
     def RegistryGetVariables(self, request: ElementId) -> ElementIdCollection:
         return ElementIdCollection()
 
@@ -110,8 +114,8 @@ class MockWorkflowClientForAssemblyTest:
     def AssemblyDeleteVariable(self, request: ElementId) -> DeleteAssemblyVariableResponse:
         return DeleteAssemblyVariableResponse()
 
-    def AssemblyGetComponents(self, request: ElementId) -> ElementIdCollection:
-        return ElementIdCollection()
+    def AssemblyGetAssembliesAndComponents(self, request: ElementId) -> ElementInfoCollection:
+        return ElementInfoCollection()
 
     def ElementGetIndexInParent(self, request: ElementId) -> ElementIndexInParentResponse:
         return ElementIndexInParentResponse()
@@ -123,15 +127,24 @@ class MockWorkflowClientForAssemblyTest:
         return AddAssemblyResponse()
 
 
-def test_can_get_name(monkeypatch) -> None:
-    mock_client = MockWorkflowClientForAssemblyTest()
-    mock_client.name_responses["TEST_ID_SHOULD_MATCH"] = "expected_name"
-    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-    sut = Assembly(ElementId(id_string="TEST_ID_SHOULD_MATCH"), None)
+def test_element_id(monkeypatch) -> None:
+    awe_tests.do_test_element_id(monkeypatch, Assembly, "SUT_TEST_ID")
 
-    result = sut.name
 
-    assert result == "expected_name"
+def test_parent_element_id(monkeypatch) -> None:
+    awe_tests.do_test_parent_element_id(monkeypatch, Assembly)
+
+
+def test_name(monkeypatch) -> None:
+    awe_tests.do_test_name(monkeypatch, Assembly)
+
+
+def test_full_name(monkeypatch) -> None:
+    awe_tests.do_test_name(monkeypatch, Assembly)
+
+
+def test_parent_element(monkeypatch) -> None:
+    awe_tests.do_test_parent_element(monkeypatch, Assembly, ElementType.ELEMTYPE_ASSEMBLY, Assembly)
 
 
 def test_can_get_control_type(monkeypatch) -> None:
@@ -175,68 +188,82 @@ def test_can_get_parent_has_parent(monkeypatch) -> None:
     assert result.element_id == parent_id_string
 
 
-def test_get_child_assemblies_empty(monkeypatch) -> None:
+def test_get_child_elements_empty(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
-    no_child_assemblies = ElementIdCollection()
+    no_child_assemblies = ElementInfoCollection()
     with unittest.mock.patch.object(
-        mock_client, "RegistryGetAssemblies", return_value=no_child_assemblies
+        mock_client, "AssemblyGetAssembliesAndComponents", return_value=no_child_assemblies
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="LEAF_ASSEMBLY"), None)
-        result = sut.assemblies
+        result = sut.get_elements()
         assert len(result) == 0
         mock_method.assert_called_once_with(ElementId(id_string="LEAF_ASSEMBLY"))
 
 
-def test_get_child_assemblies_one_child(monkeypatch) -> None:
+@pytest.mark.parametrize(
+    "type_in_response,expected_wrapper_type",
+    [(ElementType.ELEMTYPE_ASSEMBLY, Assembly), (ElementType.ELEMTYPE_COMPONENT, Component)],
+)
+def test_get_child_elements_one_child(monkeypatch, type_in_response, expected_wrapper_type) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     child_id = "CHILD_ID_STRING"
-    one_child_assembly = ElementIdCollection(ids=[ElementId(id_string=child_id)])
+    one_child_assembly = ElementInfo(id=ElementId(id_string=child_id), type=type_in_response)
+    response = ElementInfoCollection(elements=[one_child_assembly])
     fake_name = ElementName(name="FAKE_NAME")
     with unittest.mock.patch.object(
-        mock_client, "RegistryGetAssemblies", return_value=one_child_assembly
+        mock_client, "AssemblyGetAssembliesAndComponents", return_value=response
     ) as mock_get_assembly_method:
         with unittest.mock.patch.object(
             mock_client, "ElementGetFullName", return_value=fake_name
         ) as mock_get_name_method:
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
-            result = sut.assemblies
+            result = sut.get_elements()
             assert len(result) == 1
-            assert isinstance(result[0], Assembly)
+            assert isinstance(result[0], expected_wrapper_type)
             mock_get_assembly_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
-            result[0].name
+            name = result[0].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string=child_id))
 
 
 def test_get_child_assemblies_multiple_children(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
-    one_child_assembly = ElementIdCollection(
-        ids=[ElementId(id_string="LARRY"), ElementId(id_string="MOE"), ElementId(id_string="CURLY")]
+    larry_assembly_info = ElementInfo(
+        id=ElementId(id_string="IDASSEMBLY_LARRY"), type=ElementType.ELEMTYPE_ASSEMBLY
+    )
+    moe_comp_info = ElementInfo(
+        id=ElementId(id_string="IDCOMP_MOE"), type=ElementType.ELEMTYPE_COMPONENT
+    )
+    curly_assembly_info = ElementInfo(
+        id=ElementId(id_string="IDASSEMBLY_CURLY"), type=ElementType.ELEMTYPE_ASSEMBLY
+    )
+    response = ElementInfoCollection(
+        elements=[larry_assembly_info, moe_comp_info, curly_assembly_info]
     )
     fake_name = ElementName(name="FAKE_NAME")
     with unittest.mock.patch.object(
-        mock_client, "RegistryGetAssemblies", return_value=one_child_assembly
+        mock_client, "AssemblyGetAssembliesAndComponents", return_value=response
     ) as mock_get_assembly_method:
         with unittest.mock.patch.object(
             mock_client, "ElementGetFullName", return_value=fake_name
         ) as mock_get_name_method:
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = Assembly(ElementId(id_string="STOOGES"), None)
-            result = sut.assemblies
+            result = sut.get_elements()
             assert len(result) == 3
             assert isinstance(result[0], Assembly)
-            assert isinstance(result[1], Assembly)
+            assert isinstance(result[1], Component)
             assert isinstance(result[2], Assembly)
             mock_get_assembly_method.assert_called_once_with(ElementId(id_string="STOOGES"))
-            result[0].name
-            mock_get_name_method.assert_called_once_with(ElementId(id_string="LARRY"))
+            name = result[0].full_name
+            mock_get_name_method.assert_called_once_with(ElementId(id_string="IDASSEMBLY_LARRY"))
             mock_get_name_method.reset_mock()
-            result[1].name
-            mock_get_name_method.assert_called_once_with(ElementId(id_string="MOE"))
+            name = result[1].full_name
+            mock_get_name_method.assert_called_once_with(ElementId(id_string="IDCOMP_MOE"))
             mock_get_name_method.reset_mock()
-            result[2].name
-            mock_get_name_method.assert_called_once_with(ElementId(id_string="CURLY"))
+            name = result[2].full_name
+            mock_get_name_method.assert_called_once_with(ElementId(id_string="IDASSEMBLY_CURLY"))
 
 
 def test_get_variables_empty(monkeypatch) -> None:
@@ -439,35 +466,3 @@ def test_add_assembly(monkeypatch) -> None:
         )
         assert isinstance(result, Assembly)
         assert result.element_id == "BRAND_NEW_ASSEMBLY"
-
-
-@pytest.mark.parametrize(
-    "ids_in_response,expected_ids",
-    [
-        ([], []),
-        ([ElementId(id_string="SINGLE_COMP")], ["SINGLE_COMP"]),
-        (
-            [
-                ElementId(id_string="FIRST_COMP"),
-                ElementId(id_string="SECOND_COMP"),
-                ElementId(id_string="THIRD_COMP"),
-            ],
-            ["FIRST_COMP", "SECOND_COMP", "THIRD_COMP"],
-        ),
-    ],
-)
-def test_get_components(monkeypatch, ids_in_response, expected_ids) -> None:
-    mock_client = MockWorkflowClientForAssemblyTest()
-    mock_response = ElementIdCollection(ids=ids_in_response)
-    with unittest.mock.patch.object(
-        mock_client, "AssemblyGetComponents", return_value=mock_response
-    ) as mock_method:
-        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
-
-        result = sut.get_components()
-
-        mock_method.assert_called_once_with(ElementId(id_string="TARGET_ASSEMBLY"))
-        item: mc_api.IComponent
-        assert all([isinstance(item, mc_api.IComponent) for item in result])
-        assert [item.element_id for item in result] == expected_ids

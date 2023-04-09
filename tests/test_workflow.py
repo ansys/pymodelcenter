@@ -66,7 +66,7 @@ class MockWorkflowClientForWorkflowTest:
 
     def WorkflowRemoveComponent(self, request: wkf_msgs.WorkflowRemoveComponentRequest):
         response = wkf_msgs.WorkflowRemoveComponentResponse()
-        if request.target.id_string == "a.component":
+        if request.target.id_string == "A_COMPONENT":
             response.existed = True
             self.was_component_removed = True
         return response
@@ -118,8 +118,8 @@ class MockWorkflowClientForWorkflowTest:
         return response
 
     def WorkflowGetElementByName(self, request: elem_msgs.ElementName):
-        response = wkf_msgs.WorkflowGetElementByNameResponse()
-        response.id.id_string = request.name
+        response = wkf_msgs.ElementInfo()
+        response.id.id_string = request.name.replace(".", "_").upper()
         if request.name == "a.component":
             response.type = elem_msgs.ELEMTYPE_COMPONENT
         elif request.name == "a.assembly":
@@ -268,7 +268,7 @@ def test_get_component(setup_function) -> None:
     result: mcapi.IComponent = workflow.get_component("a.component")
 
     # Verification
-    assert result.element_id == "a.component"
+    assert result.element_id == "A_COMPONENT"
 
 
 def test_workflow_close(setup_function) -> None:
@@ -687,7 +687,7 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
     )
     mock_client.workflow_run_response = wkf_msgs.WorkflowRunResponse()
 
-    result = workflow.run(inputs, reset, validation_ids)
+    result = workflow.run(inputs, reset, validation_ids, validation_ids)
 
     expected_request = wkf_msgs.WorkflowRunRequest(
         target=wkf_msgs.WorkflowId(id="123"),
@@ -730,6 +730,28 @@ def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
 
     # Verify
     assert type(result) == expected_type
+
+
+@pytest.mark.parametrize(
+    "name,expected_wrapper_type,expected_id",
+    [
+        ("a.component", mcapi.IComponent, "A_COMPONENT"),
+        ("a.assembly", mcapi.IAssembly, "A_ASSEMBLY"),
+        ("model.boolean", mcapi.IBooleanVariable, "MODEL_BOOLEAN"),
+        ("model.integer", mcapi.IIntegerVariable, "MODEL_INTEGER"),
+        ("model.string", mcapi.IStringVariable, "MODEL_STRING"),
+        ("model.double", mcapi.IDoubleVariable, "MODEL_DOUBLE"),
+    ],
+)
+def test_get_element_by_name(
+    setup_function, name: str, expected_wrapper_type: Type, expected_id: str
+) -> None:
+    # Execute
+    result: ewapi.IElement = workflow.get_element_by_name(name)
+
+    # Verify
+    assert isinstance(result, expected_wrapper_type)
+    assert result.element_id == expected_id
 
 
 # @pytest.mark.parametrize(

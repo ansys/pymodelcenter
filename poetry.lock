@@ -66,19 +66,20 @@ develop = false
 
 [package.dependencies]
 ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "3c0a8f7"}
+anyio = "^3.6.2"
 numpy = "^1.22.4"
 
 [package.extras]
-dev = ["Sphinx (>=4.4,<5.0)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "mypy (>=0.940,<0.941)", "numpydoc (>=1.2,<2.0)", "pre-commit (>=2.18,<3.0)", "pyansys_sphinx_theme (>=0.2,<0.3)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "sphinx-copybutton (>=0.4,<0.5)"]
-docs = ["Sphinx (>=4.4,<5.0)", "numpydoc (>=1.2,<2.0)", "pyansys_sphinx_theme (>=0.2,<0.3)", "sphinx-copybutton (>=0.4,<0.5)"]
+dev = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "mypy (>=0.940,<0.941)", "numpydoc (>=1.2,<2.0)", "pre-commit (>=2.18,<3.0)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "sphinx-copybutton (>=0.4,<0.5)"]
+docs = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "numpydoc (>=1.2,<2.0)", "sphinx-copybutton (>=0.4,<0.5)"]
 style = ["codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)"]
 test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)"]
 
 [package.source]
 type = "git"
 url = "https://github.com/pyansys/ansys-engineeringworkflow-api.git"
-reference = "f97aeb6"
-resolved_reference = "f97aeb69a456938a095318924e1e8bf297a1469e"
+reference = "e66d11bbfa1175130913c7a7248db69ce002b341"
+resolved_reference = "e66d11bbfa1175130913c7a7248db69ce002b341"
 
 [[package]]
 name = "ansys-sphinx-theme"

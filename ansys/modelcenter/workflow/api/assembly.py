@@ -1,6 +1,6 @@
 """Contains definitions for assemblies."""
 from abc import ABC, abstractmethod
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -48,12 +48,6 @@ class IAssembly(
     """
 
     # ModelCenter specific
-
-    @property
-    @abstractmethod
-    def assemblies(self) -> Sequence["IAssembly"]:
-        """Get a list of child assemblies of this assembly."""
-        raise NotImplementedError()
 
     @abstractmethod
     def add_assembly(

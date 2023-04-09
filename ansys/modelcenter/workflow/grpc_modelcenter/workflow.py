@@ -19,6 +19,7 @@ from ._visitors import VariableValueVisitor
 from .assembly import Assembly
 from .component import Component
 from .create_variable import create_variable
+from .element_wrapper import create_element
 from .var_value_convert import (
     convert_grpc_value_to_acvi,
     convert_interop_value_to_grpc,
@@ -93,10 +94,11 @@ class Workflow(wfapi.IWorkflow):
         self,
         inputs: Mapping[str, acvi.VariableState],
         reset: bool,
-        validation_ids: AbstractSet[str],
+        validation_names: AbstractSet[str],
+        collect_names: AbstractSet[str],
     ) -> Mapping[str, acvi.VariableState]:
         request: workflow_msg.WorkflowRunRequest = self._create_run_request(
-            inputs, reset, validation_ids
+            inputs, reset, validation_names
         )
         response = self._stub.WorkflowRun(request)
         elem_id: str
@@ -114,8 +116,8 @@ class Workflow(wfapi.IWorkflow):
         self,
         inputs: Mapping[str, acvi.VariableState],
         reset: bool,
-        validation_ids: AbstractSet[str],
-    ) -> str:
+        validation_names: AbstractSet[str],
+    ) -> None:
         raise NotImplementedError
 
     @overrides
@@ -126,9 +128,9 @@ class Workflow(wfapi.IWorkflow):
         return Assembly(root, self._channel)
 
     @overrides
-    def get_element_by_id(self, element_id: str) -> engapi.IElement:
-        # TODO: not on grpc api
-        raise NotImplementedError()
+    def get_element_by_name(self, element_name: str) -> engapi.IElement:
+        response = self._stub.WorkflowGetElementByName(element_msg.ElementName(name=element_name))
+        return create_element(response, self._channel)
 
     # TODO: Should we just delete this? Should probably remove from
     #       GRPC api if so.
@@ -196,7 +198,7 @@ class Workflow(wfapi.IWorkflow):
         if isinstance(equation, str):
             eq = equation
         else:
-            eq = equation.name
+            eq = equation.full_name
         request = workflow_msg.WorkflowCreateLinkRequest(equation=eq)
         if isinstance(variable, str):
             request.target.id_string = variable
@@ -226,9 +228,7 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def get_variable(self, name: str) -> wfapi.IVariable:
         request = element_msg.ElementName(name=name)
-        response: workflow_msg.WorkflowGetElementByNameResponse = (
-            self._stub.WorkflowGetElementByName(request)
-        )
+        response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
         if response.type != element_msg.ELEMTYPE_VARIABLE:
             raise ValueError("Element is not a variable.")
@@ -244,9 +244,7 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def get_component(self, name: str) -> wfapi.IComponent:
         request = element_msg.ElementName(name=name)
-        response: workflow_msg.WorkflowGetElementByNameResponse = (
-            self._stub.WorkflowGetElementByName(request)
-        )
+        response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
         if response.type == element_msg.ELEMTYPE_COMPONENT:
             return Component(response.id, self._channel)
         elif response.type == element_msg.ELEMTYPE_IFCOMPONENT:
@@ -346,9 +344,7 @@ class Workflow(wfapi.IWorkflow):
             return self.get_root()
         else:
             request = element_msg.ElementName(name=name)
-            response: workflow_msg.WorkflowGetElementByNameResponse = (
-                self._stub.WorkflowGetElementByName(request)
-            )
+            response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
             if response.type == element_msg.ELEMTYPE_ASSEMBLY:
                 return Assembly(
                     element_msg.ElementId(id_string=response.id.id_string), self._channel
@@ -388,9 +384,7 @@ class Workflow(wfapi.IWorkflow):
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
         metadata: acvi.CommonVariableMetadata = None
         request = element_msg.ElementName(name=name)
-        response: workflow_msg.WorkflowGetElementByNameResponse = (
-            self._stub.WorkflowGetElementByName(request)
-        )
+        response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
         if response.type != element_msg.ELEMTYPE_VARIABLE:
             raise ValueError("Element is not a variable.")
@@ -542,9 +536,7 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
         request = element_msg.ElementName(name=var_name)
-        response: workflow_msg.WorkflowGetElementByNameResponse = (
-            self._stub.WorkflowGetElementByName(request)
-        )
+        response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
         try:
             value.accept(VariableValueVisitor(response.id, self._stub))
         except grpc.RpcError as e:

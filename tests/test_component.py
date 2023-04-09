@@ -6,6 +6,7 @@ import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
 from ansys.modelcenter.workflow.grpc_modelcenter.component import Component
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
     AnalysisViewPosition,
@@ -17,12 +18,14 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     ComponentReconnectResponse,
     ComponentSourceResponse,
     ElementId,
+    ElementType,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     VariableType,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeVariable
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+import tests.test_abstract_workflow_element as awe_tests
 import tests.test_variable_container as varcontainer_tests
 
 
@@ -52,6 +55,28 @@ class MockWorkflowClientForComponentTests:
 
     def AssemblyGetAnalysisViewPosition(self, request: ElementId) -> AnalysisViewPosition:
         return AnalysisViewPosition()
+
+
+def test_element_id(monkeypatch) -> None:
+    awe_tests.do_test_element_id(monkeypatch, Component, "SUT_TEST_ID")
+
+
+def test_parent_element_id(monkeypatch) -> None:
+    awe_tests.do_test_parent_element_id(monkeypatch, Component)
+
+
+def test_name(monkeypatch) -> None:
+    awe_tests.do_test_name(monkeypatch, Component)
+
+
+def test_full_name(monkeypatch) -> None:
+    awe_tests.do_test_name(monkeypatch, Component)
+
+
+def test_parent_element(monkeypatch) -> None:
+    awe_tests.do_test_parent_element(
+        monkeypatch, Component, ElementType.ELEMTYPE_ASSEMBLY, Assembly
+    )
 
 
 def test_get_variables_empty(monkeypatch):

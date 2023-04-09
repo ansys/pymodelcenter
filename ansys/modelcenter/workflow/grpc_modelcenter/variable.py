@@ -35,7 +35,7 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
 
     @property
     @overrides
-    def interop_type(self) -> acvi.VariableType:
+    def value_type(self) -> acvi.VariableType:
         response = self._client.VariableGetType(self._element_id)
         return grpc_type_enum_to_interop_type(response.var_type)
 
@@ -90,7 +90,7 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
 
     @property
     @overrides
-    def is_input_to_model(self) -> bool:
+    def is_input_to_workflow(self) -> bool:
         response = self._client.VariableGetIsInput(self._element_id)
         return response.is_input_in_workflow
 

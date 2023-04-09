@@ -1,17 +1,18 @@
 """Implementation of Assembly."""
 
-from typing import Collection, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import ansys.common.variableinterop as acvi
+import ansys.engineeringworkflow.api as aew_api
 from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
-import ansys.modelcenter.workflow.grpc_modelcenter.component as component
 
 from .abstract_renamable import AbstractRenamableElement
 from .create_variable import create_variable
+from .element_wrapper import create_element
 from .group import Group
 from .proto.element_messages_pb2 import (
     AddAssemblyRequest,
@@ -22,6 +23,7 @@ from .proto.element_messages_pb2 import (
     ElementIdOrName,
     ElementName,
 )
+from .proto.workflow_messages_pb2 import ElementInfo
 from .var_value_convert import interop_type_to_mc_type_string, mc_type_string_to_interop_type
 from .variable_container import AbstractGRPCVariableContainer
 
@@ -45,18 +47,14 @@ class Assembly(
         """
         super(Assembly, self).__init__(element_id=element_id, channel=channel)
 
-    @property  # type: ignore
     @overrides
-    def assemblies(self) -> Sequence[mc_api.IAssembly]:
-        result = self._client.RegistryGetAssemblies(self._element_id)
-        return [Assembly(one_element_id, self._channel) for one_element_id in result.ids]
-
-    @overrides
-    def get_components(self) -> Collection[mc_api.IComponent]:
-        result = self._client.AssemblyGetComponents(self._element_id)
-        one_element_id: ElementId
-        # TODO: test when component wrapper is actually ready
-        return [component.Component(one_element_id, self._channel) for one_element_id in result.ids]
+    def get_elements(self) -> Sequence[aew_api.IElement]:
+        result = self._client.AssemblyGetAssembliesAndComponents(self._element_id)
+        one_child_element: ElementInfo
+        return [
+            create_element(one_child_element, self._channel)
+            for one_child_element in result.elements
+        ]
 
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:

@@ -1,12 +1,15 @@
 """Defines an abstract base class for gRPC-backed workflow elements."""
 
 from abc import ABC
-from typing import Collection
+from typing import AbstractSet, Mapping
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
+from ansys.engineeringworkflow.api import Property
 import grpc
 from overrides import overrides
+
+import ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper as elem_wrapper
 
 from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
 from .proto.element_messages_pb2 import ElementId
@@ -42,11 +45,17 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
     @overrides
     def parent_element_id(self) -> str:
         result = self._client.ElementGetParentElement(self._element_id)
-        return result.id_string
+        return result.id.id_string
 
     @property
     @overrides
     def name(self) -> str:
+        result = self._client.ElementGetName(self._element_id)
+        return result.name
+
+    @property
+    @overrides
+    def full_name(self) -> str:
         result = self._client.ElementGetFullName(self._element_id)
         return result.name
 
@@ -63,10 +72,15 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
         )
 
     @overrides
-    def get_properties(self) -> Collection[aew_api.Property]:
-        names = self._client.PropertyOwnerGetProperties()
-        name: str
-        return [self.get_property(property_name=name) for name in names]
+    def get_property_names(self) -> AbstractSet[str]:
+        response = self._client.PropertyOwnerGetProperties()
+        return set([name for name in response.names])
+
+    @overrides
+    def get_properties(self) -> Mapping[str, Property]:
+        response = self._client.PropertyOwnerGetProperties()
+        one_prop_name: str
+        return {one_prop_name: self.get_property(property_name=name) for name in response.names}
 
     @overrides
     def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
@@ -76,3 +90,23 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
                 id=self._element_id, property_name=property_name, value=grpc_value
             )
         )
+
+    @overrides
+    def get_parent_element(self) -> aew_api.IElement:
+        result = self._client.ElementGetParentElement(self._element_id)
+        return elem_wrapper.create_element(result, self._channel)
+
+
+class UnsupportedWorkflowElement(AbstractWorkflowElement):
+    """Represents a workflow element that is known to exists but whose type is not supported."""
+
+    def __init__(self, element_id: ElementId, channel: grpc.Channel):
+        """
+        Initialize a new instance.
+
+        Parameters
+        ----------
+        element_id: the element ID of the element this object represents in ModelCenter.
+        channel: the gRPC channel on which to communicate.
+        """
+        super(UnsupportedWorkflowElement, self).__init__(element_id=element_id, channel=channel)

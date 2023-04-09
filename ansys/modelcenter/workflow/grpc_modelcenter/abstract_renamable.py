@@ -5,12 +5,12 @@ import grpc
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
+import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_wfe
 
-from .abstract_workflow_element import AbstractWorkflowElement
 from .proto.element_messages_pb2 import ElementId, ElementName, RenameRequest
 
 
-class AbstractRenamableElement(AbstractWorkflowElement, mc_api.IRenamableElement, ABC):
+class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRenamableElement, ABC):
     """Inheritable implementation of renaming with a gRPC client."""
 
     def __init__(self, element_id: ElementId, channel: grpc.Channel):

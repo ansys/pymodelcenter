@@ -6,13 +6,13 @@ from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
+import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_wfe
 import ansys.modelcenter.workflow.grpc_modelcenter.assembly as assembly
 
-from .abstract_workflow_element import AbstractWorkflowElement
 from .proto.element_messages_pb2 import ElementId
 
 
-class AbstractAssemblyChild(AbstractWorkflowElement, mc_api.IAssemblyChild, ABC):
+class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemblyChild, ABC):
     """An abstract base class for children of assemblies."""
 
     def __init__(self, element_id: ElementId, channel: Channel):

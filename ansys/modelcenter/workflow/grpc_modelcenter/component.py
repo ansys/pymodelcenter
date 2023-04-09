@@ -6,16 +6,16 @@ from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
+import ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable as abstract_renamable
+import ansys.modelcenter.workflow.grpc_modelcenter.group as group
 
-from .abstract_renamable import AbstractRenamableElement
-from .group import Group
 from .proto.element_messages_pb2 import ComponentInvokeMethodRequest, ElementId
 from .variable_container import AbstractGRPCVariableContainer
 
 
 class Component(
     AbstractGRPCVariableContainer,
-    AbstractRenamableElement,
+    abstract_renamable.AbstractRenamableElement,
     aachild.AbstractAssemblyChild,
     mc_api.IComponent,
 ):
@@ -35,7 +35,7 @@ class Component(
 
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
-        return Group(element_id, self._channel)
+        return group.Group(element_id, self._channel)
 
     @property
     @overrides

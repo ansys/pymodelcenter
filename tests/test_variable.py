@@ -44,7 +44,7 @@ def do_get_type_test(monkeypatch, sut_type, type_in_response, expected_acvi_type
         sut = sut_type(element_id=sut_element_id, channel=None)
 
         # Execute
-        result: acvi.VariableType = sut.interop_type
+        result: acvi.VariableType = sut.value_type
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -99,7 +99,7 @@ def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(element_id=sut_element_id, channel=None)
 
-        result: bool = sut.is_input_to_model
+        result: bool = sut.is_input_to_workflow
 
         mock_grpc_method.assert_called_once_with(sut_element_id)
         assert result == flag_in_response

@@ -35,16 +35,6 @@ class IVariable(aew_api.IVariable, ABC):
 
     @property
     @abstractmethod
-    def interop_type(self) -> acvi.VariableType:
-        """
-        Get the type of data this variable accepts / stores as a value.
-
-        The type is returned according to the common variable interop system.
-        """
-        raise NotImplementedError()
-
-    @property
-    @abstractmethod
     def get_modelcenter_type(self) -> str:
         """
         Get the type of data this variable accepts / stores as a value.
@@ -170,22 +160,3 @@ class IVariable(aew_api.IVariable, ABC):
         A Collection of IVariables that are influenced by the value of this variable.
         """
         raise NotImplementedError()
-
-    @property
-    @abstractmethod
-    def is_input_to_component(self) -> bool:
-        """
-        Checks whether the variable is an input.
-
-        Returns ``True`` if the variable was originally added as an input, ignoring the
-        current state that can change based off of links.
-        """
-        return self._wrapped.isInputToComponent()
-
-    def is_input_to_model(self) -> bool:
-        """
-        Checks whether the variable is an input.
-
-        A linked input returns ``False`` (Output).
-        """
-        return self._wrapped.isInputToModel()

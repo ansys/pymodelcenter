@@ -5,13 +5,13 @@ from ansys.common.variableinterop.ivariable_type_pseudovisitor import T
 import grpc
 
 import ansys.modelcenter.workflow.api as mc_api
+import ansys.modelcenter.workflow.grpc_modelcenter.boolean_variable as bool_var_impl
+import ansys.modelcenter.workflow.grpc_modelcenter.double_variable as double_var_impl
+import ansys.modelcenter.workflow.grpc_modelcenter.integer_variable as int_var_impl
+import ansys.modelcenter.workflow.grpc_modelcenter.string_variable as string_var_impl
+import ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var as unsupported_var_impl
 
-from .boolean_variable import BooleanArray, BooleanVariable
-from .double_variable import DoubleArray, DoubleVariable
-from .integer_variable import IntegerArray, IntegerVariable
 from .proto.element_messages_pb2 import ElementId
-from .string_variable import StringArray, StringVariable
-from .unsupported_var import UnsupportedTypeVariable
 
 
 class _VariableCreationVisitor(acvi.IVariableTypePseudoVisitor[mc_api.IVariable]):
@@ -20,37 +20,43 @@ class _VariableCreationVisitor(acvi.IVariableTypePseudoVisitor[mc_api.IVariable]
         self._channel = channel
 
     def visit_unknown(self) -> T:
-        return UnsupportedTypeVariable(element_id=self._element_id, channel=self._channel)
+        return unsupported_var_impl.UnsupportedTypeVariable(
+            element_id=self._element_id, channel=self._channel
+        )
 
     def visit_int(self) -> T:
-        return IntegerVariable(element_id=self._element_id, channel=self._channel)
+        return int_var_impl.IntegerVariable(element_id=self._element_id, channel=self._channel)
 
     def visit_real(self) -> T:
-        return DoubleVariable(element_id=self._element_id, channel=self._channel)
+        return double_var_impl.DoubleVariable(element_id=self._element_id, channel=self._channel)
 
     def visit_boolean(self) -> T:
-        return BooleanVariable(element_id=self._element_id, channel=self._channel)
+        return bool_var_impl.BooleanVariable(element_id=self._element_id, channel=self._channel)
 
     def visit_string(self) -> T:
-        return StringVariable(element_id=self._element_id, channel=self._channel)
+        return string_var_impl.StringVariable(element_id=self._element_id, channel=self._channel)
 
     def visit_file(self) -> T:
-        return UnsupportedTypeVariable(element_id=self._element_id, channel=self._channel)
+        return unsupported_var_impl.UnsupportedTypeVariable(
+            element_id=self._element_id, channel=self._channel
+        )
 
     def visit_int_array(self) -> T:
-        return IntegerArray(element_id=self._element_id, channel=self._channel)
+        return int_var_impl.IntegerArray(element_id=self._element_id, channel=self._channel)
 
     def visit_real_array(self) -> T:
-        return DoubleArray(element_id=self._element_id, channel=self._channel)
+        return double_var_impl.DoubleArray(element_id=self._element_id, channel=self._channel)
 
     def visit_bool_array(self) -> T:
-        return BooleanArray(element_id=self._element_id, channel=self._channel)
+        return bool_var_impl.BooleanArray(element_id=self._element_id, channel=self._channel)
 
     def visit_string_array(self) -> T:
-        return StringArray(element_id=self._element_id, channel=self._channel)
+        return string_var_impl.StringArray(element_id=self._element_id, channel=self._channel)
 
     def visit_file_array(self) -> T:
-        return UnsupportedTypeVariable(element_id=self._element_id, channel=self._channel)
+        return unsupported_var_impl.UnsupportedTypeVariable(
+            element_id=self._element_id, channel=self._channel
+        )
 
 
 def create_variable(
