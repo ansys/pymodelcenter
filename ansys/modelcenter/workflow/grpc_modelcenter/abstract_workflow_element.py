@@ -14,6 +14,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper as elem_wrapp
 from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
 from .proto.element_messages_pb2 import ElementId
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .proto.variable_value_messages_pb2 import VariableValue
 from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
 
 
@@ -61,7 +62,7 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
 
     @overrides
     def get_property(self, property_name: str) -> aew_api.Property:
-        grpc_value = self._client.PropertyOwnerGetPropertyValue(
+        grpc_value: VariableValue = self._client.PropertyOwnerGetPropertyValue(
             MetadataGetValueRequest(id=self._element_id, property_name=property_name)
         )
         acvi_value = convert_grpc_value_to_acvi(grpc_value)
@@ -73,14 +74,13 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
 
     @overrides
     def get_property_names(self) -> AbstractSet[str]:
-        response = self._client.PropertyOwnerGetProperties()
+        response = self._client.PropertyOwnerGetProperties(self._element_id)
         return set([name for name in response.names])
 
     @overrides
     def get_properties(self) -> Mapping[str, Property]:
-        response = self._client.PropertyOwnerGetProperties()
-        one_prop_name: str
-        return {one_prop_name: self.get_property(property_name=name) for name in response.names}
+        response = self._client.PropertyOwnerGetProperties(self._element_id)
+        return {name: self.get_property(property_name=name) for name in response.names}
 
     @overrides
     def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:

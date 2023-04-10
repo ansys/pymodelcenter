@@ -1,4 +1,5 @@
 from typing import Collection, Mapping, Optional, Union
+import unittest
 
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import pytest
@@ -99,6 +100,9 @@ class MockEngineClientForEngineTest:
         response.workflow_id = "147258369"
         return response
 
+    def Shutdown(self, request: eng_msgs.ShutdownRequest) -> eng_msgs.ShutdownResponse:
+        return eng_msgs.ShutdownResponse()
+
 
 mock_client: MockEngineClientForEngineTest
 
@@ -124,7 +128,7 @@ def setup_function(monkeypatch):
 
 def test_get_units(setup_function) -> None:
     # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
+    sut = grpcapi.Engine()
 
     # Execute
     result: Mapping[str, Collection[str]] = sut.get_units()
@@ -134,6 +138,17 @@ def test_get_units(setup_function) -> None:
     assert len(result["001_empty_category"]) == 0
     assert len(result["002_length"]) == 4
     assert len(result["003_seconds"]) == 1
+
+
+def test_get_run_only_mode(setup_function) -> None:
+    # Setup
+    sut = grpcapi.Engine(is_run_only=True)
+
+    # Execute
+    result: bool = sut.get_run_only_mode()
+
+    # Verify
+    assert result is True
 
 
 @pytest.mark.parametrize("workflow_type", [mcapi.WorkflowType.DATA, mcapi.WorkflowType.PROCESS])
@@ -218,6 +233,16 @@ def test_get_preference(setup_function, key: str, value: object) -> None:
     assert result == value
 
 
+def test_get_preference_no_value(setup_function) -> None:
+    # Setup
+    engine = grpcapi.Engine()
+
+    # SUT
+    with pytest.raises(Exception) as ex:
+        engine.get_preference("key")
+        assert ex.value == "Server did not return a value"
+
+
 @pytest.mark.parametrize("value", [True, 1, 2.3, "e"])
 def test_set_preference(setup_function, value: Union[bool, int, float, str]) -> None:
     # Setup
@@ -251,3 +276,20 @@ def test_get_engine_info(setup_function) -> None:
     assert info.server_type == "WorkflowCenter"
     assert info.install_location == "C:\\Path\\To\\ModelCenter\\"
     assert info.base_url is None
+
+
+def test_close(setup_function) -> None:
+    """
+    Verify that close calls Shutdown.
+    """
+
+    # Setup
+    with unittest.mock.patch.object(
+        mock_client, "Shutdown", return_value=eng_msgs.ShutdownResponse()
+    ) as mock_grpc_method:
+        with grpcapi.Engine() as sut:
+            # SUT
+            pass
+
+        # Verification
+        mock_grpc_method.assert_called_once_with(eng_msgs.ShutdownRequest())

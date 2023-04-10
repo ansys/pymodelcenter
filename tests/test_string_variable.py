@@ -199,6 +199,35 @@ def test_retrieved_metadata_includes_unsupported_type(
 
 
 @pytest.mark.parametrize(
+    "sut_type",
+    [
+        StringVariable,
+        StringArray,
+    ],
+)
+def test_set_metadata_invalid_custom_metadata(
+    monkeypatch, sut_type: Union[StringVariable, StringArray]
+):
+    # Set up
+    mock_client = MockWorkflowClientForStringVarTest()
+    mock_response = SetMetadataResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "StringVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, None)
+        new_metadata = acvi.FileMetadata()
+
+        # Execute
+        with pytest.raises(TypeError):
+            sut.set_metadata(new_metadata)
+
+        # Verify
+        mock_grpc_method.assert_not_called()
+
+
+@pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
         ("", StringVariable, acvi.StringMetadata),
@@ -275,6 +304,44 @@ def test_set_metadata_populated_custom_metadata(
         expected_request.new_metadata.base_metadata.custom_metadata["real_value"].MergeFrom(
             VariableValue(double_value=-867.5309)
         )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(
+    "sut_type,metadata_type",
+    [
+        (StringVariable, acvi.StringMetadata),
+        (StringArray, acvi.StringArrayMetadata),
+    ],
+)
+def test_set_metadata_populated_enums(
+    monkeypatch,
+    sut_type: Union[StringVariable, StringArray],
+    metadata_type: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
+):
+    # Set up
+    mock_client = MockWorkflowClientForStringVarTest()
+    mock_response = SetMetadataResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "StringVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, None)
+        new_metadata = metadata_type()
+        new_metadata.enumerated_values = [acvi.StringValue("1"), acvi.StringValue("2")]
+        new_metadata.enumerated_aliases = ["a", "b"]
+
+        # Execute
+        sut.set_metadata(new_metadata)
+
+        # Verify
+        expected_request = SetStringVariableMetadataRequest(target=sut_element_id)
+        expected_request.new_metadata.base_metadata.description = ""
+        expected_request.new_metadata.enum_values.MergeFrom(
+            [acvi.StringValue("1"), acvi.StringValue("2")]
+        )
+        expected_request.new_metadata.enum_aliases.MergeFrom(["a", "b"])
         mock_grpc_method.assert_called_once_with(expected_request)
 
 

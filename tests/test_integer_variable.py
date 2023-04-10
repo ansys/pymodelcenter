@@ -260,6 +260,35 @@ def test_retrieved_metadata_should_convert_bounds(
 
 
 @pytest.mark.parametrize(
+    "sut_type",
+    [
+        IntegerVariable,
+        IntegerArray,
+    ],
+)
+def test_set_metadata_invalid_custom_metadata(
+    monkeypatch, sut_type: Union[IntegerVariable, IntegerArray]
+):
+    # Set up
+    mock_client = MockWorkflowClientForIntegerVarTest()
+    mock_response = SetMetadataResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "IntegerVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, None)
+        new_metadata = acvi.FileMetadata()
+
+        # Execute
+        with pytest.raises(TypeError):
+            sut.set_metadata(new_metadata)
+
+        # Verify
+        mock_grpc_method.assert_not_called()
+
+
+@pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
         ("", IntegerVariable, acvi.IntegerMetadata),
@@ -393,6 +422,47 @@ def test_set_metadata_should_convert_bounds(
             expected_request.new_metadata.upper_bound = expected_upper_bound
         if expected_lower_bound_set:
             expected_request.new_metadata.lower_bound = expected_lower_bound
+        expected_request.new_metadata.numeric_metadata.MergeFrom(
+            NumericVariableMetadata(units="", display_format="")
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(
+    "sut_type,metadata_type",
+    [
+        (IntegerVariable, acvi.IntegerMetadata),
+        (IntegerArray, acvi.IntegerArrayMetadata),
+    ],
+)
+def test_set_metadata_populated_enums(
+    monkeypatch,
+    sut_type: Union[IntegerVariable, IntegerArray],
+    metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+):
+    # Set up
+    mock_client = MockWorkflowClientForIntegerVarTest()
+    mock_response = SetMetadataResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "IntegerVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, None)
+        new_metadata = metadata_type()
+        new_metadata.enumerated_values = [acvi.IntegerValue(1), acvi.IntegerValue(2)]
+        new_metadata.enumerated_aliases = ["a", "b"]
+
+        # Execute
+        sut.set_metadata(new_metadata)
+
+        # Verify
+        expected_request = SetIntegerVariableMetadataRequest(target=sut_element_id)
+        expected_request.new_metadata.base_metadata.description = ""
+        expected_request.new_metadata.enum_values.MergeFrom(
+            [acvi.IntegerValue(1), acvi.IntegerValue(2)]
+        )
+        expected_request.new_metadata.enum_aliases.MergeFrom(["a", "b"])
         expected_request.new_metadata.numeric_metadata.MergeFrom(
             NumericVariableMetadata(units="", display_format="")
         )

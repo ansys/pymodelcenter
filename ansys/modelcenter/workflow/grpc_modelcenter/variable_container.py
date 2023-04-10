@@ -29,7 +29,6 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
         ----------
         element_id: the element ID of the child group.
         """
-        raise NotImplementedError()
 
     def __init__(self, element_id: ElementId, channel: grpc.Channel):
         """

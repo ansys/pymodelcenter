@@ -20,7 +20,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
 
         Parameters
         ----------
-        var_name: str
+        var_id: str
             Name of variable to set.
         stub: ModelCenterWorkflowServiceStub
             gRPC stub to use.
@@ -54,7 +54,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
 
     @overrides
     def visit_file(self, value: acvi.FileValue) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: no cover
 
     @overrides
     def visit_integer_array(self, value: acvi.IntegerArrayValue) -> bool:
@@ -94,7 +94,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
 
     @overrides
     def visit_file_array(self, value: acvi.FileArrayValue) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def _scalar_request(
         self, value: acvi.IVariableValue, request_type: Type, value_type: Type, grpc_call: Callable

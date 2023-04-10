@@ -219,6 +219,35 @@ def test_retrieved_metadata_should_convert_bounds(
 
 
 @pytest.mark.parametrize(
+    "sut_type",
+    [
+        DoubleVariable,
+        DoubleArray,
+    ],
+)
+def test_set_metadata_invalid_custom_metadata(
+    monkeypatch, sut_type: Union[DoubleVariable, DoubleArray]
+):
+    # Set up
+    mock_client = MockWorkflowClientForDoubleVarTest()
+    mock_response = SetMetadataResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "DoubleVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, None)
+        new_metadata = acvi.FileMetadata()
+
+        # Execute
+        with pytest.raises(TypeError):
+            sut.set_metadata(new_metadata)
+
+        # Verify
+        mock_grpc_method.assert_not_called()
+
+
+@pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
         ("", DoubleVariable, acvi.RealMetadata),
@@ -352,6 +381,47 @@ def test_set_metadata_should_convert_bounds(
             expected_request.new_metadata.upper_bound = expected_upper_bound
         if expected_lower_bound_set:
             expected_request.new_metadata.lower_bound = expected_lower_bound
+        expected_request.new_metadata.numeric_metadata.MergeFrom(
+            NumericVariableMetadata(units="", display_format="")
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(
+    "sut_type,metadata_type",
+    [
+        (DoubleVariable, acvi.RealMetadata),
+        (DoubleArray, acvi.RealArrayMetadata),
+    ],
+)
+def test_set_metadata_populated_enums(
+    monkeypatch,
+    sut_type: Union[DoubleVariable, DoubleArray],
+    metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
+):
+    # Set up
+    mock_client = MockWorkflowClientForDoubleVarTest()
+    mock_response = SetMetadataResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "DoubleVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, None)
+        new_metadata = metadata_type()
+        new_metadata.enumerated_values = [acvi.RealValue(1.1), acvi.RealValue(2.2)]
+        new_metadata.enumerated_aliases = ["a", "b"]
+
+        # Execute
+        sut.set_metadata(new_metadata)
+
+        # Verify
+        expected_request = SetDoubleVariableMetadataRequest(target=sut_element_id)
+        expected_request.new_metadata.base_metadata.description = ""
+        expected_request.new_metadata.enum_values.MergeFrom(
+            [acvi.RealValue(1.1), acvi.RealValue(2.2)]
+        )
+        expected_request.new_metadata.enum_aliases.MergeFrom(["a", "b"])
         expected_request.new_metadata.numeric_metadata.MergeFrom(
             NumericVariableMetadata(units="", display_format="")
         )

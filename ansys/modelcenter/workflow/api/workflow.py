@@ -138,13 +138,13 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
 
     # TODO/REDUCE: consider dropping for Phase II
-    def set_scheduler(self, schedular: str) -> None:
+    def set_scheduler(self, scheduler: str) -> None:
         """
         Set the current active scheduler for the Model.
 
         Parameters
         ----------
-        schedular : str
+        scheduler : str
             The scheduler type. Possible types are:
                 * forward
                 * backward
@@ -152,7 +152,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
                 * script
             Note: all scheduler types are case-sensitive.
         """
-        self._instance.setScheduler(schedular)
+        raise NotImplementedError()  # pragma: no cover
 
     @abstractmethod
     def remove_component(self, name: str) -> None:

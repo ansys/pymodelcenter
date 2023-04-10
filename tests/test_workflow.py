@@ -1,5 +1,6 @@
 """Tests for Workflow."""
 from typing import Iterable, List, Mapping, Type
+import unittest
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as ewapi
@@ -278,6 +279,19 @@ def test_workflow_close(setup_function) -> None:
 
     # Verify
     assert mock_client.was_closed
+
+
+def test_workflow_auto_close(setup_function) -> None:
+    # Setup
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowClose", return_value=wkf_msgs.WorkflowCloseResponse()
+    ) as mock_grpc_method:
+        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz") as sut:
+            # SUT
+            pass
+
+        # Verification
+        mock_grpc_method.assert_called_once_with(wkf_msgs.WorkflowId(id="123"))
 
 
 def test_workflow_directory(setup_function) -> None:

@@ -56,7 +56,7 @@ class Engine(IEngine):
     def process_id(self) -> int:
         """Get the id of the connected process; useful for debugging."""
         # Can also get this via grpc if we want.
-        return self._process.get_process_id()
+        return self._process.get_process_id()  # pragma: no cover
 
     @overrides
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:

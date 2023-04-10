@@ -6,7 +6,6 @@ import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
 from ansys.modelcenter.workflow.grpc_modelcenter.component import Component
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
     AnalysisViewPosition,
@@ -75,8 +74,16 @@ def test_full_name(monkeypatch) -> None:
 
 def test_parent_element(monkeypatch) -> None:
     awe_tests.do_test_parent_element(
-        monkeypatch, Component, ElementType.ELEMTYPE_ASSEMBLY, Assembly
+        monkeypatch, Component, ElementType.ELEMTYPE_COMPONENT, Component
     )
+
+
+def test_get_property_names(monkeypatch) -> None:
+    awe_tests.do_test_get_property_names(monkeypatch, Component)
+
+
+def test_get_properties(monkeypatch) -> None:
+    awe_tests.do_test_get_properties(monkeypatch, Component)
 
 
 def test_get_variables_empty(monkeypatch):

@@ -26,4 +26,4 @@ def create_element(info: ElementInfo, channel: grpc.Channel) -> aew_api.IElement
             var_value_convert.grpc_type_enum_to_interop_type(info.var_type), info.id, channel
         )
     elif info.type == ElementType.ELEMTYPE_UNKNOWN:
-        return abstract_elem.AbstractWorkflowElement(info.id, channel)
+        return abstract_elem.UnsupportedWorkflowElement(info.id, channel)

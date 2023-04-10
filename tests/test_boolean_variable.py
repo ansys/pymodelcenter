@@ -202,6 +202,35 @@ def test_retrieved_metadata_includes_unsupported_type(
 
 
 @pytest.mark.parametrize(
+    "sut_type",
+    [
+        BooleanVariable,
+        BooleanArray,
+    ],
+)
+def test_set_metadata_invalid_custom_metadata(
+    monkeypatch, sut_type: Union[BooleanVariable, BooleanArray]
+):
+    # Set up
+    mock_client = MockWorkflowClientForBooleanVarTest()
+    mock_response = SetMetadataResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "BooleanVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, None)
+        new_metadata = acvi.FileMetadata()
+
+        # Execute
+        with pytest.raises(TypeError):
+            sut.set_metadata(new_metadata)
+
+        # Verify
+        mock_grpc_method.assert_not_called()
+
+
+@pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
         ("", BooleanVariable, acvi.BooleanMetadata),

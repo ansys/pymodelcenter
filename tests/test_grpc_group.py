@@ -11,17 +11,19 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     ElementId,
     ElementIdCollection,
     ElementName,
+    ElementType,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     VariableType,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeVariable
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+import tests.test_abstract_workflow_element as awe_tests
 import tests.test_variable_container as base_tests
 
 
 class MockWorkflowClientForAssemblyTest:
-    def __init__(self):
+    def __init__(self) -> None:
         self._name_responses: Dict[str, str] = {}
 
     @property
@@ -81,6 +83,34 @@ def test_get_groups_one_group(monkeypatch):
 
 def test_get_groups_multiple_groups(monkeypatch):
     base_tests.do_test_get_groups_multiple_groups(monkeypatch, Group)
+
+
+def test_element_id(monkeypatch) -> None:
+    awe_tests.do_test_element_id(monkeypatch, Group, "SUT_TEST_ID")
+
+
+def test_parent_element_id(monkeypatch) -> None:
+    awe_tests.do_test_parent_element_id(monkeypatch, Group)
+
+
+def test_name(monkeypatch) -> None:
+    awe_tests.do_test_name(monkeypatch, Group)
+
+
+def test_full_name(monkeypatch) -> None:
+    awe_tests.do_test_name(monkeypatch, Group)
+
+
+def test_parent_element(monkeypatch) -> None:
+    awe_tests.do_test_parent_element(monkeypatch, Group, ElementType.ELEMTYPE_GROUP, Group)
+
+
+def test_get_property_names(monkeypatch) -> None:
+    awe_tests.do_test_get_property_names(monkeypatch, Group)
+
+
+def test_get_properties(monkeypatch) -> None:
+    awe_tests.do_test_get_properties(monkeypatch, Group)
 
 
 def test_can_get_name(monkeypatch):

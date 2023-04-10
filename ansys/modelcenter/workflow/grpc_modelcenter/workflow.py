@@ -254,7 +254,7 @@ class Workflow(wfapi.IWorkflow):
             raise ValueError("Element is not a component.")
 
     @overrides
-    def set_scheduler(self, schedular: str) -> None:
+    def set_scheduler(self, scheduler: str) -> None:
         raise NotImplementedError()
 
     @overrides

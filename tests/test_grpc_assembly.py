@@ -11,7 +11,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
 from ansys.modelcenter.workflow.grpc_modelcenter.component import Component
-from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
     MetadataGetValueRequest,
     MetadataSetValueRequest,
@@ -147,6 +146,14 @@ def test_parent_element(monkeypatch) -> None:
     awe_tests.do_test_parent_element(monkeypatch, Assembly, ElementType.ELEMTYPE_ASSEMBLY, Assembly)
 
 
+def test_get_property_names(monkeypatch) -> None:
+    awe_tests.do_test_get_property_names(monkeypatch, Assembly)
+
+
+def test_get_properties(monkeypatch) -> None:
+    awe_tests.do_test_get_properties(monkeypatch, Assembly)
+
+
 def test_can_get_control_type(monkeypatch) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_client.control_type_responses["TEST_ID_SHOULD_MATCH"] = "Sequence"
@@ -267,7 +274,7 @@ def test_get_child_assemblies_multiple_children(monkeypatch) -> None:
 
 
 def test_get_variables_empty(monkeypatch) -> None:
-    base_tests.do_test_get_variables_empty(monkeypatch, Group)
+    base_tests.do_test_get_variables_empty(monkeypatch, Assembly)
 
 
 @pytest.mark.parametrize(
@@ -288,24 +295,24 @@ def test_get_variables_empty(monkeypatch) -> None:
 )
 def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type) -> None:
     base_tests.do_test_get_variables_one_variable(
-        monkeypatch, Group, var_type, expected_wrapper_type
+        monkeypatch, Assembly, var_type, expected_wrapper_type
     )
 
 
 def test_get_variables_multiple_variables(monkeypatch) -> None:
-    base_tests.do_test_get_variables_multiple_variables(monkeypatch, Group)
+    base_tests.do_test_get_variables_multiple_variables(monkeypatch, Assembly)
 
 
 def test_get_groups_empty(monkeypatch) -> None:
-    base_tests.do_test_get_groups_empty(monkeypatch, Group)
+    base_tests.do_test_get_groups_empty(monkeypatch, Assembly)
 
 
 def test_get_groups_one_group(monkeypatch) -> None:
-    base_tests.do_test_get_groups_one_group(monkeypatch, Group)
+    base_tests.do_test_get_groups_one_group(monkeypatch, Assembly)
 
 
 def test_get_groups_multiple_groups(monkeypatch) -> None:
-    base_tests.do_test_get_groups_multiple_groups(monkeypatch, Group)
+    base_tests.do_test_get_groups_multiple_groups(monkeypatch, Assembly)
 
 
 @pytest.mark.parametrize(

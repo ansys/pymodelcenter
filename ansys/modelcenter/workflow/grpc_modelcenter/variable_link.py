@@ -26,7 +26,7 @@ class VariableLink(wfapi.IVariableLink):
 
     @overrides
     def __str__(self):
-        return "{LHS: " + self._lhs_id + ", RHS: " + self._rhs + "}"
+        return "{LHS: " + self._lhs_id + ", RHS: " + self._rhs + "}"  # pragma: no cover
 
     @overrides
     def suspend_link(self) -> None:
