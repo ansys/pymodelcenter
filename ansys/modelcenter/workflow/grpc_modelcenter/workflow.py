@@ -73,12 +73,14 @@ class Workflow(wfapi.IWorkflow):
         self,
         inputs: Mapping[str, acvi.VariableState],
         reset: bool,
-        validation_ids: AbstractSet[str],
+        validation_names: AbstractSet[str],
+        collection_names: AbstractSet[str],
     ) -> workflow_msg.WorkflowRunRequest:
         request = workflow_msg.WorkflowRunRequest(
             target=workflow_msg.WorkflowId(id=self._id),
             reset=reset,
-            validation_ids=[val_id for val_id in validation_ids],
+            validation_names=[name for name in validation_names],
+            collection_names=[name for name in collection_names],
         )
 
         var_id: str
@@ -98,7 +100,7 @@ class Workflow(wfapi.IWorkflow):
         collect_names: AbstractSet[str],
     ) -> Mapping[str, acvi.VariableState]:
         request: workflow_msg.WorkflowRunRequest = self._create_run_request(
-            inputs, reset, validation_names
+            inputs, reset, validation_names, collect_names
         )
         response = self._stub.WorkflowRun(request)
         elem_id: str
