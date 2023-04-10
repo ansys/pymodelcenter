@@ -18,7 +18,6 @@ class IVariable(aew_api.IVariable, ABC):
     @abstractmethod
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         """Get the standard metadata for this variable."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -31,7 +30,6 @@ class IVariable(aew_api.IVariable, ABC):
         IComponent :
             Owning IComponent object.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -42,7 +40,6 @@ class IVariable(aew_api.IVariable, ABC):
         The type is returned according to ModelCenter's name for the type.
         ModelCenter contains some geometry-specific types which are stored as string data.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def invalidate(self) -> None:
@@ -51,7 +48,6 @@ class IVariable(aew_api.IVariable, ABC):
 
         This will set all dependent variables invalid also.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def direct_precedents(self, follow_suspended: bool = False) -> Collection["IVariable"]:
@@ -74,7 +70,6 @@ class IVariable(aew_api.IVariable, ABC):
         -------
         A Collection of IVariables that are immediate precedents of this variable.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def direct_dependents(self, follow_suspended: bool = False) -> Collection["IVariable"]:
@@ -93,7 +88,6 @@ class IVariable(aew_api.IVariable, ABC):
         -------
         A Collection of IVariables that are immediate dependents of this variable.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def precedent_links(self) -> Collection[IVariableLink]:
@@ -108,7 +102,6 @@ class IVariable(aew_api.IVariable, ABC):
         -------
         A Collection of IVariable links that are immediate precedents of this variable.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def dependent_links(self) -> Collection[IVariableLink]:
@@ -121,7 +114,6 @@ class IVariable(aew_api.IVariable, ABC):
         -------
         A Collection of IVariableLinks that are immediate dependents of this variable.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def precedents(self, follow_suspended: bool = False) -> Sequence["IVariable"]:
@@ -140,7 +132,6 @@ class IVariable(aew_api.IVariable, ABC):
         -------
         A Collection of IVariables that influence the value of this variable.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def dependents(self, follow_suspended: bool = False) -> Sequence["IVariable"]:
@@ -159,4 +150,3 @@ class IVariable(aew_api.IVariable, ABC):
         -------
         A Collection of IVariables that are influenced by the value of this variable.
         """
-        raise NotImplementedError()

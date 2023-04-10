@@ -24,7 +24,6 @@ class IFileArray(IFileVariableBase, IArray, ABC):
         bool :
             `True` if the file content is to be saved with the workflow.
         """
-        raise NotImplementedError()
 
     @save_with_model.setter
     @abstractmethod
@@ -37,9 +36,8 @@ class IFileArray(IFileVariableBase, IArray, ABC):
         value : bool
             Set to `True` if the file content is to be saved with the workflow.
         """
-        raise NotImplementedError()
 
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.FileArrayMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

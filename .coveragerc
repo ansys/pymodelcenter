@@ -1,0 +1,2 @@
+[run]
+omit = ansys/modelcenter/workflow/grpc_modelcenter/proto/*

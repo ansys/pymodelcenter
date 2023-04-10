@@ -21,7 +21,6 @@ class IIfComponent(IComponent, ABC):
         -------
         True if in exclusive mode, False if in inclusive mode.
         """
-        raise NotImplementedError()
 
     @exclusive.setter
     @abstractmethod
@@ -34,7 +33,6 @@ class IIfComponent(IComponent, ABC):
         value : bool
             The new value.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -47,7 +45,6 @@ class IIfComponent(IComponent, ABC):
         -------
         True if there is an else branch, False otherwise.
         """
-        raise NotImplementedError()
 
     @run_last_branch_by_default.setter
     @abstractmethod
@@ -60,13 +57,11 @@ class IIfComponent(IComponent, ABC):
         value : bool
             The new value.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def num_branches(self) -> int:
         """Get the number of branches."""
-        raise NotImplementedError()
 
     @abstractmethod
     def get_branch_condition(self, index: int) -> str:
@@ -83,7 +78,6 @@ class IIfComponent(IComponent, ABC):
         str :
              The branch condition.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def set_branch_condition(self, index: int, condition: str) -> None:
@@ -97,7 +91,6 @@ class IIfComponent(IComponent, ABC):
         condition : str
             The new condition.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_branch_name(self, index: int) -> str:
@@ -113,7 +106,6 @@ class IIfComponent(IComponent, ABC):
         -------
         The name of the branch.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def rename_branch(self, index: int, name: str) -> None:
@@ -127,4 +119,3 @@ class IIfComponent(IComponent, ABC):
         name : str
             New name of the branch.
         """
-        raise NotImplementedError()

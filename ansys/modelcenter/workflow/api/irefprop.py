@@ -23,48 +23,40 @@ class IReferencePropertyBase(ABC):
     @abstractmethod
     def enum_values(self) -> str:
         """Get the property's enumerated values."""
-        raise NotImplementedError()
 
     @enum_values.setter
     @abstractmethod
     def enum_values(self, value: str) -> None:
         """Set the property's enumerated values."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def is_input(self) -> bool:
         """Get whether the property is an input."""
-        raise NotImplementedError()
 
     @is_input.setter
     def is_input(self, value):
         """Set whether the property is an input."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def title(self) -> str:
         """Get the title of the property."""
-        raise NotImplementedError()
 
     @title.setter
     @abstractmethod
     def title(self, value: str) -> None:
         """Set the title of the property."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def description(self) -> str:
         """Get the description of the property."""
-        raise NotImplementedError()
 
     @description.setter
     @abstractmethod
     def description(self, value):
         """Set the description of the property."""
-        raise NotImplementedError()
 
     @abstractmethod
     def get_name(self) -> str:
@@ -75,7 +67,6 @@ class IReferencePropertyBase(ABC):
         -------
         The name of the reference array property.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_type(self) -> RefPropValueTypes:
@@ -86,7 +77,6 @@ class IReferencePropertyBase(ABC):
         -------
         The value type of the reference array property.
         """
-        raise NotImplementedError()
 
 
 class IReferenceProperty(IReferencePropertyBase, ABC):
@@ -97,12 +87,10 @@ class IReferenceProperty(IReferencePropertyBase, ABC):
         self, value: Union[acvi.BooleanValue, acvi.IntegerValue, acvi.RealValue, acvi.StringValue]
     ):
         """Set the value of the reference property."""
-        raise NotImplementedError()
 
     @abstractmethod
     def get_value(self) -> RefPropValueTypes:
         """Get the value of the reference property."""
-        raise NotImplementedError()
 
 
 class IReferenceArrayProperty(IReferencePropertyBase, ABC):
@@ -115,12 +103,10 @@ class IReferenceArrayProperty(IReferencePropertyBase, ABC):
         value: Union[acvi.BooleanValue, acvi.IntegerValue, acvi.RealValue, acvi.StringValue],
     ):
         """Set the value of the reference property at the specified index."""
-        raise NotImplementedError()
 
     @abstractmethod
     def get_value(self, index: int) -> RefPropValueTypes:
         """Get the value of the reference property at the specified index."""
-        raise NotImplementedError()
 
 
 REF_PROPERTY_RETURN = TypeVar(
@@ -131,12 +117,12 @@ REF_PROPERTY_RETURN = TypeVar(
 class IReferencePropertyOwner(ABC, Generic[REF_PROPERTY_RETURN]):
     """Defines common methods for variables with reference properties."""
 
+    @abstractmethod
     def create_reference_prop(
         self, name: str, prop_value_type: RefPropValueTypes
     ) -> REF_PROPERTY_RETURN:
         """Create a reference property with the specified name and type."""
-        raise NotImplementedError()
 
+    @abstractmethod
     def get_reference_prop(self, name: str) -> REF_PROPERTY_RETURN:
         """Get a reference property with the specified name."""
-        raise NotImplementedError()

@@ -39,7 +39,6 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         -------
         A new Workflow instance.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_formatter(self, fmt: str) -> IFormat:
@@ -56,7 +55,6 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         -------
         A Format object that formats in the given style.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
@@ -76,7 +74,6 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         -------
         The value of the given preference.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def set_preference(self, pref: str, value: Union[bool, int, float, str]) -> None:
@@ -93,7 +90,6 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         value: Union[bool, int, float, str]
             The value to set.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_units(self) -> Mapping[str, Collection[str]]:
@@ -119,4 +115,3 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         -------
         True if in Run-Only mode; otherwise, False.
         """
-        raise NotImplementedError()

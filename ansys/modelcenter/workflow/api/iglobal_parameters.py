@@ -17,7 +17,6 @@ class IGlobalParameters(ABC):
     @abstractmethod
     def count(self) -> int:
         """Count of the name/value pairs."""
-        raise NotImplementedError()
 
     @abstractmethod
     def get_item(self, index: Union[int, str]) -> object:
@@ -33,7 +32,6 @@ class IGlobalParameters(ABC):
         -------
         The value of the parameter.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def set_item(self, index: Union[int, str], new_value: object) -> None:
@@ -47,7 +45,6 @@ class IGlobalParameters(ABC):
         new_value :
             The variable to hold the value of the parameter.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def set_export_to_remote_components(self, index: Union[int, str], export: bool) -> None:
@@ -62,7 +59,6 @@ class IGlobalParameters(ABC):
         export :
             If true, this name/value pair will be sent.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def remove(self, index: Union[int, str]) -> None:
@@ -74,4 +70,3 @@ class IGlobalParameters(ABC):
         index :
             The name of the parameter to remove.
         """
-        raise NotImplementedError()

@@ -13,4 +13,4 @@ class IBooleanArray(IArray, ABC):
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.BooleanMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

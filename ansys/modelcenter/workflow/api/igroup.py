@@ -19,4 +19,4 @@ class IGroupOwner(IVariableContainer, ABC):
 class IGroup(IGroupOwner, ABC):
     """Represents a variable group in ModelCenter."""
 
-    pass
+    ...  # pragma: no cover

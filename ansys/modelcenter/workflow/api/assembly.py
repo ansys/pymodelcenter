@@ -16,7 +16,6 @@ class IAssemblyChild(ABC):
     @abstractmethod
     def index_in_parent(self) -> int:
         """Get the index of the assembly within its parent assembly."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -28,7 +27,6 @@ class IAssemblyChild(ABC):
         -------
         The parent assembly or None if this assembly is the root of the workflow.
         """
-        raise NotImplementedError()
 
 
 class IAssembly(
@@ -75,7 +73,6 @@ class IAssembly(
         -------
         The created assembly object.
         """
-        raise NotImplementedError()
 
     # TODO: add constants / enum for ModelCenter type strings?
     def add_variable(self, name: str, mc_type: Union[acvi.VariableType, str]) -> aew_api.IVariable:
@@ -116,7 +113,6 @@ class IAssembly(
         -------
         An object representing the created variable.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def delete_variable(self, name: str) -> bool:
@@ -136,4 +132,3 @@ class IAssembly(
         True if the specified variable was located and deleted,
         False if it was not and no action was taken.
         """
-        raise NotImplementedError()

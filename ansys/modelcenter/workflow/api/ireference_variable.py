@@ -14,16 +14,13 @@ class IReferenceVariable(IVariable, IReferencePropertyOwner[IReferenceProperty],
     @abstractmethod
     def reference(self) -> str:
         """Get the reference equation for this variable."""
-        raise NotImplementedError()
 
     @reference.setter
     @abstractmethod
     def reference(self, value: str) -> None:
         """Set the reference for this variable."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def referenced_variables(self) -> Sequence[IVariable]:
         """Get the variables referenced by this variable."""
-        raise NotImplementedError()

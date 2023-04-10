@@ -17,9 +17,15 @@ class IArray(IVariable, ABC):
         array must be exactly the same size or an error ensues.
         If True, the array will resize itself when such link is validated.
         """
-        raise NotImplementedError()
 
     @auto_size.setter
     @abstractmethod
     def auto_size(self, value: bool) -> None:
-        raise NotImplementedError()
+        """
+        Setter for the auto_size property.
+
+        Parameters
+        ----------
+        value: bool
+            The new value.
+        """

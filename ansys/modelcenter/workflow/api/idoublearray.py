@@ -13,4 +13,4 @@ class IDoubleArray(IArray, ABC):
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.RealArrayMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

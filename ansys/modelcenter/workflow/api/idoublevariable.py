@@ -13,4 +13,4 @@ class IDoubleVariable(IVariable, ABC):
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.RealMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

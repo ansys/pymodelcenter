@@ -21,7 +21,6 @@ class IFileVariableBase(ABC):
         bool :
             `True` if the file content is to be saved with the Model file.
         """
-        raise NotImplementedError()
 
     @save_with_model.setter
     @abstractmethod
@@ -34,7 +33,6 @@ class IFileVariableBase(ABC):
         value : bool
             Set to `True` if the file content is to be saved with the Model file.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -47,7 +45,6 @@ class IFileVariableBase(ABC):
         bool :
             `True` if direct file transfer is used for incoming link.
         """
-        raise NotImplementedError()
 
     @direct_transfer.setter
     @abstractmethod
@@ -60,7 +57,6 @@ class IFileVariableBase(ABC):
         value : bool
             Set to `True` if direct file transfer is used for incoming link.
         """
-        raise NotImplementedError()
 
 
 # TODO/REDUCE: Consider dropping for Phase II.
@@ -70,4 +66,4 @@ class IFileVariable(IFileVariableBase, IVariable, ABC):
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.FileMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

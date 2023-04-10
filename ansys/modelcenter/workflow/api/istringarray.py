@@ -13,4 +13,4 @@ class IStringArray(IArray, ABC):
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.StringArrayMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

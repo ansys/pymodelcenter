@@ -16,7 +16,6 @@ class IReferenceArray(IArray, IReferencePropertyOwner[IReferenceArrayProperty], 
     @abstractmethod
     def get_reference(self, index: int) -> str:
         """Get the reference equation for this variable at the specified index."""
-        raise NotImplementedError()
 
     @abstractmethod
     def set_reference(self, index: int, new_reference: str):
@@ -37,4 +36,3 @@ class IReferenceArray(IArray, IReferencePropertyOwner[IReferenceArrayProperty], 
         object
             The references variables of the element.
         """
-        raise NotImplementedError()

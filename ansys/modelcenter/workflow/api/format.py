@@ -160,13 +160,11 @@ class IFormat(ABC):
         -------
         The format string used to format values.
         """
-        raise NotImplementedError()
 
     @format.setter
     @abstractmethod
     def format(self, fmt: str) -> None:
         """Setter for format property."""
-        raise NotImplementedError()
 
     @abstractmethod
     def string_to_integer(self, string: str) -> int64:
@@ -185,7 +183,6 @@ class IFormat(ABC):
         -------
         The value of the string.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def string_to_real(self, string: str) -> float64:
@@ -204,7 +201,6 @@ class IFormat(ABC):
         -------
         The value of the string.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def integer_to_string(self, integer: int64) -> str:
@@ -220,7 +216,6 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def real_to_string(self, real: float64) -> str:
@@ -236,7 +231,6 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def string_to_string(self, string: str) -> str:
@@ -252,7 +246,6 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def integer_to_editable_string(self, integer: int64) -> str:
@@ -269,7 +262,6 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def real_to_editable_string(self, real: float64) -> str:
@@ -286,4 +278,3 @@ class IFormat(ABC):
         -------
         The formatted string.
         """
-        raise NotImplementedError()

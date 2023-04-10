@@ -38,7 +38,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         value : acvi.IVariableValue
             The new value to set.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_value(self, var_name: str) -> acvi.VariableState:
@@ -54,7 +53,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         The value as a VariableState.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
@@ -74,7 +72,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
             The metadata, in the form of a CommonVariableMetadata
             implementation.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def create_link(self, variable: Union[IVariable, str], equation: Union[str, IVariable]) -> None:
@@ -90,12 +87,10 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
             Equation of the link. You may also pass an IVariable object here,
             and its name will become the equation.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def save_workflow(self) -> None:
         """Save the current Model."""
-        raise NotImplementedError()
 
     @abstractmethod
     def save_workflow_as(self, file_name: str) -> None:
@@ -107,12 +102,10 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         file_name : str
             Path to save the Model in.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def close_workflow(self) -> None:
         """Close the current Model."""
-        raise NotImplementedError()
 
     @abstractmethod
     def get_variable(self, name: str) -> IVariable:
@@ -128,7 +121,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         The variable.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_component(self, name: str) -> IComponent:
@@ -144,7 +136,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         The component.
         """
-        raise NotImplementedError()
 
     # TODO/REDUCE: consider dropping for Phase II
     def set_scheduler(self, schedular: str) -> None:
@@ -173,7 +164,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         name : str
             Full ModelCenter path of the component to remove.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def create_assembly(
@@ -196,7 +186,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Assembly.
         """
         # TODO: document / define enumeration for allowed assembly types.
-        raise NotImplementedError()
 
     @abstractmethod
     def auto_link(self, src_comp: str, dest_comp: str) -> Collection[IVariableLink]:
@@ -214,37 +203,29 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         A collection of the created links.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_links(self) -> Collection[IVariableLink]:
         """
         Get a list of all links in the model.
 
-        Parameters
-        ----------
-        reserved
-            Parameter reserved for future use.
-
         Returns
         -------
         Iterable over variable links.
         """
-        raise NotImplementedError(0)
 
     @abstractmethod
     def get_workflow_uuid(self) -> str:
         """Get the unique ID string for the current model."""
-        raise NotImplementedError()
 
     @abstractmethod
     def halt(self) -> None:
         """Stop execution of the Model currently running in ModelCenter."""
-        raise NotImplementedError(0)
 
     # TODO / REDUCE: consider dropping all DataMonitor methods for Phase II.
     # TODO / REDUCE: consider dropping DataMonitor related functionality entirely
     #                (if not, update these methods)
+    @abstractmethod
     def get_data_monitor(self, component: Union[IComponent, str], index: int) -> IDataMonitor:
         """
         Get the DataMonitor at the given index for the given component.
@@ -260,7 +241,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         The component's DataMonitor at the given index.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def create_data_monitor(
@@ -284,7 +264,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         The created DataMonitor.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def remove_data_monitor(self, component: Union[IComponent, str], index: int) -> bool:
@@ -302,7 +281,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         True if the component had a DataMonitor at the given index.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def move_component(
@@ -320,7 +298,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         index
             Position in the parent.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_assembly(self, name: Optional[str] = None) -> IAssembly:
@@ -333,7 +310,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
             The full name of the desired assembly.
             If None is passed, the root assembly of the workflow is returned.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def create_component(
@@ -367,4 +343,3 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         The created component.
         """
-        raise NotImplementedError()

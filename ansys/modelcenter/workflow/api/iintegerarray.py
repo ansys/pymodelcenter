@@ -13,4 +13,4 @@ class IIntegerArray(IArray, ABC):
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.IntegerArrayMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

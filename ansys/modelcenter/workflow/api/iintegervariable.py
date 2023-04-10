@@ -13,4 +13,4 @@ class IIntegerVariable(IVariable, ABC):
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.IntegerMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

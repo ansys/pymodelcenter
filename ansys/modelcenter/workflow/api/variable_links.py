@@ -11,13 +11,11 @@ class IVariableLink(ABC):
     @abstractmethod
     def suspend_link(self) -> None:
         """Causes the link to be suspended."""
-        raise NotImplementedError()
 
     # TODO/REDUCE: consider dropping link suspension for Phase II.
     @abstractmethod
     def resume_link(self) -> None:
         """Resumes the link if it was suspended."""
-        raise NotImplementedError()
 
     @abstractmethod
     def break_link(self) -> None:
@@ -27,7 +25,6 @@ class IVariableLink(ABC):
         Breaking the link removes the dependencies between the left-hand and right-hand side of the
         link. This object becomes invalid and cannot be used after calling this method.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -40,7 +37,6 @@ class IVariableLink(ABC):
         a simple variable name, except in cases where the link targets a single array index,
         in which case it will be the name of the variable plus an array index.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -51,10 +47,8 @@ class IVariableLink(ABC):
         This will be a simple equation containing the names of
         the other variables on which this link depends.
         """
-        raise NotImplementedError()
 
     @rhs.setter
     @abstractmethod
     def rhs(self, new_rhs: str) -> None:
         """Set the right-hand side (source) of the link equation."""
-        raise NotImplementedError()

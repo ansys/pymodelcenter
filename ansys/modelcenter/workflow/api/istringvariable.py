@@ -13,4 +13,4 @@ class IStringVariable(IVariable, ABC):
     @overrides
     @abstractmethod
     def get_metadata(self) -> acvi.StringMetadata:
-        raise NotImplementedError()
+        ...  # pragma: no cover

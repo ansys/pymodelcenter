@@ -23,7 +23,6 @@ class IDataMonitor(ABC):
         -------
         The name of the row.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def set_name(self, row: int, name: str) -> None:
@@ -37,7 +36,6 @@ class IDataMonitor(ABC):
         name : str
             The new display name.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def is_renamed(self, row: int) -> bool:
@@ -54,7 +52,6 @@ class IDataMonitor(ABC):
         -------
         True or False
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def get_link(self, row: int) -> str:
@@ -73,7 +70,6 @@ class IDataMonitor(ABC):
         -------
         The full name of the variable, or a blank string.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def set_link(self, row: int, link: str) -> bool:
@@ -93,7 +89,6 @@ class IDataMonitor(ABC):
         True if the link was set, False if the variable or row was not
         valid.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def add_item(self, name: str, link: str) -> int:
@@ -112,7 +107,6 @@ class IDataMonitor(ABC):
         -------
         The index of the new item in the DataMonitor.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def add_unlinked_item(self, name: str) -> int:
@@ -129,7 +123,6 @@ class IDataMonitor(ABC):
         -------
             The index of the new item in the DataMonitor.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def remove_item(self, row: int) -> None:
@@ -141,7 +134,6 @@ class IDataMonitor(ABC):
         row : int
             The row in the DataMonitor of interest.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def remove_link(self, row: int) -> None:
@@ -154,43 +146,36 @@ class IDataMonitor(ABC):
         row :
             The row in the DataMonitor of interest.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def display_full_names(self) -> bool:
         """Get the status of the "Display Full Names" option."""
-        raise NotImplementedError()
 
     @display_full_names.setter
     @abstractmethod
     def display_full_names(self, display_full_names: bool) -> None:
         """Set the "Display Full Names" option."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def auto_delete(self) -> bool:
         """Get the status of the Auto Delete option."""
-        raise NotImplementedError()
 
     @auto_delete.setter
     @abstractmethod
     def auto_delete(self, auto_delete: bool) -> None:
         """Set the status of the Auto Delete option."""
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def display_units(self) -> bool:
         """Get the status of the "Display Units" option."""
-        raise NotImplementedError()
 
     @display_units.setter
     @abstractmethod
     def display_units(self, display_units) -> None:
         """Set the "Display Units" option."""
-        raise NotImplementedError()
 
     @abstractmethod
     def get_col_width(self, col: int) -> int:
@@ -206,7 +191,6 @@ class IDataMonitor(ABC):
         -------
         The column width.
         """
-        raise NotImplementedError()
 
     @abstractmethod
     def set_col_width(self, col: int, width: int) -> None:
@@ -220,19 +204,17 @@ class IDataMonitor(ABC):
         width :
             The new width for the column.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
     def is_valid(self) -> bool:
         """Determine whether all the items in the DataMonitor are \
         valid or not."""
-        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def title(self) -> str:
         """Get the title of the DataMonitor."""
-        raise NotImplementedError()
 
     @title.setter
     @abstractmethod
@@ -245,7 +227,6 @@ class IDataMonitor(ABC):
         title: str
             The new title.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -257,7 +238,6 @@ class IDataMonitor(ABC):
         -------
         A Tuple containing the (width, height) of the DataMonitor.
         """
-        raise NotImplementedError()
 
     @size.setter
     @abstractmethod
@@ -270,7 +250,6 @@ class IDataMonitor(ABC):
         size: Tuple[int, int]
             The new (width, height) of the DataMonitor.
         """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -282,7 +261,6 @@ class IDataMonitor(ABC):
         -------
         A tuple containing the (x,y) position of the DataMonitor.
         """
-        raise NotImplementedError()
 
     @location.setter
     @abstractmethod
@@ -295,4 +273,3 @@ class IDataMonitor(ABC):
         location: Tuple[int, int]
             The new (x,y) location.
         """
-        raise NotImplementedError()
