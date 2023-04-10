@@ -14,6 +14,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     ComponentInvokeMethodRequest,
     ComponentInvokeMethodResponse,
     ComponentIsConnectedResponse,
+    ComponentPaczUrlResponse,
     ComponentReconnectResponse,
     ComponentSourceResponse,
     ElementId,
@@ -54,6 +55,9 @@ class MockWorkflowClientForComponentTests:
 
     def AssemblyGetAnalysisViewPosition(self, request: ElementId) -> AnalysisViewPosition:
         return AnalysisViewPosition()
+
+    def ComponentGetPaczUrl(self, request: ElementId) -> ComponentPaczUrlResponse:
+        return ComponentPaczUrlResponse()
 
 
 def test_element_id(monkeypatch) -> None:
@@ -239,3 +243,28 @@ def test_get_analysis_view_position(monkeypatch):
 
         mock_grpc_method.assert_called_once_with(sut_id)
         assert result == (47, 9001)
+
+
+@pytest.mark.parametrize(
+    "url_in_response,url_set_in_response,expected_result",
+    [
+        ("file://C/component.pacz", True, "file://C/component.pacz"),
+        ("common:/Quadratic", False, None),
+    ],
+)
+def test_pacz_url(monkeypatch, url_in_response, url_set_in_response, expected_result):
+    mock_client = MockWorkflowClientForComponentTests()
+    mock_response = ComponentPaczUrlResponse()
+    if url_set_in_response:
+        mock_response.pacz_url = url_in_response
+    sut_id = ElementId(id_string="SUT_COMPONENT_ID")
+    with unittest.mock.patch.object(
+        mock_client, "ComponentGetPaczUrl", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Component(sut_id, None)
+
+        result = sut.pacz_url
+
+        assert result == expected_result
+        mock_grpc_method.assert_called_once_with(sut_id)

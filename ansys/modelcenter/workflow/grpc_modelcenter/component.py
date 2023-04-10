@@ -1,5 +1,5 @@
 """Definition of Component."""
-from typing import Collection, Tuple
+from typing import Collection, Optional, Tuple
 
 from grpc import Channel
 from overrides import overrides
@@ -90,7 +90,6 @@ class Component(
 
     @property
     @overrides
-    def pacz_url(self):
-        # TODO: Need a more reliable gRPC call than just trying to parse source string
-        # TODO: Upstream merge will include actual return type
-        pass
+    def pacz_url(self) -> Optional[str]:
+        response = self._client.ComponentGetPaczUrl(self._element_id)
+        return response.pacz_url if response.HasField("pacz_url") else None
