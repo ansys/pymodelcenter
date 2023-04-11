@@ -7,7 +7,7 @@ from typing import Optional
 import winreg
 
 
-def _find_exe_location() -> str:
+def _find_exe_location() -> str:  # pragma: no cover
     """Attempts to find ModelCenter.exe."""
     key: winreg.HKEYType = winreg.OpenKey(
         winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Phoenix Integration\ModelCenter"

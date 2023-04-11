@@ -22,7 +22,7 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
     """An abstract base class for gRPC-backed workflow elements."""
 
     def _create_client(self, channel: grpc.Channel) -> ModelCenterWorkflowServiceStub:
-        return ModelCenterWorkflowServiceStub(channel)
+        return ModelCenterWorkflowServiceStub(channel)  # pragma: no cover
 
     def __init__(self, element_id: ElementId, channel: grpc.Channel):
         """
