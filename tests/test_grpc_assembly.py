@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 import unittest.mock
 
 import ansys.common.variableinterop as acvi
@@ -318,8 +318,6 @@ def test_get_groups_multiple_groups(monkeypatch) -> None:
 @pytest.mark.parametrize(
     "var_type,expected_var_type_in_request",
     [
-        ("int", "int"),
-        ("real", "real"),
         (acvi.VariableType.INTEGER, "int"),
         (acvi.VariableType.REAL, "real"),
         (acvi.VariableType.BOOLEAN, "bool"),
@@ -333,7 +331,7 @@ def test_get_groups_multiple_groups(monkeypatch) -> None:
     ],
 )
 def test_assembly_create_variable(
-    monkeypatch, var_type: Union[str, acvi.VariableType], expected_var_type_in_request: str
+    monkeypatch, var_type: acvi.VariableType, expected_var_type_in_request: str
 ) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = AddAssemblyVariableResponse(id=ElementId(id_string="CREATED_VAR"))

@@ -31,16 +31,6 @@ class IVariable(aew_api.IVariable, ABC):
             Owning IComponent object.
         """
 
-    @property
-    @abstractmethod
-    def get_modelcenter_type(self) -> str:
-        """
-        Get the type of data this variable accepts / stores as a value.
-
-        The type is returned according to ModelCenter's name for the type.
-        ModelCenter contains some geometry-specific types which are stored as string data.
-        """
-
     @abstractmethod
     def invalidate(self) -> None:
         """

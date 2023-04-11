@@ -39,12 +39,6 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
         response = self._client.VariableGetType(self._element_id)
         return grpc_type_enum_to_interop_type(response.var_type)
 
-    @property
-    @overrides
-    def get_modelcenter_type(self) -> str:
-        response = self._client.VariableGetType(self._element_id)
-        return response.mc_type
-
     # TODO/REDUCE: Consider dropping invalidate, predecent / dependent methods for Phase II
 
     @overrides

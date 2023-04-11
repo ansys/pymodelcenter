@@ -1,6 +1,6 @@
 """Contains definitions for assemblies."""
 from abc import ABC, abstractmethod
-from typing import Optional, Union
+from typing import Optional
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -74,8 +74,7 @@ class IAssembly(
         The created assembly object.
         """
 
-    # TODO: add constants / enum for ModelCenter type strings?
-    def add_variable(self, name: str, mc_type: Union[acvi.VariableType, str]) -> aew_api.IVariable:
+    def add_variable(self, name: str, mc_type: acvi.VariableType) -> aew_api.IVariable:
         """
         Create a variable on this assembly.
 
@@ -86,28 +85,6 @@ class IAssembly(
 
         mc_type
             The type for the new variable.
-            The caller may either specify a type from the Ansys Common Variable Interop library,
-            or a string for a particular ModelCenter type.
-            In addition to the standard Ansys Common Variable Interop types
-            ModelCenter supports some additional internal geometry types.
-            The following string values are acceptable:
-               - double
-               - int
-               - boolean
-               - string
-               - file
-               - double[]
-               - int[]
-               - boolean[]
-               - string[]
-               - quadfacet
-               - surfaceofrevolution
-               - nurbs
-               - bspline
-               - ruled
-               - skinned
-               - vrml
-               - node
 
         Returns
         -------

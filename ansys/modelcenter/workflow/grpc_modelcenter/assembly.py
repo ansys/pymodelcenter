@@ -1,6 +1,6 @@
 """Implementation of Assembly."""
 
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -61,10 +61,8 @@ class Assembly(
         return Group(element_id, self._channel)
 
     @overrides
-    def add_variable(self, name: str, mc_type: Union[acvi.VariableType, str]) -> mc_api.IVariable:
-        type_in_request: str = (
-            mc_type if isinstance(mc_type, str) else interop_type_to_mc_type_string(mc_type)
-        )
+    def add_variable(self, name: str, mc_type: acvi.VariableType) -> mc_api.IVariable:
+        type_in_request: str = interop_type_to_mc_type_string(mc_type)
         result: AddAssemblyVariableResponse = self._client.AssemblyAddVariable(
             AddAssemblyVariableRequest(
                 name=ElementName(name=name),
