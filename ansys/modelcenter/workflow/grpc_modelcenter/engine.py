@@ -23,8 +23,8 @@ class Engine(IEngine):
         """Initialize a new Engine instance."""
         self._is_run_only: bool = is_run_only
         self._process = MCDProcess()
-        self._process.start(is_run_only)
-        self._channel = grpc.insecure_channel("localhost:50051")
+        port: int = self._process.start(is_run_only)
+        self._channel = grpc.insecure_channel("localhost:" + str(port))
         self._stub = self._create_client(self._channel)
         self._workflow_id: Optional[str] = None
 

@@ -31,7 +31,7 @@ class MCDProcess:
         self._debug: bool = True if self._exe_path.endswith("ModelCenterD.exe") else False
         self._timeout: float = 60 if self._debug else 30
 
-    def start(self, run_only: bool = False) -> None:
+    def start(self, run_only: bool = False) -> int:
         """Start the MCD process."""
         args = [self._exe_path, "/Grpc", "/Automation"]
         if run_only:
@@ -48,7 +48,8 @@ class MCDProcess:
             if time.time() - start > self._timeout:
                 break
             elif line.startswith("grpc server listening on "):
-                return
+                colon_index = line.find(":")+1  # MCD returns string like: 0.0.0.0:50051
+                return int(line[colon_index:].strip())
             else:
                 time.sleep(0.1)
         raise Exception("Timed out waiting for ModelCenter to start.")

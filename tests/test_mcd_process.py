@@ -10,7 +10,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter import MCDProcess
 
 class MockProcess:
     def __init__(self) -> None:
-        self.stdout = io.BytesIO(b"garbage\r\n\r\ngrpc server listening on 50051\n")
+        self.stdout = io.BytesIO(b"garbage\r\n\r\ngrpc server listening on 0.0.0.0:50051\n")
         self.pid = 902
 
 
@@ -28,11 +28,12 @@ def test_start(monkeypatch) -> None:
     mock_process = MockProcess()
     with unittest.mock.patch.object(subprocess, "Popen", return_value=mock_process) as mock_popen:
         # SUT
-        sut.start()
+        result: int = sut.start()
 
         mock_popen.assert_called_once_with(
             ["C:\\ModelCenter.exe", "/Grpc", "/Automation"], stdout=subprocess.PIPE
         )
+        assert result == 50051
 
 
 @patch(
@@ -45,11 +46,12 @@ def test_start_runonly(monkeypatch) -> None:
     mock_process = MockProcess()
     with unittest.mock.patch.object(subprocess, "Popen", return_value=mock_process) as mock_popen:
         # SUT
-        sut.start(run_only=True)
+        result: int = sut.start(run_only=True)
 
         mock_popen.assert_called_once_with(
             ["C:\\ModelCenter.exe", "/Grpc", "/Automation", "/runonly"], stdout=subprocess.PIPE
         )
+        assert result == 50051
 
 
 @patch(
@@ -65,7 +67,7 @@ def test_start_timeout(monkeypatch) -> None:
 
         # SUT
         with pytest.raises(Exception) as err:
-            sut.start()
+            result: int = sut.start()
 
         mock_popen.assert_called_once_with(
             ["C:\\ModelCenter.exe", "/Grpc", "/Automation"], stdout=subprocess.PIPE
