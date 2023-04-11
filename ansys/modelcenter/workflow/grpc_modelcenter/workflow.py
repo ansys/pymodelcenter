@@ -1,6 +1,6 @@
 """Implementation of Workflow."""
 import os
-from typing import AbstractSet, Collection, List, Mapping, Optional, Tuple, Type, Union
+from typing import AbstractSet, Any, Collection, List, Mapping, Optional, Tuple, Type, Union
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
@@ -169,14 +169,17 @@ class Workflow(wfapi.IWorkflow):
         def convert(val: ArrayLike, dims: ArrayLike, val_type: Type) -> acvi.IVariableValue:
             return val_type(shape_=dims, values=np.array(val).flatten())
 
-        value = getattr(response.value, response.value.WhichOneof("value"))
+        attr: Optional[str] = response.value.WhichOneof("value")
+        value: Any = None
+        if attr is not None:
+            value = getattr(response.value, attr)
         acvi_value: acvi.IVariableValue
-        if isinstance(value, float):
+        if isinstance(value, bool):
+            acvi_value = acvi.BooleanValue(value)
+        elif isinstance(value, float):
             acvi_value = acvi.RealValue(value)
         elif isinstance(value, int):
             acvi_value = acvi.IntegerValue(value)
-        elif isinstance(value, bool):
-            acvi_value = acvi.BooleanValue(value)
         elif isinstance(value, str):
             acvi_value = acvi.StringValue(value)
         elif isinstance(value, var_val_msg.DoubleArrayValue):
@@ -364,7 +367,7 @@ class Workflow(wfapi.IWorkflow):
         init_string: Optional[str] = None,
         av_position: Optional[Tuple[int, int]] = None,
         insert_before: Optional[Union[wfapi.IComponent, wfapi.IAssembly, str]] = None,
-    ) -> wfapi.IComponent:
+    ) -> Component:
         request = workflow_msg.WorkflowCreateComponentRequest(
             source_path=server_path, name=name, init_str=init_string
         )

@@ -1,6 +1,8 @@
 import unittest
 
 import ansys.common.variableinterop as acvi
+from ansys.common.variableinterop import CommonVariableMetadata
+import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
@@ -13,6 +15,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableState,
     VariableTypeResponse,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
@@ -103,3 +106,37 @@ def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
 
         mock_grpc_method.assert_called_once_with(sut_element_id)
         assert result == flag_in_response
+
+
+class MockVariable(BaseVariable):
+    """Mock variable for generic tests."""
+
+    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
+        pass
+
+    def get_metadata(self) -> CommonVariableMetadata:
+        pass
+
+    def set_value(self, value: VariableState) -> None:
+        pass
+
+
+def test_get_state_conversion_failure(monkeypatch) -> None:
+    """Perform a test of get_state on a particular base variable."""
+
+    # Setup
+    mock_client = MockWorkflowClientForVariableTest()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "VariableGetState", return_value=VariableState(value=None, is_valid=True)
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = MockVariable(element_id=sut_element_id, channel=None)
+
+        with pytest.raises(Exception) as err:
+            # SUT
+            result: acvi.VariableState = sut.get_value(None)
+
+        # Verification
+        assert err.value.args[0] == "Unexpected failure converting gRPC value response"
+        mock_grpc_method.assert_called_once_with(sut_element_id)

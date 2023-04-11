@@ -149,6 +149,9 @@ class MockWorkflowClientForWorkflowTest:
         elif request.name == "model.strings":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_STRING_ARRAY
+        elif request.name == "model.unknown":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_UNKNOWN
         return response
 
     def WorkflowHalt(self, request: wkf_msgs.WorkflowHaltRequest):
@@ -177,6 +180,30 @@ class MockWorkflowClientForWorkflowTest:
             response.var_type = var_msgs.VARTYPE_FILE
         elif request.id_string == "model.files":
             response.var_type = var_msgs.VARTYPE_FILE_ARRAY
+        return response
+
+    def VariableGetState(self, request: elem_msgs.ElementIdOrName) -> var_msgs.VariableState:
+        response = var_msgs.VariableState()
+        if request.target_name.name == "model.boolean":
+            response.value.bool_value = False
+        elif request.target_name.name == "model.booleans":
+            response.value.bool_array_value.values.extend([True, False, True])
+        elif request.target_name.name == "model.integer":
+            response.value.int_value = 42
+        elif request.target_name.name == "model.integers":
+            response.value.int_array_value.values.extend([86, 42, 1])
+        elif request.target_name.name == "model.double":
+            response.value.double_value = 3.14
+        elif request.target_name.name == "model.doubles":
+            response.value.double_array_value.values.extend([1.414, 0.717, 3.14])
+        elif request.target_name.name == "model.string":
+            response.value.string_value = "sVal"
+        elif request.target_name.name == "model.strings":
+            response.value.string_array_value.values.extend(["one", "two", "three"])
+        elif request.target_name.name == "model.file":
+            pass
+        elif request.target_name.name == "model.files":
+            pass
         return response
 
     def BooleanVariableGetMetadata(self, request: elem_msgs.ElementId):
@@ -225,6 +252,30 @@ class MockWorkflowClientForWorkflowTest:
     def ElementGetFullName(self, request: elem_msgs.ElementId) -> elem_msgs.ElementName:
         return elem_msgs.ElementName(name=request.id_string)
 
+    def BooleanVariableSetValue(self, request):
+        pass
+
+    def IntegerVariableSetValue(self, request):
+        pass
+
+    def DoubleVariableSetValue(self, request):
+        pass
+
+    def StringVariableSetValue(self, request):
+        pass
+
+    def BooleanArraySetValue(self, request):
+        pass
+
+    def IntegerArraySetValue(self, request):
+        pass
+
+    def DoubleArraySetValue(self, request):
+        pass
+
+    def StringArraySetValue(self, request):
+        pass
+
 
 mock_client: MockWorkflowClientForWorkflowTest
 
@@ -243,6 +294,8 @@ def setup_function(monkeypatch):
     global mock_client
     mock_client = MockWorkflowClientForWorkflowTest()
     monkeypatch_client_creation(monkeypatch, grpcmc.Workflow, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.Assembly, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.Component, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.BooleanVariable, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.BooleanArray, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.DoubleVariable, mock_client)
@@ -270,6 +323,13 @@ def test_get_component(setup_function) -> None:
 
     # Verification
     assert result.element_id == "A_COMPONENT"
+
+
+def test_get_component_on_wrong_type(setup_function) -> None:
+    # Execute
+    with pytest.raises(ValueError) as err:
+        result: mcapi.IComponent = workflow.get_component("a.bool")
+    assert err.value.args[0] == "Element is not a component."
 
 
 def test_workflow_close(setup_function) -> None:
@@ -318,136 +378,93 @@ def test_workflow_file_name(setup_function):
     assert result == "qwerty.pxcz"
 
 
-# set_value_tests = [
-#     pytest.param(acvi.BooleanValue(True), "True", id="bool"),
-#     pytest.param(acvi.IntegerValue(42), "42", id="int"),
-#     pytest.param(acvi.RealValue(3.14), "3.14", id="read"),
-#     pytest.param(acvi.StringValue("strVal"), "strVal", id="str"),
-#     pytest.param(acvi.BooleanArrayValue(values=[True, False]), "True,False", id="bool[]"),
-#     pytest.param(acvi.IntegerArrayValue(values=[86, 42]), "86,42", id="int[]"),
-#     pytest.param(acvi.RealArrayValue(values=[0.717, 1.414]), "0.717,1.414", id="real[]"),
-#     pytest.param(acvi.StringArrayValue(values=["one", "two"]), '"one","two"', id="str[]"),
-#     pytest.param("Some String", "Some String", id="raw str"),
-#     pytest.param(14.44, "14.44", id="raw float"),
-# ]
-#
-#
-# @pytest.mark.parametrize("src,expected", set_value_tests)
-# def test_set_value(src: Any, expected: str):
-#     """
-#     Testing of set_value method.
-#     """
-#     global mock_mc, workflow
-#
-#     # SUT
-#     workflow.set_value("var.name", src)
-#
-#     # Verify
-#     assert mock_mc.getCallCount("setValue") == 1
-#     args = mock_mc.getLastArgumentRecord("setValue")
-#     assert args[0] == "var.name"
-#     result = args[1]
-#     assert type(result) == str
-#     assert result == expected
-#
-#
-# get_value_tests = [
-#     pytest.param("root.b", acvi.BooleanValue(False), id="bool"),
-#     pytest.param("root.i", acvi.IntegerValue(42), id="int"),
-#     pytest.param("root.r", acvi.RealValue(3.14), id="real"),
-#     pytest.param("root.s", acvi.StringValue("sVal"), id="str"),
-#     pytest.param("root.b_a", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"),
-#     pytest.param("root.i_a", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
-#     pytest.param("root.r_a", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"),
-#   pytest.param("root.s_a", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"),
-# ]
-# """Collection of tests for get_value, used in test_get_value."""
-#
-#
-# def setup_test_values():
-#     """
-#     Setup some values usable of testing get_value and \
-#     get_value_absolute.
-#     """
-#     global mock_mc
-#     mock_mc.createAssemblyVariable("b", "Input", "root")
-#     mock_mc.createAssemblyVariable("i", "Input", "root")
-#     mock_mc.createAssemblyVariable("r", "Input", "root")
-#     mock_mc.createAssemblyVariable("s", "Input", "root")
-#     mock_mc.createAssemblyVariable("b_a", "Input", "root")
-#     mock_mc.createAssemblyVariable("i_a", "Input", "root")
-#     mock_mc.createAssemblyVariable("r_a", "Input", "root")
-#     mock_mc.createAssemblyVariable("s_a", "Input", "root")
-#     vars_ = py_list_to_net_typed_list(
-#         ["root.b", "root.i", "root.r", "root.s", "root.b_a", "root.i_a", "root.r_a", "root.s_a"]
-#     )
-#     vals = py_list_to_net_list(
-#         [
-#             False,
-#             42,
-#             3.14,
-#             "sVal",
-#             [True, False, True],
-#             [86, 42, 1],
-#             [1.414, 0.717, 3.14],
-#             ["one", "two", "three"],
-#         ]
-#     )
-#     mock_mc.SetMockValues(vars_, vals)
-#
-#
-# @pytest.mark.parametrize("var_name,expected", get_value_tests)
-# def test_get_value(var_name: str, expected: acvi.IVariableValue):
-#     """
-#     Testing of get_value_tests method pulling each of the different
-#     variable types.
-#     """
-#     global mock_mc, workflow
-#     setup_test_values()
-#
-#     # SUT
-#     result = workflow.get_value(var_name)
-#
-#     # Verify
-#     assert result == expected
-#     assert type(result) == type(expected)
-#     assert mock_mc.getCallCount("getValue")
-#
-#
-# value_absolute_tests = get_value_tests.copy()
-# """Collection of test for get_value_absolute.
-#
-# Reusing the tests for get_values, but then adding some additional tests
-# below."""
-#
-# value_absolute_tests.extend(
-#     [
-#         pytest.param("root.b_a[1]", acvi.BooleanValue(False), id="bool array indexed"),
-#         pytest.param("root.i_a[2]", acvi.IntegerValue(1), id="int array indexed"),
-#         pytest.param("root.r_a[0]", acvi.RealValue(1.414), id="real array indexed"),
-#         pytest.param("root.s_a[1]", acvi.StringValue("two"), id="str array indexed"),
-#     ]
-# )
-#
-#
-# @pytest.mark.parametrize("var_name,expected", value_absolute_tests)
-# def test_get_value_absolute(var_name: str, expected: acvi.IVariableValue):
-#     """
-#     Testing of get_value_tests method pulling each of the different \
-#     variable types.
-#     """
-#     global mock_mc, workflow
-#     setup_test_values()
-#
-#     # SUT
-#     result = workflow.get_value_absolute(var_name)
-#
-#     # Verify
-#     assert result == expected
-#     assert type(result) == type(expected)
-#     assert mock_mc.getCallCount("getValueAbsolute")
-#
-#
+set_value_tests = [
+    pytest.param("BooleanVariableSetValue", acvi.BooleanValue(True), True, id="bool"),
+    pytest.param("IntegerVariableSetValue", acvi.IntegerValue(42), 42, id="int"),
+    pytest.param("DoubleVariableSetValue", acvi.RealValue(3.14), 3.14, id="read"),
+    pytest.param("StringVariableSetValue", acvi.StringValue("strVal"), "strVal", id="str"),
+    pytest.param(
+        "BooleanArraySetValue",
+        acvi.BooleanArrayValue(values=[True, False]),
+        var_msgs.BooleanArrayValue(values=[True, False], dims=var_msgs.ArrayDimensions(dims=[2])),
+        id="bool[]",
+    ),
+    pytest.param(
+        "IntegerArraySetValue",
+        acvi.IntegerArrayValue(values=[86, 42]),
+        var_msgs.IntegerArrayValue(values=[86, 42], dims=var_msgs.ArrayDimensions(dims=[2])),
+        id="int[]",
+    ),
+    pytest.param(
+        "DoubleArraySetValue",
+        acvi.RealArrayValue(values=[0.717, 1.414]),
+        var_msgs.DoubleArrayValue(values=[0.717, 1.414], dims=var_msgs.ArrayDimensions(dims=[2])),
+        id="real[]",
+    ),
+    pytest.param(
+        "StringArraySetValue",
+        acvi.StringArrayValue(values=["one", "two"]),
+        var_msgs.StringArrayValue(values=["one", "two"], dims=var_msgs.ArrayDimensions(dims=[2])),
+        id="str[]",
+    ),
+]
+
+
+@pytest.mark.parametrize("request_method,src,expected", set_value_tests)
+def test_set_value(setup_function, request_method: str, src: acvi.IVariableValue, expected: str):
+    # Setup
+    with unittest.mock.patch.object(
+        mock_client,
+        request_method,
+        return_value=var_msgs.SetVariableValueResponse(was_changed=True),
+    ) as mock_grpc_method:
+        # SUT
+        workflow.set_value("var.name", src)
+
+    # Verify
+    mock_grpc_method.assert_called_once()
+    assert mock_grpc_method.call_args[0][0].target == elem_msgs.ElementId(id_string="VAR_NAME")
+    assert mock_grpc_method.call_args[0][0].new_value == expected
+
+
+get_value_tests = [
+    pytest.param("model.boolean", acvi.BooleanValue(False), id="bool"),
+    pytest.param("model.integer", acvi.IntegerValue(42), id="int"),
+    pytest.param("model.double", acvi.RealValue(3.14), id="real"),
+    pytest.param("model.string", acvi.StringValue("sVal"), id="str"),
+    pytest.param(
+        "model.booleans", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"
+    ),
+    pytest.param("model.integers", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
+    pytest.param(
+        "model.doubles", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"
+    ),
+    pytest.param(
+        "model.strings", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"
+    ),
+]
+"""Collection of tests for get_value, used in test_get_value."""
+
+
+@pytest.mark.parametrize("var_name,expected", get_value_tests)
+def test_get_value(setup_function, var_name: str, expected: acvi.IVariableValue):
+    # SUT
+    result: var_msgs.VariableState = workflow.get_value(var_name)
+
+    # Verify
+    assert result.value == expected
+    assert type(result.value) == type(expected)
+
+
+def test_get_value_unknown(setup_function) -> None:
+    # SUT
+    with pytest.raises(TypeError) as err:
+        result: var_msgs.VariableState = workflow.get_value("model.unknown")
+
+    # Verify
+    assert err.value.args[0] == "Unsupported type was returned: <class 'NoneType'>"
+
+
 # @pytest.mark.parametrize("schedular", ["forward", "backward", "mixed", "script"])
 # def test_set_scheduler(schedular: str) -> None:
 #     """
@@ -478,12 +495,19 @@ def test_remove_component(setup_function):
     assert mock_client.was_component_removed
 
 
-def test_get_assembly(setup_function):
+@pytest.mark.parametrize("name", [pytest.param("a.assembly"), pytest.param(None)])
+def test_get_assembly(setup_function, name: str):
     # SUT
-    result = workflow.get_assembly("a.assembly")
+    result = workflow.get_assembly(name)
 
     # Verify
     assert type(result) == grpcmc.Assembly
+
+
+def test_get_assembly_on_wrong_type(setup_function):
+    with pytest.raises(ValueError) as err:
+        workflow.get_assembly("a.component")
+    assert err.value.args[0] == "Element is not an assembly."
 
 
 @pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
@@ -571,6 +595,20 @@ def test_get_file_meta_data(setup_function, is_array: bool) -> None:
     assert metadata.description == "☯"
 
 
+def test_get_variable_meta_data_on_invalid_element(setup_function) -> None:
+    # SUT
+    with pytest.raises(ValueError) as err:
+        metadata = workflow.get_variable_meta_data("model.component")
+    assert err.value.args[0] == "Element is not a variable."
+
+
+def test_get_variable_meta_data_on_unknown_type(setup_function) -> None:
+    # SUT
+    with pytest.raises(ValueError) as err:
+        metadata = workflow.get_variable_meta_data("model.unknown")
+    assert err.value.args[0] == "Unknown variable type."
+
+
 @pytest.mark.parametrize(
     "workflow_id,link_lhs_values",
     [
@@ -600,6 +638,17 @@ def test_get_uuid(setup_function) -> None:
     assert result == "123"
 
 
+def test_halt(setup_function) -> None:
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowHalt", return_value=wkf_msgs.WorkflowHaltResponse()
+    ) as mock_grpc_method:
+        # SUT
+        workflow.halt()
+
+        # Verification
+        mock_grpc_method.assert_called_once_with(wkf_msgs.WorkflowHaltRequest())
+
+
 def test_auto_link(setup_function) -> None:
     # Execute
     links: List[mcapi.IVariableLink] = workflow.auto_link(
@@ -617,6 +666,17 @@ def test_auto_link(setup_function) -> None:
 def test_create_assembly(setup_function) -> None:
     # Execute
     result: grpcmc.Assembly = workflow.create_assembly("newAssembly", "Model")
+
+    # Verify
+    assert result.element_id == "Model.newAssembly"
+
+
+def test_create_assembly_on_assembly(setup_function) -> None:
+    # Setup
+    parent = grpcmc.Assembly(element_id=elem_msgs.ElementId(id_string="Model"), channel=None)
+
+    # Execute
+    result: grpcmc.Assembly = workflow.create_assembly("newAssembly", parent)
 
     # Verify
     assert result.element_id == "Model.newAssembly"
@@ -651,6 +711,93 @@ def test_create_component(setup_function) -> None:
 
     # Verify
     assert component.element_id == "zxcv"
+
+
+def test_create_component_at_xy_pos(setup_function) -> None:
+    # Setup
+    response = wkf_msgs.WorkflowCreateComponentResponse()
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowCreateComponent", return_value=response
+    ) as mock_grpc_method:
+        # Execute
+        component: grpcmc.Component = workflow.create_component(
+            server_path="common:\\Functions\\Quadratic",
+            name="二次",
+            parent="Model",
+            init_string=None,
+            av_position=(3, 5),
+            insert_before=None,
+        )
+
+        # Verify
+        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+            source_path="common:\\Functions\\Quadratic",
+            name="二次",
+            init_str=None,
+            parent=elem_msgs.ElementId(id_string="Model"),
+            coords=elem_msgs.AnalysisViewPosition(x_pos=3, y_pos=5),
+            after_comp=None,
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_create_component_after_comp_by_id(setup_function) -> None:
+    # Setup
+    response = wkf_msgs.WorkflowCreateComponentResponse()
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowCreateComponent", return_value=response
+    ) as mock_grpc_method:
+        # Execute
+        component: grpcmc.Component = workflow.create_component(
+            server_path="common:\\Functions\\Quadratic",
+            name="二次",
+            parent="Model",
+            init_string=None,
+            av_position=None,
+            insert_before="43q48a93cd300cab",
+        )
+
+        # Verify
+        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+            source_path="common:\\Functions\\Quadratic",
+            name="二次",
+            init_str=None,
+            parent=elem_msgs.ElementId(id_string="Model"),
+            coords=None,
+            after_comp=elem_msgs.ElementId(id_string="43q48a93cd300cab"),
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_create_component_after_comp_by_component(setup_function) -> None:
+    # Setup
+    response = wkf_msgs.WorkflowCreateComponentResponse()
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowCreateComponent", return_value=response
+    ) as mock_grpc_method:
+
+        # Execute
+        component: grpcmc.Component = workflow.create_component(
+            server_path="common:\\Functions\\Quadratic",
+            name="二次",
+            parent="Model",
+            init_string=None,
+            av_position=None,
+            insert_before=grpcmc.Component(
+                element_id=elem_msgs.ElementId(id_string="43q48a93cd300cab"), channel=None
+            ),
+        )
+
+        # Verify
+        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+            source_path="common:\\Functions\\Quadratic",
+            name="二次",
+            init_str=None,
+            parent=elem_msgs.ElementId(id_string="Model"),
+            coords=None,
+            after_comp=elem_msgs.ElementId(id_string="43q48a93cd300cab"),
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
 
 
 def test_create_link(setup_function) -> None:
@@ -746,6 +893,13 @@ def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
 
     # Verify
     assert type(result) == expected_type
+
+
+def test_get_variable_on_wrong_type(setup_function) -> None:
+    # Execute
+    with pytest.raises(ValueError) as err:
+        result: mcapi.IVariable = workflow.get_variable("fail")
+    assert err.value.args[0] == "Element is not a variable."
 
 
 @pytest.mark.parametrize(
