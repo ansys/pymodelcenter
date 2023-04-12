@@ -5,6 +5,8 @@ import ansys.modelcenter.workflow.api as wfapi
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
+from .grpc_error_interpretation import interpret_rpc_error
+
 
 class VariableLink(wfapi.IVariableLink):
     """GRPC implementation of IVariableLink."""
@@ -36,6 +38,7 @@ class VariableLink(wfapi.IVariableLink):
     def resume_link(self) -> None:
         raise NotImplementedError()
 
+    @interpret_rpc_error()
     @overrides
     def break_link(self) -> None:
         request = workflow_msg.WorkflowBreakLinkRequest()

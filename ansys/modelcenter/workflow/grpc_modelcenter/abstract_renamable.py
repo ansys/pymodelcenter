@@ -7,6 +7,12 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_wfe
 
+from .grpc_error_interpretation import (
+    WRAP_INVALID_ARG,
+    WRAP_NAME_COLLISION,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
 from .proto.element_messages_pb2 import ElementId, ElementName, RenameRequest
 
 
@@ -24,6 +30,7 @@ class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRen
         """
         super(AbstractRenamableElement, self).__init__(element_id=element_id, channel=channel)
 
+    @interpret_rpc_error({**WRAP_INVALID_ARG, **WRAP_NAME_COLLISION, **WRAP_TARGET_NOT_FOUND})
     @overrides
     def rename(self, new_name: str) -> None:
         self._client.AssemblyRename(

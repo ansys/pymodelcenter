@@ -9,6 +9,7 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from .abstract_workflow_element import AbstractWorkflowElement
+from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
 from .var_value_convert import convert_grpc_value_to_acvi, grpc_type_enum_to_interop_type
 
@@ -28,12 +29,14 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
         super(BaseVariable, self).__init__(element_id=element_id, channel=channel)
 
     @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def owning_component(self) -> mc_api.IComponent:
         # TODO/REDUCE: Skipping implementation, will drop for Phase II.
         raise NotImplementedError()
 
     @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def value_type(self) -> acvi.VariableType:
         response = self._client.VariableGetType(self._element_id)
@@ -77,17 +80,20 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
         return []
 
     @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def is_input_to_component(self) -> bool:
         response = self._client.VariableGetIsInput(self._element_id)
         return response.is_input_in_component
 
     @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def is_input_to_workflow(self) -> bool:
         response = self._client.VariableGetIsInput(self._element_id)
         return response.is_input_in_workflow
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:
         response = self._client.VariableGetState(self._element_id)

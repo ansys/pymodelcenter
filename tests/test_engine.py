@@ -2,11 +2,16 @@ from typing import Collection, Mapping, Optional, Union
 import unittest
 
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
+import grpc
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcapi
+from ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation import (
+    EngineDisconnectedError,
+)
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msgs  # noqa: 501
+from tests.grpc_server_test_utils.mock_grpc_exception import MockGrpcError
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
@@ -16,10 +21,14 @@ class MockEngineClientForEngineTest:
         self.username: str = ""
         self.password: str = ""
         self.pref_value: Optional[Union[bool, int, float, str]] = None
+        self.raise_error_on_info: Optional[grpc.StatusCode] = None
 
     def GetEngineInfo(
         self, request: eng_msgs.GetServerInfoRequest
     ) -> eng_msgs.GetServerInfoResponse:
+        if self.raise_error_on_info is not None:
+            raise MockGrpcError(self.raise_error_on_info, "Simulated failure to communicate.")
+
         response = eng_msgs.GetServerInfoResponse()
         response.version.major = 1
         response.version.minor = 2
@@ -276,6 +285,17 @@ def test_get_engine_info(setup_function) -> None:
     assert info.server_type == "WorkflowCenter"
     assert info.install_location == "C:\\Path\\To\\ModelCenter\\"
     assert info.base_url is None
+
+
+def test_get_engine_info_simulated_crash(setup_function) -> None:
+
+    # Setup
+    engine = grpcapi.Engine()
+    mock_client.raise_error_on_info = grpc.StatusCode.UNAVAILABLE
+
+    # SUT
+    with pytest.raises(EngineDisconnectedError):
+        engine.get_server_info()
 
 
 def test_close(setup_function) -> None:

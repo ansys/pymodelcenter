@@ -6,6 +6,11 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
+from .grpc_error_interpretation import (
+    WRAP_OUT_OF_BOUNDS,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import SetDoubleVariableMetadataRequest
 from .var_metadata_convert import (
@@ -32,11 +37,13 @@ class DoubleVariable(BaseVariable, mc_api.IDoubleVariable):
         """
         super(DoubleVariable, self).__init__(element_id=element_id, channel=channel)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.RealMetadata:
         response = self._client.DoubleVariableGetMetadata(self._element_id)
         return convert_grpc_real_metadata(response)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealMetadata):
@@ -45,6 +52,7 @@ class DoubleVariable(BaseVariable, mc_api.IDoubleVariable):
         fill_real_metadata_message(new_metadata, request.new_metadata)
         self._client.DoubleVariableSetMetadata(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: acvi.VariableState) -> None:
         self._do_set_value(value.value)
@@ -70,11 +78,13 @@ class DoubleArray(BaseArray, mc_api.IDoubleArray):
         """
         super(DoubleArray, self).__init__(element_id=element_id, channel=channel)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.RealArrayMetadata:
         response = self._client.DoubleVariableGetMetadata(self._element_id)
         return convert_grpc_real_array_metadata(response)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealArrayMetadata):
@@ -83,6 +93,7 @@ class DoubleArray(BaseArray, mc_api.IDoubleArray):
         fill_real_metadata_message(new_metadata, request.new_metadata)
         self._client.DoubleVariableSetMetadata(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: acvi.VariableState) -> None:
         self._do_set_value(value.value)

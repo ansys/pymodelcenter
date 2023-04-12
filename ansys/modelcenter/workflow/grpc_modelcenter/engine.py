@@ -11,6 +11,7 @@ from ansys.modelcenter.workflow.api import IEngine, IFormat, IWorkflow, Workflow
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 
 from .format import Format
+from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .mcd_process import MCDProcess
 from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
@@ -36,6 +37,7 @@ class Engine(IEngine):
         """Clean up when leaving a 'with' block."""
         self.close()
 
+    @interpret_rpc_error()
     def close(self):
         """Shuts down the grpc server and clear out all objects."""
         request = eng_msg.ShutdownRequest()
@@ -58,6 +60,7 @@ class Engine(IEngine):
         # Can also get this via grpc if we want.
         return self._process.get_process_id()  # pragma: no cover
 
+    @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
         request = eng_msg.NewWorkflowRequest(
@@ -67,6 +70,7 @@ class Engine(IEngine):
         response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
         return Workflow(response.workflow_id, name)
 
+    @interpret_rpc_error({grpc.StatusCode.NOT_FOUND: FileNotFoundError, **WRAP_INVALID_ARG})
     @overrides
     def load_workflow(
         self, file_name: Union[PathLike, str], ignore_connection_errors: Optional[bool] = None
@@ -83,6 +87,7 @@ class Engine(IEngine):
         formatter: Format = Format(fmt)
         return formatter
 
+    @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
         request = eng_msg.GetPreferenceRequest(preference_name=pref)
@@ -93,6 +98,7 @@ class Engine(IEngine):
         else:
             raise Exception("Server did not return a value.")
 
+    @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def set_preference(self, pref: str, value: Union[bool, int, float, str]) -> None:
         request = eng_msg.SetPreferenceRequest(preference_name=pref)
@@ -106,6 +112,7 @@ class Engine(IEngine):
             request.str_value = value
         response: eng_msg.SetPreferenceResponse = self._stub.EngineSetPreference(request)
 
+    @interpret_rpc_error()
     @overrides
     def get_units(self) -> Mapping[str, Collection[str]]:
         result: Dict[str, List[str]] = {}
@@ -126,6 +133,7 @@ class Engine(IEngine):
     def get_run_only_mode(self) -> bool:
         return self._is_run_only
 
+    @interpret_rpc_error()
     @overrides
     def get_server_info(self) -> WorkflowEngineInfo:
         request = eng_msg.GetServerInfoRequest()

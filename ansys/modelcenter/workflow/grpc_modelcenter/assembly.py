@@ -14,6 +14,12 @@ from .abstract_renamable import AbstractRenamableElement
 from .create_variable import create_variable
 from .element_wrapper import create_element
 from .group import Group
+from .grpc_error_interpretation import (
+    WRAP_INVALID_ARG,
+    WRAP_NAME_COLLISION,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
 from .proto.element_messages_pb2 import (
     AddAssemblyRequest,
     AddAssemblyVariableRequest,
@@ -47,6 +53,7 @@ class Assembly(
         """
         super(Assembly, self).__init__(element_id=element_id, channel=channel)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_elements(self) -> Sequence[aew_api.IElement]:
         result = self._client.AssemblyGetAssembliesAndComponents(self._element_id)
@@ -60,6 +67,7 @@ class Assembly(
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return Group(element_id, self._channel)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION})
     @overrides
     def add_variable(self, name: str, mc_type: acvi.VariableType) -> mc_api.IVariable:
         type_in_request: str = interop_type_to_mc_type_string(mc_type)
@@ -74,6 +82,7 @@ class Assembly(
             mc_type_string_to_interop_type(type_in_request), result.id, self._channel
         )
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def delete_variable(self, name: str) -> bool:
         assembly_name = self.name
@@ -83,6 +92,7 @@ class Assembly(
         )
         return self._client.AssemblyDeleteVariable(request).existed
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION, **WRAP_INVALID_ARG})
     @overrides
     def add_assembly(
         self,

@@ -7,6 +7,11 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
+from .grpc_error_interpretation import (
+    WRAP_OUT_OF_BOUNDS,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import SetStringVariableMetadataRequest
 from .var_metadata_convert import (
@@ -33,11 +38,13 @@ class StringVariable(BaseVariable, mc_api.IStringVariable):
         """
         super(StringVariable, self).__init__(element_id=element_id, channel=channel)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.StringArrayMetadata:
         response = self._client.StringVariableGetMetadata(self._element_id)
         return convert_grpc_string_metadata(response)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.StringMetadata):
@@ -46,6 +53,7 @@ class StringVariable(BaseVariable, mc_api.IStringVariable):
         fill_string_metadata_message(new_metadata, request.new_metadata)
         self._client.StringVariableSetMetadata(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: acvi.VariableState) -> None:
         self._do_set_value(value.value)
@@ -71,11 +79,13 @@ class StringArray(BaseArray, mc_api.IStringArray):
         """
         super(StringArray, self).__init__(element_id=element_id, channel=channel)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.StringArrayMetadata:
         response = self._client.StringVariableGetMetadata(self._element_id)
         return convert_grpc_string_array_metadata(response)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.StringArrayMetadata):
@@ -84,6 +94,7 @@ class StringArray(BaseArray, mc_api.IStringArray):
         fill_string_metadata_message(new_metadata, request.new_metadata)
         self._client.StringVariableSetMetadata(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: acvi.VariableState) -> None:
         self._do_set_value(value.value)

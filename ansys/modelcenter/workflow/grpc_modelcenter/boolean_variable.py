@@ -7,6 +7,11 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
+from .grpc_error_interpretation import (
+    WRAP_OUT_OF_BOUNDS,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import SetBooleanVariableMetadataRequest
 from .var_metadata_convert import (
@@ -33,11 +38,13 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
         """
         super(BooleanVariable, self).__init__(element_id=element_id, channel=channel)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.BooleanArrayMetadata:
         response = self._client.BooleanVariableGetMetadata(self._element_id)
         return convert_grpc_boolean_metadata(response)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.BooleanMetadata):
@@ -46,6 +53,7 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
         fill_boolean_metadata_message(new_metadata, request.new_metadata)
         self._client.BooleanVariableSetMetadata(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: acvi.VariableState) -> None:
         if not isinstance(value.value, acvi.BooleanValue):
@@ -59,11 +67,13 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
 class BooleanArray(BaseArray, mc_api.IBooleanArray):
     """Represents a gRPC boolean array variable on the workflow."""
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.BooleanArrayMetadata:
         response = self._client.BooleanVariableGetMetadata(self._element_id)
         return convert_grpc_boolean_array_metadata(response)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.BooleanArrayMetadata):
@@ -72,6 +82,7 @@ class BooleanArray(BaseArray, mc_api.IBooleanArray):
         fill_boolean_metadata_message(new_metadata, request.new_metadata)
         self._client.BooleanVariableSetMetadata(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: acvi.VariableState) -> None:
         if not isinstance(value.value, acvi.BooleanArrayValue):

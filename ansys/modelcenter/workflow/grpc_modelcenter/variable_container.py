@@ -10,6 +10,7 @@ import ansys.modelcenter.workflow.api as mc_api
 
 from .abstract_workflow_element import AbstractWorkflowElement
 from .create_variable import create_variable
+from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import VariableInfo
 from .var_value_convert import grpc_type_enum_to_interop_type
@@ -42,6 +43,7 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
         super(AbstractGRPCVariableContainer, self).__init__(element_id=element_id, channel=channel)
 
     @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def groups(self) -> Mapping[str, mc_api.IGroup]:
         # TODO: alter gRPC response so that short names are included in the first place.
@@ -52,6 +54,7 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
         one_group: mc_api.IGroup
         return {one_group.name: one_group for one_group in groups}
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_variables(self) -> Mapping[str, mc_api.IVariable]:
         # TODO: alter gRPC response so that short names are included in the first place.

@@ -11,6 +11,7 @@ from overrides import overrides
 
 import ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper as elem_wrapper
 
+from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
 from .proto.element_messages_pb2 import ElementId
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
@@ -43,23 +44,27 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
         return self._element_id.id_string
 
     @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def parent_element_id(self) -> str:
         result = self._client.ElementGetParentElement(self._element_id)
         return result.id.id_string
 
     @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def name(self) -> str:
         result = self._client.ElementGetName(self._element_id)
         return result.name
 
     @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def full_name(self) -> str:
         result = self._client.ElementGetFullName(self._element_id)
         return result.name
 
+    @interpret_rpc_error({**WRAP_INVALID_ARG, **WRAP_TARGET_NOT_FOUND})
     @overrides
     def get_property(self, property_name: str) -> aew_api.Property:
         grpc_value: VariableValue = self._client.PropertyOwnerGetPropertyValue(
@@ -72,16 +77,19 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
             property_value=acvi_value,
         )
 
+    @interpret_rpc_error({**WRAP_INVALID_ARG, **WRAP_TARGET_NOT_FOUND})
     @overrides
     def get_property_names(self) -> AbstractSet[str]:
         response = self._client.PropertyOwnerGetProperties(self._element_id)
         return set([name for name in response.names])
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_properties(self) -> Mapping[str, Property]:
         response = self._client.PropertyOwnerGetProperties(self._element_id)
         return {name: self.get_property(property_name=name) for name in response.names}
 
+    @interpret_rpc_error({**WRAP_INVALID_ARG, **WRAP_TARGET_NOT_FOUND})
     @overrides
     def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
         grpc_value = convert_interop_value_to_grpc(property_value)
@@ -91,6 +99,7 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
             )
         )
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_parent_element(self) -> aew_api.IElement:
         result = self._client.ElementGetParentElement(self._element_id)
