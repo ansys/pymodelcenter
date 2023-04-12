@@ -188,16 +188,18 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         # TODO: document / define enumeration for allowed assembly types.
 
     @abstractmethod
-    def auto_link(self, src_comp: str, dest_comp: str) -> Collection[IVariableLink]:
+    def auto_link(
+        self, src_comp: Union[IComponent, str], dest_comp: Union[IComponent, str]
+    ) -> Collection[IVariableLink]:
         """
         Automatically links two components.
 
         Parameters
         ----------
         src_comp : str
-            The source component.
+            The source component or the full name of the component desired.
         dest_comp : str
-            The destination component.
+            The destination component or the full name of the component desired.
 
         Returns
         -------

@@ -328,10 +328,18 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def auto_link(self, src_comp: str, dest_comp: str) -> Collection[wfapi.IVariableLink]:
+    def auto_link(
+        self, src_comp: Union[str, wfapi.IComponent], dest_comp: Union[str, wfapi.IComponent]
+    ) -> Collection[wfapi.IVariableLink]:
         request = workflow_msg.WorkflowAutoLinkRequest()
-        request.source_comp.id_string = src_comp
-        request.target_comp.id_string = dest_comp
+        src_comp_used = (
+            src_comp if isinstance(src_comp, wfapi.IComponent) else self.get_component(src_comp)
+        )
+        dest_comp_used = (
+            dest_comp if isinstance(dest_comp, wfapi.IComponent) else self.get_component(dest_comp)
+        )
+        request.source_comp.id_string = src_comp_used.element_id
+        request.target_comp.id_string = dest_comp_used.element_id
         response: workflow_msg.WorkflowAutoLinkResponse = self._stub.WorkflowAutoLink(request)
         links: List[wfapi.IVariableLink] = [
             VariableLink(self._stub, lhs_id=entry.lhs.id_string, rhs=entry.rhs)

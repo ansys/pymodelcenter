@@ -87,8 +87,8 @@ class MockWorkflowClientForWorkflowTest:
     def WorkflowAutoLink(self, request: wkf_msgs.WorkflowAutoLinkRequest):
         response = wkf_msgs.WorkflowAutoLinkResponse()
         if (
-            request.source_comp.id_string == "Workflow.source_comp"
-            and request.target_comp.id_string == "Workflow.dest_comp"
+            request.source_comp.id_string == "WORKFLOW_SOURCE_COMP"
+            and request.target_comp.id_string == "WORKFLOW_DEST_COMP"
         ):
             link = response.created_links.add()
             link.lhs.id_string = "a"
@@ -122,6 +122,10 @@ class MockWorkflowClientForWorkflowTest:
         response = wkf_msgs.ElementInfo()
         response.id.id_string = request.element_full_name.name.replace(".", "_").upper()
         if request.element_full_name.name == "a.component":
+            response.type = elem_msgs.ELEMTYPE_COMPONENT
+        elif request.element_full_name.name == "Workflow.source_comp":
+            response.type = elem_msgs.ELEMTYPE_COMPONENT
+        elif request.element_full_name.name == "Workflow.dest_comp":
             response.type = elem_msgs.ELEMTYPE_COMPONENT
         elif request.element_full_name.name == "a.assembly":
             response.type = elem_msgs.ELEMTYPE_ASSEMBLY
@@ -658,6 +662,21 @@ def test_auto_link(setup_function) -> None:
     links: List[mcapi.IVariableLink] = workflow.auto_link(
         "Workflow.source_comp", "Workflow.dest_comp"
     )
+
+    # Verify
+    assert len(links) == 2
+    assert links[0].lhs == "a"
+    assert links[0].rhs == "1"
+    assert links[1].lhs == "b"
+    assert links[1].rhs == "2"
+
+
+def test_auto_link_with_objects(setup_function) -> None:
+    source_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_SOURCE_COMP"), None)
+    dest_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_DEST_COMP"), None)
+
+    # Execute
+    links: List[mcapi.IVariableLink] = workflow.auto_link(source_comp, dest_comp)
 
     # Verify
     assert len(links) == 2
