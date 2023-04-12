@@ -15,7 +15,6 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workfl
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
-from ._visitors import VariableValueVisitor
 from .assembly import Assembly
 from .component import Component
 from .create_variable import create_variable
@@ -605,9 +604,5 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
-        request = workflow_msg.NamedElementInWorkflow(
-            workflow=workflow_msg.WorkflowId(id=self._id),
-            element_full_name=element_msg.ElementName(name=var_name),
-        )
-        response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
-        value.accept(VariableValueVisitor(response.id, self._stub))
+        var = self.get_variable(var_name)
+        var.set_value(acvi.VariableState(value, True))

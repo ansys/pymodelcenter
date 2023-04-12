@@ -389,30 +389,66 @@ def test_workflow_file_name(setup_function):
 
 
 set_value_tests = [
-    pytest.param("BooleanVariableSetValue", acvi.BooleanValue(True), True, id="bool"),
-    pytest.param("IntegerVariableSetValue", acvi.IntegerValue(42), 42, id="int"),
-    pytest.param("DoubleVariableSetValue", acvi.RealValue(3.14), 3.14, id="read"),
-    pytest.param("StringVariableSetValue", acvi.StringValue("strVal"), "strVal", id="str"),
+    pytest.param(
+        "BooleanVariableSetValue",
+        "model.boolean",
+        "MODEL_BOOLEAN",
+        acvi.BooleanValue(True),
+        True,
+        id="bool",
+    ),
+    pytest.param(
+        "IntegerVariableSetValue",
+        "model.integer",
+        "MODEL_INTEGER",
+        acvi.IntegerValue(42),
+        42,
+        id="int",
+    ),
+    pytest.param(
+        "DoubleVariableSetValue",
+        "model.double",
+        "MODEL_DOUBLE",
+        acvi.RealValue(3.14),
+        3.14,
+        id="read",
+    ),
+    pytest.param(
+        "StringVariableSetValue",
+        "model.string",
+        "MODEL_STRING",
+        acvi.StringValue("strVal"),
+        "strVal",
+        id="str",
+    ),
     pytest.param(
         "BooleanArraySetValue",
+        "model.booleans",
+        "MODEL_BOOLEANS",
         acvi.BooleanArrayValue(values=[True, False]),
         var_msgs.BooleanArrayValue(values=[True, False], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="bool[]",
     ),
     pytest.param(
         "IntegerArraySetValue",
+        "model.integers",
+        "MODEL_INTEGERS",
         acvi.IntegerArrayValue(values=[86, 42]),
         var_msgs.IntegerArrayValue(values=[86, 42], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="int[]",
     ),
     pytest.param(
         "DoubleArraySetValue",
+        "model.doubles",
+        "MODEL_DOUBLES",
         acvi.RealArrayValue(values=[0.717, 1.414]),
         var_msgs.DoubleArrayValue(values=[0.717, 1.414], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="real[]",
     ),
     pytest.param(
         "StringArraySetValue",
+        "model.strings",
+        "MODEL_STRINGS",
         acvi.StringArrayValue(values=["one", "two"]),
         var_msgs.StringArrayValue(values=["one", "two"], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="str[]",
@@ -420,8 +456,15 @@ set_value_tests = [
 ]
 
 
-@pytest.mark.parametrize("request_method,src,expected", set_value_tests)
-def test_set_value(setup_function, request_method: str, src: acvi.IVariableValue, expected: str):
+@pytest.mark.parametrize("request_method,name,expected_id,src,expected", set_value_tests)
+def test_set_value(
+    setup_function,
+    request_method: str,
+    name: str,
+    expected_id: str,
+    src: acvi.IVariableValue,
+    expected: str,
+):
     # Setup
     with unittest.mock.patch.object(
         mock_client,
@@ -429,11 +472,11 @@ def test_set_value(setup_function, request_method: str, src: acvi.IVariableValue
         return_value=var_msgs.SetVariableValueResponse(was_changed=True),
     ) as mock_grpc_method:
         # SUT
-        workflow.set_value("var.name", src)
+        workflow.set_value(name, src)
 
     # Verify
     mock_grpc_method.assert_called_once()
-    assert mock_grpc_method.call_args[0][0].target == elem_msgs.ElementId(id_string="VAR_NAME")
+    assert mock_grpc_method.call_args[0][0].target == elem_msgs.ElementId(id_string=expected_id)
     assert mock_grpc_method.call_args[0][0].new_value == expected
 
 
@@ -725,7 +768,9 @@ def test_save_workflow_as(setup_function):
 
 def test_create_component(setup_function) -> None:
     # Execute
-    response = wkf_msgs.WorkflowCreateComponentResponse(created=elem_msgs.ElementId(id_string="zxcv"))
+    response = wkf_msgs.WorkflowCreateComponentResponse(
+        created=elem_msgs.ElementId(id_string="zxcv")
+    )
     with unittest.mock.patch.object(
         mock_client, "WorkflowCreateComponent", return_value=response
     ) as mock_grpc_method:
@@ -752,9 +797,11 @@ def test_create_component(setup_function) -> None:
 
 def test_create_component_parent_object(setup_function) -> None:
     # Execute
-    response = wkf_msgs.WorkflowCreateComponentResponse(created=elem_msgs.ElementId(id_string="zxcv"))
+    response = wkf_msgs.WorkflowCreateComponentResponse(
+        created=elem_msgs.ElementId(id_string="zxcv")
+    )
     with unittest.mock.patch.object(
-            mock_client, "WorkflowCreateComponent", return_value=response
+        mock_client, "WorkflowCreateComponent", return_value=response
     ) as mock_grpc_method:
         component: grpcmc.Component = workflow.create_component(
             server_path="common:\\Functions\\Quadratic",
@@ -775,6 +822,7 @@ def test_create_component_parent_object(setup_function) -> None:
         )
         mock_grpc_method.assert_called_once_with(expected_request)
         assert component.element_id == "zxcv"
+
 
 def test_create_component_at_xy_pos(setup_function) -> None:
     # Setup
