@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Collection
+from typing import Mapping
 
 from ansys.engineeringworkflow.api import IVariableContainer
 
@@ -12,7 +12,7 @@ class IGroupOwner(IVariableContainer, ABC):
 
     @property
     @abstractmethod
-    def groups(self) -> Collection["IGroup"]:
+    def groups(self) -> Mapping[str, "IGroup"]:
         """The groups that this item contains."""
 
 
