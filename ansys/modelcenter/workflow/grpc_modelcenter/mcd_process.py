@@ -48,7 +48,7 @@ class MCDProcess:
             if time.time() - start > self._timeout:
                 break
             elif line.startswith("grpc server listening on "):
-                colon_index = line.find(":")+1  # MCD returns string like: 0.0.0.0:50051
+                colon_index = line.find(":") + 1  # MCD returns string like: 0.0.0.0:50051
                 return int(line[colon_index:].strip())
             else:
                 time.sleep(0.1)
