@@ -154,7 +154,11 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_element_by_name(self, element_name: str) -> engapi.IElement:
-        response = self._stub.WorkflowGetElementByName(element_msg.ElementName(name=element_name))
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=element_name),
+        )
+        response = self._stub.WorkflowGetElementByName(request)
         return create_element(response, self._channel)
 
     # TODO: Should we just delete this? Should probably remove from
@@ -261,7 +265,10 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_variable(self, name: str) -> wfapi.IVariable:
-        request = element_msg.ElementName(name=name)
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=name),
+        )
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
         if response.type != element_msg.ELEMTYPE_VARIABLE:
@@ -278,7 +285,10 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_component(self, name: str) -> wfapi.IComponent:
-        request = element_msg.ElementName(name=name)
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=name),
+        )
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
         if response.type == element_msg.ELEMTYPE_COMPONENT:
             return Component(response.id, self._channel)
@@ -385,7 +395,10 @@ class Workflow(wfapi.IWorkflow):
         if name is None:
             return self.get_root()
         else:
-            request = element_msg.ElementName(name=name)
+            request = workflow_msg.NamedElementInWorkflow(
+                workflow=workflow_msg.WorkflowId(id=self._id),
+                element_full_name=element_msg.ElementName(name=name),
+            )
             response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
             if response.type == element_msg.ELEMTYPE_ASSEMBLY:
                 return Assembly(
@@ -427,7 +440,10 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
         metadata: acvi.CommonVariableMetadata = None
-        request = element_msg.ElementName(name=name)
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=name),
+        )
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
         if response.type != element_msg.ELEMTYPE_VARIABLE:
@@ -580,6 +596,9 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
-        request = element_msg.ElementName(name=var_name)
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=var_name),
+        )
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
         value.accept(VariableValueVisitor(response.id, self._stub))

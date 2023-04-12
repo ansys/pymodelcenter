@@ -120,36 +120,36 @@ class MockWorkflowClientForWorkflowTest:
 
     def WorkflowGetElementByName(self, request: elem_msgs.ElementName):
         response = wkf_msgs.ElementInfo()
-        response.id.id_string = request.name.replace(".", "_").upper()
-        if request.name == "a.component":
+        response.id.id_string = request.element_full_name.name.replace(".", "_").upper()
+        if request.element_full_name.name == "a.component":
             response.type = elem_msgs.ELEMTYPE_COMPONENT
-        elif request.name == "a.assembly":
+        elif request.element_full_name.name == "a.assembly":
             response.type = elem_msgs.ELEMTYPE_ASSEMBLY
-        elif request.name == "model.boolean":
+        elif request.element_full_name.name == "model.boolean":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_BOOLEAN
-        elif request.name == "model.booleans":
+        elif request.element_full_name.name == "model.booleans":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_BOOLEAN_ARRAY
-        elif request.name == "model.double":
+        elif request.element_full_name.name == "model.double":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_REAL
-        elif request.name == "model.doubles":
+        elif request.element_full_name.name == "model.doubles":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_REAL_ARRAY
-        elif request.name == "model.integer":
+        elif request.element_full_name.name == "model.integer":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_INTEGER
-        elif request.name == "model.integers":
+        elif request.element_full_name.name == "model.integers":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_INTEGER_ARRAY
-        elif request.name == "model.string":
+        elif request.element_full_name.name == "model.string":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_STRING
-        elif request.name == "model.strings":
+        elif request.element_full_name.name == "model.strings":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_STRING_ARRAY
-        elif request.name == "model.unknown":
+        elif request.element_full_name.name == "model.unknown":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_UNKNOWN
         return response
@@ -314,6 +314,7 @@ def test_get_root(setup_function) -> None:
     result: ewapi.IControlStatement = workflow.get_root()
 
     # Verification
+    assert isinstance(result, mcapi.IAssembly)
     assert result.element_id == "Model"
 
 
@@ -322,6 +323,7 @@ def test_get_component(setup_function) -> None:
     result: mcapi.IComponent = workflow.get_component("a.component")
 
     # Verification
+    assert isinstance(result, mcapi.IComponent)
     assert result.element_id == "A_COMPONENT"
 
 
