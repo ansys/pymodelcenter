@@ -78,7 +78,7 @@ class MockWorkflowClientForWorkflowTest:
         return response
 
     def WorkflowCreateLink(self, request: wkf_msgs.WorkflowCreateLinkRequest):
-        if request.target.id_string != "inputs.var1" or request.equation != "Workflow.comp.output4":
+        if request.target.id_string != "INPUTS_VAR1" or request.equation != "Workflow.comp.output4":
             raise Exception()
         self.was_link_created = True
         response = wkf_msgs.WorkflowCreateLinkResponse()
@@ -250,6 +250,8 @@ class MockWorkflowClientForWorkflowTest:
         return self.workflow_run_response
 
     def ElementGetFullName(self, request: elem_msgs.ElementId) -> elem_msgs.ElementName:
+        if request.id_string == "WORKFLOW_COMP_OUTPUT4":
+            return elem_msgs.ElementName(name="Workflow.comp.output4")
         return elem_msgs.ElementName(name=request.id_string)
 
     def BooleanVariableSetValue(self, request):
@@ -814,9 +816,9 @@ def test_create_link(setup_function) -> None:
 
 
 def test_create_link_with_objects(setup_function) -> None:
-    lhs = elem_msgs.ElementId(id_string="inputs.var1")
+    lhs = elem_msgs.ElementId(id_string="INPUTS_VAR1")
     test_var = grpcmc.DoubleVariable(lhs, workflow._channel)
-    rhs = elem_msgs.ElementId(id_string="Workflow.comp.output4")
+    rhs = elem_msgs.ElementId(id_string="WORKFLOW_COMP_OUTPUT4")
     test_eqn_var = grpcmc.DoubleVariable(rhs, workflow._channel)
 
     # Execute

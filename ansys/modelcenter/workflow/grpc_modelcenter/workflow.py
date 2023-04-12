@@ -235,7 +235,7 @@ class Workflow(wfapi.IWorkflow):
             eq = equation.full_name
         request = workflow_msg.WorkflowCreateLinkRequest(equation=eq)
         if isinstance(variable, str):
-            request.target.id_string = variable
+            request.target.id_string = self.get_element_by_name(variable).element_id
         else:
             request.target.id_string = variable.element_id
         response: workflow_msg.WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
