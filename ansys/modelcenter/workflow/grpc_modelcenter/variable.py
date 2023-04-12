@@ -11,6 +11,7 @@ import ansys.modelcenter.workflow.api as mc_api
 from .abstract_workflow_element import AbstractWorkflowElement
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
+from .proto.workflow_messages_pb2 import ElementIdOrName
 from .var_value_convert import convert_grpc_value_to_acvi, grpc_type_enum_to_interop_type
 
 
@@ -96,7 +97,7 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_value(self, hid: Optional[str]) -> acvi.VariableState:
-        response = self._client.VariableGetState(self._element_id)
+        response = self._client.VariableGetState(ElementIdOrName(target_id=self._element_id))
         interop_value: acvi.IVariableValue
         try:
             interop_value = convert_grpc_value_to_acvi(response.value)

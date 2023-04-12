@@ -15,6 +15,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableState,
     VariableTypeResponse,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementIdOrName
 from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
@@ -27,7 +28,7 @@ class MockWorkflowClientForVariableTest:
     def VariableGetType(self, request: ElementId) -> VariableTypeResponse:
         return VariableTypeResponse()
 
-    def VariableGetState(self, request: ElementId) -> VariableState:
+    def VariableGetState(self, request: ElementIdOrName) -> VariableState:
         return VariableState()
 
     def VariableGetIsInput(self, request: ElementId) -> VariableIsInputResponse:
@@ -67,7 +68,7 @@ def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state)
 
         result: acvi.VariableState = sut.get_value(None)
 
-        mock_grpc_method.assert_called_once_with(sut_element_id)
+        mock_grpc_method.assert_called_once_with(ElementIdOrName(target_id=sut_element_id))
         assert result.value == expected_acvi_state.value
         assert result.is_valid == expected_acvi_state.is_valid
 
@@ -139,4 +140,4 @@ def test_get_state_conversion_failure(monkeypatch) -> None:
 
         # Verification
         assert err.value.args[0] == "Unexpected failure converting gRPC value response"
-        mock_grpc_method.assert_called_once_with(sut_element_id)
+        mock_grpc_method.assert_called_once_with(ElementIdOrName(target_id=sut_element_id))

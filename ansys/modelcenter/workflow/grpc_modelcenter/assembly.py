@@ -24,12 +24,15 @@ from .proto.element_messages_pb2 import (
     AddAssemblyRequest,
     AddAssemblyVariableRequest,
     AddAssemblyVariableResponse,
-    DeleteAssemblyVariableRequest,
     ElementId,
-    ElementIdOrName,
     ElementName,
 )
-from .proto.workflow_messages_pb2 import ElementInfo
+from .proto.workflow_messages_pb2 import (
+    DeleteAssemblyVariableRequest,
+    ElementIdOrName,
+    ElementInfo,
+    NamedElementInWorkflow,
+)
 from .var_value_convert import interop_type_to_mc_type_string, mc_type_string_to_interop_type
 from .variable_container import AbstractGRPCVariableContainer
 
@@ -88,7 +91,9 @@ class Assembly(
         assembly_name = self.name
         var_name = f"{assembly_name}.{name}"
         request = DeleteAssemblyVariableRequest(
-            target=ElementIdOrName(target_name=ElementName(name=var_name))
+            target=ElementIdOrName(
+                target_name=NamedElementInWorkflow(element_full_name=ElementName(name=var_name))
+            )
         )
         return self._client.AssemblyDeleteVariable(request).existed
 

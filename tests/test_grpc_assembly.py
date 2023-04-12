@@ -26,11 +26,9 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     AssemblyIconSetRequest,
     AssemblyIconSetResponse,
     AssemblyType,
-    DeleteAssemblyVariableRequest,
     DeleteAssemblyVariableResponse,
     ElementId,
     ElementIdCollection,
-    ElementIdOrName,
     ElementIndexInParentResponse,
     ElementName,
     ElementType,
@@ -42,8 +40,11 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableValue,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import (
+    DeleteAssemblyVariableRequest,
+    ElementIdOrName,
     ElementInfo,
     ElementInfoCollection,
+    NamedElementInWorkflow,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeVariable
 from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
@@ -440,7 +441,9 @@ def test_delete_variable(monkeypatch) -> None:
     target_assembly_name = "Model.DeleteVarAssembly"
     target_assembly_id = "TARGET_ASSEMBLY"
     mock_client.name_responses[target_assembly_id] = target_assembly_name
-    target_variable_name = ElementName(name="Model.DeleteVarAssembly.VarToDelete")
+    target_variable_name = NamedElementInWorkflow(
+        element_full_name=ElementName(name="Model.DeleteVarAssembly.VarToDelete")
+    )
     with unittest.mock.patch.object(
         mock_client, "AssemblyDeleteVariable", return_value=DeleteAssemblyVariableResponse()
     ) as mock_delete:

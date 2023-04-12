@@ -188,27 +188,27 @@ class MockWorkflowClientForWorkflowTest:
             response.var_type = var_msgs.VARTYPE_FILE_ARRAY
         return response
 
-    def VariableGetState(self, request: elem_msgs.ElementIdOrName) -> var_msgs.VariableState:
+    def VariableGetState(self, request: wkf_msgs.ElementIdOrName) -> var_msgs.VariableState:
         response = var_msgs.VariableState()
-        if request.target_name.name == "model.boolean":
+        if request.target_name.element_full_name.name == "model.boolean":
             response.value.bool_value = False
-        elif request.target_name.name == "model.booleans":
+        elif request.target_name.element_full_name.name == "model.booleans":
             response.value.bool_array_value.values.extend([True, False, True])
-        elif request.target_name.name == "model.integer":
+        elif request.target_name.element_full_name.name == "model.integer":
             response.value.int_value = 42
-        elif request.target_name.name == "model.integers":
+        elif request.target_name.element_full_name.name == "model.integers":
             response.value.int_array_value.values.extend([86, 42, 1])
-        elif request.target_name.name == "model.double":
+        elif request.target_name.element_full_name.name == "model.double":
             response.value.double_value = 3.14
-        elif request.target_name.name == "model.doubles":
+        elif request.target_name.element_full_name.name == "model.doubles":
             response.value.double_array_value.values.extend([1.414, 0.717, 3.14])
-        elif request.target_name.name == "model.string":
+        elif request.target_name.element_full_name.name == "model.string":
             response.value.string_value = "sVal"
-        elif request.target_name.name == "model.strings":
+        elif request.target_name.element_full_name.name == "model.strings":
             response.value.string_array_value.values.extend(["one", "two", "three"])
-        elif request.target_name.name == "model.file":
+        elif request.target_name.element_full_name.name == "model.file":
             pass
-        elif request.target_name.name == "model.files":
+        elif request.target_name.element_full_name.name == "model.files":
             pass
         return response
 

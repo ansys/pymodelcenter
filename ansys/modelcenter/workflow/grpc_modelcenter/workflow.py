@@ -185,7 +185,12 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_value(self, var_name: str) -> acvi.VariableState:
-        request = element_msg.ElementIdOrName(target_name=element_msg.ElementName(name=var_name))
+        request = workflow_msg.ElementIdOrName(
+            target_name=workflow_msg.NamedElementInWorkflow(
+                element_full_name=element_msg.ElementName(name=var_name),
+                workflow=workflow_msg.WorkflowId(id=self._id),
+            )
+        )
         response: var_val_msg.VariableState
         try:
             response = self._stub.VariableGetState(request)
