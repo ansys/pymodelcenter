@@ -123,6 +123,8 @@ class MockWorkflowClientForWorkflowTest:
         response.id.id_string = request.element_full_name.name.replace(".", "_").upper()
         if request.element_full_name.name == "a.component":
             response.type = elem_msgs.ELEMTYPE_COMPONENT
+        elif request.element_full_name.name == "Model":
+            response.type = elem_msgs.ELEMTYPE_ASSEMBLY
         elif request.element_full_name.name == "Workflow.source_comp":
             response.type = elem_msgs.ELEMTYPE_COMPONENT
         elif request.element_full_name.name == "Workflow.dest_comp":
@@ -723,18 +725,56 @@ def test_save_workflow_as(setup_function):
 
 def test_create_component(setup_function) -> None:
     # Execute
-    component: grpcmc.Component = workflow.create_component(
-        server_path="common:\\Functions\\Quadratic",
-        name="二次",
-        parent="Model",
-        init_string=None,
-        av_position=None,
-        insert_before=None,
-    )
+    response = wkf_msgs.WorkflowCreateComponentResponse(created=elem_msgs.ElementId(id_string="zxcv"))
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowCreateComponent", return_value=response
+    ) as mock_grpc_method:
+        component: grpcmc.Component = workflow.create_component(
+            server_path="common:\\Functions\\Quadratic",
+            name="二次",
+            parent="Model",
+            init_string=None,
+            av_position=None,
+            insert_before=None,
+        )
 
-    # Verify
-    assert component.element_id == "zxcv"
+        # Verify
+        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+            source_path="common:\\Functions\\Quadratic",
+            name="二次",
+            init_str=None,
+            parent=elem_msgs.ElementId(id_string="MODEL"),
+            after_comp=None,
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+        assert component.element_id == "zxcv"
 
+
+def test_create_component_parent_object(setup_function) -> None:
+    # Execute
+    response = wkf_msgs.WorkflowCreateComponentResponse(created=elem_msgs.ElementId(id_string="zxcv"))
+    with unittest.mock.patch.object(
+            mock_client, "WorkflowCreateComponent", return_value=response
+    ) as mock_grpc_method:
+        component: grpcmc.Component = workflow.create_component(
+            server_path="common:\\Functions\\Quadratic",
+            name="二次",
+            parent=grpcmc.Assembly(elem_msgs.ElementId(id_string="45df304"), None),
+            init_string=None,
+            av_position=None,
+            insert_before=None,
+        )
+
+        # Verify
+        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+            source_path="common:\\Functions\\Quadratic",
+            name="二次",
+            init_str=None,
+            parent=elem_msgs.ElementId(id_string="45df304"),
+            after_comp=None,
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+        assert component.element_id == "zxcv"
 
 def test_create_component_at_xy_pos(setup_function) -> None:
     # Setup
@@ -757,7 +797,7 @@ def test_create_component_at_xy_pos(setup_function) -> None:
             source_path="common:\\Functions\\Quadratic",
             name="二次",
             init_str=None,
-            parent=elem_msgs.ElementId(id_string="Model"),
+            parent=elem_msgs.ElementId(id_string="MODEL"),
             coords=elem_msgs.AnalysisViewPosition(x_pos=3, y_pos=5),
             after_comp=None,
         )
@@ -777,7 +817,7 @@ def test_create_component_after_comp_by_id(setup_function) -> None:
             parent="Model",
             init_string=None,
             av_position=None,
-            insert_before="43q48a93cd300cab",
+            insert_before="Model.before_comp",
         )
 
         # Verify
@@ -785,9 +825,9 @@ def test_create_component_after_comp_by_id(setup_function) -> None:
             source_path="common:\\Functions\\Quadratic",
             name="二次",
             init_str=None,
-            parent=elem_msgs.ElementId(id_string="Model"),
+            parent=elem_msgs.ElementId(id_string="MODEL"),
             coords=None,
-            after_comp=elem_msgs.ElementId(id_string="43q48a93cd300cab"),
+            after_comp=elem_msgs.ElementId(id_string="MODEL_BEFORE_COMP"),
         )
         mock_grpc_method.assert_called_once_with(expected_request)
 
@@ -816,7 +856,7 @@ def test_create_component_after_comp_by_component(setup_function) -> None:
             source_path="common:\\Functions\\Quadratic",
             name="二次",
             init_str=None,
-            parent=elem_msgs.ElementId(id_string="Model"),
+            parent=elem_msgs.ElementId(id_string="MODEL"),
             coords=None,
             after_comp=elem_msgs.ElementId(id_string="43q48a93cd300cab"),
         )

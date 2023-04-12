@@ -430,13 +430,14 @@ class Workflow(wfapi.IWorkflow):
         request = workflow_msg.WorkflowCreateComponentRequest(
             source_path=server_path, name=name, init_str=init_string
         )
-        request.parent.id_string = parent
+        used_parent = parent if isinstance(parent, wfapi.IAssembly) else self.get_assembly(parent)
+        request.parent.id_string = used_parent.element_id
         if av_position is not None:
             request.coords.x_pos = av_position[0]
             request.coords.y_pos = av_position[1]
         elif insert_before is not None:
             if isinstance(insert_before, str):
-                request.after_comp.id_string = insert_before
+                request.after_comp.id_string = self.get_element_by_name(insert_before).element_id
             else:
                 request.after_comp.id_string = insert_before.element_id
         response: workflow_msg.WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(
