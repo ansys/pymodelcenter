@@ -284,6 +284,11 @@ class MockWorkflowClientForWorkflowTest:
     def StringArraySetValue(self, request):
         pass
 
+    def WorkflowMoveComponent(
+        self, request: wkf_msgs.MoveComponentRequest
+    ) -> elem_msgs.ElementIndexInParentResponse:
+        return elem_msgs.ElementIndexInParentResponse()
+
 
 mock_client: MockWorkflowClientForWorkflowTest
 
@@ -1033,6 +1038,38 @@ def test_get_element_by_name(
     # Verify
     assert isinstance(result, expected_wrapper_type)
     assert result.element_id == expected_id
+
+
+def test_move_component_names(setup_function):
+    mock_response = elem_msgs.ElementIndexInParentResponse()
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowMoveComponent", return_value=mock_response
+    ) as mock_grpc_method:
+        workflow.move_component("a.component", "a.assembly")
+
+        expected_request = wkf_msgs.MoveComponentRequest(
+            target=elem_msgs.ElementId(id_string="A_COMPONENT"),
+            new_parent=elem_msgs.ElementId(id_string="A_ASSEMBLY"),
+            index_in_parent=-1,
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_move_component_objects(setup_function):
+    mock_response = elem_msgs.ElementIndexInParentResponse()
+    mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), None)
+    mock_assembly = grpcmc.Assembly(elem_msgs.ElementId(id_string="ASSY_3948"), None)
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowMoveComponent", return_value=mock_response
+    ) as mock_grpc_method:
+        workflow.move_component(mock_component, mock_assembly, 47)
+
+        expected_request = wkf_msgs.MoveComponentRequest(
+            target=elem_msgs.ElementId(id_string="COMP_4857"),
+            new_parent=elem_msgs.ElementId(id_string="ASSY_3948"),
+            index_in_parent=47,
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
 
 
 # @pytest.mark.parametrize(

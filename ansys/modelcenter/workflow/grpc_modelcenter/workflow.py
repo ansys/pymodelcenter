@@ -393,8 +393,18 @@ class Workflow(wfapi.IWorkflow):
         parent: Union[wfapi.IAssembly, str],
         index: int = -1,
     ) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError()
+        used_component: wfapi.IComponent = (
+            component if isinstance(component, wfapi.IComponent) else self.get_component(component)
+        )
+        used_parent: wfapi.IAssembly = (
+            parent if isinstance(parent, wfapi.IAssembly) else self.get_assembly(parent)
+        )
+        request = workflow_msg.MoveComponentRequest(
+            target=element_msg.ElementId(id_string=used_component.element_id),
+            new_parent=element_msg.ElementId(id_string=used_parent.element_id),
+            index_in_parent=index,
+        )
+        self._stub.WorkflowMoveComponent(request)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
