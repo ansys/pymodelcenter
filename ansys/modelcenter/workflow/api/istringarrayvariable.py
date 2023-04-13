@@ -1,4 +1,4 @@
-"""Contains definitions for double variables."""
+"""Definitions of string array variable."""
 from abc import ABC, abstractmethod
 
 import ansys.common.variableinterop as acvi
@@ -7,10 +7,10 @@ from overrides import overrides
 from .ivariable import IVariable
 
 
-class IDoubleVariable(IVariable, ABC):
-    """Represents a double / real variable on the workflow."""
+class IStringArrayVariable(IVariable, ABC):
+    """Represents a string variable on the workflow."""
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> acvi.RealMetadata:
+    def get_metadata(self) -> acvi.StringArrayMetadata:
         ...  # pragma: no cover

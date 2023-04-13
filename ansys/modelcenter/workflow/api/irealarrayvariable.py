@@ -7,8 +7,8 @@ from overrides import overrides
 from .ivariable import IVariable
 
 
-class IDoubleArray(IVariable, ABC):
-    """Represents a double array variable on the workflow."""
+class IRealArrayVariable(IVariable, ABC):
+    """Represents a variable storing an array of reals on the workflow."""
 
     @overrides
     @abstractmethod

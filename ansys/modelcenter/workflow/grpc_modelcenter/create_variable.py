@@ -28,7 +28,7 @@ class _VariableCreationVisitor(acvi.IVariableTypePseudoVisitor[mc_api.IVariable]
         return int_var_impl.IntegerVariable(element_id=self._element_id, channel=self._channel)
 
     def visit_real(self) -> T:
-        return double_var_impl.DoubleVariable(element_id=self._element_id, channel=self._channel)
+        return double_var_impl.RealVariable(element_id=self._element_id, channel=self._channel)
 
     def visit_boolean(self) -> T:
         return bool_var_impl.BooleanVariable(element_id=self._element_id, channel=self._channel)
@@ -45,13 +45,17 @@ class _VariableCreationVisitor(acvi.IVariableTypePseudoVisitor[mc_api.IVariable]
         return int_var_impl.IntegerArray(element_id=self._element_id, channel=self._channel)
 
     def visit_real_array(self) -> T:
-        return double_var_impl.DoubleArray(element_id=self._element_id, channel=self._channel)
+        return double_var_impl.RealArrayVariable(element_id=self._element_id, channel=self._channel)
 
     def visit_bool_array(self) -> T:
-        return bool_var_impl.BooleanArray(element_id=self._element_id, channel=self._channel)
+        return bool_var_impl.BooleanArrayVariable(
+            element_id=self._element_id, channel=self._channel
+        )
 
     def visit_string_array(self) -> T:
-        return string_var_impl.StringArray(element_id=self._element_id, channel=self._channel)
+        return string_var_impl.StringArrayVariable(
+            element_id=self._element_id, channel=self._channel
+        )
 
     def visit_file_array(self) -> T:
         return unsupported_var_impl.UnsupportedTypeVariable(

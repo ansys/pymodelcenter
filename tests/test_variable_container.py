@@ -116,7 +116,7 @@ def do_test_get_variables_multiple_variables(monkeypatch, sut_type) -> None:
         assert result["larry"].element_id == "IDVAR_LARRY"
         assert isinstance(result["moe"], mc_api.IStringVariable)
         assert result["moe"].element_id == "IDVAR_MOE"
-        assert isinstance(result["curly"], mc_api.IDoubleVariable)
+        assert isinstance(result["curly"], mc_api.IRealVariable)
         assert result["curly"].element_id == "IDVAR_CURLY"
 
 

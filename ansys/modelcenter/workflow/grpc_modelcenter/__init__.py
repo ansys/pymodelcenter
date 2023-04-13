@@ -6,13 +6,13 @@ and attempt to communicate with it via gRPC.
 """
 
 from .assembly import Assembly
-from .boolean_variable import BooleanArray, BooleanVariable
+from .boolean_variable import BooleanArrayVariable, BooleanVariable
 from .component import Component
-from .double_variable import DoubleArray, DoubleVariable
+from .double_variable import RealArrayVariable, RealVariable
 from .engine import Engine
 from .format import Format
 from .integer_variable import IntegerArray, IntegerVariable
 from .mcd_process import MCDProcess
-from .string_variable import StringArray, StringVariable
+from .string_variable import StringArrayVariable, StringVariable
 from .variable_link import VariableLink
 from .workflow import Workflow

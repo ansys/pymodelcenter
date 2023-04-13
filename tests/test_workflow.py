@@ -305,13 +305,13 @@ def setup_function(monkeypatch):
     monkeypatch_client_creation(monkeypatch, grpcmc.Assembly, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.Component, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.BooleanVariable, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.BooleanArray, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.DoubleVariable, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.DoubleArray, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.BooleanArrayVariable, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.RealVariable, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.RealArrayVariable, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.IntegerVariable, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.IntegerArray, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringVariable, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.StringArray, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayVariable, mock_client)
 
     global workflow
     workflow = grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz")
@@ -924,9 +924,9 @@ def test_create_link(setup_function) -> None:
 
 def test_create_link_with_objects(setup_function) -> None:
     lhs = elem_msgs.ElementId(id_string="INPUTS_VAR1")
-    test_var = grpcmc.DoubleVariable(lhs, workflow._channel)
+    test_var = grpcmc.RealVariable(lhs, workflow._channel)
     rhs = elem_msgs.ElementId(id_string="WORKFLOW_COMP_OUTPUT4")
-    test_eqn_var = grpcmc.DoubleVariable(rhs, workflow._channel)
+    test_eqn_var = grpcmc.RealVariable(rhs, workflow._channel)
 
     # Execute
     workflow.create_link(test_var, test_eqn_var)
@@ -989,13 +989,13 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
     "name,expected_type",
     [
         pytest.param("model.boolean", grpcmc.BooleanVariable),
-        pytest.param("model.booleans", grpcmc.BooleanArray),
-        pytest.param("model.double", grpcmc.DoubleVariable),
-        pytest.param("model.doubles", grpcmc.DoubleArray),
+        pytest.param("model.booleans", grpcmc.BooleanArrayVariable),
+        pytest.param("model.double", grpcmc.RealVariable),
+        pytest.param("model.doubles", grpcmc.RealArrayVariable),
         pytest.param("model.integer", grpcmc.IntegerVariable),
         pytest.param("model.integers", grpcmc.IntegerArray),
         pytest.param("model.string", grpcmc.StringVariable),
-        pytest.param("model.strings", grpcmc.StringArray),
+        pytest.param("model.strings", grpcmc.StringArrayVariable),
     ],
 )
 def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
@@ -1021,7 +1021,7 @@ def test_get_variable_on_wrong_type(setup_function) -> None:
         ("model.boolean", mcapi.IBooleanVariable, "MODEL_BOOLEAN"),
         ("model.integer", mcapi.IIntegerVariable, "MODEL_INTEGER"),
         ("model.string", mcapi.IStringVariable, "MODEL_STRING"),
-        ("model.double", mcapi.IDoubleVariable, "MODEL_DOUBLE"),
+        ("model.double", mcapi.IRealVariable, "MODEL_DOUBLE"),
     ],
 )
 def test_get_element_by_name(

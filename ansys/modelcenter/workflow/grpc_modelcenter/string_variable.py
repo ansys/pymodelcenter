@@ -1,4 +1,4 @@
-"""Contains definition for StringVariable and StringArray."""
+"""Contains definition for StringVariable and StringArrayVariable."""
 
 import ansys.common.variableinterop as acvi
 from grpc import Channel
@@ -63,7 +63,7 @@ class StringVariable(BaseVariable, mc_api.IStringVariable):
         value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
-class StringArray(BaseVariable, mc_api.IStringArray):
+class StringArrayVariable(BaseVariable, mc_api.IStringArrayVariable):
     """Represents a gRPC double / real array variable on the workflow."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -77,7 +77,7 @@ class StringArray(BaseVariable, mc_api.IStringArray):
         channel: Channel
             The gRPC channel to use.
         """
-        super(StringArray, self).__init__(element_id=element_id, channel=channel)
+        super(StringArrayVariable, self).__init__(element_id=element_id, channel=channel)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

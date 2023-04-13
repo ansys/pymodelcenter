@@ -8,7 +8,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
     AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.boolean_variable import (
-    BooleanArray,
+    BooleanArrayVariable,
     BooleanVariable,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
@@ -63,14 +63,14 @@ class MockWorkflowClientForBooleanVarTest:
     [
         ("", BooleanVariable, acvi.BooleanMetadata),
         ("This is a mock variable description.", BooleanVariable, acvi.BooleanMetadata),
-        ("", BooleanArray, acvi.BooleanArrayMetadata),
-        ("This is a mock variable description.", BooleanArray, acvi.BooleanArrayMetadata),
+        ("", BooleanArrayVariable, acvi.BooleanArrayMetadata),
+        ("This is a mock variable description.", BooleanArrayVariable, acvi.BooleanArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
-    sut_type: Union[BooleanVariable, BooleanArray],
+    sut_type: Union[BooleanVariable, BooleanArrayVariable],
     expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -99,11 +99,11 @@ def test_retrieved_metadata_should_include_description(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArray, acvi.BooleanArrayMetadata)],
+    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArrayVariable, acvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Union[BooleanVariable, BooleanArray],
+    sut_type: Union[BooleanVariable, BooleanArrayVariable],
     expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -131,11 +131,11 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArray, acvi.BooleanArrayMetadata)],
+    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArrayVariable, acvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Union[BooleanVariable, BooleanArray],
+    sut_type: Union[BooleanVariable, BooleanArrayVariable],
     expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -173,11 +173,11 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArray, acvi.BooleanArrayMetadata)],
+    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArrayVariable, acvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
-    sut_type: Union[BooleanVariable, BooleanArray],
+    sut_type: Union[BooleanVariable, BooleanArrayVariable],
     expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -205,11 +205,11 @@ def test_retrieved_metadata_includes_unsupported_type(
     "sut_type",
     [
         BooleanVariable,
-        BooleanArray,
+        BooleanArrayVariable,
     ],
 )
 def test_set_metadata_invalid_custom_metadata(
-    monkeypatch, sut_type: Union[BooleanVariable, BooleanArray]
+    monkeypatch, sut_type: Union[BooleanVariable, BooleanArrayVariable]
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -235,14 +235,14 @@ def test_set_metadata_invalid_custom_metadata(
     [
         ("", BooleanVariable, acvi.BooleanMetadata),
         ("This is a mock variable description.", BooleanVariable, acvi.BooleanMetadata),
-        ("", BooleanArray, acvi.BooleanArrayMetadata),
-        ("This is a mock variable description.", BooleanArray, acvi.BooleanArrayMetadata),
+        ("", BooleanArrayVariable, acvi.BooleanArrayMetadata),
+        ("This is a mock variable description.", BooleanArrayVariable, acvi.BooleanArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Union[BooleanVariable, BooleanArray],
+    sut_type: Union[BooleanVariable, BooleanArrayVariable],
     metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -271,14 +271,14 @@ def test_set_metadata_empty_custom_metadata(
     [
         ("", BooleanVariable, acvi.BooleanMetadata),
         ("This is a mock variable description.", BooleanVariable, acvi.BooleanMetadata),
-        ("", BooleanArray, acvi.BooleanArrayMetadata),
-        ("This is a mock variable description.", BooleanArray, acvi.BooleanArrayMetadata),
+        ("", BooleanArrayVariable, acvi.BooleanArrayMetadata),
+        ("This is a mock variable description.", BooleanArrayVariable, acvi.BooleanArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Union[BooleanVariable, BooleanArray],
+    sut_type: Union[BooleanVariable, BooleanArrayVariable],
     metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -390,7 +390,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_client, "BooleanArraySetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanArray(sut_element_id, None)
+        sut = BooleanArrayVariable(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute
@@ -424,7 +424,7 @@ def test_array_set_disallowed(monkeypatch, set_value):
         mock_client, "BooleanArraySetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanArray(sut_element_id, None)
+        sut = BooleanArrayVariable(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -444,7 +444,7 @@ def test_scalar_get_type(monkeypatch):
 def test_array_get_type(monkeypatch):
     do_get_type_test(
         monkeypatch,
-        BooleanArray,
+        BooleanArrayVariable,
         VariableType.VARTYPE_BOOLEAN_ARRAY,
         acvi.VariableType.BOOLEAN_ARRAY,
     )
@@ -494,7 +494,7 @@ def test_scalar_get_state(
 def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
     do_get_state_test(
         monkeypatch,
-        BooleanArray,
+        BooleanArrayVariable,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(bool_array_value=value_in_response)
         ),
@@ -507,8 +507,8 @@ def test_array_get_state(monkeypatch, value_in_response, validity_in_response, e
     [
         (BooleanVariable, True),
         (BooleanVariable, False),
-        (BooleanArray, True),
-        (BooleanArray, False),
+        (BooleanArrayVariable, True),
+        (BooleanArrayVariable, False),
     ],
 )
 def test_is_input_component(monkeypatch, sut_type, flag_in_response):
@@ -520,8 +520,8 @@ def test_is_input_component(monkeypatch, sut_type, flag_in_response):
     [
         (BooleanVariable, True),
         (BooleanVariable, False),
-        (BooleanArray, True),
-        (BooleanArray, False),
+        (BooleanArrayVariable, True),
+        (BooleanArrayVariable, False),
     ],
 )
 def test_is_input_workflow(monkeypatch, sut_type, flag_in_response):

@@ -1,4 +1,4 @@
-"""Contains definition for BooleanVariable and BooleanArray."""
+"""Contains definition for BooleanVariable and BooleanArrayVariable."""
 
 import ansys.common.variableinterop as acvi
 from grpc import Channel
@@ -64,7 +64,7 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
         value.value.accept(set_visitor)
 
 
-class BooleanArray(BaseVariable, mc_api.IBooleanArray):
+class BooleanArrayVariable(BaseVariable, mc_api.IBooleanArrayVariable):
     """Represents a gRPC boolean array variable on the workflow."""
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
@@ -104,4 +104,4 @@ class BooleanArray(BaseVariable, mc_api.IBooleanArray):
         channel: Channel
             The gRPC channel to use.
         """
-        super(BooleanArray, self).__init__(element_id=element_id, channel=channel)
+        super(BooleanArrayVariable, self).__init__(element_id=element_id, channel=channel)

@@ -1,4 +1,4 @@
-"""Contains definition for DoubleVariable and DoubleArray."""
+"""Contains definition for RealVariable and RealArrayVariable."""
 import ansys.common.variableinterop as acvi
 from grpc import Channel
 from overrides import overrides
@@ -21,7 +21,7 @@ from .var_metadata_convert import (
 from .variable import BaseVariable
 
 
-class DoubleVariable(BaseVariable, mc_api.IDoubleVariable):
+class RealVariable(BaseVariable, mc_api.IRealVariable):
     """Represents a gRPC double / real variable on the workflow."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -35,7 +35,7 @@ class DoubleVariable(BaseVariable, mc_api.IDoubleVariable):
         channel: Channel
             The gRPC channel to use.
         """
-        super(DoubleVariable, self).__init__(element_id=element_id, channel=channel)
+        super(RealVariable, self).__init__(element_id=element_id, channel=channel)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -62,7 +62,7 @@ class DoubleVariable(BaseVariable, mc_api.IDoubleVariable):
         value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
-class DoubleArray(BaseVariable, mc_api.IDoubleArray):
+class RealArrayVariable(BaseVariable, mc_api.IRealArrayVariable):
     """Represents a gRPC double / real array variable on the workflow."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -76,7 +76,7 @@ class DoubleArray(BaseVariable, mc_api.IDoubleArray):
         channel: Channel
             The gRPC channel to use.
         """
-        super(DoubleArray, self).__init__(element_id=element_id, channel=channel)
+        super(RealArrayVariable, self).__init__(element_id=element_id, channel=channel)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
