@@ -11,11 +11,9 @@ if TYPE_CHECKING:
     import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 
-# TODO: What from this interface can be elevated to the aew_api?
 class IVariable(aew_api.IVariable, ABC):
     """Represents a variable in the workflow."""
 
-    # TODO: Should the upstream get_value, set_value be renamed / changed to properties?
     @abstractmethod
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         """Get the standard metadata for this variable."""

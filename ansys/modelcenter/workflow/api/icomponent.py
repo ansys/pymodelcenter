@@ -41,10 +41,6 @@ class IComponent(
         The source of the component.
         """
 
-    # TODO: This item is shared with Assembly on the ModelCenter API,
-    #       but on the Ansys Engineering Workflow API, it's defined by IControlStatement
-    #       which is not an ancestor of IComponent, but is the equivalent to IAssembly.
-    #       NPS is considering making IComponent an IControlStatement, need to follow up.
     @property
     @abstractmethod
     def control_type(self) -> str:

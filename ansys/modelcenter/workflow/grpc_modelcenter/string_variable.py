@@ -48,7 +48,11 @@ class StringVariable(BaseVariable, mc_api.IStringVariable):
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.StringMetadata):
-            raise TypeError()  # TODO: be more informative in this error message
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {acvi.StringArrayMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
         request = SetStringVariableMetadataRequest(target=self._element_id)
         fill_string_metadata_message(new_metadata, request.new_metadata)
         self._client.StringVariableSetMetadata(request)
@@ -89,7 +93,11 @@ class StringArrayVariable(BaseVariable, mc_api.IStringArrayVariable):
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.StringArrayMetadata):
-            raise TypeError()  # TODO: be more informative in this error message
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {acvi.StringArrayMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
         request = SetStringVariableMetadataRequest(target=self._element_id)
         fill_string_metadata_message(new_metadata, request.new_metadata)
         self._client.StringVariableSetMetadata(request)

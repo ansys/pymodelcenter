@@ -47,7 +47,11 @@ class RealVariable(BaseVariable, mc_api.IRealVariable):
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealMetadata):
-            raise TypeError()  # TODO: be more informative in this error message
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {acvi.RealMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
         request = SetDoubleVariableMetadataRequest(target=self._element_id)
         fill_real_metadata_message(new_metadata, request.new_metadata)
         self._client.DoubleVariableSetMetadata(request)
@@ -88,7 +92,11 @@ class RealArrayVariable(BaseVariable, mc_api.IRealArrayVariable):
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.RealArrayMetadata):
-            raise TypeError()  # TODO: be more informative in this error message
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {acvi.RealArrayMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
         request = SetDoubleVariableMetadataRequest(target=self._element_id)
         fill_real_metadata_message(new_metadata, request.new_metadata)
         self._client.DoubleVariableSetMetadata(request)

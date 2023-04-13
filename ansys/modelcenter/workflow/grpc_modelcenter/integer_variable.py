@@ -47,7 +47,11 @@ class IntegerVariable(BaseVariable, mc_api.IIntegerVariable):
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.IntegerMetadata):
-            raise TypeError()  # TODO: be more informative in this error message
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {acvi.IntegerMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
         request = SetIntegerVariableMetadataRequest(target=self._element_id)
         fill_integer_metadata_message(new_metadata, request.new_metadata)
         self._client.IntegerVariableSetMetadata(request)
@@ -86,7 +90,11 @@ class IntegerArray(BaseVariable, mc_api.IIntegerArray):
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
         if not isinstance(new_metadata, acvi.IntegerArrayMetadata):
-            raise TypeError()  # TODO: be more informative in this error message
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {acvi.IntegerArrayMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
         request = SetIntegerVariableMetadataRequest(target=self._element_id)
         fill_integer_metadata_message(new_metadata, request.new_metadata)
         self._client.IntegerVariableSetMetadata(request)
