@@ -94,7 +94,7 @@ class IReferenceProperty(IReferencePropertyBase, ABC):
 
 
 class IReferenceArrayProperty(IReferencePropertyBase, ABC):
-    """Represents a reference property of a scalar reference variable."""
+    """Represents a reference property of an array reference variable."""
 
     @abstractmethod
     def set_value(
