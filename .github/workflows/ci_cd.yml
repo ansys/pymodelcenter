@@ -10,122 +10,158 @@ on:
     branches:
       - main
 
+env:
+  MAIN_PYTHON_VERSION: '3.10'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  style:
-    name: Style Check
-    runs-on: windows-latest
+
+  code-style:
+    name: "Running code style checks"
+    runs-on: ubuntu-latest
 
     steps:
-      - name: setup-git-credentials
+      - name: "Set up git Credentials"
         run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
           token: ${{ secrets.PHX_NIGHTLY_SECRET }}
 
-      - name: Setup Python
+      - name: "Set up Python"
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Install style requirements
+      - name: "Install pre-commit"
+        shell: bash
         run: |
-          pip install .[style] --disable-pip-version-check
+          python -m pip install --upgrade pip pre-commit
+          pre-commit install
 
-      - name: Codespell
-        run: |
-          make codespell
+      - name: "Run pre-commit"
+        shell: bash
+        run: pre-commit run --all-files --show-diff-on-failure
 
-      - name: flake8
-        run: |
-          make flake8 
+#  doc-style:
+#    name: "Running doc style checks"
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: "Set up git Credentials"
+#        run: |
+#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
+#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+#
+#      - name: "Install Git and clone project"
+#        uses: actions/checkout@v3
+#        with:
+#          submodules: recursive
+#          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+#
+#      - name: "Run Vale"
+#        uses: errata-ai/vale-action@reviewdog
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          files: doc
+#          reporter: github-pr-check
+#          level: error
+#          filter_mode: nofilter
+#          fail_on_error: true
+#          vale_flags: "--config=${{ doc/.vale.ini }}"
 
   main:
-    name: Build and Testing
-    runs-on: windows-latest
+    name: "Build and Testing"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+        os: ['windows-latest']
 
     steps:
-      - name: setup-git-credentials
+      - name: "Set up git credentials"
         run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
           token: ${{ secrets.PHX_NIGHTLY_SECRET }}
 
-      - name: Setup Python
+      - name: "Setup Python"
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python-version }}
 
-      - name: Install dev dependencies
+      - name: "Install dev dependencies"
         run: pip install .[dev]
 
-      - name: Run gRPC compiler
+      - name: "Run gRPC compiler"
         run: protos/generate-proto.bat
 
-      - name: Create wheel
+      - name: "Create wheel"
         run: |
           pip install build
           python -m build --wheel
 
-      - name: Validate wheel
+      - name: "Validate wheel"
         run: |
           pip install twine
           twine check dist/*
 
-      - name: Install library, with test extra
+      - name: "Install library, with test extra"
         run: pip install .[test]
 
-      - name: Unit testing
+      - name: "Unit testing"
         run: |
           cd tests  # so we're testing the install, not local
-          pytest -vx
+          pytest -vx --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html:.cov/html
 
-      - name: Upload wheel
-        uses: actions/upload-artifact@v2
+      - name: "Upload wheel"
+        uses: actions/upload-artifact@v3
         with:
           name: ansys-modelcenter-workflow-wheel
           path: dist/
           retention-days: 7
 
   docs:
-    name: Build Documentation
+    name: "Build Documentation"
     runs-on: ubuntu-latest
 
     steps:
-      - name: setup-git-credentials
+      - name: "Set up git credentials"
         run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/phx-mocks.insteadOf https://github.com/Phoenix-Integration-Inc/phx-mocks
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-common-variableinterop.insteadOf https://github.com/pyansys/ansys-common-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
           token: ${{ secrets.PHX_NIGHTLY_SECRET }}
           
-      - name: Setup Python
+      - name: "Set up Python"
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Install library, with docs extra
+      - name: "Install library, with docs extra"
         run: |
           pip install poetry
           poetry install -E docs
 
-      - name: Build HTML
+      - name: "Build HTML"
         run: |
           poetry run make -C doc html SPHINXOPTS="-W"
 
@@ -135,21 +171,21 @@ jobs:
 #          sudo apt-get install -y texlive-latex-extra latexmk
 #          poetry run make -C doc latexpdf
 
-      - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v2
+      - name: "Upload HTML Documentation"
+        uses: actions/upload-artifact@v3
         with:
           name: Documentation-html
           path: doc/build/html
           retention-days: 7
 
-#      - name: Upload PDF Documentation
+#      - name: "Upload PDF Documentation"
 #        uses: actions/upload-artifact@v2
 #        with:
 #          name: Documentation-pdf
 #          path: doc/build/latex/*.pdf
 #          retention-days: 7
 
-      - name: Deploy to gh-pages
+      - name: "Deploy to gh-pages"
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.8
         with:
@@ -163,12 +199,12 @@ jobs:
     needs: [main, style, docs]
     runs-on: windows-latest
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v1
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -186,10 +222,10 @@ jobs:
           path: ~/html
 
       # list current directory
-      - name: List directory structure
+      - name: "List directory structure"
         run: ls -R
 
-      - name: Deploy
+      - name: "Deploy"
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           BRANCH: gh-pages
@@ -197,7 +233,7 @@ jobs:
           CLEAN: true
 
       # note how we use the PyPI tokens
-      - name: Upload to Azure PyPi (disabled)
+      - name: "Upload to Azure PyPi (disabled)"
         run: |
           pip install twine
           # twine upload --skip-existing ./**/*.whl
@@ -205,7 +241,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
-      - name: Release
+      - name: "Release"
         uses: softprops/action-gh-release@v1
         with:
           files: |
