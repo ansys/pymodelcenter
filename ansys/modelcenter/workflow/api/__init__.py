@@ -1,7 +1,5 @@
 """ansys.modelcenter.workflow.api module initialization."""
 from .assembly import IAssembly, IAssemblyChild
-from .component_metadata import ComponentMetadataAccess
-from .data_type import VarType
 from .datamonitor import IDataMonitor
 from .engine import IEngine, WorkflowType
 from .format import IFormat
