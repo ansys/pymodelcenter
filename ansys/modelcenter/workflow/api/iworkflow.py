@@ -90,7 +90,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def save_workflow(self) -> None:
-        """Save the current Model."""
+        """Save the current workflow."""
 
     @abstractmethod
     def save_workflow_as(self, file_name: str) -> None:
