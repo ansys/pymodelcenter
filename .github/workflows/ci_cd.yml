@@ -162,11 +162,11 @@ jobs:
           poetry install -E docs
 
       - name: "Run gRPC compiler"
-        run: protos/generate-proto.bat
+        run: poetry run protos/generate-proto.bat
 
       - name: "Build HTML"
         run: |
-          poetry run make -C doc html SPHINXOPTS="-W"
+          poetry run doc/make.bat html SPHINXOPTS="-W"
 
 #      - name: Build PDF Documentation
 #        run: |
