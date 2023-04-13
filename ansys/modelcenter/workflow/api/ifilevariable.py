@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 import ansys.common.variableinterop as acvi
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.iarray import IVariable
+from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 
 class IFileVariableBase(ABC):

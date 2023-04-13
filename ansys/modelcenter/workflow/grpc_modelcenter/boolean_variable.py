@@ -19,7 +19,7 @@ from .var_metadata_convert import (
     convert_grpc_boolean_metadata,
     fill_boolean_metadata_message,
 )
-from .variable import BaseArray, BaseVariable
+from .variable import BaseVariable
 
 
 class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
@@ -64,7 +64,7 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
         value.value.accept(set_visitor)
 
 
-class BooleanArray(BaseArray, mc_api.IBooleanArray):
+class BooleanArray(BaseVariable, mc_api.IBooleanArray):
     """Represents a gRPC boolean array variable on the workflow."""
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)

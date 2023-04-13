@@ -18,7 +18,7 @@ from .var_metadata_convert import (
     convert_grpc_real_metadata,
     fill_real_metadata_message,
 )
-from .variable import BaseArray, BaseVariable
+from .variable import BaseVariable
 
 
 class DoubleVariable(BaseVariable, mc_api.IDoubleVariable):
@@ -62,7 +62,7 @@ class DoubleVariable(BaseVariable, mc_api.IDoubleVariable):
         value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
-class DoubleArray(BaseArray, mc_api.IDoubleArray):
+class DoubleArray(BaseVariable, mc_api.IDoubleArray):
     """Represents a gRPC double / real array variable on the workflow."""
 
     def __init__(self, element_id: ElementId, channel: Channel):

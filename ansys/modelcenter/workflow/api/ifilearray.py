@@ -4,13 +4,13 @@ from abc import ABC, abstractmethod
 import ansys.common.variableinterop as acvi
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.iarray import IArray
+from ansys.modelcenter.workflow.api.ivariable import IVariable
 
 from .ifilevariable import IFileVariableBase
 
 
 # TODO/REDUCE: Consider dropping for Phase II.
-class IFileArray(IFileVariableBase, IArray, ABC):
+class IFileArray(IFileVariableBase, IVariable, ABC):
     """Represents a file array variable in the workflow."""
 
     @property

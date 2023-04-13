@@ -4,10 +4,10 @@ from abc import ABC, abstractmethod
 import ansys.common.variableinterop as acvi
 from overrides import overrides
 
-from .iarray import IArray
+from .ivariable import IVariable
 
 
-class IBooleanArray(IArray, ABC):
+class IBooleanArray(IVariable, ABC):
     """Represents a boolean array variable on the workflow."""
 
     @overrides

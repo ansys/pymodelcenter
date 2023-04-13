@@ -5,7 +5,6 @@ from .data_type import VarType
 from .datamonitor import IDataMonitor
 from .engine import IEngine, WorkflowType
 from .format import IFormat
-from .iarray import IArray
 from .ibooleanarray import IBooleanArray
 from .ibooleanvariable import IBooleanVariable
 from .icomponent import IComponent

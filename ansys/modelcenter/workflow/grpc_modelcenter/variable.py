@@ -107,19 +107,3 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
                 "Unexpected failure converting gRPC value response"
             ) from convert_failure
         return acvi.VariableState(value=interop_value, is_valid=response.is_valid)
-
-
-class BaseArray(BaseVariable, mc_api.IArray, ABC):
-    """Base class for gRPC-based ModelCenter array variables."""
-
-    @property
-    @overrides
-    def auto_size(self) -> bool:
-        # TODO: currently missing a gRPC endpoint
-        return True
-
-    @auto_size.setter
-    @overrides
-    def auto_size(self, value: bool) -> None:
-        # TODO: currently missing a gRPC endpoint
-        pass

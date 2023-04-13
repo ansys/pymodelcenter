@@ -2,13 +2,12 @@
 from abc import ABC, abstractmethod
 from typing import Sequence
 
-from .iarray import IArray
 from .irefprop import IReferenceArrayProperty, IReferencePropertyOwner
 from .ivariable import IVariable
 
 
 # TODO/REDUCE: Consider dropping this for Phase II.
-class IReferenceArray(IArray, IReferencePropertyOwner[IReferenceArrayProperty], ABC):
+class IReferenceArray(IVariable, IReferencePropertyOwner[IReferenceArrayProperty], ABC):
     """Represents a reference array variable in a ModelCenter workflow."""
 
     # TODO: consider creating a type to implement indexing, iteration semantics for references?

@@ -4,10 +4,10 @@ from abc import ABC, abstractmethod
 import ansys.common.variableinterop as acvi
 from overrides import overrides
 
-from .iarray import IArray
+from .ivariable import IVariable
 
 
-class IDoubleArray(IArray, ABC):
+class IDoubleArray(IVariable, ABC):
     """Represents a double array variable on the workflow."""
 
     @overrides
