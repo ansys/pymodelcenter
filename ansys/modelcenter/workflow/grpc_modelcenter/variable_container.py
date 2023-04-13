@@ -46,7 +46,7 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def groups(self) -> Mapping[str, mc_api.IGroup]:
-        # TODO: alter gRPC response so that short names are included in the first place.
+        # LTTODO: alter gRPC response so that short names are included in the first place.
         """Get the child groups of this element."""
         result = self._client.RegistryGetGroups(self._element_id)
         one_element_id: ElementId
@@ -57,7 +57,7 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_variables(self) -> Mapping[str, mc_api.IVariable]:
-        # TODO: alter gRPC response so that short names are included in the first place.
+        # LTTODO: alter gRPC response so that short names are included in the first place.
         result = self._client.RegistryGetVariables(self._element_id)
         one_var_info: VariableInfo
         variables = [
