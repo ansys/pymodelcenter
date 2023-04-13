@@ -191,12 +191,7 @@ class Workflow(wfapi.IWorkflow):
                 workflow=workflow_msg.WorkflowId(id=self._id),
             )
         )
-        response: var_val_msg.VariableState
-        try:
-            response = self._stub.VariableGetState(request)
-        except grpc.RpcError as e:
-            # TODO: how to handle?
-            raise e
+        response: var_val_msg.VariableState = self._stub.VariableGetState(request)
 
         def convert(val: ArrayLike, dims: ArrayLike, val_type: Type) -> acvi.IVariableValue:
             return val_type(shape_=dims, values=np.array(val).flatten())
