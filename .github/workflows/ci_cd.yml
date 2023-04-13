@@ -163,7 +163,7 @@ jobs:
 
       - name: "Run gRPC compiler"
         run: |
-          .venv/Scripts/activate.bat
+          poetry shell
           protos/generate-proto.bat
 
       - name: "Build HTML"
