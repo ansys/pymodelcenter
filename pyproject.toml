@@ -63,6 +63,6 @@ ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-v
 [tool.poetry.extras]
 dev = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton", "codespell",
     "flake8", "pytest", "pytest-cov", "pre-commit", "mypy", "grpcio-tools"]
-docs = ["Sphinx", "numpydoc", "aynsys-sphinx-theme", "sphinx-copybutton"]
+docs = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton"]
 style = ["codespell", "flake8"]
 test = ["pytest", "pytest-cov"]
