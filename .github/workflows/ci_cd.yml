@@ -158,13 +158,10 @@ jobs:
 
       - name: "Install library, with docs extra"
         run: |
-          pip install poetry
-          poetry install -E docs
+          pip install .[docs]
 
       - name: "Run gRPC compiler"
-        run: |
-          poetry shell
-          protos/generate-proto.bat
+        run: protos/generate-proto.bat
 
       - name: "Build HTML"
         run: doc/make.bat html SPHINXOPTS="-W"
