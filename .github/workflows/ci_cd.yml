@@ -196,7 +196,7 @@ jobs:
 
   Release:
     if: contains(github.ref, 'refs/tags')
-    needs: [main, style, docs]
+    needs: [main, code-style, docs]
     runs-on: windows-latest
     steps:
       - name: "Set up Python"
