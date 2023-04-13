@@ -9,7 +9,11 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from .abstract_workflow_element import AbstractWorkflowElement
-from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
+from .grpc_error_interpretation import (
+    WRAP_TARGET_NOT_FOUND,
+    EngineInternalError,
+    interpret_rpc_error,
+)
 from .proto.element_messages_pb2 import ElementId
 from .proto.workflow_messages_pb2 import ElementIdOrName
 from .var_value_convert import convert_grpc_value_to_acvi, grpc_type_enum_to_interop_type
@@ -102,8 +106,7 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
         try:
             interop_value = convert_grpc_value_to_acvi(response.value)
         except ValueError as convert_failure:
-            # TODO/ERRORS: Need a specific error type here.
-            raise Exception(
+            raise EngineInternalError(
                 "Unexpected failure converting gRPC value response"
             ) from convert_failure
         return acvi.VariableState(value=interop_value, is_valid=response.is_valid)
