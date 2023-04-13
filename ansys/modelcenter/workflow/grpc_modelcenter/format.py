@@ -3,7 +3,7 @@ import grpc
 from numpy import float64, int64
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api.format import IFormat
+from ansys.modelcenter.workflow.api import IFormat
 
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .proto.format_messages_pb2 import (

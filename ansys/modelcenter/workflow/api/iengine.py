@@ -5,8 +5,8 @@ from typing import Collection, Mapping, Union
 
 from ansys.engineeringworkflow.api import IFileBasedWorkflowEngine
 
-from .format import IFormat
-from .workflow import IWorkflow
+from .iformat import IFormat
+from .iworkflow import IWorkflow
 
 
 class WorkflowType(Enum):

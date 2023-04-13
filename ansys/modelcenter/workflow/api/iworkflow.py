@@ -5,11 +5,11 @@ from typing import Collection, Optional, Tuple, Union
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
-from ansys.modelcenter.workflow.api.assembly import IAssembly
 from ansys.modelcenter.workflow.api.datamonitor import IDataMonitor
+from ansys.modelcenter.workflow.api.iassembly import IAssembly
 from ansys.modelcenter.workflow.api.icomponent import IComponent
 from ansys.modelcenter.workflow.api.ivariable import IVariable
-from ansys.modelcenter.workflow.api.variable_links import IVariableLink
+from ansys.modelcenter.workflow.api.ivariable_link import IVariableLink
 
 
 class IWorkflow(aew_api.IWorkflowInstance, ABC):

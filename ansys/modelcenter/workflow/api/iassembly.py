@@ -6,7 +6,7 @@ import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
 import ansys.modelcenter.workflow.api.igroup as igroup
-import ansys.modelcenter.workflow.api.renamable_element as renamable_element
+import ansys.modelcenter.workflow.api.irenamable_elements as renamable_element
 
 
 class IAssemblyChild(ABC):

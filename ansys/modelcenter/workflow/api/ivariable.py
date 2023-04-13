@@ -1,13 +1,14 @@
 """Contains common base class for all variables."""
 from abc import ABC, abstractmethod
-from typing import Collection, Sequence
+from typing import TYPE_CHECKING, Collection, Sequence
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
-import ansys.modelcenter.workflow.api.icomponent as icomponent
+from .ivariable_link import IVariableLink
 
-from .variable_links import IVariableLink
+if TYPE_CHECKING:
+    import ansys.modelcenter.workflow.api.icomponent as icomponent
 
 
 # TODO: What from this interface can be elevated to the aew_api?

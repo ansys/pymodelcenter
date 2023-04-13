@@ -4,10 +4,10 @@ from typing import Collection, Tuple
 
 import ansys.engineeringworkflow.api as aew_api
 
-import ansys.modelcenter.workflow.api.assembly as assembly
+import ansys.modelcenter.workflow.api.iassembly as assembly
 import ansys.modelcenter.workflow.api.igroup as igroup
+import ansys.modelcenter.workflow.api.irenamable_elements as renamable_element
 import ansys.modelcenter.workflow.api.ivariable as ivariable
-import ansys.modelcenter.workflow.api.renamable_element as renamable_element
 
 
 class IComponent(
