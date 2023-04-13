@@ -1,6 +1,6 @@
 """Provides an object-oriented way to interact with ModelCenter variables via gRPC."""
 from abc import ABC
-from typing import Collection, Optional, Sequence
+from typing import Optional
 
 import ansys.common.variableinterop as acvi
 from grpc import Channel
@@ -36,53 +36,9 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def owning_component(self) -> mc_api.IComponent:
-        # TODO/REDUCE: Skipping implementation, will drop for Phase II.
-        raise NotImplementedError()
-
-    @property
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
     def value_type(self) -> acvi.VariableType:
         response = self._client.VariableGetType(self._element_id)
         return grpc_type_enum_to_interop_type(response.var_type)
-
-    # TODO/REDUCE: Consider dropping invalidate, predecent / dependent methods for Phase II
-
-    @overrides
-    def invalidate(self) -> None:
-        # TODO: Currently missing a call on gRPC API.
-        pass
-
-    @overrides
-    def direct_precedents(self, follow_suspended: bool = False) -> Collection[mc_api.IVariable]:
-        # TODO: Currently missing a call on gRPC API
-        return []
-
-    @overrides
-    def direct_dependents(self, follow_suspended: bool = False) -> Collection[mc_api.IVariable]:
-        # TODO: Currently missing a call on gRPC API
-        return []
-
-    @overrides
-    def precedent_links(self) -> Collection[mc_api.IVariableLink]:
-        # TODO: Currently missing a call on gRPC API
-        return []
-
-    @overrides
-    def dependent_links(self) -> Collection[mc_api.IVariableLink]:
-        # TODO: Currently missing a call on gRPC API
-        return []
-
-    @overrides
-    def precedents(self, follow_suspended: bool = False) -> Sequence[mc_api.IVariable]:
-        # TODO: Currently missing a call on gRPC API
-        return []
-
-    @overrides
-    def dependents(self, follow_suspended: bool = False) -> Sequence[mc_api.IVariable]:
-        # TODO: Currently missing a gRPC endpoint
-        return []
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)

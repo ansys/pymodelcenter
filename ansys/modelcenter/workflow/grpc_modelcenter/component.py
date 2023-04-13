@@ -1,5 +1,5 @@
 """Definition of Component."""
-from typing import Collection, Optional, Tuple
+from typing import Optional, Tuple
 
 from grpc import Channel, StatusCode
 from overrides import overrides
@@ -49,18 +49,6 @@ class Component(
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return group.Group(element_id, self._channel)
-
-    @property
-    @overrides
-    def associated_files(self) -> Collection[str]:
-        # TODO/REDUCE: skipping impl for now, will be dropped for Phase II.
-        return []
-
-    @associated_files.setter
-    @overrides
-    def associated_files(self) -> Collection[str]:
-        # TODO/REDUCE: skipping impl for now, will be dropped for Phase II.
-        return [""]
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

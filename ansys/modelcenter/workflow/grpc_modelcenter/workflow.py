@@ -297,10 +297,6 @@ class Workflow(wfapi.IWorkflow):
         else:
             raise ValueError("Element is not a component.")
 
-    @overrides
-    def set_scheduler(self, scheduler: str) -> None:
-        raise NotImplementedError()
-
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND})
     @overrides
     def remove_component(self, name: str) -> None:
@@ -368,22 +364,6 @@ class Workflow(wfapi.IWorkflow):
     def halt(self) -> None:
         request = workflow_msg.WorkflowHaltRequest()
         response: workflow_msg.WorkflowHaltResponse = self._stub.WorkflowHalt(request)
-
-    @overrides
-    def get_data_monitor(
-        self, component: Union[wfapi.IComponent, str], index: int
-    ) -> wfapi.IDataMonitor:
-        raise NotImplementedError()
-
-    @overrides
-    def create_data_monitor(
-        self, component: Union[wfapi.IComponent, str], name: str, x: int, y: int
-    ) -> object:
-        raise NotImplementedError()
-
-    @overrides
-    def remove_data_monitor(self, component: Union[wfapi.IComponent, str], index: int) -> bool:
-        raise NotImplementedError()
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides

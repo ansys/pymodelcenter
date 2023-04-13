@@ -5,7 +5,6 @@ from typing import Collection, Optional, Tuple, Union
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
-from ansys.modelcenter.workflow.api.datamonitor import IDataMonitor
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 from ansys.modelcenter.workflow.api.icomponent import IComponent
 from ansys.modelcenter.workflow.api.ivariable import IVariable
@@ -137,23 +136,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         The component.
         """
 
-    # TODO/REDUCE: consider dropping for Phase II
-    def set_scheduler(self, scheduler: str) -> None:
-        """
-        Set the current active scheduler for the workflow.
-
-        Parameters
-        ----------
-        scheduler : str
-            The scheduler type. Possible types are:
-                * forward
-                * backward
-                * mixed
-                * script
-            Note: all scheduler types are case-sensitive.
-        """
-        raise NotImplementedError()  # pragma: no cover
-
     @abstractmethod
     def remove_component(self, name: str) -> None:
         """
@@ -223,66 +205,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def halt(self) -> None:
         """Stop execution of the workflow currently running in ModelCenter."""
-
-    # TODO / REDUCE: consider dropping all DataMonitor methods for Phase II.
-    # TODO / REDUCE: consider dropping DataMonitor related functionality entirely
-    #                (if not, update these methods)
-    @abstractmethod
-    def get_data_monitor(self, component: Union[IComponent, str], index: int) -> IDataMonitor:
-        """
-        Get the DataMonitor at the given index for the given component.
-
-        Parameters
-        ----------
-        component: str
-            The name of the component.
-        index: int
-            The index of the DataMonitor in the component.
-
-        Returns
-        -------
-        The component's DataMonitor at the given index.
-        """
-
-    @abstractmethod
-    def create_data_monitor(
-        self, component: Union[IComponent, str], name: str, x: int, y: int
-    ) -> object:
-        """
-        Create a DataMonitor associated with the specified component.
-
-        Parameters
-        ----------
-        component: str
-            The name of the component to associate the DataMonitor with.
-        name: str
-            The name of the DataMonitor.
-        x: int
-            The x-position of the DataMonitor.
-        y: int
-            The y-position of the DataMonitor.
-
-        Returns
-        -------
-        The created DataMonitor.
-        """
-
-    @abstractmethod
-    def remove_data_monitor(self, component: Union[IComponent, str], index: int) -> bool:
-        """
-        Remove the DataMonitor at the given index for the given component.
-
-        Parameters
-        ----------
-        component: str
-            The name of the component.
-        index: int
-            The index of the DataMonitor in the component.
-
-        Returns
-        -------
-        True if the component had a DataMonitor at the given index.
-        """
 
     @abstractmethod
     def move_component(
