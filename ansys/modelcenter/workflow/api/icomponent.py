@@ -7,7 +7,6 @@ import ansys.engineeringworkflow.api as aew_api
 import ansys.modelcenter.workflow.api.iassembly as assembly
 import ansys.modelcenter.workflow.api.igroup as igroup
 import ansys.modelcenter.workflow.api.irenamable_elements as renamable_element
-import ansys.modelcenter.workflow.api.ivariable as ivariable
 
 
 class IComponent(
@@ -40,23 +39,6 @@ class IComponent(
         Returns
         -------
         The source of the component.
-        """
-
-    # TODO: should be on base variable container
-    @abstractmethod
-    def get_variable(self, name: str) -> ivariable.IVariable:
-        """
-        Get a variable in this component by name.
-
-        Parameters
-        ----------
-        name: str
-            The name of the variable, in dotted notation relative to
-            the component.
-
-        Returns
-        -------
-        The variable object.
         """
 
     # TODO: This item is shared with Assembly on the ModelCenter API,

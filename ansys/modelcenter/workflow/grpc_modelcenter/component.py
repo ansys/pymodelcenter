@@ -68,12 +68,6 @@ class Component(
         response = self._client.ComponentGetSource(self._element_id)
         return response.source
 
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def get_variable(self, name: str) -> mc_api.IVariable:
-        # TODO: skipping for now as the need for it will be removed by an upstream AEW update.
-        raise NotImplementedError()
-
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def invoke_method(self, method: str) -> None:
