@@ -95,17 +95,17 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def save_workflow_as(self, file_name: str) -> None:
         """
-        Save the current Model to a specified file.
+        Save the current workflow to a specified file.
 
         Parameters
         ----------
         file_name : str
-            Path to save the Model in.
+            Path to save the workflow in.
         """
 
     @abstractmethod
     def close_workflow(self) -> None:
-        """Close the current Model."""
+        """Close the current workflow."""
 
     @abstractmethod
     def get_variable(self, name: str) -> IVariable:
@@ -140,7 +140,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     # TODO/REDUCE: consider dropping for Phase II
     def set_scheduler(self, scheduler: str) -> None:
         """
-        Set the current active scheduler for the Model.
+        Set the current active scheduler for the workflow.
 
         Parameters
         ----------
@@ -157,7 +157,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def remove_component(self, name: str) -> None:
         """
-        Remove the specified component from the Model.
+        Remove the specified component from the workflow.
 
         Parameters
         ----------
@@ -170,7 +170,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         self, name: str, parent: Union[IAssembly, str], assembly_type: Optional[str] = None
     ):
         """
-        Create a new Assembly in the Model.
+        Create a new Assembly in the workflow.
 
         Parameters
         ----------
@@ -209,7 +209,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def get_links(self) -> Collection[IVariableLink]:
         """
-        Get a list of all links in the model.
+        Get a list of all links in the workflow.
 
         Returns
         -------
@@ -218,11 +218,11 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_workflow_uuid(self) -> str:
-        """Get the unique ID string for the current model."""
+        """Get the unique ID string for the current workflow."""
 
     @abstractmethod
     def halt(self) -> None:
-        """Stop execution of the Model currently running in ModelCenter."""
+        """Stop execution of the workflow currently running in ModelCenter."""
 
     # TODO / REDUCE: consider dropping all DataMonitor methods for Phase II.
     # TODO / REDUCE: consider dropping DataMonitor related functionality entirely
