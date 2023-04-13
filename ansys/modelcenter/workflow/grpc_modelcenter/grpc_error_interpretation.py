@@ -40,7 +40,7 @@ class EngineDisconnectedError(Exception):
         """Initialize a new instance."""
         super(EngineDisconnectedError, self).__init__(
             f"The connection to the ModelCenter engine is not available. Did you make a call to "
-            f"shut it down?\nDetail:{message}"
+            f"shut it down?\nDetail: {message}"
         )
 
 
@@ -51,7 +51,7 @@ class InvalidInstanceError(Exception):
         """Initialize a new instance."""
         super(InvalidInstanceError, self).__init__(
             f"The ModelCenter engine was not able to locate the target element. "
-            f"The element may have been deleted or its workflow unloaded.\nDetail:{message}"
+            f"The element may have been deleted or its workflow unloaded.\nDetail: {message}"
         )
 
 
