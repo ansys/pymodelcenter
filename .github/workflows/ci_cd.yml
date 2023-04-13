@@ -161,6 +161,9 @@ jobs:
           pip install poetry
           poetry install -E docs
 
+      - name: "Run gRPC compiler"
+        run: protos/generate-proto.bat
+
       - name: "Build HTML"
         run: |
           poetry run make -C doc html SPHINXOPTS="-W"
