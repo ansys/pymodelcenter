@@ -62,6 +62,9 @@ This creates a new virtual environment, which can be activated with:
 
    poetry shell
 
+The grpc proto files needed to build can then be generated using the generate-proto batch script
+in ./protos.
+
 
 Documentation
 -------------
@@ -98,13 +101,25 @@ it, and retrieve the value of a variable:
 
 .. code:: python
 
-   >>> from ansys.modelcenter.workflow.api import Engine
-   >>> engine = Engine()
-   >>> workflow = engine.load_workflow("brake.pxcz")
-   >>> workflow.run()
-   >>> workflow.get_value("Model.caliper.normalForce")
-   1687.145838
+    import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
+    with grpcmc.Engine() as mc:
+        print("Creating new model...")
+        with mc.new_workflow("d:\\workspace\\Designs\\DEMO\\demo.pxcz") as workflow:
+            root_id = workflow.get_root().element_id
+
+            print("     Directory: " + workflow.workflow_directory)
+            print("          File: " + workflow.workflow_file_name)
+
+            workflow.create_component(
+                "common:\\Functions\\Quadratic",
+                "NewQuadratic",
+                root_id,
+                x_pos=50, y_pos=50)
+
+            print("Saving...")
+            workflow.save_workflow()
+            print("Done.")
 
 Testing
 -------
