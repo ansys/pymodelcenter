@@ -9,9 +9,9 @@ import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aa
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable as abstract_renamable
 import ansys.modelcenter.workflow.grpc_modelcenter.group as group
 
+from .abstract_datapin_container import AbstractGRPCDatapinContainer
 from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ComponentInvokeMethodRequest, ElementId
-from .variable_container import AbstractGRPCVariableContainer
 
 
 class ComponentReconnectionFailedError(Exception):
@@ -27,7 +27,7 @@ class ComponentDownloadValuesFailedError(Exception):
 
 
 class Component(
-    AbstractGRPCVariableContainer,
+    AbstractGRPCDatapinContainer,
     abstract_renamable.AbstractRenamableElement,
     aachild.AbstractAssemblyChild,
     mc_api.IComponent,

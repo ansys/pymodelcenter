@@ -1,20 +1,20 @@
 """ansys.modelcenter.workflow.api module initialization."""
 from .iassembly import IAssembly, IAssemblyChild
-from .ibooleanarrayvariable import IBooleanArrayVariable
-from .ibooleanvariable import IBooleanVariable
+from .ibooleanarraydatapin import IBooleanArrayDatapin
+from .ibooleandatapin import IBooleanDatapin
 from .icomponent import IComponent
+from .idatapin import IDatapin
 from .iengine import IEngine, WorkflowType
 from .iformat import IFormat
 from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup, IGroupOwner
 from .iif_component import IIfComponent
-from .iintegerarray import IIntegerArray
-from .iintegervariable import IIntegerVariable
-from .irealarrayvariable import IRealArrayVariable
-from .irealvariable import IRealVariable
+from .iintegerarraydatapin import IIntegerArray
+from .iintegerdatapin import IIntegerDatapin
+from .irealarraydatapin import IRealArrayDatapin
+from .irealdatapin import IRealDatapin
 from .irenamable_elements import IRenamableElement
-from .istringarrayvariable import IStringArrayVariable
-from .istringvariable import IStringVariable
-from .ivariable import IVariable
-from .ivariable_link import IVariableLink
+from .istringarraydatapin import IStringArrayDatapin
+from .istringdatapin import IStringDatapin
+from .ivariable_link import IDatapinLink
 from .iworkflow import IWorkflow

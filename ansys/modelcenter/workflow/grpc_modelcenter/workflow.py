@@ -17,7 +17,8 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 a
 
 from .assembly import Assembly
 from .component import Component
-from .create_variable import create_variable
+from .create_datapin import create_datapin
+from .datapin_link import DatapinLink
 from .element_wrapper import create_element
 from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
@@ -31,7 +32,6 @@ from .var_value_convert import (
     convert_interop_value_to_grpc,
     grpc_type_enum_to_interop_type,
 )
-from .variable_link import VariableLink
 
 
 class WorkflowRunFailedError(Exception):
@@ -225,7 +225,7 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def create_link(
-        self, variable: Union[wfapi.IVariable, str], equation: Union[str, wfapi.IVariable]
+        self, variable: Union[wfapi.IDatapin, str], equation: Union[str, wfapi.IDatapin]
     ) -> None:
         eq: str
         if isinstance(equation, str):
@@ -263,7 +263,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_variable(self, name: str) -> wfapi.IVariable:
+    def get_variable(self, name: str) -> wfapi.IDatapin:
         request = workflow_msg.NamedElementInWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),
@@ -275,7 +275,7 @@ class Workflow(wfapi.IWorkflow):
 
         var_type: var_val_msg.VariableType = response.var_type
 
-        return create_variable(
+        return create_datapin(
             var_value_type=grpc_type_enum_to_interop_type(var_type),
             element_id=response.id,
             channel=self._channel,
@@ -325,7 +325,7 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def auto_link(
         self, src_comp: Union[str, wfapi.IComponent], dest_comp: Union[str, wfapi.IComponent]
-    ) -> Collection[wfapi.IVariableLink]:
+    ) -> Collection[wfapi.IDatapinLink]:
         request = workflow_msg.WorkflowAutoLinkRequest()
         src_comp_used = (
             src_comp if isinstance(src_comp, wfapi.IComponent) else self.get_component(src_comp)
@@ -336,21 +336,21 @@ class Workflow(wfapi.IWorkflow):
         request.source_comp.id_string = src_comp_used.element_id
         request.target_comp.id_string = dest_comp_used.element_id
         response: workflow_msg.WorkflowAutoLinkResponse = self._stub.WorkflowAutoLink(request)
-        links: List[wfapi.IVariableLink] = [
-            VariableLink(self._stub, lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+        links: List[wfapi.IDatapinLink] = [
+            DatapinLink(self._stub, lhs_id=entry.lhs.id_string, rhs=entry.rhs)
             for entry in response.created_links
         ]
         return links
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND})
     @overrides
-    def get_links(self) -> Collection[wfapi.IVariableLink]:
+    def get_links(self) -> Collection[wfapi.IDatapinLink]:
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(
             request
         )
-        links: List[wfapi.IVariableLink] = [
-            VariableLink(self._stub, lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+        links: List[wfapi.IDatapinLink] = [
+            DatapinLink(self._stub, lhs_id=entry.lhs.id_string, rhs=entry.rhs)
             for entry in response.links
         ]
         return links

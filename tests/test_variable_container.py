@@ -112,11 +112,11 @@ def do_test_get_datapins_multiple_variables(monkeypatch, sut_type) -> None:
         result = sut.get_datapins()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="STOOGES"))
         assert len(result) == 3
-        assert isinstance(result["larry"], mc_api.IIntegerVariable)
+        assert isinstance(result["larry"], mc_api.IIntegerDatapin)
         assert result["larry"].element_id == "IDVAR_LARRY"
-        assert isinstance(result["moe"], mc_api.IStringVariable)
+        assert isinstance(result["moe"], mc_api.IStringDatapin)
         assert result["moe"].element_id == "IDVAR_MOE"
-        assert isinstance(result["curly"], mc_api.IRealVariable)
+        assert isinstance(result["curly"], mc_api.IRealDatapin)
         assert result["curly"].element_id == "IDVAR_CURLY"
 
 

@@ -19,7 +19,7 @@ from .proto.workflow_messages_pb2 import ElementIdOrName
 from .var_value_convert import convert_grpc_value_to_acvi, grpc_type_enum_to_interop_type
 
 
-class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
+class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
     """Represents a variable in the workflow."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -31,7 +31,7 @@ class BaseVariable(AbstractWorkflowElement, mc_api.IVariable, ABC):
         element_id : ElementId
             The id of the element.
         """
-        super(BaseVariable, self).__init__(element_id=element_id, channel=channel)
+        super(BaseDatapin, self).__init__(element_id=element_id, channel=channel)
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)

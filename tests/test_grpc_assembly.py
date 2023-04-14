@@ -10,6 +10,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
     AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
+from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
 from ansys.modelcenter.workflow.grpc_modelcenter.component import Component
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
     MetadataGetValueRequest,
@@ -46,8 +47,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 imp
     ElementInfoCollection,
     NamedElementInWorkflow,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeVariable
-from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
+from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeDatapin
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 import tests.test_abstract_workflow_element as awe_tests
 import tests.test_variable_container as base_tests
@@ -281,17 +281,17 @@ def test_get_variables_empty(monkeypatch) -> None:
 @pytest.mark.parametrize(
     "var_type,expected_wrapper_type",
     [
-        (VariableType.VARTYPE_INTEGER, mc_api.IIntegerVariable),
-        (VariableType.VARTYPE_REAL, mc_api.IRealVariable),
-        (VariableType.VARTYPE_BOOLEAN, mc_api.IBooleanVariable),
-        (VariableType.VARTYPE_STRING, mc_api.IStringVariable),
-        (VariableType.VARTYPE_FILE, UnsupportedTypeVariable),
+        (VariableType.VARTYPE_INTEGER, mc_api.IIntegerDatapin),
+        (VariableType.VARTYPE_REAL, mc_api.IRealDatapin),
+        (VariableType.VARTYPE_BOOLEAN, mc_api.IBooleanDatapin),
+        (VariableType.VARTYPE_STRING, mc_api.IStringDatapin),
+        (VariableType.VARTYPE_FILE, UnsupportedTypeDatapin),
         (VariableType.VARTYPE_INTEGER_ARRAY, mc_api.IIntegerArray),
-        (VariableType.VARTYPE_REAL_ARRAY, mc_api.IRealArrayVariable),
-        (VariableType.VARTYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayVariable),
-        (VariableType.VARTYPE_STRING_ARRAY, mc_api.IStringArrayVariable),
-        (VariableType.VARTYPE_FILE_ARRAY, UnsupportedTypeVariable),
-        (VariableType.VARTYPE_UNKNOWN, UnsupportedTypeVariable),
+        (VariableType.VARTYPE_REAL_ARRAY, mc_api.IRealArrayDatapin),
+        (VariableType.VARTYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayDatapin),
+        (VariableType.VARTYPE_STRING_ARRAY, mc_api.IStringArrayDatapin),
+        (VariableType.VARTYPE_FILE_ARRAY, UnsupportedTypeDatapin),
+        (VariableType.VARTYPE_UNKNOWN, UnsupportedTypeDatapin),
     ],
 )
 def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type) -> None:
@@ -341,7 +341,7 @@ def test_assembly_create_variable(
     ) as mock_add_var_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), None)
-        result = sut.add_variable("created_variable_name", var_type)
+        result = sut.add_datapin("created_variable_name", var_type)
         mock_add_var_method.assert_called_once_with(
             AddAssemblyVariableRequest(
                 name=ElementName(name="created_variable_name"),
@@ -350,7 +350,7 @@ def test_assembly_create_variable(
             )
         )
         assert result.element_id == "CREATED_VAR"
-        assert isinstance(result, BaseVariable)
+        assert isinstance(result, BaseDatapin)
 
 
 def test_assembly_create_variable_unknown_type(monkeypatch) -> None:
@@ -364,7 +364,7 @@ def test_assembly_create_variable_unknown_type(monkeypatch) -> None:
         with pytest.raises(
             ValueError, match="Cannot determine a ModelCenter type for an unknown variable type."
         ):
-            sut.add_variable("created_variable_name", acvi.VariableType.UNKNOWN)
+            sut.add_datapin("created_variable_name", acvi.VariableType.UNKNOWN)
         mock_add_var_method.assert_not_called()
 
 
@@ -449,7 +449,7 @@ def test_delete_variable(monkeypatch) -> None:
     ) as mock_delete:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string=target_assembly_id), None)
-        sut.delete_variable("VarToDelete")
+        sut.delete_datapin("VarToDelete")
         mock_delete.assert_called_once_with(
             DeleteAssemblyVariableRequest(target=ElementIdOrName(target_name=target_variable_name))
         )

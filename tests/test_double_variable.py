@@ -7,10 +7,6 @@ import pytest
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.double_variable import (
-    RealArrayVariable,
-    RealVariable,
-)
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     ArrayDimensions,
@@ -26,6 +22,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableType,
     VariableValue,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.real_datapin import RealArrayDatapin, RealDatapin
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .test_variable import (
@@ -58,16 +55,16 @@ class MockWorkflowClientForDoubleVarTest:
 @pytest.mark.parametrize(
     "description_string,sut_type,expected_metadata_type",
     [
-        ("", RealVariable, acvi.RealMetadata),
-        ("This is a mock variable description.", RealVariable, acvi.RealMetadata),
-        ("", RealArrayVariable, acvi.RealArrayMetadata),
-        ("This is a mock variable description.", RealArrayVariable, acvi.RealArrayMetadata),
+        ("", RealDatapin, acvi.RealMetadata),
+        ("This is a mock variable description.", RealDatapin, acvi.RealMetadata),
+        ("", RealArrayDatapin, acvi.RealArrayMetadata),
+        ("This is a mock variable description.", RealArrayDatapin, acvi.RealArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
-    sut_type: Union[RealVariable, RealArrayVariable],
+    sut_type: Union[RealDatapin, RealArrayDatapin],
     expected_metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
@@ -94,11 +91,11 @@ def test_retrieved_metadata_should_include_description(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(RealVariable, acvi.RealMetadata), (RealArrayVariable, acvi.RealArrayMetadata)],
+    [(RealDatapin, acvi.RealMetadata), (RealArrayDatapin, acvi.RealArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Union[RealVariable, RealArrayVariable],
+    sut_type: Union[RealDatapin, RealArrayDatapin],
     expected_metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
@@ -126,11 +123,11 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(RealVariable, acvi.RealMetadata), (RealArrayVariable, acvi.RealArrayMetadata)],
+    [(RealDatapin, acvi.RealMetadata), (RealArrayDatapin, acvi.RealArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Union[RealVariable, RealArrayVariable],
+    sut_type: Union[RealDatapin, RealArrayDatapin],
     expected_metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
@@ -170,19 +167,19 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
     "sut_type,expected_metadata_type,upper_bound,set_upper_bound,expected_upper_bound,"
     "lower_bound,set_lower_bound,expected_lower_bound",
     [
-        (RealVariable, acvi.RealMetadata, 0.0, False, None, 0.0, False, None),
-        (RealVariable, acvi.RealMetadata, -4.7, True, -4.7, 9000.1, True, 9000.1),
-        (RealVariable, acvi.RealMetadata, 0.0, False, None, 9000.1, True, 9000.1),
-        (RealVariable, acvi.RealMetadata, -4.7, True, -4.7, 0.0, False, None),
-        (RealArrayVariable, acvi.RealArrayMetadata, 0.0, False, None, 0.0, False, None),
-        (RealArrayVariable, acvi.RealArrayMetadata, -4.7, True, -4.7, 9000.1, True, 9000.1),
-        (RealArrayVariable, acvi.RealArrayMetadata, 0.0, False, None, 9000.1, True, 9000.1),
-        (RealArrayVariable, acvi.RealArrayMetadata, -4.7, True, -4.7, 0.0, False, None),
+        (RealDatapin, acvi.RealMetadata, 0.0, False, None, 0.0, False, None),
+        (RealDatapin, acvi.RealMetadata, -4.7, True, -4.7, 9000.1, True, 9000.1),
+        (RealDatapin, acvi.RealMetadata, 0.0, False, None, 9000.1, True, 9000.1),
+        (RealDatapin, acvi.RealMetadata, -4.7, True, -4.7, 0.0, False, None),
+        (RealArrayDatapin, acvi.RealArrayMetadata, 0.0, False, None, 0.0, False, None),
+        (RealArrayDatapin, acvi.RealArrayMetadata, -4.7, True, -4.7, 9000.1, True, 9000.1),
+        (RealArrayDatapin, acvi.RealArrayMetadata, 0.0, False, None, 9000.1, True, 9000.1),
+        (RealArrayDatapin, acvi.RealArrayMetadata, -4.7, True, -4.7, 0.0, False, None),
     ],
 )
 def test_retrieved_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Union[RealVariable, RealArrayVariable],
+    sut_type: Union[RealDatapin, RealArrayDatapin],
     expected_metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
     upper_bound: float,
     set_upper_bound: bool,
@@ -224,12 +221,12 @@ def test_retrieved_metadata_should_convert_bounds(
 @pytest.mark.parametrize(
     "sut_type",
     [
-        RealVariable,
-        RealArrayVariable,
+        RealDatapin,
+        RealArrayDatapin,
     ],
 )
 def test_set_metadata_invalid_custom_metadata(
-    monkeypatch, sut_type: Union[RealVariable, RealArrayVariable]
+    monkeypatch, sut_type: Union[RealDatapin, RealArrayDatapin]
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -253,16 +250,16 @@ def test_set_metadata_invalid_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", RealVariable, acvi.RealMetadata),
-        ("This is a mock variable description.", RealVariable, acvi.RealMetadata),
-        ("", RealArrayVariable, acvi.RealArrayMetadata),
-        ("This is a mock variable description.", RealArrayVariable, acvi.RealArrayMetadata),
+        ("", RealDatapin, acvi.RealMetadata),
+        ("This is a mock variable description.", RealDatapin, acvi.RealMetadata),
+        ("", RealArrayDatapin, acvi.RealArrayMetadata),
+        ("This is a mock variable description.", RealArrayDatapin, acvi.RealArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Union[RealVariable, RealArrayVariable],
+    sut_type: Union[RealDatapin, RealArrayDatapin],
     metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
@@ -292,16 +289,16 @@ def test_set_metadata_empty_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", RealVariable, acvi.RealMetadata),
-        ("This is a mock variable description.", RealVariable, acvi.RealMetadata),
-        ("", RealArrayVariable, acvi.RealArrayMetadata),
-        ("This is a mock variable description.", RealArrayVariable, acvi.RealArrayMetadata),
+        ("", RealDatapin, acvi.RealMetadata),
+        ("This is a mock variable description.", RealDatapin, acvi.RealMetadata),
+        ("", RealArrayDatapin, acvi.RealArrayMetadata),
+        ("This is a mock variable description.", RealArrayDatapin, acvi.RealArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Union[RealVariable, RealArrayVariable],
+    sut_type: Union[RealDatapin, RealArrayDatapin],
     metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
@@ -340,19 +337,19 @@ def test_set_metadata_populated_custom_metadata(
     "sut_type,metadata_type,original_lower_bound,expected_lower_bound,expected_lower_bound_set,"
     "original_upper_bound,expected_upper_bound,expected_upper_bound_set",
     [
-        (RealVariable, acvi.RealMetadata, None, 0.0, False, None, 0.0, False),
-        (RealVariable, acvi.RealMetadata, -4.7, -4.7, True, 9000.1, 9000.1, True),
-        (RealVariable, acvi.RealMetadata, None, 0.0, False, 9000.1, 9000.1, True),
-        (RealVariable, acvi.RealMetadata, -4.7, -4.7, True, None, 0.0, False),
-        (RealArrayVariable, acvi.RealArrayMetadata, None, 0.0, False, None, 0.0, False),
-        (RealArrayVariable, acvi.RealArrayMetadata, -4.7, -4.7, True, 9000.1, 9000.1, True),
-        (RealArrayVariable, acvi.RealArrayMetadata, None, 0.0, False, 9000.1, 9000.1, True),
-        (RealArrayVariable, acvi.RealArrayMetadata, -4.7, -4.7, True, None, 0.0, False),
+        (RealDatapin, acvi.RealMetadata, None, 0.0, False, None, 0.0, False),
+        (RealDatapin, acvi.RealMetadata, -4.7, -4.7, True, 9000.1, 9000.1, True),
+        (RealDatapin, acvi.RealMetadata, None, 0.0, False, 9000.1, 9000.1, True),
+        (RealDatapin, acvi.RealMetadata, -4.7, -4.7, True, None, 0.0, False),
+        (RealArrayDatapin, acvi.RealArrayMetadata, None, 0.0, False, None, 0.0, False),
+        (RealArrayDatapin, acvi.RealArrayMetadata, -4.7, -4.7, True, 9000.1, 9000.1, True),
+        (RealArrayDatapin, acvi.RealArrayMetadata, None, 0.0, False, 9000.1, 9000.1, True),
+        (RealArrayDatapin, acvi.RealArrayMetadata, -4.7, -4.7, True, None, 0.0, False),
     ],
 )
 def test_set_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Union[RealVariable, RealArrayVariable],
+    sut_type: Union[RealDatapin, RealArrayDatapin],
     metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
     original_lower_bound: Optional[float],
     expected_lower_bound: float,
@@ -393,13 +390,13 @@ def test_set_metadata_should_convert_bounds(
 @pytest.mark.parametrize(
     "sut_type,metadata_type",
     [
-        (RealVariable, acvi.RealMetadata),
-        (RealArrayVariable, acvi.RealArrayMetadata),
+        (RealDatapin, acvi.RealMetadata),
+        (RealArrayDatapin, acvi.RealArrayMetadata),
     ],
 )
 def test_set_metadata_populated_enums(
     monkeypatch,
-    sut_type: Union[RealVariable, RealArrayVariable],
+    sut_type: Union[RealDatapin, RealArrayDatapin],
     metadata_type: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
 ):
     # Set up
@@ -449,7 +446,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_client, "DoubleVariableSetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = RealVariable(sut_element_id, None)
+        sut = RealDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute
@@ -482,7 +479,7 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
         mock_client, "DoubleVariableSetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = RealVariable(sut_element_id, None)
+        sut = RealDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -528,7 +525,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_client, "DoubleArraySetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = RealArrayVariable(sut_element_id, None)
+        sut = RealArrayDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute
@@ -561,7 +558,7 @@ def test_array_set_disallowed(monkeypatch, set_value):
         mock_client, "DoubleArraySetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = RealArrayVariable(sut_element_id, None)
+        sut = RealArrayDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -573,13 +570,13 @@ def test_array_set_disallowed(monkeypatch, set_value):
 
 
 def test_scalar_get_type(monkeypatch):
-    do_get_type_test(monkeypatch, RealVariable, VariableType.VARTYPE_REAL, acvi.VariableType.REAL)
+    do_get_type_test(monkeypatch, RealDatapin, VariableType.VARTYPE_REAL, acvi.VariableType.REAL)
 
 
 def test_array_get_type(monkeypatch):
     do_get_type_test(
         monkeypatch,
-        RealArrayVariable,
+        RealArrayDatapin,
         VariableType.VARTYPE_REAL_ARRAY,
         acvi.VariableType.REAL_ARRAY,
     )
@@ -597,7 +594,7 @@ def test_scalar_get_state(
 ):
     do_get_state_test(
         monkeypatch,
-        RealVariable,
+        RealDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(double_value=value_in_response)
         ),
@@ -629,7 +626,7 @@ def test_scalar_get_state(
 def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
     do_get_state_test(
         monkeypatch,
-        RealArrayVariable,
+        RealArrayDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(double_array_value=value_in_response)
         ),
@@ -640,10 +637,10 @@ def test_array_get_state(monkeypatch, value_in_response, validity_in_response, e
 @pytest.mark.parametrize(
     "sut_type, flag_in_response",
     [
-        (RealVariable, True),
-        (RealVariable, False),
-        (RealArrayVariable, True),
-        (RealArrayVariable, False),
+        (RealDatapin, True),
+        (RealDatapin, False),
+        (RealArrayDatapin, True),
+        (RealArrayDatapin, False),
     ],
 )
 def test_is_input_component(monkeypatch, sut_type, flag_in_response):
@@ -653,10 +650,10 @@ def test_is_input_component(monkeypatch, sut_type, flag_in_response):
 @pytest.mark.parametrize(
     "sut_type, flag_in_response",
     [
-        (RealVariable, True),
-        (RealVariable, False),
-        (RealArrayVariable, True),
-        (RealArrayVariable, False),
+        (RealDatapin, True),
+        (RealDatapin, False),
+        (RealArrayDatapin, True),
+        (RealArrayDatapin, False),
     ],
 )
 def test_is_input_workflow(monkeypatch, sut_type, flag_in_response):

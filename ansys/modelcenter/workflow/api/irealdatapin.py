@@ -4,11 +4,11 @@ from abc import ABC, abstractmethod
 import ansys.common.variableinterop as acvi
 from overrides import overrides
 
-from .ivariable import IVariable
+from .idatapin import IDatapin
 
 
-class IRealVariable(IVariable, ABC):
-    """Represents a variable storing a real on the workflow."""
+class IRealDatapin(IDatapin, ABC):
+    """Represents a datapin storing a real on the workflow."""
 
     @overrides
     @abstractmethod

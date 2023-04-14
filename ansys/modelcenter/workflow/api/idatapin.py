@@ -5,9 +5,9 @@ import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
 
-class IVariable(aew_api.IDatapin, ABC):
-    """Represents a variable in the workflow."""
+class IDatapin(aew_api.IDatapin, ABC):
+    """Represents a datapin in the workflow."""
 
     @abstractmethod
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        """Get the standard metadata for this variable."""
+        """Get the standard metadata for this datapin."""

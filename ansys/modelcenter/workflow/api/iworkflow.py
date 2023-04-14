@@ -7,8 +7,8 @@ import ansys.engineeringworkflow.api as aew_api
 
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 from ansys.modelcenter.workflow.api.icomponent import IComponent
-from ansys.modelcenter.workflow.api.ivariable import IVariable
-from ansys.modelcenter.workflow.api.ivariable_link import IVariableLink
+from ansys.modelcenter.workflow.api.idatapin import IDatapin
+from ansys.modelcenter.workflow.api.ivariable_link import IDatapinLink
 
 
 class IWorkflow(aew_api.IWorkflowInstance, ABC):
@@ -21,7 +21,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     # TODO: We need to come up with a consistent convention (and document)
     #       whether incoming variable values will have their types coerced or not
-    #       for this and the actual IVariable objects.
+    #       for this and the actual IDatapin objects.
     @abstractmethod
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
         """
@@ -73,7 +73,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
 
     @abstractmethod
-    def create_link(self, variable: Union[IVariable, str], equation: Union[str, IVariable]) -> None:
+    def create_link(self, variable: Union[IDatapin, str], equation: Union[str, IDatapin]) -> None:
         """
         Create a link to the specified variable based on the specified equation.
 
@@ -82,7 +82,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         variable : Union[IVariable, str]
             The variable that the link should target,
             or its full name.
-        equation : Union[str, IVariable]
+        equation : Union[str, IDatapin]
             Equation of the link. You may also pass an IVariable object here,
             and its name will become the equation.
         """
@@ -107,7 +107,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """Close the current workflow."""
 
     @abstractmethod
-    def get_variable(self, name: str) -> IVariable:
+    def get_variable(self, name: str) -> IDatapin:
         """
         Get variable of given name.
 
@@ -172,7 +172,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def auto_link(
         self, src_comp: Union[IComponent, str], dest_comp: Union[IComponent, str]
-    ) -> Collection[IVariableLink]:
+    ) -> Collection[IDatapinLink]:
         """
         Automatically links two components.
 
@@ -189,7 +189,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
 
     @abstractmethod
-    def get_links(self) -> Collection[IVariableLink]:
+    def get_links(self) -> Collection[IDatapinLink]:
         """
         Get a list of all links in the workflow.
 

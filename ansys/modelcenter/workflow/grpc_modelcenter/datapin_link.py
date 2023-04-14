@@ -1,4 +1,4 @@
-"""Implementation of VariableLink."""
+"""Implementation of DatapinLink."""
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
@@ -8,8 +8,8 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 a
 from .grpc_error_interpretation import interpret_rpc_error
 
 
-class VariableLink(wfapi.IVariableLink):
-    """GRPC implementation of IVariableLink."""
+class DatapinLink(wfapi.IDatapinLink):
+    """GRPC implementation of IDatapinLink."""
 
     def __init__(
         self, stub: grpc_mcd_workflow.ModelCenterWorkflowServiceStub, lhs_id: str, rhs: str

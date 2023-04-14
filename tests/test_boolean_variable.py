@@ -7,9 +7,9 @@ import pytest
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.boolean_variable import (
-    BooleanArrayVariable,
-    BooleanVariable,
+from ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin import (
+    BooleanArrayDatapin,
+    BooleanDatapin,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
@@ -61,16 +61,16 @@ class MockWorkflowClientForBooleanVarTest:
 @pytest.mark.parametrize(
     "description_string,sut_type,expected_metadata_type",
     [
-        ("", BooleanVariable, acvi.BooleanMetadata),
-        ("This is a mock variable description.", BooleanVariable, acvi.BooleanMetadata),
-        ("", BooleanArrayVariable, acvi.BooleanArrayMetadata),
-        ("This is a mock variable description.", BooleanArrayVariable, acvi.BooleanArrayMetadata),
+        ("", BooleanDatapin, acvi.BooleanMetadata),
+        ("This is a mock variable description.", BooleanDatapin, acvi.BooleanMetadata),
+        ("", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
+        ("This is a mock variable description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
-    sut_type: Union[BooleanVariable, BooleanArrayVariable],
+    sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
     expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -99,11 +99,11 @@ def test_retrieved_metadata_should_include_description(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArrayVariable, acvi.BooleanArrayMetadata)],
+    [(BooleanDatapin, acvi.BooleanMetadata), (BooleanArrayDatapin, acvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Union[BooleanVariable, BooleanArrayVariable],
+    sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
     expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -131,11 +131,11 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArrayVariable, acvi.BooleanArrayMetadata)],
+    [(BooleanDatapin, acvi.BooleanMetadata), (BooleanArrayDatapin, acvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Union[BooleanVariable, BooleanArrayVariable],
+    sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
     expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -173,11 +173,11 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanVariable, acvi.BooleanMetadata), (BooleanArrayVariable, acvi.BooleanArrayMetadata)],
+    [(BooleanDatapin, acvi.BooleanMetadata), (BooleanArrayDatapin, acvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
-    sut_type: Union[BooleanVariable, BooleanArrayVariable],
+    sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
     expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -204,12 +204,12 @@ def test_retrieved_metadata_includes_unsupported_type(
 @pytest.mark.parametrize(
     "sut_type",
     [
-        BooleanVariable,
-        BooleanArrayVariable,
+        BooleanDatapin,
+        BooleanArrayDatapin,
     ],
 )
 def test_set_metadata_invalid_custom_metadata(
-    monkeypatch, sut_type: Union[BooleanVariable, BooleanArrayVariable]
+    monkeypatch, sut_type: Union[BooleanDatapin, BooleanArrayDatapin]
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -233,16 +233,16 @@ def test_set_metadata_invalid_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", BooleanVariable, acvi.BooleanMetadata),
-        ("This is a mock variable description.", BooleanVariable, acvi.BooleanMetadata),
-        ("", BooleanArrayVariable, acvi.BooleanArrayMetadata),
-        ("This is a mock variable description.", BooleanArrayVariable, acvi.BooleanArrayMetadata),
+        ("", BooleanDatapin, acvi.BooleanMetadata),
+        ("This is a mock variable description.", BooleanDatapin, acvi.BooleanMetadata),
+        ("", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
+        ("This is a mock variable description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Union[BooleanVariable, BooleanArrayVariable],
+    sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
     metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -269,16 +269,16 @@ def test_set_metadata_empty_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", BooleanVariable, acvi.BooleanMetadata),
-        ("This is a mock variable description.", BooleanVariable, acvi.BooleanMetadata),
-        ("", BooleanArrayVariable, acvi.BooleanArrayMetadata),
-        ("This is a mock variable description.", BooleanArrayVariable, acvi.BooleanArrayMetadata),
+        ("", BooleanDatapin, acvi.BooleanMetadata),
+        ("This is a mock variable description.", BooleanDatapin, acvi.BooleanMetadata),
+        ("", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
+        ("This is a mock variable description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Union[BooleanVariable, BooleanArrayVariable],
+    sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
     metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
 ):
     # Set up
@@ -323,7 +323,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_client, "BooleanVariableSetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanVariable(sut_element_id, None)
+        sut = BooleanDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute
@@ -357,7 +357,7 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
         mock_client, "BooleanVariableSetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanVariable(sut_element_id, None)
+        sut = BooleanDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -390,7 +390,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_client, "BooleanArraySetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanArrayVariable(sut_element_id, None)
+        sut = BooleanArrayDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute
@@ -424,7 +424,7 @@ def test_array_set_disallowed(monkeypatch, set_value):
         mock_client, "BooleanArraySetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanArrayVariable(sut_element_id, None)
+        sut = BooleanArrayDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -437,14 +437,14 @@ def test_array_set_disallowed(monkeypatch, set_value):
 
 def test_scalar_get_type(monkeypatch):
     do_get_type_test(
-        monkeypatch, BooleanVariable, VariableType.VARTYPE_BOOLEAN, acvi.VariableType.BOOLEAN
+        monkeypatch, BooleanDatapin, VariableType.VARTYPE_BOOLEAN, acvi.VariableType.BOOLEAN
     )
 
 
 def test_array_get_type(monkeypatch):
     do_get_type_test(
         monkeypatch,
-        BooleanArrayVariable,
+        BooleanArrayDatapin,
         VariableType.VARTYPE_BOOLEAN_ARRAY,
         acvi.VariableType.BOOLEAN_ARRAY,
     )
@@ -464,7 +464,7 @@ def test_scalar_get_state(
 ):
     do_get_state_test(
         monkeypatch,
-        BooleanVariable,
+        BooleanDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(bool_value=value_in_response)
         ),
@@ -494,7 +494,7 @@ def test_scalar_get_state(
 def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
     do_get_state_test(
         monkeypatch,
-        BooleanArrayVariable,
+        BooleanArrayDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(bool_array_value=value_in_response)
         ),
@@ -505,10 +505,10 @@ def test_array_get_state(monkeypatch, value_in_response, validity_in_response, e
 @pytest.mark.parametrize(
     "sut_type, flag_in_response",
     [
-        (BooleanVariable, True),
-        (BooleanVariable, False),
-        (BooleanArrayVariable, True),
-        (BooleanArrayVariable, False),
+        (BooleanDatapin, True),
+        (BooleanDatapin, False),
+        (BooleanArrayDatapin, True),
+        (BooleanArrayDatapin, False),
     ],
 )
 def test_is_input_component(monkeypatch, sut_type, flag_in_response):
@@ -518,10 +518,10 @@ def test_is_input_component(monkeypatch, sut_type, flag_in_response):
 @pytest.mark.parametrize(
     "sut_type, flag_in_response",
     [
-        (BooleanVariable, True),
-        (BooleanVariable, False),
-        (BooleanArrayVariable, True),
-        (BooleanArrayVariable, False),
+        (BooleanDatapin, True),
+        (BooleanDatapin, False),
+        (BooleanArrayDatapin, True),
+        (BooleanArrayDatapin, False),
     ],
 )
 def test_is_input_workflow(monkeypatch, sut_type, flag_in_response):

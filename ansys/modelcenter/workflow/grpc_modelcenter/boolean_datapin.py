@@ -1,4 +1,4 @@
-"""Contains definition for BooleanVariable and BooleanArrayVariable."""
+"""Contains definition for BooleanDatapin and BooleanArrayDatapin."""
 
 import ansys.common.variableinterop as acvi
 from grpc import Channel
@@ -7,6 +7,7 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
+from .base_datapin import BaseDatapin
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
@@ -19,11 +20,10 @@ from .var_metadata_convert import (
     convert_grpc_boolean_metadata,
     fill_boolean_metadata_message,
 )
-from .variable import BaseVariable
 
 
-class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
-    """Represents a gRPC boolean variable on the workflow."""
+class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
+    """Represents a boolean datapin."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -36,7 +36,7 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
         channel: Channel
             The gRPC channel to use.
         """
-        super(BooleanVariable, self).__init__(element_id=element_id, channel=channel)
+        super(BooleanDatapin, self).__init__(element_id=element_id, channel=channel)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -68,8 +68,8 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
         value.value.accept(set_visitor)
 
 
-class BooleanArrayVariable(BaseVariable, mc_api.IBooleanArrayVariable):
-    """Represents a gRPC boolean array variable on the workflow."""
+class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
+    """Represents a boolean array datapin."""
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -112,4 +112,4 @@ class BooleanArrayVariable(BaseVariable, mc_api.IBooleanArrayVariable):
         channel: Channel
             The gRPC channel to use.
         """
-        super(BooleanArrayVariable, self).__init__(element_id=element_id, channel=channel)
+        super(BooleanArrayDatapin, self).__init__(element_id=element_id, channel=channel)

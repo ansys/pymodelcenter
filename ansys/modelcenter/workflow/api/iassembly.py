@@ -39,7 +39,7 @@ class IAssembly(
     """
     A ModelCenter assembly organizes components and other assemblies in a workflow.
 
-    Additionally, assemblies can have variables appended to themselves,
+    Additionally, assemblies can have datapins appended to themselves,
     allowing them to act as a way to abstract subordinate parts of the model.
 
     Each ModelCenter workflow has an assembly as its root element, containing all other assemblies.
@@ -74,38 +74,38 @@ class IAssembly(
         The created assembly object.
         """
 
-    def add_variable(self, name: str, mc_type: acvi.VariableType) -> aew_api.IDatapin:
+    def add_datapin(self, name: str, mc_type: acvi.VariableType) -> aew_api.IDatapin:
         """
-        Create a variable on this assembly.
+        Create a datapin on this assembly.
 
         Parameters
         ----------
         name : str
-            Name of the new variable to create.
+            Name of the new datapin to create.
 
         mc_type
-            The type for the new variable.
+            The type for the new datapin.
 
         Returns
         -------
-        An object representing the created variable.
+        An object representing the created datapin.
         """
 
     @abstractmethod
-    def delete_variable(self, name: str) -> bool:
+    def delete_datapin(self, name: str) -> bool:
         """
-        Delete the specified variable.
+        Delete the specified datapin.
 
-        Variable objects that represent the specified variable will become invalid.
-        If there is no variable with the specified name, no error will be thrown.
+        Variable objects that represent the specified datapin will become invalid.
+        If there is no datapin with the specified name, no error will be thrown.
 
         Parameters
         ----------
         name : str
-            Name of the variable to be deleted.
+            Name of the datapin to be deleted.
 
         Returns
         -------
-        True if the specified variable was located and deleted,
+        True if the specified datapin was located and deleted,
         False if it was not and no action was taken.
         """
