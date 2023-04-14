@@ -56,7 +56,7 @@ class AbstractGRPCVariableContainer(AbstractWorkflowElement, mc_api.IGroupOwner,
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_variables(self) -> Mapping[str, mc_api.IVariable]:
+    def get_datapins(self) -> Mapping[str, mc_api.IVariable]:
         # LTTODO: alter gRPC response so that short names are included in the first place.
         result = self._client.RegistryGetVariables(self._element_id)
         one_var_info: VariableInfo

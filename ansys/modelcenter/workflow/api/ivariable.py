@@ -5,7 +5,7 @@ import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
 
-class IVariable(aew_api.IVariable, ABC):
+class IVariable(aew_api.IDatapin, ABC):
     """Represents a variable in the workflow."""
 
     @abstractmethod

@@ -44,7 +44,7 @@ class MockWorkflowClientForAssemblyTest:
 
 
 def test_get_variables_empty(monkeypatch):
-    base_tests.do_test_get_variables_empty(monkeypatch, Group)
+    base_tests.do_test_get_datapins_empty(monkeypatch, Group)
 
 
 @pytest.mark.parametrize(
@@ -64,13 +64,13 @@ def test_get_variables_empty(monkeypatch):
     ],
 )
 def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type):
-    base_tests.do_test_get_variables_one_variable(
+    base_tests.do_test_get_datapins_one_variable(
         monkeypatch, Group, var_type, expected_wrapper_type
     )
 
 
 def test_get_variables_multiple_variables(monkeypatch):
-    base_tests.do_test_get_variables_multiple_variables(monkeypatch, Group)
+    base_tests.do_test_get_datapins_multiple_variables(monkeypatch, Group)
 
 
 def test_get_groups_empty(monkeypatch):

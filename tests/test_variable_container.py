@@ -46,7 +46,7 @@ class MockWorkflowClientForAbstractVariableContainerTest:
         return ElementIdCollection()
 
 
-def do_test_get_variables_empty(monkeypatch, sut_type) -> None:
+def do_test_get_datapins_empty(monkeypatch, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     no_variables = VariableInfoCollection()
     with unittest.mock.patch.object(
@@ -54,12 +54,12 @@ def do_test_get_variables_empty(monkeypatch, sut_type) -> None:
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(ElementId(id_string="NO_VARIABLES"), None)
-        result = sut.get_variables()
+        result = sut.get_datapins()
         assert len(result) == 0
         mock_method.assert_called_once_with(ElementId(id_string="NO_VARIABLES"))
 
 
-def do_test_get_variables_one_variable(
+def do_test_get_datapins_one_variable(
     monkeypatch, sut_type, var_type, expected_wrapper_type
 ) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
@@ -73,14 +73,14 @@ def do_test_get_variables_one_variable(
     ) as mock_get_variable_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(ElementId(id_string="SINGLE_CHILD"), None)
-        result = sut.get_variables()
+        result = sut.get_datapins()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
         assert len(result) == 1
         assert isinstance(result["child_var"], expected_wrapper_type)
         assert result["child_var"].element_id == variable_id.id_string
 
 
-def do_test_get_variables_multiple_variables(monkeypatch, sut_type) -> None:
+def do_test_get_datapins_multiple_variables(monkeypatch, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     mock_client.name_responses["IDVAR_LARRY"] = "larry"
     mock_client.name_responses["IDVAR_MOE"] = "moe"
@@ -109,7 +109,7 @@ def do_test_get_variables_multiple_variables(monkeypatch, sut_type) -> None:
     ) as mock_get_variable_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(ElementId(id_string="STOOGES"), None)
-        result = sut.get_variables()
+        result = sut.get_datapins()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="STOOGES"))
         assert len(result) == 3
         assert isinstance(result["larry"], mc_api.IIntegerVariable)

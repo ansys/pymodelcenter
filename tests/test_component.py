@@ -91,7 +91,7 @@ def test_get_properties(monkeypatch) -> None:
 
 
 def test_get_variables_empty(monkeypatch):
-    varcontainer_tests.do_test_get_variables_empty(monkeypatch, Component)
+    varcontainer_tests.do_test_get_datapins_empty(monkeypatch, Component)
 
 
 @pytest.mark.parametrize(
@@ -111,13 +111,13 @@ def test_get_variables_empty(monkeypatch):
     ],
 )
 def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type):
-    varcontainer_tests.do_test_get_variables_one_variable(
+    varcontainer_tests.do_test_get_datapins_one_variable(
         monkeypatch, Component, var_type, expected_wrapper_type
     )
 
 
 def test_get_variables_multiple_variables(monkeypatch):
-    varcontainer_tests.do_test_get_variables_multiple_variables(monkeypatch, Component)
+    varcontainer_tests.do_test_get_datapins_multiple_variables(monkeypatch, Component)
 
 
 def test_get_groups_empty(monkeypatch):

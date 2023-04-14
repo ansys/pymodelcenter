@@ -74,7 +74,7 @@ class IAssembly(
         The created assembly object.
         """
 
-    def add_variable(self, name: str, mc_type: acvi.VariableType) -> aew_api.IVariable:
+    def add_variable(self, name: str, mc_type: acvi.VariableType) -> aew_api.IDatapin:
         """
         Create a variable on this assembly.
 

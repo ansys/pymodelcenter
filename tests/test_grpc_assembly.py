@@ -275,7 +275,7 @@ def test_get_child_assemblies_multiple_children(monkeypatch) -> None:
 
 
 def test_get_variables_empty(monkeypatch) -> None:
-    base_tests.do_test_get_variables_empty(monkeypatch, Assembly)
+    base_tests.do_test_get_datapins_empty(monkeypatch, Assembly)
 
 
 @pytest.mark.parametrize(
@@ -295,13 +295,13 @@ def test_get_variables_empty(monkeypatch) -> None:
     ],
 )
 def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type) -> None:
-    base_tests.do_test_get_variables_one_variable(
+    base_tests.do_test_get_datapins_one_variable(
         monkeypatch, Assembly, var_type, expected_wrapper_type
     )
 
 
 def test_get_variables_multiple_variables(monkeypatch) -> None:
-    base_tests.do_test_get_variables_multiple_variables(monkeypatch, Assembly)
+    base_tests.do_test_get_datapins_multiple_variables(monkeypatch, Assembly)
 
 
 def test_get_groups_empty(monkeypatch) -> None:
