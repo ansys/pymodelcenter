@@ -19,7 +19,14 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows :: Windows 7",
+    "Operating System :: Microsoft :: Windows :: Windows Vista",
+    "Operating System :: Microsoft :: Windows :: Windows 8",
+    "Operating System :: Microsoft :: Windows :: Windows 8.1",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Operating System :: Microsoft :: Windows :: Windows Server 2003",
+    "Operating System :: Microsoft :: Windows :: Windows Server 2008",
 ]
 
 packages = [
@@ -30,7 +37,6 @@ packages = [
 python = ">=3.8,<3.11"
 numpy = "^1.22.3"
 overrides = "^6.1"
-pythonnet = "^2.5.2"
 
 # This is the closest version to what we're using in C++.
 # It's probably not strictly necessary to keep these exactly in sync,
@@ -40,7 +46,7 @@ grpcio-tools = "1.51.3"
 
 Sphinx =  {version="^4.4", optional=true}
 numpydoc =  {version="^1.2", optional=true}
-pyansys_sphinx_theme =  {version="^0.2", optional=true}
+ansys-sphinx-theme =  {version="^0.9", optional=true}
 sphinx-copybutton =  {version="^0.5", optional=true}
 
 codespell = {version="^2.1", optional=true}
@@ -51,14 +57,12 @@ pytest-cov = {version="^3.0", optional=true}
 pre-commit = {version="^2.17.0", optional=true}
 mypy = {version="^0.940", optional=true}
 
-# TODO: temporarily disabling until PyAnsys build boxes have credentials for these.
-ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "f97aeb6"}
-phoenix-mocks = {git = "https://github.com/Phoenix-Integration-Inc/phx-mocks.git", rev = "7be65b0"}
+ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "e66d11bbfa1175130913c7a7248db69ce002b341"}
 ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "3c0a8f7"}
 
 [tool.poetry.extras]
-dev = ["Sphinx", "numpydoc", "pyansys_sphinx_theme", "sphinx-copybutton", "codespell",
-    "flake8", "pytest", "pytest-cov", "pre-commit", "mypy", "grpcio-tools"]
-docs = ["Sphinx", "numpydoc", "pyansys_sphinx_theme", "sphinx-copybutton"]
+dev = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton", "codespell",
+    "flake8", "pytest", "pytest-cov", "pre-commit", "mypy"]
+docs = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton"]
 style = ["codespell", "flake8"]
 test = ["pytest", "pytest-cov"]

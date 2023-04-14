@@ -31,7 +31,7 @@ engineering workflows.
 Installation
 ------------
 The ``ansys-modelcenter-workflow`` package currently supports Python
-3.8 through 3.10 on Windows and Linux.
+3.8 through 3.10 on Windows.
 This package is not currently available on PyPI, but will be when it is
 ready for use.
 At that time you can install ``ansys-modelcenter-workflow`` with:
@@ -40,8 +40,8 @@ At that time you can install ``ansys-modelcenter-workflow`` with:
 
    pip install ansys-modelcenter-workflow
 
-Alternatively, install the latest from `pymodelcenter GitHub
-<https://github.com/pyansys/pymodelcenter>`_ via:
+Alternatively, install the latest development version directly from
+the `pymodelcenter GitHub <https://github.com/pyansys/pymodelcenter>`_ via:
 
 .. code::
 
@@ -56,7 +56,7 @@ For a local "development" version, install with:
    pip install poetry
    poetry install -E dev
 
-This creates a new virtual environment, which can be activated with
+This creates a new virtual environment, which can be activated with:
 
 .. code::
 
@@ -68,33 +68,36 @@ in ./protos.
 
 Documentation
 -------------
-TODO: link to the full sphinx documentation. `PyAnsys <https://py-pacz.docs.pyansys.com/>`_
-For building documentation, you can run the usual rules provided in the Sphinx Makefile, such as:
+`API Documentation <api/index.html>`_
 
-.. code::
-
-    make -C doc/ html && your_browser_name doc/html/index.html
-
-on Unix, or:
-
-.. code::
-
-    .\doc\make.bat html
-
-on Windows. Make sure the required dependencies are installed with:
+For building documentation, you can run the usual rules provided in the Sphinx Makefile.
+First, ensure the required dependencies are installed with:
 
 .. code::
 
     poetry install -E docs
 
+Then on Unix run:
+
+.. code::
+
+    make -C doc/ html && your_browser_name doc/html/index.html
+
+and on Windows run:
+
+.. code::
+
+    .\doc\make.bat html
+
+
 
 Usage
 -----
-The main classes used to create and run workflows are the Engine class
-and the Workflow class.
+The main classes used to create and run workflows are the ``Engine`` class
+and the ``Workflow`` class.
 
 This is an example of how to load a previously saved workflow, execute
-it, and retrieve the value o a variable:
+it, and retrieve the value of a variable:
 
 .. code:: python
 
@@ -126,7 +129,11 @@ Dependencies required for testing can be installed via:
 
     poetry install -E test
 
-The tests can then be run via pytest.
+The tests can then be run via pytest. To test and generate a code coverage report run:
+
+.. code::
+
+    pytest --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html tests/
 
 
 License

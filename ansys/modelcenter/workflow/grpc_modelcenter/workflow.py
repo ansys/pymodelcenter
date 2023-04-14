@@ -1,6 +1,6 @@
 """Implementation of Workflow."""
 import os
-from typing import AbstractSet, Iterable, List, Mapping, Optional, Type, Union
+from typing import AbstractSet, Any, Collection, List, Mapping, Optional, Tuple, Type, Union
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
@@ -15,17 +15,30 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workfl
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
-from ._visitors import VariableValueVisitor
 from .assembly import Assembly
-from .boolean_variable import BooleanVariable
 from .component import Component
-from .double_variable import DoubleVariable
-from .integer_variable import IntegerVariable
-from .string_variable import StringVariable
-from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
+from .create_variable import create_variable
+from .element_wrapper import create_element
+from .grpc_error_interpretation import (
+    WRAP_INVALID_ARG,
+    WRAP_NAME_COLLISION,
+    WRAP_OUT_OF_BOUNDS,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
+from .var_value_convert import (
+    convert_grpc_value_to_acvi,
+    convert_interop_value_to_grpc,
+    grpc_type_enum_to_interop_type,
+)
+from .variable_link import VariableLink
 
 
-class Workflow(wfapi.Workflow):
+class WorkflowRunFailedError(Exception):
+    """Raised to indicate that a workflow run failed."""
+
+
+class Workflow(wfapi.IWorkflow):
     """Represents a Workflow or Model in ModelCenter."""
 
     def __init__(self, workflow_id: str, file_path: str):
@@ -59,6 +72,7 @@ class Workflow(wfapi.Workflow):
         """Create a client from a grpc channel."""
         return grpc_mcd_workflow.ModelCenterWorkflowServiceStub(grpc_channel)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_state(self) -> engapi.WorkflowInstanceState:
         # if self._instance.getHaltStatus():
@@ -70,12 +84,14 @@ class Workflow(wfapi.Workflow):
         self,
         inputs: Mapping[str, acvi.VariableState],
         reset: bool,
-        validation_ids: AbstractSet[str],
+        validation_names: AbstractSet[str],
+        collection_names: AbstractSet[str],
     ) -> workflow_msg.WorkflowRunRequest:
         request = workflow_msg.WorkflowRunRequest(
             target=workflow_msg.WorkflowId(id=self._id),
             reset=reset,
-            validation_ids=[val_id for val_id in validation_ids],
+            validation_names=[name for name in validation_names],
+            collection_names=[name for name in collection_names],
         )
 
         var_id: str
@@ -86,19 +102,28 @@ class Workflow(wfapi.Workflow):
 
         return request
 
+    @interpret_rpc_error(
+        {
+            **WRAP_TARGET_NOT_FOUND,
+            **WRAP_INVALID_ARG,
+            **WRAP_OUT_OF_BOUNDS,
+            grpc.StatusCode.FAILED_PRECONDITION: WorkflowRunFailedError,
+        }
+    )
     @overrides
     def run(
         self,
         inputs: Mapping[str, acvi.VariableState],
         reset: bool,
-        validation_ids: AbstractSet[str],
+        validation_names: AbstractSet[str],
+        collect_names: AbstractSet[str],
     ) -> Mapping[str, acvi.VariableState]:
         request: workflow_msg.WorkflowRunRequest = self._create_run_request(
-            inputs, reset, validation_ids
+            inputs, reset, validation_names, collect_names
         )
         response = self._stub.WorkflowRun(request)
         elem_id: str
-        response_var_state: workflow_msg.VariableState
+        response_var_state: var_val_msg.VariableState
         return {
             elem_id: acvi.VariableState(
                 is_valid=response_var_state.is_valid,
@@ -107,15 +132,17 @@ class Workflow(wfapi.Workflow):
             for elem_id, response_var_state in response.results.items()
         }
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def start_run(
         self,
         inputs: Mapping[str, acvi.VariableState],
         reset: bool,
-        validation_ids: AbstractSet[str],
-    ) -> str:
+        validation_names: AbstractSet[str],
+    ) -> None:
         raise NotImplementedError
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_root(self) -> engapi.IControlStatement:
         request = workflow_msg.WorkflowId(id=self._id)
@@ -123,14 +150,27 @@ class Workflow(wfapi.Workflow):
         root: element_msg.ElementId = response.id
         return Assembly(root, self._channel)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_element_by_id(self, element_id: str) -> engapi.IElement:
-        # TODO: not on grpc api
-        raise NotImplementedError
+    def get_element_by_name(self, element_name: str) -> engapi.IElement:
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=element_name),
+        )
+        response = self._stub.WorkflowGetElementByName(request)
+        return create_element(response, self._channel)
 
-    @property  # type: ignore
-    @overrides
+    # TODO: Should we just delete this? Should probably remove from
+    #       GRPC api if so.
+    @property
     def workflow_directory(self) -> str:
+        """
+        Get the directory the workflow is in.
+
+        Returns
+        -------
+        The workflow directory.
+        """
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(
             request
@@ -142,54 +182,71 @@ class Workflow(wfapi.Workflow):
     def workflow_file_name(self) -> str:
         return self._file_name
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_value(self, var_name: str) -> acvi.IVariableValue:
-        var_id: element_msg.ElementId = self._stub.WorkflowGetVariableByName(
-            element_msg.ElementName(name=var_name)
+    def get_value(self, var_name: str) -> acvi.VariableState:
+        request = workflow_msg.ElementIdOrName(
+            target_name=workflow_msg.NamedElementInWorkflow(
+                element_full_name=element_msg.ElementName(name=var_name),
+                workflow=workflow_msg.WorkflowId(id=self._id),
+            )
         )
-        response: var_val_msg.VariableState
-        try:
-            response = self._stub.VariableGetState(var_id)
-        except grpc.RpcError as e:
-            # TODO: how to handle?
-            raise e
+        response: var_val_msg.VariableState = self._stub.VariableGetState(request)
 
         def convert(val: ArrayLike, dims: ArrayLike, val_type: Type) -> acvi.IVariableValue:
             return val_type(shape_=dims, values=np.array(val).flatten())
 
-        value = getattr(response.value, response.value.WhichOneof("value"))
-        if isinstance(value, float):
-            return acvi.RealValue(value)
+        attr: Optional[str] = response.value.WhichOneof("value")
+        value: Any = None
+        if attr is not None:
+            value = getattr(response.value, attr)
+        acvi_value: acvi.IVariableValue
+        if isinstance(value, bool):
+            acvi_value = acvi.BooleanValue(value)
+        elif isinstance(value, float):
+            acvi_value = acvi.RealValue(value)
         elif isinstance(value, int):
-            return acvi.IntegerValue(value)
-        elif isinstance(value, bool):
-            return acvi.BooleanValue(value)
+            acvi_value = acvi.IntegerValue(value)
         elif isinstance(value, str):
-            return acvi.StringValue(value)
+            acvi_value = acvi.StringValue(value)
         elif isinstance(value, var_val_msg.DoubleArrayValue):
-            return convert(value.values, value.dims.dims, acvi.RealArrayValue)
+            acvi_value = convert(value.values, value.dims.dims, acvi.RealArrayValue)
         elif isinstance(value, var_val_msg.IntegerArrayValue):
-            return convert(value.values, value.dims.dims, acvi.IntegerArrayValue)
+            acvi_value = convert(value.values, value.dims.dims, acvi.IntegerArrayValue)
         elif isinstance(value, var_val_msg.BooleanArrayValue):
-            return convert(value.values, value.dims.dims, acvi.BooleanArrayValue)
+            acvi_value = convert(value.values, value.dims.dims, acvi.BooleanArrayValue)
         elif isinstance(value, var_val_msg.StringArrayValue):
-            return convert(value.values, value.dims.dims, acvi.StringArrayValue)
+            acvi_value = convert(value.values, value.dims.dims, acvi.StringArrayValue)
         else:
             # unsupported type (should be impossible)
             raise TypeError(f"Unsupported type was returned: {type(value)}")
+        return acvi.VariableState(acvi_value, response.is_valid)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def create_link(self, variable: str, equation: str) -> None:
-        request = workflow_msg.WorkflowCreateLinkRequest(equation=equation)
-        request.target.id_string = variable
+    def create_link(
+        self, variable: Union[wfapi.IVariable, str], equation: Union[str, wfapi.IVariable]
+    ) -> None:
+        eq: str
+        if isinstance(equation, str):
+            eq = equation
+        else:
+            eq = equation.full_name
+        request = workflow_msg.WorkflowCreateLinkRequest(equation=eq)
+        if isinstance(variable, str):
+            request.target.id_string = self.get_element_by_name(variable).element_id
+        else:
+            request.target.id_string = variable.element_id
         response: workflow_msg.WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def save_workflow(self) -> None:
         request = workflow_msg.WorkflowId()
         request.id = self._id
         response: workflow_msg.WorkflowSaveResponse = self._stub.WorkflowSave(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def save_workflow_as(self, file_name: str) -> None:
         request = workflow_msg.WorkflowSaveAsRequest()
@@ -197,125 +254,103 @@ class Workflow(wfapi.Workflow):
         request.new_target_path = file_name
         response: workflow_msg.WorkflowSaveResponse = self._stub.WorkflowSaveAs(request)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def close_workflow(self) -> None:
         request = workflow_msg.WorkflowId()
         request.id = self._id
         response: workflow_msg.WorkflowCloseResponse = self._stub.WorkflowClose(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_variable(self, name: str) -> wfapi.IVariable:
-        request = element_msg.ElementName(name=name)
-        response: element_msg.ElementId = self._stub.WorkflowGetVariableByName(request)
-        type_response: var_val_msg.VariableTypeResponse = self._stub.VariableGetType(response)
-        # TODO: maybe use a visitor here?
-        var_type: var_val_msg.VariableType = type_response.var_type
-        if var_type == var_val_msg.VARTYPE_BOOLEAN:
-            return BooleanVariable(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_INTEGER:
-            return IntegerVariable(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_REAL:
-            return DoubleVariable(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_STRING:
-            return StringVariable(response, self._stub)
-        elif var_type == var_val_msg.VARTYPE_FILE:
-            return None  # TODO: need wrapper
-        elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
-            return None  # TODO: need wrapper
-        elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
-            return None  # TODO: need wrapper
-        elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
-            return None  # TODO: need wrapper
-        elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
-            return None  # TODO: need wrapper
-        elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
-            return None  # TODO: need wrapper
-        else:
-            raise ValueError("Unknown variable type.")
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=name),
+        )
+        response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
+        if response.type != element_msg.ELEMTYPE_VARIABLE:
+            raise ValueError("Element is not a variable.")
+
+        var_type: var_val_msg.VariableType = response.var_type
+
+        return create_variable(
+            var_value_type=grpc_type_enum_to_interop_type(var_type),
+            element_id=response.id,
+            channel=self._channel,
+        )
+
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_component(self, name: str) -> wfapi.IComponent:
-        request = element_msg.ElementName(name=name)
-        response: element_msg.ElementId = self._stub.WorkflowGetComponentOrAssemblyByName(request)
-        return Component(response.id_string)
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=name),
+        )
+        response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
+        if response.type == element_msg.ELEMTYPE_COMPONENT:
+            return Component(response.id, self._channel)
+        elif response.type == element_msg.ELEMTYPE_IFCOMPONENT:
+            # return IfComponent(response.id.id_string)
+            raise NotImplementedError()
+        else:
+            raise ValueError("Element is not a component.")
 
-    @overrides
-    def trade_study_end(self) -> None:
-        # self._instance.tradeStudyEnd()
-        raise NotImplementedError
-
-    # Skip IDispatch* createJobManager([optional]VARIANT showProgressDialog);
-
-    @overrides
-    def trade_study_start(self) -> None:
-        # self._instance.tradeStudyStart()
-        raise NotImplementedError
-
-    @overrides
-    def get_halt_status(self) -> bool:
-        # return self._instance.getHaltStatus()
-        raise NotImplementedError
-
-    @overrides
-    def get_value_absolute(self, var_name: str) -> acvi.IVariableValue:
-        # value = self._instance.getValueAbsolute(var_name)
-        # return Workflow.value_to_variable_value(value)
-        raise NotImplementedError
-
-    @overrides
-    def set_scheduler(self, schedular: str) -> None:
-        # self._instance.setScheduler(schedular)
-        raise NotImplementedError
-
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND})
     @overrides
     def remove_component(self, name: str) -> None:
         comp: Component = self.get_component(name)
         request = workflow_msg.WorkflowRemoveComponentRequest()
         request.target.id_string = comp.element_id
-        response: workflow_msg.WorkflowRemoveComponentResponse = self._stub.WorkflowRemoveComponent(
-            request
+        self._stub.WorkflowRemoveComponent(request)
+
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_NAME_COLLISION})
+    @overrides
+    def create_assembly(
+        self, name: str, parent: Union[wfapi.IAssembly, str], assembly_type: Optional[str] = None
+    ):
+        request = element_msg.AddAssemblyRequest(
+            name=element_msg.ElementName(name=name), av_pos=None, assembly_type=assembly_type
         )
-        if not response.existed:
-            raise ValueError("Component does not exist")
+        if parent is not None:
+            if isinstance(parent, str):
+                request.parent.id_string = parent
+            else:
+                request.parent.id_string = parent.element_id
+        response: element_msg.AddAssemblyResponse = self._stub.AssemblyAddAssembly(request)
+        return Assembly(response.id, self._channel)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def break_link(self, target_id: str) -> None:
-        request = workflow_msg.WorkflowBreakLinkRequest()
-        request.target_var.id_string = target_id
-        response: workflow_msg.WorkflowBreakLinkResponse = self._stub.WorkflowBreakLink(request)
-        if not response.existed:
-            raise ValueError("Target id does not exist.")
-
-    @overrides
-    def run_macro(self, macro_name: str, use_mc_object: bool = False) -> object:
-        # return self._instance.runMacro(macro_name, use_mc_object)
-        raise NotImplementedError
-
-    @overrides
-    def create_assembly(self, name: str, parent: str, assembly_type: Optional[str] = None):
-        # return self._instance.createAssembly(name, parent, assembly_type)
-        raise NotImplementedError
-
-    @overrides
-    def auto_link(self, src_comp: str, dest_comp: str) -> Iterable[wfapi.VariableLink]:
+    def auto_link(
+        self, src_comp: Union[str, wfapi.IComponent], dest_comp: Union[str, wfapi.IComponent]
+    ) -> Collection[wfapi.IVariableLink]:
         request = workflow_msg.WorkflowAutoLinkRequest()
-        request.source_comp.id_string = src_comp
-        request.target_comp.id_string = dest_comp
+        src_comp_used = (
+            src_comp if isinstance(src_comp, wfapi.IComponent) else self.get_component(src_comp)
+        )
+        dest_comp_used = (
+            dest_comp if isinstance(dest_comp, wfapi.IComponent) else self.get_component(dest_comp)
+        )
+        request.source_comp.id_string = src_comp_used.element_id
+        request.target_comp.id_string = dest_comp_used.element_id
         response: workflow_msg.WorkflowAutoLinkResponse = self._stub.WorkflowAutoLink(request)
-        links: List[wfapi.VariableLink] = [
-            wfapi.VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+        links: List[wfapi.IVariableLink] = [
+            VariableLink(self._stub, lhs_id=entry.lhs.id_string, rhs=entry.rhs)
             for entry in response.created_links
         ]
         return links
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND})
     @overrides
-    def get_links(self, reserved: object = None) -> Iterable[wfapi.VariableLink]:
+    def get_links(self) -> Collection[wfapi.IVariableLink]:
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetLinksResponse = self._stub.WorkflowGetLinksRequest(
             request
         )
-        links: List[wfapi.VariableLink] = [
-            wfapi.VariableLink(lhs_id=entry.lhs.id_string, rhs=entry.rhs)
+        links: List[wfapi.IVariableLink] = [
+            VariableLink(self._stub, lhs_id=entry.lhs.id_string, rhs=entry.rhs)
             for entry in response.links
         ]
         return links
@@ -324,148 +359,149 @@ class Workflow(wfapi.Workflow):
     def get_workflow_uuid(self) -> str:
         return self._id
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND})
     @overrides
     def halt(self) -> None:
-        # self._instance.halt()
-        raise NotImplementedError
+        request = workflow_msg.WorkflowHaltRequest()
+        response: workflow_msg.WorkflowHaltResponse = self._stub.WorkflowHalt(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def run_variables(self, variable_array: Optional[str]) -> None:
-        # self._instance.run(variable_array or "")
-        raise NotImplementedError
+    def move_component(
+        self,
+        component: Union[wfapi.IComponent, str],
+        parent: Union[wfapi.IAssembly, str],
+        index: int = -1,
+    ) -> None:
+        used_component: wfapi.IComponent = (
+            component if isinstance(component, wfapi.IComponent) else self.get_component(component)
+        )
+        used_parent: wfapi.IAssembly = (
+            parent if isinstance(parent, wfapi.IAssembly) else self.get_assembly(parent)
+        )
+        request = workflow_msg.MoveComponentRequest(
+            target=element_msg.ElementId(id_string=used_component.element_id),
+            new_parent=element_msg.ElementId(id_string=used_parent.element_id),
+            index_in_parent=index,
+        )
+        self._stub.WorkflowMoveComponent(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_data_monitor(self, component: str, index: int) -> wfapi.DataMonitor:
-        # dm_object: phxmock.MockDataMonitor = self._instance.getDataMonitor(component, index)
-        # return DataMonitor(dm_object)
-        raise NotImplementedError
+    def get_assembly(self, name: Optional[str] = None) -> wfapi.IAssembly:
+        if name is None:
+            return self.get_root()
+        else:
+            request = workflow_msg.NamedElementInWorkflow(
+                workflow=workflow_msg.WorkflowId(id=self._id),
+                element_full_name=element_msg.ElementName(name=name),
+            )
+            response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
+            if response.type == element_msg.ELEMTYPE_ASSEMBLY:
+                return Assembly(
+                    element_msg.ElementId(id_string=response.id.id_string), self._channel
+                )
+            else:
+                raise ValueError("Element is not an assembly.")
 
-    @overrides
-    def create_data_monitor(self, component: str, name: str, x: int, y: int) -> object:
-        # dm_object: phxmock.MockDataMonitor = self._instance.createDataMonitor(
-        #   component, name, x, y)
-        # return DataMonitor(dm_object)
-        raise NotImplementedError
-
-    @overrides
-    def remove_data_monitor(self, component: str, index: int) -> bool:
-        # return self._instance.removeDataMonitor(component, index)
-        raise NotImplementedError
-
-    @overrides
-    def get_data_explorer(self, index: int) -> Optional[wfapi.DataExplorer]:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def move_component(self, component: str, parent: str, index: object) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def set_xml_extension(self, xml: str) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def get_assembly(self, name: str = None) -> object:  # IAssembly
-        # if name is None or name == "":
-        #     assembly = self._instance.getModel()
-        # else:
-        #     assembly = self._instance.getAssembly(name)
-        # if assembly is None:
-        #     return None
-        # return Assembly(assembly)
-        raise NotImplementedError
-
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_NAME_COLLISION})
     @overrides
     def create_component(
         self,
         server_path: str,
         name: str,
-        parent: str,
+        parent: Union[wfapi.IAssembly, str],
+        *,
         init_string: Optional[str] = None,
-        x_pos: Optional[int] = None,
-        y_pos: Optional[int] = None,
-    ) -> wfapi.IComponent:
-        # TODO: init_string not on grpc api
+        av_position: Optional[Tuple[int, int]] = None,
+        insert_before: Optional[Union[wfapi.IComponent, wfapi.IAssembly, str]] = None,
+    ) -> Component:
         request = workflow_msg.WorkflowCreateComponentRequest(
             source_path=server_path, name=name, init_str=init_string
         )
-        request.parent.id_string = parent
-        if x_pos is not None and y_pos is not None:
-            request.coords.x_pos = x_pos
-            request.coords.y_pos = y_pos
+        used_parent = parent if isinstance(parent, wfapi.IAssembly) else self.get_assembly(parent)
+        request.parent.id_string = used_parent.element_id
+        if av_position is not None:
+            request.coords.x_pos = av_position[0]
+            request.coords.y_pos = av_position[1]
+        elif insert_before is not None:
+            if isinstance(insert_before, str):
+                request.after_comp.id_string = self.get_element_by_name(insert_before).element_id
+            else:
+                request.after_comp.id_string = insert_before.element_id
         response: workflow_msg.WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(
             request
         )
-        return Component(response.created.id_string)
+        return Component(response.created, self._channel)
 
-    @overrides
-    def get_macro_script(self, macro_name: str) -> str:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def set_macro_script(self, macro_name: str, script: str) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def get_macro_script_language(self, macro_name: str) -> str:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def set_macro_script_language(self, macro_name: str, language: str) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
-    @overrides
-    def add_new_macro(self, macro_name: str, is_app_macro: bool) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
         metadata: acvi.CommonVariableMetadata = None
-        request = element_msg.ElementName(name=name)
-        response: element_msg.ElementId = self._stub.WorkflowGetVariableByName(request)
-        type_response: var_val_msg.VariableTypeResponse = self._stub.VariableGetType(response)
-        var_type: var_val_msg.VariableType = type_response.var_type
+        request = workflow_msg.NamedElementInWorkflow(
+            workflow=workflow_msg.WorkflowId(id=self._id),
+            element_full_name=element_msg.ElementName(name=name),
+        )
+        response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
+
+        if response.type != element_msg.ELEMTYPE_VARIABLE:
+            raise ValueError("Element is not a variable.")
+        elem_id: element_msg.ElementId = response.id
+        var_type: var_val_msg.VariableType = response.var_type
+
         if var_type == var_val_msg.VARTYPE_BOOLEAN:
             metadata = acvi.BooleanMetadata()
-            # TODO: description?
+            self._set_bool_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_INTEGER:
             metadata = acvi.IntegerMetadata()
-            self._set_int_metadata(response, metadata)
+            self._set_int_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_REAL:
             metadata = acvi.RealMetadata()
-            self._set_real_metadata(response, metadata)
+            self._set_real_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_STRING:
             metadata = acvi.StringMetadata()
-            self._set_string_metadata(response, metadata)
+            self._set_string_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_FILE:
             metadata = acvi.FileMetadata()
-            # TODO: description?
+            self._set_file_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
             metadata = acvi.BooleanArrayMetadata()
-            # TODO: description?
+            self._set_bool_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
             metadata = acvi.IntegerArrayMetadata()
-            self._set_int_metadata(response, metadata)
+            self._set_int_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
             metadata = acvi.RealArrayMetadata()
-            self._set_real_metadata(response, metadata)
+            self._set_real_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
             metadata = acvi.StringArrayMetadata()
-            self._set_string_metadata(response, metadata)
+            self._set_string_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
             metadata = acvi.FileArrayMetadata()
-            # TODO: description?
+            self._set_file_metadata(elem_id, metadata)
         else:
             raise ValueError("Unknown variable type.")
         return metadata
+
+    def _set_bool_metadata(
+        self,
+        var_id: element_msg.ElementId,
+        metadata: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    ) -> None:
+        """
+        Query grpc for metadata for a boolean variable, and populate the given metadata object.
+
+        Parameters
+        ----------
+        var_id: ElementId
+        The id of the variable.
+        metadata: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata]
+        The metadata object to populate.
+        """
+        response: var_val_msg.BooleanVariableMetadata = self._stub.BooleanVariableGetMetadata(
+            var_id
+        )
+        metadata.description = response.base_metadata.description
 
     def _set_real_metadata(
         self,
@@ -483,7 +519,9 @@ class Workflow(wfapi.Workflow):
         The metadata object to populate.
         """
         response: var_val_msg.DoubleVariableMetadata = self._stub.DoubleVariableGetMetadata(var_id)
-        # TODO: description, units, display_format?
+        metadata.description = response.base_metadata.description
+        metadata.units = response.numeric_metadata.units
+        metadata.display_format = response.numeric_metadata.display_format
         metadata.lower_bound = response.lower_bound
         metadata.upper_bound = response.upper_bound
         metadata.enumerated_values.extend(response.enum_values)
@@ -507,7 +545,9 @@ class Workflow(wfapi.Workflow):
         response: var_val_msg.IntegerVariableMetadata = self._stub.IntegerVariableGetMetadata(
             var_id
         )
-        # TODO: description, units, display_format?
+        metadata.description = response.base_metadata.description
+        metadata.units = response.numeric_metadata.units
+        metadata.display_format = response.numeric_metadata.display_format
         metadata.lower_bound = response.lower_bound
         metadata.upper_bound = response.upper_bound
         metadata.enumerated_values.extend(response.enum_values)
@@ -528,33 +568,31 @@ class Workflow(wfapi.Workflow):
         metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata]
         The metadata object to populate.
         """
-        # TODO: description, units, display_format?
         response: var_val_msg.StringVariableMetadata = self._stub.StringVariableGetMetadata(var_id)
+        metadata.description = response.base_metadata.description
         metadata.enumerated_values.extend(response.enum_values)
         metadata.enumerated_aliases.extend(response.enum_aliases)
 
-    @overrides
-    def create_data_explorer(self, trade_study_type: str, setup: str) -> wfapi.DataExplorer:
-        # TODO: not on grpc api
-        raise NotImplementedError
+    def _set_file_metadata(
+        self,
+        var_id: element_msg.ElementId,
+        metadata: Union[acvi.FileMetadata, acvi.FileArrayMetadata],
+    ) -> None:
+        """
+        Query grpc for metadata for a file variable, and populate the given metadata object.
 
-    @overrides
-    def get_macro_timeout(self, macro_name: str) -> float:
-        # TODO: not on grpc api
-        raise NotImplementedError
+        Parameters
+        ----------
+        var_id: ElementId
+        The id of the variable.
+        metadata: Union[acvi.FileMetadata, acvi.FileArrayMetadata]
+        The metadata object to populate.
+        """
+        response: var_val_msg.FileVariableMetadata = self._stub.FileVariableGetMetadata(var_id)
+        metadata.description = response.base_metadata.description
 
-    @overrides
-    def set_macro_timeout(self, macro_name: str, timeout: float) -> None:
-        # TODO: not on grpc api
-        raise NotImplementedError
-
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
-        var_id: element_msg.ElementId = self._stub.WorkflowGetVariableByName(
-            element_msg.ElementName(name=var_name)
-        )
-        try:
-            value.accept(VariableValueVisitor(var_id, self._stub))
-        except grpc.RpcError as e:
-            # How should we handle errors here?
-            raise e
+        var = self.get_variable(var_name)
+        var.set_value(acvi.VariableState(value, True))

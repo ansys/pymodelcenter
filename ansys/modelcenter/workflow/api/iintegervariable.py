@@ -1,54 +1,16 @@
 """Contains definitions for integer variables."""
+from abc import ABC, abstractmethod
+
 import ansys.common.variableinterop as acvi
-import clr
 from overrides import overrides
 
-from .ivariable import FormattableVariable, ScalarVariable
-
-clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
-from Phoenix.Mock import MockIntegerVariable  # type: ignore
+from .ivariable import IVariable
 
 
-class IIntegerVariable(
-    ScalarVariable[MockIntegerVariable], FormattableVariable[MockIntegerVariable]
-):
+class IIntegerVariable(IVariable, ABC):
     """Represents an integer variable on the workflow."""
 
     @overrides
-    def __init__(self, wrapped: MockIntegerVariable):
-        super().__init__(wrapped)
-        self._standard_metadata: acvi.CommonVariableMetadata = acvi.IntegerMetadata()
-
-    @property  # type: ignore
-    @overrides
-    def value(self) -> acvi.IntegerValue:
-        return acvi.IntegerValue(self._wrapped.value)
-
-    @value.setter  # type: ignore
-    @overrides
-    def value(self, new_value: acvi.IVariableValue):
-        self._wrapped.fromString(new_value.to_api_string())
-
-    @property  # type: ignore
-    @overrides
-    def value_absolute(self) -> acvi.IntegerValue:
-        return acvi.IntegerValue(self._wrapped.valueAbsolute)
-
-    @overrides
-    def set_initial_value(self, value: acvi.IVariableValue) -> None:
-        self._wrapped.setInitialValue(int(acvi.to_integer_value(value)))
-
-    @property  # type: ignore
-    @overrides
-    def standard_metadata(self) -> acvi.IntegerMetadata:
-        return self._standard_metadata
-
-    @standard_metadata.setter  # type: ignore
-    @overrides
-    def standard_metadata(self, new_metadata: acvi.IntegerMetadata) -> None:
-        if not isinstance(new_metadata, acvi.IntegerMetadata):
-            raise acvi.exceptions.IncompatibleTypesException(
-                new_metadata.variable_type.name, self._standard_metadata.variable_type.name
-            )
-        else:
-            self._standard_metadata = new_metadata
+    @abstractmethod
+    def get_metadata(self) -> acvi.IntegerMetadata:
+        ...  # pragma: no cover

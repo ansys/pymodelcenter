@@ -1,40 +1,18 @@
 """Implementation of Engine."""
 from os import PathLike
 from string import Template
-from typing import Optional, Union
+from typing import Collection, Dict, List, Mapping, Optional, Union
 
 from ansys.engineeringworkflow.api import IWorkflowInstance, WorkflowEngineInfo
 import grpc
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import DataExplorer
-from ansys.modelcenter.workflow.api import Engine as IEngine
-from ansys.modelcenter.workflow.api import Format as IFormat
-from ansys.modelcenter.workflow.api import OnConnectionErrorMode
-from ansys.modelcenter.workflow.api import Workflow as IWorkflow
-from ansys.modelcenter.workflow.api import WorkflowType
+from ansys.modelcenter.workflow.api import IEngine, IFormat, IWorkflow, WorkflowType
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 
 from .format import Format
+from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .mcd_process import MCDProcess
-from .proto.engine_messages_pb2 import (
-    DATA,
-    PROCESS,
-    GetPreferenceRequest,
-    GetPreferenceResponse,
-    GetServerInfoRequest,
-    GetServerInfoResponse,
-    GetUnitCategoriesRequest,
-    GetUnitCategoriesResponse,
-    GetUnitNamesRequest,
-    GetUnitNamesResponse,
-    LoadWorkflowRequest,
-    LoadWorkflowResponse,
-    NewWorkflowRequest,
-    NewWorkflowResponse,
-    SetPasswordRequest,
-    SetUserNameRequest,
-    ShutdownRequest,
-)
 from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
 
@@ -46,8 +24,8 @@ class Engine(IEngine):
         """Initialize a new Engine instance."""
         self._is_run_only: bool = is_run_only
         self._process = MCDProcess()
-        self._process.start(is_run_only)
-        self._channel = grpc.insecure_channel("localhost:50051")
+        port: int = self._process.start(is_run_only)
+        self._channel = grpc.insecure_channel("localhost:" + str(port))
         self._stub = self._create_client(self._channel)
         self._workflow_id: Optional[str] = None
 
@@ -59,9 +37,10 @@ class Engine(IEngine):
         """Clean up when leaving a 'with' block."""
         self.close()
 
+    @interpret_rpc_error()
     def close(self):
         """Shuts down the grpc server and clear out all objects."""
-        request = ShutdownRequest()
+        request = eng_msg.ShutdownRequest()
         self._stub.Shutdown(request)
         self._stub = None
 
@@ -75,101 +54,90 @@ class Engine(IEngine):
         """Create a client from a grpc channel."""
         return GRPCModelCenterServiceStub(grpc_channel)
 
-    @property  # type: ignore
-    @overrides
+    @property
     def process_id(self) -> int:
+        """Get the id of the connected process; useful for debugging."""
         # Can also get this via grpc if we want.
-        return self._process.get_process_id()
+        return self._process.get_process_id()  # pragma: no cover
 
+    @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
-        request = NewWorkflowRequest()
-        request.path = name
-        request.workflow_type = DATA if workflow_type is WorkflowType.DATA else PROCESS
-        response: NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
+        request = eng_msg.NewWorkflowRequest(
+            path=name,
+            workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
+        )
+        response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
         return Workflow(response.workflow_id, name)
 
+    @interpret_rpc_error({grpc.StatusCode.NOT_FOUND: FileNotFoundError, **WRAP_INVALID_ARG})
     @overrides
-    def load_workflow(self, file_name: Union[PathLike, str]) -> IWorkflowInstance:
-        return self.load_workflow_ex(file_name)
-
-    @overrides
-    def load_workflow_ex(
-        self, file_name: str, on_connect_error: OnConnectionErrorMode = OnConnectionErrorMode.ERROR
-    ) -> IWorkflow:
-        if on_connect_error == OnConnectionErrorMode.DIALOG:
-            raise ValueError("This client does not support UI mode.")
-        request = LoadWorkflowRequest()
-        request.path = file_name
-        response: LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
-        return Workflow(response.workflow_id, file_name)
+    def load_workflow(
+        self, file_name: Union[PathLike, str], ignore_connection_errors: Optional[bool] = None
+    ) -> IWorkflowInstance:
+        request = eng_msg.LoadWorkflowRequest(
+            path=str(file_name),
+            connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
+        )
+        response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
+        return Workflow(response.workflow_id, request.path)
 
     @overrides
     def get_formatter(self, fmt: str) -> IFormat:
         formatter: Format = Format(fmt)
         return formatter
 
-    @overrides
-    def set_user_name(self, user_name: str) -> None:
-        request = SetUserNameRequest()
-        request.user_name = user_name
-        self._stub.EngineSetUserName(request)
-
-    @overrides
-    def set_password(self, password: str) -> None:
-        request = SetPasswordRequest()
-        request.password = password
-        self._stub.EngineSetPassword(request)
-
+    @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
-        request = GetPreferenceRequest()
-        request.preference_name = pref
-        response: GetPreferenceResponse = self._stub.EngineGetPreference(request)
+        request = eng_msg.GetPreferenceRequest(preference_name=pref)
+        response: eng_msg.GetPreferenceResponse = self._stub.EngineGetPreference(request)
         attr: Optional[str] = response.WhichOneof("value")
         if attr is not None:
             return getattr(response, attr)
         else:
             raise Exception("Server did not return a value.")
 
+    @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
-    def get_num_unit_categories(self) -> int:
-        request = GetUnitCategoriesRequest()
-        response: GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(request)
-        return len(response.names)
+    def set_preference(self, pref: str, value: Union[bool, int, float, str]) -> None:
+        request = eng_msg.SetPreferenceRequest(preference_name=pref)
+        if isinstance(value, bool):
+            request.bool_value = value
+        elif isinstance(value, int):
+            request.int_value = value
+        elif isinstance(value, float):
+            request.double_value = value
+        else:
+            request.str_value = value
+        response: eng_msg.SetPreferenceResponse = self._stub.EngineSetPreference(request)
 
+    @interpret_rpc_error()
     @overrides
-    def get_unit_category_name(self, index: int) -> str:
-        request = GetUnitCategoriesRequest()
-        response: GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(request)
-        return response.names[index]
-
-    @overrides
-    def get_num_units(self, category: str) -> int:
-        request = GetUnitNamesRequest()
-        request.category = category
-        response: GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
-        return len(response.names)
-
-    @overrides
-    def get_unit_name(self, category: str, index: int) -> str:
-        request = GetUnitNamesRequest()
-        request.category = category
-        response: GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
-        return response.names[index]
+    def get_units(self) -> Mapping[str, Collection[str]]:
+        result: Dict[str, List[str]] = {}
+        category_request = eng_msg.GetUnitCategoriesRequest()
+        category_response: eng_msg.GetUnitCategoriesResponse = self._stub.EngineGetUnitCategories(
+            category_request
+        )
+        for category in category_response.names:
+            result[category] = []
+            request = eng_msg.GetUnitNamesRequest()
+            request.category = category
+            response: eng_msg.GetUnitNamesResponse = self._stub.EngineGetUnitNames(request)
+            for unit in response.names:
+                result[category].append(unit)
+        return result
 
     @overrides
     def get_run_only_mode(self) -> bool:
         return self._is_run_only
 
-    @overrides
-    def save_trade_study(self, uri: str, data_explorer: DataExplorer) -> None:
-        raise NotImplementedError
-
+    @interpret_rpc_error()
     @overrides
     def get_server_info(self) -> WorkflowEngineInfo:
-        request = GetServerInfoRequest()
-        response: GetServerInfoResponse = self._stub.GetEngineInfo(request)
+        request = eng_msg.GetServerInfoRequest()
+        response: eng_msg.GetServerInfoResponse = self._stub.GetEngineInfo(request)
 
         version = {
             "major": response.version.major,

@@ -1,7 +1,7 @@
 """Sphinx documentation configuration file."""
 from datetime import datetime
 
-from pyansys_sphinx_theme import pyansys_logo_black
+from ansys_sphinx_theme import pyansys_logo_black as logo
 
 from ansys.modelcenter.workflow import __version__
 
@@ -11,14 +11,18 @@ copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "Ansys, Inc."
 release = version = __version__
 
-# use the default pyansys logo
-html_logo = pyansys_logo_black
-html_theme = "pyansys_sphinx_theme"
+# use the default ansys logo
+html_logo = logo
+html_theme = "ansys_sphinx_theme"
 
 # specify the location of your github repo
 html_theme_options = {
-    "github_url": "https://github.com/pyansys/pyansys-sphinx-theme",
+    "github_url": "https://github.com/pyansys/pymodelcenter",
     "show_prev_next": False,
+    "show_breadcrumbs": True,
+    "additional_breadcrumbs": [
+        ("PyAnsys", "https://docs.pyansys.com/"),
+    ],
 }
 
 # Sphinx extensions
@@ -29,6 +33,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
 ]
+autosummary_generate = True
 
 # Intersphinx mapping
 intersphinx_mapping = {

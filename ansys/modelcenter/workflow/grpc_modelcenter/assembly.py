@@ -3,28 +3,46 @@
 from typing import Optional, Sequence
 
 import ansys.common.variableinterop as acvi
-import ansys.engineeringworkflow.api as base_api
+import ansys.engineeringworkflow.api as aew_api
 from grpc import Channel
 from overrides import overrides
 
-import ansys.modelcenter.workflow.api as api
+import ansys.modelcenter.workflow.api as mc_api
+import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
 
+from .abstract_renamable import AbstractRenamableElement
+from .create_variable import create_variable
+from .element_wrapper import create_element
 from .group import Group
-from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
+from .grpc_error_interpretation import (
+    WRAP_INVALID_ARG,
+    WRAP_NAME_COLLISION,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
 from .proto.element_messages_pb2 import (
     AddAssemblyRequest,
     AddAssemblyVariableRequest,
-    AssemblyIconSetRequest,
+    AddAssemblyVariableResponse,
     ElementId,
     ElementName,
-    RenameRequest,
 )
-from .var_value_convert import convert_grpc_value_to_acvi, convert_interop_value_to_grpc
-from .variable import Variable
+from .proto.workflow_messages_pb2 import (
+    DeleteAssemblyVariableRequest,
+    ElementIdOrName,
+    ElementInfo,
+    NamedElementInWorkflow,
+)
+from .var_value_convert import interop_type_to_mc_type_string, mc_type_string_to_interop_type
 from .variable_container import AbstractGRPCVariableContainer
 
 
-class Assembly(AbstractGRPCVariableContainer, api.Assembly):
+class Assembly(
+    AbstractRenamableElement,
+    AbstractGRPCVariableContainer,
+    aachild.AbstractAssemblyChild,
+    mc_api.IAssembly,
+):
     """Represents an assembly in ModelCenter."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
@@ -38,111 +56,48 @@ class Assembly(AbstractGRPCVariableContainer, api.Assembly):
         """
         super(Assembly, self).__init__(element_id=element_id, channel=channel)
 
-    @property  # type: ignore
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def element_id(self) -> str:
-        """
-        TODO.
-
-        Returns
-        -------
-        TODO.
-        """
-        # TODO: readonly?
-        return self._element_id.id_string
-
-    @property  # type: ignore
-    @overrides
-    def name(self):
-        return self.get_name()
-
-    @property  # type: ignore
-    @overrides
-    def control_type(self) -> str:
-        result = self._client.RegistryGetControlType(self._element_id)
-        return result.type
-
-    @property  # type: ignore
-    @overrides
-    def parent_assembly(self) -> Optional[api.Assembly]:
-        result = self._client.ElementGetParentElement(self._element_id)
-        if result.id_string is None or result.id_string == "":
-            return None
-        else:
-            return Assembly(result, self._channel)
-
-    @property  # type: ignore
-    @overrides
-    def assemblies(self) -> Sequence[api.Assembly]:
-        result = self._client.RegistryGetAssemblies(self._element_id)
-        return [Assembly(one_element_id, self._channel) for one_element_id in result.ids]
+    def get_elements(self) -> Sequence[aew_api.IElement]:
+        result = self._client.AssemblyGetAssembliesAndComponents(self._element_id)
+        one_child_element: ElementInfo
+        return [
+            create_element(one_child_element, self._channel)
+            for one_child_element in result.elements
+        ]
 
     @overrides
-    def _create_group(self, element_id: ElementId) -> api.IGroup:
+    def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return Group(element_id, self._channel)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION})
     @overrides
-    def add_variable(self, name: str, type_: str) -> api.IVariable:
-        result = self._client.AssemblyAddVariable(
+    def add_variable(self, name: str, mc_type: acvi.VariableType) -> mc_api.IVariable:
+        type_in_request: str = interop_type_to_mc_type_string(mc_type)
+        result: AddAssemblyVariableResponse = self._client.AssemblyAddVariable(
             AddAssemblyVariableRequest(
-                name=ElementName(name=name), target_assembly=self._element_id, variable_type=type_
+                name=ElementName(name=name),
+                target_assembly=self._element_id,
+                variable_type=type_in_request,
             )
         )
-        return Variable(result.id, self._channel)
-
-    @overrides
-    def rename(self, name: str) -> None:
-        self._client.AssemblyRename(
-            RenameRequest(target_assembly=self._element_id, new_name=ElementName(name=name))
+        return create_variable(
+            mc_type_string_to_interop_type(type_in_request), result.id, self._channel
         )
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_property(self, property_name: str) -> base_api.Property:
-        grpc_value = self._client.PropertyOwnerGetPropertyValue(
-            MetadataGetValueRequest(id=self._element_id, property_name=property_name)
-        )
-        acvi_value = convert_grpc_value_to_acvi(grpc_value)
-        return base_api.Property(
-            parent_element_id=self._element_id.id_string,
-            property_name=property_name,
-            property_value=acvi_value,
-        )
-
-    @overrides
-    def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
-        grpc_value = convert_interop_value_to_grpc(property_value)
-        self._client.PropertyOwnerSetPropertyValue(
-            MetadataSetValueRequest(
-                id=self._element_id, property_name=property_name, value=grpc_value
-            )
-        )
-
-    @property  # type: ignore
-    @overrides
-    def icon_id(self) -> int:
-        response = self._client.AssemblyGetIcon(self._element_id)
-        return response.id
-
-    @icon_id.setter  # type: ignore
-    @overrides
-    def icon_id(self, value: int) -> None:
-        self._client.AssemblySetIcon(
-            AssemblyIconSetRequest(target=self._element_id, new_icon_id=value)
-        )
-
-    @property  # type: ignore
-    @overrides
-    def index_in_parent(self) -> int:
-        response = self._client.ElementGetIndexInParent(self._element_id)
-        return response.index
-
-    @overrides
-    def delete_variable(self, name: str) -> None:
-        assembly_name = self.get_full_name()
+    def delete_variable(self, name: str) -> bool:
+        assembly_name = self.name
         var_name = f"{assembly_name}.{name}"
-        target_var = self._client.WorkflowGetVariableByName(ElementName(name=var_name))
-        self._client.AssemblyDeleteVariable(target_var)
+        request = DeleteAssemblyVariableRequest(
+            target=ElementIdOrName(
+                target_name=NamedElementInWorkflow(element_full_name=ElementName(name=var_name))
+            )
+        )
+        return self._client.AssemblyDeleteVariable(request).existed
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION, **WRAP_INVALID_ARG})
     @overrides
     def add_assembly(
         self,
@@ -150,7 +105,7 @@ class Assembly(AbstractGRPCVariableContainer, api.Assembly):
         x_pos: Optional[int],
         y_pos: Optional[int],
         assembly_type: Optional[str] = None,
-    ) -> api.Assembly:
+    ) -> mc_api.IAssembly:
         request = AddAssemblyRequest(
             name=ElementName(name=name), parent=self._element_id, assembly_type=assembly_type
         )

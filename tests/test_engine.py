@@ -1,20 +1,34 @@
+from typing import Collection, Mapping, Optional, Union
+import unittest
+
+from ansys.engineeringworkflow.api import WorkflowEngineInfo
+import grpc
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcapi
+from ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation import (
+    EngineDisconnectedError,
+)
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msgs  # noqa: 501
+from tests.grpc_server_test_utils.mock_grpc_exception import MockGrpcError
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
 class MockEngineClientForEngineTest:
-    def __init__(self):
+    def __init__(self) -> None:
         self.username: str = ""
         self.password: str = ""
+        self.pref_value: Optional[Union[bool, int, float, str]] = None
+        self.raise_error_on_info: Optional[grpc.StatusCode] = None
 
     def GetEngineInfo(
         self, request: eng_msgs.GetServerInfoRequest
     ) -> eng_msgs.GetServerInfoResponse:
+        if self.raise_error_on_info is not None:
+            raise MockGrpcError(self.raise_error_on_info, "Simulated failure to communicate.")
+
         response = eng_msgs.GetServerInfoResponse()
         response.version.major = 1
         response.version.minor = 2
@@ -50,6 +64,14 @@ class MockEngineClientForEngineTest:
         elif request.preference_name == "d":
             response.str_value = "e"
         return response
+
+    def EngineSetPreference(
+        self, request: eng_msgs.SetPreferenceRequest
+    ) -> eng_msgs.SetPreferenceResponse:
+        attr: Optional[str] = request.WhichOneof("value")
+        if attr is not None:
+            self.pref_value = getattr(request, attr)
+        return eng_msgs.SetPreferenceResponse()
 
     def EngineGetUnitCategories(
         self, request: eng_msgs.GetUnitCategoriesRequest
@@ -87,6 +109,9 @@ class MockEngineClientForEngineTest:
         response.workflow_id = "147258369"
         return response
 
+    def Shutdown(self, request: eng_msgs.ShutdownRequest) -> eng_msgs.ShutdownResponse:
+        return eng_msgs.ShutdownResponse()
+
 
 mock_client: MockEngineClientForEngineTest
 
@@ -103,97 +128,36 @@ def setup_function(monkeypatch):
     def mock_init(self):
         pass
 
-    def mock_get_id(self) -> int:
-        return 4294967290
-
     monkeypatch.setattr(grpcapi.MCDProcess, "start", mock_start)
     monkeypatch.setattr(grpcapi.MCDProcess, "__init__", mock_init)
-    monkeypatch.setattr(grpcapi.MCDProcess, "get_process_id", mock_get_id)
     global mock_client
     mock_client = MockEngineClientForEngineTest()
     monkeypatch_client_creation(monkeypatch, grpcapi.Engine, mock_client)
 
 
-def test_process_id(setup_function) -> None:
+def test_get_units(setup_function) -> None:
     # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
+    sut = grpcapi.Engine()
 
     # Execute
-    result: int = sut.process_id
+    result: Mapping[str, Collection[str]] = sut.get_units()
 
     # Verify
-    assert result == 4294967290
+    assert len(result.keys()) == 3
+    assert len(result["001_empty_category"]) == 0
+    assert len(result["002_length"]) == 4
+    assert len(result["003_seconds"]) == 1
 
 
-def test_get_num_unit_categories(setup_function) -> None:
+def test_get_run_only_mode(setup_function) -> None:
     # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
+    sut = grpcapi.Engine(is_run_only=True)
 
     # Execute
-    result: int = sut.get_num_unit_categories()
+    result: bool = sut.get_run_only_mode()
 
     # Verify
-    assert result == 3
-
-
-@pytest.mark.parametrize(
-    "category,expected_result",
-    [
-        pytest.param("001_empty_category", 0, id="empty category"),
-        pytest.param("002_length", 4, id="four units"),
-        pytest.param("003_seconds", 1, id="one unit"),
-    ],
-)
-def test_get_num_units(setup_function, category: str, expected_result: int) -> None:
-    # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
-
-    # Execute
-    result: int = sut.get_num_units(category)
-
-    # Verify
-    assert result == expected_result
-
-
-@pytest.mark.parametrize(
-    "category_index,expected_result",
-    [
-        pytest.param(0, "001_empty_category"),
-        pytest.param(1, "002_length"),
-        pytest.param(2, "003_seconds"),
-    ],
-)
-def test_get_unit_category_name(setup_function, category_index: int, expected_result: str) -> None:
-    # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
-
-    # Execute
-    result: str = sut.get_unit_category_name(category_index)
-
-    # Verify
-    assert result == expected_result
-
-
-@pytest.mark.parametrize(
-    "category,unit_index,expected_result",
-    [
-        pytest.param("002_length", 0, "inches", id="inches"),
-        pytest.param("002_length", 1, "feet", id="feet"),
-        pytest.param("002_length", 2, "mm", id="cm"),
-        pytest.param("002_length", 3, "cm", id="mm"),
-    ],
-)
-def test_get_unit_name(
-    setup_function, category: str, unit_index: int, expected_result: str
-) -> None:
-    # Setup
-    sut: grpcapi.Engine = grpcapi.Engine()
-
-    # Execute
-    result: str = sut.get_unit_name(category, unit_index)
-
-    # Verify
-    assert result == expected_result
+    assert result is True
 
 
 @pytest.mark.parametrize("workflow_type", [mcapi.WorkflowType.DATA, mcapi.WorkflowType.PROCESS])
@@ -217,30 +181,16 @@ def test_new_workflow(setup_function, workflow_type: mcapi.WorkflowType) -> None
     assert result._id == "8675309"
 
 
-@pytest.mark.parametrize(
-    "path, error",
-    [
-        ("", mcapi.OnConnectionErrorMode.ERROR),
-        # TODO: More cases when we have a real backend
-    ],
-)
-def test_load_workflow(setup_function, path: str, error: mcapi.OnConnectionErrorMode) -> None:
+def test_load_workflow(setup_function) -> None:
     """
     Verify that load_workflow works as expected.
-
-    Parameters
-    ----------
-    path: str
-        The path to the file to load.
-    error: mcapi.OnConnectionErrorMode
-        The error handling mode to use.
     """
 
     # Setup
     engine = grpcapi.Engine()
 
     # SUT
-    result: grpcapi.Workflow = engine.load_workflow_ex(path, error)
+    result: grpcapi.Workflow = engine.load_workflow("", False)
 
     # Verification
     assert isinstance(result, grpcapi.Workflow)
@@ -269,34 +219,6 @@ def test_get_formatter(setup_function, fmt: str) -> None:
     assert result.format == fmt
 
 
-def test_set_user_name(setup_function) -> None:
-    """
-    Verify set_user_name works as expected.
-    """
-    # Setup
-    engine = grpcapi.Engine()
-
-    # SUT
-    engine.set_user_name("Bob")
-
-    # Verification
-    assert mock_client.username == "Bob"
-
-
-def test_set_password(setup_function) -> None:
-    """
-    Verify set_user_name works as expected.
-    """
-    # Setup
-    engine = grpcapi.Engine()
-
-    # SUT
-    engine.set_password("12345")
-
-    # Verification
-    assert mock_client.password == "12345"
-
-
 @pytest.mark.parametrize("key, value", [("a", True), ("b", 1), ("c", 2.3), ("d", "e")])
 def test_get_preference(setup_function, key: str, value: object) -> None:
     """
@@ -320,18 +242,26 @@ def test_get_preference(setup_function, key: str, value: object) -> None:
     assert result == value
 
 
-# def test_save_trade_study(setup_function) -> None:
-#     """Verify that save_trade_study works as expected."""
-#
-#     # Setup
-#     engine = grpcapi.Engine()
-#
-#     # SUT
-#     mock_de = MockDataExplorer("MockTradeStudyType")
-#     engine.save_trade_study("uri", mcapi.DataExplorer(mock_de))
-#
-#     # Verification
-#     assert engine._instance.getCallCount("saveTradeStudy") == 1
+def test_get_preference_no_value(setup_function) -> None:
+    # Setup
+    engine = grpcapi.Engine()
+
+    # SUT
+    with pytest.raises(Exception) as ex:
+        engine.get_preference("key")
+        assert ex.value == "Server did not return a value"
+
+
+@pytest.mark.parametrize("value", [True, 1, 2.3, "e"])
+def test_set_preference(setup_function, value: Union[bool, int, float, str]) -> None:
+    # Setup
+    engine = grpcapi.Engine()
+
+    # SUT
+    engine.set_preference("key", value)
+
+    # Verification
+    assert mock_client.pref_value == value
 
 
 def test_get_engine_info(setup_function) -> None:
@@ -343,7 +273,7 @@ def test_get_engine_info(setup_function) -> None:
     engine = grpcapi.Engine()
 
     # SUT
-    info: mcapi.WorkflowEngineInfo = engine.get_server_info()
+    info: WorkflowEngineInfo = engine.get_server_info()
 
     # Verification
     assert info.release_year == 1
@@ -355,3 +285,31 @@ def test_get_engine_info(setup_function) -> None:
     assert info.server_type == "WorkflowCenter"
     assert info.install_location == "C:\\Path\\To\\ModelCenter\\"
     assert info.base_url is None
+
+
+def test_get_engine_info_simulated_crash(setup_function) -> None:
+
+    # Setup
+    engine = grpcapi.Engine()
+    mock_client.raise_error_on_info = grpc.StatusCode.UNAVAILABLE
+
+    # SUT
+    with pytest.raises(EngineDisconnectedError):
+        engine.get_server_info()
+
+
+def test_close(setup_function) -> None:
+    """
+    Verify that close calls Shutdown.
+    """
+
+    # Setup
+    with unittest.mock.patch.object(
+        mock_client, "Shutdown", return_value=eng_msgs.ShutdownResponse()
+    ) as mock_grpc_method:
+        with grpcapi.Engine() as sut:
+            # SUT
+            pass
+
+        # Verification
+        mock_grpc_method.assert_called_once_with(eng_msgs.ShutdownRequest())

@@ -1,20 +1,14 @@
 """Definition of IfComponent."""
-import clr
+from abc import ABC, abstractmethod
 
 from .icomponent import IComponent
 
-clr.AddReference("phoenix-mocks/Phoenix.Mock.v45")
-from Phoenix.Mock import MockIfComponent
 
-
-class IIfComponent(IComponent):
+class IIfComponent(IComponent, ABC):
     """Component for creating branching paths in a process workflow."""
 
-    def __init__(self, instance: MockIfComponent):
-        """Initialize."""
-        super().__init__(instance)
-
     @property
+    @abstractmethod
     def exclusive(self) -> bool:
         """
         Whether the branching condition is exclusive.
@@ -27,9 +21,9 @@ class IIfComponent(IComponent):
         -------
         True if in exclusive mode, False if in inclusive mode.
         """
-        return self._wrapped.exclusive
 
     @exclusive.setter
+    @abstractmethod
     def exclusive(self, value: bool) -> None:
         """
         Setter for the exclusive property.
@@ -39,9 +33,9 @@ class IIfComponent(IComponent):
         value : bool
             The new value.
         """
-        self._wrapped.exclusive = value
 
     @property
+    @abstractmethod
     def run_last_branch_by_default(self) -> bool:
         """
         Whether there is an else branch that is run if no conditions \
@@ -51,9 +45,9 @@ class IIfComponent(IComponent):
         -------
         True if there is an else branch, False otherwise.
         """
-        return self._wrapped.runLastBranchByDefault
 
     @run_last_branch_by_default.setter
+    @abstractmethod
     def run_last_branch_by_default(self, value: bool) -> None:
         """
         Setter for run_last_branch_by_default property.
@@ -63,13 +57,13 @@ class IIfComponent(IComponent):
         value : bool
             The new value.
         """
-        self._wrapped.runLastBranchByDefault = value
 
     @property
+    @abstractmethod
     def num_branches(self) -> int:
         """Get the number of branches."""
-        return self._wrapped.getNumBranches()
 
+    @abstractmethod
     def get_branch_condition(self, index: int) -> str:
         """
              Get the branch condition.
@@ -84,8 +78,8 @@ class IIfComponent(IComponent):
         str :
              The branch condition.
         """
-        return self._wrapped.getBranchCondition(index)
 
+    @abstractmethod
     def set_branch_condition(self, index: int, condition: str) -> None:
         """
         Set the branch condition.
@@ -97,8 +91,8 @@ class IIfComponent(IComponent):
         condition : str
             The new condition.
         """
-        self._wrapped.setBranchCondition(index, condition)
 
+    @abstractmethod
     def get_branch_name(self, index: int) -> str:
         """
         Return the name of the branch.
@@ -112,8 +106,8 @@ class IIfComponent(IComponent):
         -------
         The name of the branch.
         """
-        return self._wrapped.getBranchName(index)
 
+    @abstractmethod
     def rename_branch(self, index: int, name: str) -> None:
         """
         Rename the branch to the given name.
@@ -125,4 +119,3 @@ class IIfComponent(IComponent):
         name : str
             New name of the branch.
         """
-        return self._wrapped.renameBranch(index, name)

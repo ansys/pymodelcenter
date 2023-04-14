@@ -44,6 +44,6 @@ repos:
     args: ["--ignore-decorator=overrides", "--add-ignore=D401"]
 
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v0.940
+  rev: v1.1.1
   hooks:
   - id: mypy

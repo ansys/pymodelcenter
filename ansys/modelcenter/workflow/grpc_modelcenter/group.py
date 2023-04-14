@@ -24,8 +24,3 @@ class Group(AbstractGRPCVariableContainer, api.IGroup):
             The id of the element.
         """
         super(Group, self).__init__(element_id=element_id, channel=channel)
-
-    @property  # type: ignore
-    def element_id(self) -> str:
-        """Get the ID of the element."""
-        return self._element_id.id_string

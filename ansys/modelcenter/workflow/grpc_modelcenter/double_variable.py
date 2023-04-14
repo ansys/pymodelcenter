@@ -1,87 +1,111 @@
-"""Contains definition for DoubleVariable and DoubleArray."""
-from typing import Collection, Optional, Sequence
-
+"""Contains definition for RealVariable and RealArrayVariable."""
 import ansys.common.variableinterop as acvi
-from ansys.engineeringworkflow.api import Property
-import grpc
-import numpy as np
+from grpc import Channel
 from overrides import overrides
 
-import ansys.modelcenter.workflow.api as wfapi
-from ansys.modelcenter.workflow.api import VariableLink
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
-    ModelCenterWorkflowServiceStub,
+import ansys.modelcenter.workflow.api as mc_api
+
+from ._visitors.variable_value_visitor import VariableValueVisitor
+from .grpc_error_interpretation import (
+    WRAP_OUT_OF_BOUNDS,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
 )
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
+from .proto.element_messages_pb2 import ElementId
+from .proto.variable_value_messages_pb2 import SetDoubleVariableMetadataRequest
+from .var_metadata_convert import (
+    convert_grpc_real_array_metadata,
+    convert_grpc_real_metadata,
+    fill_real_metadata_message,
+)
+from .variable import BaseVariable
 
-from ._visitors import VariableValueVisitor
 
-
-class DoubleVariable(wfapi.IDoubleVariable):
+class RealVariable(BaseVariable, mc_api.IRealVariable):
     """Represents a gRPC double / real variable on the workflow."""
 
+    def __init__(self, element_id: ElementId, channel: Channel):
+        """
+        Initialize a new instance.
+
+        Parameters
+        ----------
+        element_id: ElementId
+            The id of the variable.
+        channel: Channel
+            The gRPC channel to use.
+        """
+        super(RealVariable, self).__init__(element_id=element_id, channel=channel)
+
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def __init__(self, id: element_msg.ElementId, channel: grpc.Channel):
-        self._id = id
-        self._channel = channel
-        self._stub = ModelCenterWorkflowServiceStub(channel)
+    def get_metadata(self) -> acvi.RealMetadata:
+        response = self._client.DoubleVariableGetMetadata(self._element_id)
+        return convert_grpc_real_metadata(response)
 
-    @property  # type: ignore
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def value(self) -> acvi.RealValue:
-        response: var_val_msg.VariableState = self._stub.VariableGetState(self._id)
-        return acvi.RealValue(response.value.double_value)
+    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, acvi.RealMetadata):
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {acvi.RealMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
+        request = SetDoubleVariableMetadataRequest(target=self._element_id)
+        fill_real_metadata_message(new_metadata, request.new_metadata)
+        self._client.DoubleVariableSetMetadata(request)
 
-    @value.setter  # type: ignore
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def value(self, new_value: acvi.RealValue):
-        new_value.accept(VariableValueVisitor(var_id=self._id, stub=self._stub))
+    def set_value(self, value: acvi.VariableState) -> None:
+        self._do_set_value(value.value)
 
-    @overrides
-    def get_properties(self) -> Collection[Property]:
-        raise NotImplementedError
-
-    @overrides
-    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        raise NotImplementedError
-
-    @overrides
-    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        raise NotImplementedError
+    @acvi.implicit_coerce
+    def _do_set_value(self, value: acvi.RealValue) -> None:
+        value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
-class DoubleArray(wfapi.IDoubleArray):
+class RealArrayVariable(BaseVariable, mc_api.IRealArrayVariable):
     """Represents a gRPC double / real array variable on the workflow."""
 
-    @overrides
-    def __init__(self, id: element_msg.ElementId, channel: grpc.Channel):
-        self._id = id
-        self._channel = channel
-        self._stub = ModelCenterWorkflowServiceStub(channel)
+    def __init__(self, element_id: ElementId, channel: Channel):
+        """
+        Initialize a new instance.
 
-    @property  # type: ignore
-    @overrides
-    def value(self) -> acvi.RealArrayValue:
-        response: var_val_msg.VariableState = self._stub.VariableGetState(self._id)
-        grpc_value = response.value.double_array_value
-        values = np.array(grpc_value.values).flatten()
-        dims = grpc_value.dims.dims
-        return acvi.RealArrayValue(shape_=dims, values=values)
+        Parameters
+        ----------
+        element_id: ElementId
+            The id of the variable.
+        channel: Channel
+            The gRPC channel to use.
+        """
+        super(RealArrayVariable, self).__init__(element_id=element_id, channel=channel)
 
-    @value.setter  # type: ignore
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def value(self, new_value: acvi.RealArrayValue):
-        new_value.accept(VariableValueVisitor(var_id=self._id, stub=self._stub))
+    def get_metadata(self) -> acvi.RealArrayMetadata:
+        response = self._client.DoubleVariableGetMetadata(self._element_id)
+        return convert_grpc_real_array_metadata(response)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_properties(self) -> Collection[Property]:
-        raise NotImplementedError
+    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, acvi.RealArrayMetadata):
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {acvi.RealArrayMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
+        request = SetDoubleVariableMetadataRequest(target=self._element_id)
+        fill_real_metadata_message(new_metadata, request.new_metadata)
+        self._client.DoubleVariableSetMetadata(request)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def precedent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        raise NotImplementedError
+    def set_value(self, value: acvi.VariableState) -> None:
+        self._do_set_value(value.value)
 
-    @overrides
-    def dependent_links(self, reserved: Optional[object] = None) -> Sequence[VariableLink]:
-        raise NotImplementedError
+    @acvi.implicit_coerce
+    def _do_set_value(self, value: acvi.RealArrayValue) -> None:
+        value.accept(VariableValueVisitor(self._element_id, self._client))

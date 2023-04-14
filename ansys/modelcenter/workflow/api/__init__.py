@@ -1,31 +1,20 @@
 """ansys.modelcenter.workflow.api module initialization."""
-from .arrayish import Arrayish
-from .assembly import Assembly
-from .component_metadata import ComponentMetadataAccess, ComponentMetadataType
-from .data_explorer import DataExplorer
-from .data_type import VarType
-from .datamonitor import DataMonitor
-from .engine import Engine, OnConnectionErrorMode, WorkflowType
-from .format import Format
-from .iarray import IArray
-from .ibooleanarray import IBooleanArray
+from .iassembly import IAssembly, IAssemblyChild
+from .ibooleanarrayvariable import IBooleanArrayVariable
 from .ibooleanvariable import IBooleanVariable
 from .icomponent import IComponent
-from .idoublearray import IDoubleArray
-from .idoublevariable import IDoubleVariable
-from .ifilearray import IFileArray
-from .ifilevariable import IFileVariable
+from .iengine import IEngine, WorkflowType
+from .iformat import IFormat
 from .iglobal_parameters import IGlobalParameters
-from .igroup import IGroup
+from .igroup import IGroup, IGroupOwner
 from .iif_component import IIfComponent
 from .iintegerarray import IIntegerArray
 from .iintegervariable import IIntegerVariable
-from .ireference_array import IReferenceArray
-from .ireference_variable import IReferenceVariable
-from .irefprop import IRefArrayProp, IRefProp
-from .iscript_component import IScriptComponent
-from .istringarray import IStringArray
+from .irealarrayvariable import IRealArrayVariable
+from .irealvariable import IRealVariable
+from .irenamable_elements import IRenamableElement
+from .istringarrayvariable import IStringArrayVariable
 from .istringvariable import IStringVariable
-from .ivariable import FormattableVariable, IVariable
-from .variable_links import VariableLink
-from .workflow import Workflow
+from .ivariable import IVariable
+from .ivariable_link import IVariableLink
+from .iworkflow import IWorkflow

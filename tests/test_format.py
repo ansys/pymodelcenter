@@ -11,26 +11,26 @@ from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_clie
 
 
 class MockEngineClientForFormatTest:
-    def __init__(self):
+    def __init__(self) -> None:
         self._str_to_int_responses: Dict[str, int64] = {}
         self._str_to_real_responses: Dict[str, float64] = {}
         self._int_to_str_responses: Dict[int64, str] = {}
         self._real_to_str_responses: Dict[float64, str] = {}
 
     @property
-    def str_to_int_responses(self):
+    def str_to_int_responses(self) -> Dict[str, int64]:
         return self._str_to_int_responses
 
     @property
-    def str_to_real_responses(self):
+    def str_to_real_responses(self) -> Dict[str, float64]:
         return self._str_to_real_responses
 
     @property
-    def int_to_str_responses(self):
+    def int_to_str_responses(self) -> Dict[int64, str]:
         return self._int_to_str_responses
 
     @property
-    def real_to_str_responses(self):
+    def real_to_str_responses(self) -> Dict[float64, str]:
         return self._real_to_str_responses
 
     def FormatStringToInteger(
@@ -95,7 +95,7 @@ mock_client: MockEngineClientForFormatTest
 
 
 @pytest.fixture
-def setup_function(monkeypatch):
+def setup_function(monkeypatch) -> None:
     """
     Setup called before each test function in this module.
     """
