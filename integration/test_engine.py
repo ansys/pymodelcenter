@@ -3,6 +3,7 @@ import os
 from typing import Collection, Mapping
 
 import ansys.engineeringworkflow.api as ewapi
+
 import ansys.modelcenter.workflow.api as mcapi
 
 
@@ -82,8 +83,8 @@ def test_can_get_engine_info(create_engine) -> None:
     assert info.base_url is None
 
     # TODO: See if we can have these be the right values for local and nightly builds
-    #assert info.is_release_build == False
-    #assert info.install_location == "C:\\SVN\\SourceCode\\ModelCenter\\install"
+    # assert info.is_release_build == False
+    # assert info.install_location == "C:\\SVN\\SourceCode\\ModelCenter\\install"
 
 
 expected_units = {
