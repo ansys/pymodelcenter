@@ -192,13 +192,12 @@ jobs:
     needs: docs
     #if: github.event_name == 'push'
     steps:
-      - name:
-        - name: "Deploy the latest documentation"
-          uses: pyansys/actions/doc-deploy-dev@v4
-          with:
-            cname: "modelcenter.docs.pyansys.com"
-            token: ${{ secrets.GITHUB_TOKEN }}
-            doc-artifact-name: Documentation-html
+      - name: "Deploy the latest documentation"
+        uses: pyansys/actions/doc-deploy-dev@v4
+        with:
+          cname: "modelcenter.docs.pyansys.com"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          doc-artifact-name: Documentation-html
 
   Release:
     if: contains(github.ref, 'refs/tags')
