@@ -186,14 +186,12 @@ jobs:
 #          path: doc/build/latex/*.pdf
 #          retention-days: 7
 
-      - name: "Deploy to gh-pages"
-        #if: github.ref == 'refs/heads/main'
-        uses: JamesIves/github-pages-deploy-action@v4.3.4
+      - name: "Deploy the latest documentation"
+        uses: pyansys/actions/doc-deploy-dev@v4
         with:
-          BRANCH: gh-pages
-          FOLDER: doc/build/html
-          CLEAN: true
-          single-commit: true
+            cname: "modelcenter.docs.pyansys.com"
+            token: ${{ secrets.GITHUB_TOKEN }}
+            doc-artifact-name: Documentation-html
 
   Release:
     if: contains(github.ref, 'refs/tags')
