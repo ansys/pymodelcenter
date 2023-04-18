@@ -5,9 +5,7 @@ from .ibooleanvariable import IBooleanVariable
 from .icomponent import IComponent
 from .iengine import IEngine, WorkflowType
 from .iformat import IFormat
-from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup, IGroupOwner
-from .iif_component import IIfComponent
 from .iintegerarray import IIntegerArray
 from .iintegervariable import IIntegerVariable
 from .irealarrayvariable import IRealArrayVariable
