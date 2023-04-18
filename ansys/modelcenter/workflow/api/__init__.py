@@ -6,9 +6,7 @@ from .icomponent import IComponent
 from .idatapin import IDatapin
 from .iengine import IEngine, WorkflowType
 from .iformat import IFormat
-from .iglobal_parameters import IGlobalParameters
 from .igroup import IGroup, IGroupOwner
-from .iif_component import IIfComponent
 from .iintegerarraydatapin import IIntegerArray
 from .iintegerdatapin import IIntegerDatapin
 from .irealarraydatapin import IRealArrayDatapin
