@@ -1,6 +1,8 @@
 """Sphinx documentation configuration file."""
 from datetime import datetime
+import os
 
+from ansys_sphinx_theme import get_version_match
 from ansys_sphinx_theme import pyansys_logo_black as logo
 
 from ansys.modelcenter.workflow import __version__
@@ -10,6 +12,7 @@ project = "ansys-modelcenter-workflow"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "Ansys, Inc."
 release = version = __version__
+cname = os.getenv("DOCUMENTATION_CNAME", "nocname.com")
 
 # use the default ansys logo
 html_logo = logo
@@ -20,6 +23,10 @@ html_theme_options = {
     "github_url": "https://github.com/pyansys/pymodelcenter",
     "show_prev_next": False,
     "show_breadcrumbs": True,
+    "switcher": {
+        "json_url": f"https://{cname}/versions.json",
+        "version_match": get_version_match(__version__),
+    },
     "additional_breadcrumbs": [
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
