@@ -7,7 +7,7 @@ import ansys.engineeringworkflow.api as ewapi
 import ansys.modelcenter.workflow.api as mcapi
 
 
-def test_can_create_a_new_workflow(create_engine) -> None:
+def test_can_create_a_new_workflow(engine) -> None:
     # Arrange
     workflow_name = "new_workflow_test.pxcz"
     workflow_path: str = os.path.join(os.getcwd(), workflow_name)
@@ -15,7 +15,7 @@ def test_can_create_a_new_workflow(create_engine) -> None:
         os.remove(workflow_path)  # delete the file if it already exists
 
     # Act
-    with create_engine.new_workflow(
+    with engine.new_workflow(
         name=workflow_path, workflow_type=mcapi.WorkflowType.DATA
     ) as workflow:
         # Assert
@@ -23,54 +23,54 @@ def test_can_create_a_new_workflow(create_engine) -> None:
         assert os.path.isfile(workflow_name)
 
 
-def test_can_load_a_workflow(create_engine) -> None:
+def test_can_load_a_workflow(engine) -> None:
     # Arrange
     workflow_name = "all_types.pxcz"
     workflow_path: str = os.path.join(os.getcwd(), "test_files", workflow_name)
 
     # Act
-    with create_engine.load_workflow(file_name=workflow_path) as workflow:
+    with engine.load_workflow(file_name=workflow_path) as workflow:
         # Assert
         assert workflow.workflow_file_name == workflow_name
 
 
-def test_can_read_engine_preferences(create_engine) -> None:
+def test_can_read_engine_preferences(engine) -> None:
     # Act
-    preference: str = create_engine.get_preference(pref="Default New Model Type")
+    preference: str = engine.get_preference(pref="Default New Model Type")
 
     # Assert
     assert preference == "Prompt user"
 
 
-def test_can_set_engine_preferences(create_engine) -> None:
+def test_can_set_engine_preferences(engine) -> None:
     # Arrange
     preference: str = "Script Component Editor H"
-    initial_value: int = int(create_engine.get_preference(preference))
+    initial_value: int = int(engine.get_preference(preference))
     new_value: int = initial_value * 2
 
     try:
         # Act
-        create_engine.set_preference(pref=preference, value=new_value)
+        engine.set_preference(pref=preference, value=new_value)
 
         # Assert
-        assert int(create_engine.get_preference(pref=preference)) == new_value
+        assert int(engine.get_preference(pref=preference)) == new_value
 
     finally:
         # Restore the initial preference
-        create_engine.set_preference(pref=preference, value=initial_value)
+        engine.set_preference(pref=preference, value=initial_value)
 
 
-def test_can_get_list_of_supported_units(create_engine) -> None:
+def test_can_get_list_of_supported_units(engine) -> None:
     # Act
-    units: Mapping[str, Collection[str]] = create_engine.get_units()
+    units: Mapping[str, Collection[str]] = engine.get_units()
 
     # Assert
     assert units == expected_units
 
 
-def test_can_get_engine_info(create_engine) -> None:
+def test_can_get_engine_info(engine) -> None:
     # Act
-    info: ewapi.WorkflowEngineInfo = create_engine.get_server_info()
+    info: ewapi.WorkflowEngineInfo = engine.get_server_info()
 
     # Assert
     assert info.release_year == 23

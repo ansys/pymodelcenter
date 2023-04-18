@@ -9,7 +9,7 @@ engine: grpcmc.Engine
 """The Engine object used for all integration tests."""
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", name="engine")
 def create_engine() -> Generator[grpcmc.Engine, None, None]:
     """
     Setup called before each test function in this test session to create the SUT.
