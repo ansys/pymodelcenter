@@ -1,5 +1,6 @@
 """Provides an object-oriented way to interact with ModelCenter variable groups via gRPC."""
 from grpc import Channel
+from overrides import overrides
 
 import ansys.modelcenter.workflow.api as api
 
@@ -24,3 +25,7 @@ class Group(AbstractGRPCVariableContainer, api.IGroup):
             The id of the element.
         """
         super(Group, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, Group) and self.element_id == other.element_id

@@ -144,7 +144,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_root(self) -> engapi.IControlStatement:
+    def get_root(self) -> Assembly:
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
         root: element_msg.ElementId = response.id
@@ -283,7 +283,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_component(self, name: str) -> wfapi.IComponent:
+    def get_component(self, name: str) -> Component:
         request = workflow_msg.NamedElementInWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),

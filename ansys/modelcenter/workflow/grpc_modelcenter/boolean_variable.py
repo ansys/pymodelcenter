@@ -38,6 +38,10 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
         """
         super(BooleanVariable, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, BooleanVariable) and self.element_id == other.element_id
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.BooleanArrayMetadata:
@@ -70,6 +74,10 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
 
 class BooleanArrayVariable(BaseVariable, mc_api.IBooleanArrayVariable):
     """Represents a gRPC boolean array variable on the workflow."""
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, BooleanArrayVariable) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

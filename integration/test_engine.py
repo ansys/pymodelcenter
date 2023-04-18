@@ -15,9 +15,7 @@ def test_can_create_a_new_workflow(engine) -> None:
         os.remove(workflow_path)  # delete the file if it already exists
 
     # Act
-    with engine.new_workflow(
-        name=workflow_path, workflow_type=mcapi.WorkflowType.DATA
-    ) as workflow:
+    with engine.new_workflow(name=workflow_path, workflow_type=mcapi.WorkflowType.DATA) as workflow:
         # Assert
         assert workflow.workflow_file_name == workflow_name
         assert os.path.isfile(workflow_name)

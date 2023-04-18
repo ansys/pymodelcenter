@@ -57,6 +57,10 @@ class Assembly(
         """
         super(Assembly, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, Assembly) and self.element_id == other.element_id
+
     @property
     @overrides
     def parent_element_id(self) -> str:

@@ -37,6 +37,10 @@ class IntegerVariable(BaseVariable, mc_api.IIntegerVariable):
         """
         super(IntegerVariable, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, IntegerVariable) and self.element_id == other.element_id
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.IntegerMetadata:
@@ -81,6 +85,10 @@ class IntegerArray(BaseVariable, mc_api.IIntegerArray):
             The gRPC channel to use.
         """
         super(IntegerArray, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, IntegerArray) and self.element_id == other.element_id
 
     @overrides
     def get_metadata(self) -> acvi.RealArrayMetadata:

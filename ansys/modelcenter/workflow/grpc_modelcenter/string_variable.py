@@ -38,6 +38,10 @@ class StringVariable(BaseVariable, mc_api.IStringVariable):
         """
         super(StringVariable, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, StringVariable) and self.element_id == other.element_id
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.StringArrayMetadata:
@@ -82,6 +86,10 @@ class StringArrayVariable(BaseVariable, mc_api.IStringArrayVariable):
             The gRPC channel to use.
         """
         super(StringArrayVariable, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, StringArrayVariable) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

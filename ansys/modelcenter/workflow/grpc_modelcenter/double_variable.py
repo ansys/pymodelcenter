@@ -37,6 +37,10 @@ class RealVariable(BaseVariable, mc_api.IRealVariable):
         """
         super(RealVariable, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, RealVariable) and self.element_id == other.element_id
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.RealMetadata:
@@ -81,6 +85,10 @@ class RealArrayVariable(BaseVariable, mc_api.IRealArrayVariable):
             The gRPC channel to use.
         """
         super(RealArrayVariable, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, RealArrayVariable) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

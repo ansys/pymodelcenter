@@ -47,6 +47,10 @@ class Component(
         super(Component, self).__init__(element_id=element_id, channel=channel)
 
     @overrides
+    def __eq__(self, other):
+        return isinstance(other, Component) and self.element_id == other.element_id
+
+    @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return group.Group(element_id, self._channel)
 
