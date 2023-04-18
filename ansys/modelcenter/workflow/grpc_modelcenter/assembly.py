@@ -18,6 +18,7 @@ from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
     WRAP_NAME_COLLISION,
     WRAP_TARGET_NOT_FOUND,
+    InvalidInstanceError,
     interpret_rpc_error,
 )
 from .proto.element_messages_pb2 import (
@@ -55,6 +56,20 @@ class Assembly(
             The id of the .
         """
         super(Assembly, self).__init__(element_id=element_id, channel=channel)
+
+    @property
+    @overrides
+    def parent_element_id(self) -> str:
+        result: str
+        try:
+            result = super().parent_element_id
+        except InvalidInstanceError:
+            # return empty string instead of an error if this is the root
+            if self.full_name.find(".") == -1:
+                result = ""
+            else:
+                raise
+        return result
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
