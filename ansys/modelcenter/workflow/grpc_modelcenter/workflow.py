@@ -58,6 +58,7 @@ class Workflow(wfapi.IWorkflow):
         # (MPP): Unsure if we should pass this in from Engine
         self._channel = grpc.insecure_channel("localhost:50051")
         self._stub = self._create_client(self._channel)
+        self._closed = False
 
     def __enter__(self):
         """Initialization when created in a 'with' statement."""
@@ -65,7 +66,8 @@ class Workflow(wfapi.IWorkflow):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Clean up when leaving a 'with' block."""
-        self.close_workflow()
+        if not self._closed:
+            self.close_workflow()
 
     @staticmethod
     def _create_client(grpc_channel) -> grpc_mcd_workflow.ModelCenterWorkflowServiceStub:
@@ -260,6 +262,7 @@ class Workflow(wfapi.IWorkflow):
         request = workflow_msg.WorkflowId()
         request.id = self._id
         response: workflow_msg.WorkflowCloseResponse = self._stub.WorkflowClose(request)
+        self._closed = True
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
