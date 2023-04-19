@@ -10,8 +10,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as 
 import ansys.modelcenter.workflow.grpc_modelcenter.assembly as assembly
 
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
-from .proto.element_messages_pb2 import ElementId
-from .proto.element_messages_pb2 import ElementType
+from .proto.element_messages_pb2 import ElementId, ElementType
 from .proto.workflow_messages_pb2 import ElementInfo
 
 
@@ -37,8 +36,10 @@ class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemb
         if not result.id.id_string:
             return None
         else:
-            if result.type == ElementType.ELEMTYPE_ASSEMBLY or\
-                    result.type == ElementType.ELEMTYPE_IFCOMPONENT:
+            if (
+                result.type == ElementType.ELEMTYPE_ASSEMBLY
+                or result.type == ElementType.ELEMTYPE_IFCOMPONENT
+            ):
                 return assembly.Assembly(result.id, self._channel)
             else:
                 return None

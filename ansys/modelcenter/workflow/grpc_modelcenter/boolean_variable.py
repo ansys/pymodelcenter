@@ -44,7 +44,7 @@ class BooleanVariable(BaseVariable, mc_api.IBooleanVariable):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> acvi.BooleanArrayMetadata:
+    def get_metadata(self) -> acvi.BooleanMetadata:
         response = self._client.BooleanVariableGetMetadata(self._element_id)
         return convert_grpc_boolean_metadata(response)
 

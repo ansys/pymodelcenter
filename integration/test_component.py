@@ -1,10 +1,7 @@
 """Integration tests around Component functionality"""
 import os
-from typing import Collection, Mapping
 
-import ansys.engineeringworkflow.api as ewapi
-
-import ansys.modelcenter.workflow.api as mcapi
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 
 def test_can_get_component_properties(engine) -> None:
@@ -15,7 +12,7 @@ def test_can_get_component_properties(engine) -> None:
 
     with engine.load_workflow(file_name=workflow_path) as workflow:
         # Act
-        component: mcapi.Component = workflow.get_component("ワークフロー.all_types_コンポーネント")
+        component: grpcmc.Component = workflow.get_component("ワークフロー.all_types_コンポーネント")
 
         # Assert
         assert component is not None

@@ -1,6 +1,6 @@
 """Integration tests around Workflow functionality."""
 import os
-from typing import Collection, Generator, List, Mapping, Set
+from typing import Collection, List, Mapping, Set
 import unittest
 
 import ansys.common.variableinterop as acvi
@@ -9,13 +9,6 @@ import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-
-
-@pytest.fixture(name="workflow")
-def load_workflow(engine) -> Generator[grpcmc.Workflow, None, None]:
-    workflow_path: str = os.path.join(os.getcwd(), "test_files", "all_types.pxcz")
-    with engine.load_workflow(file_name=workflow_path) as workflow:
-        yield workflow
 
 
 def test_getting_the_workflow_root(workflow) -> None:
