@@ -8,7 +8,7 @@ import ansys.engineeringworkflow.api as aew_api
 from ansys.modelcenter.workflow.api.iassembly import IAssembly
 from ansys.modelcenter.workflow.api.icomponent import IComponent
 from ansys.modelcenter.workflow.api.idatapin import IDatapin
-from ansys.modelcenter.workflow.api.ivariable_link import IDatapinLink
+from ansys.modelcenter.workflow.api.idatapin_link import IDatapinLink
 
 
 class IWorkflow(aew_api.IWorkflowInstance, ABC):
