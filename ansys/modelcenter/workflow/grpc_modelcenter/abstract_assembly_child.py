@@ -11,6 +11,8 @@ import ansys.modelcenter.workflow.grpc_modelcenter.assembly as assembly
 
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
+from .proto.element_messages_pb2 import ElementType
+from .proto.workflow_messages_pb2 import ElementInfo
 
 
 class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemblyChild, ABC):
@@ -31,11 +33,15 @@ class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemb
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def parent_assembly(self) -> Optional[mc_api.IAssembly]:
-        result = self._client.ElementGetParentElement(self._element_id)
-        if result.id_string is None or result.id_string == "":
+        result: ElementInfo = self._client.ElementGetParentElement(self._element_id)
+        if not result.id.id_string:
             return None
         else:
-            return assembly.Assembly(result, self._channel)
+            if result.type == ElementType.ELEMTYPE_ASSEMBLY or\
+                    result.type == ElementType.ELEMTYPE_IFCOMPONENT:
+                return assembly.Assembly(result.id, self._channel)
+            else:
+                return None
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
