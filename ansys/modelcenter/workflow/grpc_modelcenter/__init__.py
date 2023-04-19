@@ -28,6 +28,6 @@ from .integer_datapin import IntegerArray, IntegerDatapin
 from .mcd_process import MCDProcess
 from .real_datapin import RealArrayDatapin, RealDatapin
 from .string_datapin import StringArrayDatapin, StringDatapin
-from .unsupported_var import DatapinWithUnsupportedTypeException, UnsupportedTypeDatapin
+from .unsupported_type_datapin import DatapinWithUnsupportedTypeException, UnsupportedTypeDatapin
 from .var_value_convert import ValueTypeNotSupportedError
 from .workflow import Workflow

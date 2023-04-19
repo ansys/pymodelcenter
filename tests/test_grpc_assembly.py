@@ -47,7 +47,9 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 imp
     ElementInfoCollection,
     NamedElementInWorkflow,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import UnsupportedTypeDatapin
+from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
+    UnsupportedTypeDatapin,
+)
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 import tests.test_abstract_workflow_element as awe_tests
 import tests.test_variable_container as base_tests

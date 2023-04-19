@@ -5,7 +5,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     VariableState,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var import (
+from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
     DatapinWithUnsupportedTypeException,
     UnsupportedTypeDatapin,
 )

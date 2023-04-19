@@ -9,7 +9,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin as bool_pin_i
 import ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin as int_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.real_datapin as double_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.string_datapin as string_pin_impl
-import ansys.modelcenter.workflow.grpc_modelcenter.unsupported_var as unsupported_pin_impl
+import ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin as unsupported_pin_impl
 
 from .proto.element_messages_pb2 import ElementId
 
