@@ -201,7 +201,6 @@ def test_workflow_is_not_usable_after_close(workflow) -> None:
     )
 
 
-@pytest.mark.skip("Needs VariableState.__eq__ implementation merged")
 def test_running_and_getting_results(workflow) -> None:
     # Arrange
     validation_names: Set[str] = set()

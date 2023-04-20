@@ -238,7 +238,6 @@ def test_can_manipulate_type_specific_variable_information(
     value_result: ewapi.VariableState = variable.get_value(hid=None)
 
     # Assert
-    # TODO: need VariableState.__eq__ branch merged
-    # assert value_result == value
+    assert value_result == value
     assert variable.value_type == val_type
     var_assert(variable)
