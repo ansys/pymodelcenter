@@ -7,6 +7,7 @@ import pytest
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
     ElementId,
     VariableIsInputResponse,
@@ -16,7 +17,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableTypeResponse,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementIdOrName
-from ansys.modelcenter.workflow.grpc_modelcenter.variable import BaseVariable
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
@@ -109,7 +109,7 @@ def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
         assert result == flag_in_response
 
 
-class MockVariable(BaseVariable):
+class MockVariable(BaseDatapin):
     """Mock variable for generic tests."""
 
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:

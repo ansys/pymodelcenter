@@ -63,7 +63,7 @@ class IComponent(
 
     @abstractmethod
     def invalidate(self) -> None:
-        """Invalidate the component and all of its variables."""
+        """Invalidate the component and all of its datapins."""
 
     @property
     @abstractmethod
@@ -76,7 +76,7 @@ class IComponent(
 
     @abstractmethod
     def download_values(self) -> None:
-        """Download the component's variable values from the server if\
+        """Download the component's datapin values from the server if\
         it is a ModelCenter Remote Execution component."""
 
     @abstractmethod

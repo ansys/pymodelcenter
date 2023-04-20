@@ -4,11 +4,11 @@ from abc import ABC, abstractmethod
 import ansys.common.variableinterop as acvi
 from overrides import overrides
 
-from .ivariable import IVariable
+from .idatapin import IDatapin
 
 
-class IBooleanArrayVariable(IVariable, ABC):
-    """Represents a boolean array variable on the workflow."""
+class IBooleanArrayDatapin(IDatapin, ABC):
+    """Represents a boolean array datapin on the workflow."""
 
     @overrides
     @abstractmethod

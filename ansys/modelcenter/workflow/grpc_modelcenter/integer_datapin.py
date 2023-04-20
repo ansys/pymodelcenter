@@ -1,4 +1,4 @@
-"""Contains definition for IntegerVariable and IntegerArray."""
+"""Contains definition for IntegerDatapin and IntegerArray."""
 import ansys.common.variableinterop as acvi
 from grpc import Channel
 from overrides import overrides
@@ -6,6 +6,7 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
+from .base_datapin import BaseDatapin
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
@@ -18,11 +19,10 @@ from .var_metadata_convert import (
     convert_grpc_integer_metadata,
     fill_integer_metadata_message,
 )
-from .variable import BaseVariable
 
 
-class IntegerVariable(BaseVariable, mc_api.IIntegerVariable):
-    """Represents a gRPC integer variable on the workflow."""
+class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
+    """Represents an integer datapin."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -35,7 +35,7 @@ class IntegerVariable(BaseVariable, mc_api.IIntegerVariable):
         channel: Channel
             The gRPC channel to use.
         """
-        super(IntegerVariable, self).__init__(element_id=element_id, channel=channel)
+        super(IntegerDatapin, self).__init__(element_id=element_id, channel=channel)
 
     @overrides
     def __eq__(self, other):
@@ -70,8 +70,8 @@ class IntegerVariable(BaseVariable, mc_api.IIntegerVariable):
         value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
-class IntegerArray(BaseVariable, mc_api.IIntegerArray):
-    """Represents a gRPC double / real array variable on the workflow."""
+class IntegerArray(BaseDatapin, mc_api.IIntegerArray):
+    """Represents an integer array datapin."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """

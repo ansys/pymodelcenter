@@ -3,8 +3,8 @@
 from abc import ABC, abstractmethod
 
 
-class IVariableLink(ABC):
-    """Represents a link between two variables in the workflow."""
+class IDatapinLink(ABC):
+    """Represents a link between two datapins in the workflow."""
 
     @abstractmethod
     def break_link(self) -> None:

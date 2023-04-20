@@ -5,11 +5,11 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as api
 
 from .. import api as mc_api
+from .abstract_datapin_container import AbstractGRPCDatapinContainer
 from .proto.element_messages_pb2 import ElementId
-from .variable_container import AbstractGRPCVariableContainer
 
 
-class Group(AbstractGRPCVariableContainer, api.IGroup):
+class Group(AbstractGRPCDatapinContainer, api.IGroup):
     """Represents a group in the workflow."""
 
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
