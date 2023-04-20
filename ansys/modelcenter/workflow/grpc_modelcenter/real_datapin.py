@@ -39,7 +39,7 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
 
     @overrides
     def __eq__(self, other):
-        return isinstance(other, RealVariable) and self.element_id == other.element_id
+        return isinstance(other, RealDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -88,7 +88,7 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
 
     @overrides
     def __eq__(self, other):
-        return isinstance(other, RealArrayVariable) and self.element_id == other.element_id
+        return isinstance(other, RealArrayDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

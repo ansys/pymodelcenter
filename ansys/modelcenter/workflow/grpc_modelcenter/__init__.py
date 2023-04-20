@@ -24,7 +24,7 @@ from .grpc_error_interpretation import (
     UnexpectedEngineError,
     ValueOutOfRangeError,
 )
-from .integer_datapin import IntegerArray, IntegerDatapin
+from .integer_datapin import IntegerArrayDatapin, IntegerDatapin
 from .mcd_process import MCDProcess
 from .real_datapin import RealArrayDatapin, RealDatapin
 from .string_datapin import StringArrayDatapin, StringDatapin

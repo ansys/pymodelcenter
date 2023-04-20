@@ -40,7 +40,7 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
     @overrides
     def __eq__(self, other):
-        return isinstance(other, StringVariable) and self.element_id == other.element_id
+        return isinstance(other, StringDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -89,7 +89,7 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
 
     @overrides
     def __eq__(self, other):
-        return isinstance(other, StringArrayVariable) and self.element_id == other.element_id
+        return isinstance(other, StringArrayDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

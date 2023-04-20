@@ -40,7 +40,7 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
 
     @overrides
     def __eq__(self, other):
-        return isinstance(other, BooleanVariable) and self.element_id == other.element_id
+        return isinstance(other, BooleanDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -77,7 +77,7 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
 
     @overrides
     def __eq__(self, other):
-        return isinstance(other, BooleanArrayVariable) and self.element_id == other.element_id
+        return isinstance(other, BooleanArrayDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

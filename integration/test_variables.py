@@ -12,14 +12,14 @@ import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 @pytest.mark.parametrize(
     "name,var_type,is_array",
     [
-        ("boolIn", grpcmc.BooleanVariable, False),
-        ("realIn", grpcmc.RealVariable, False),
-        ("intIn", grpcmc.IntegerVariable, False),
-        ("strIn", grpcmc.StringVariable, False),
-        ("boolIn", grpcmc.BooleanArrayVariable, True),
-        ("realIn", grpcmc.RealArrayVariable, True),
-        ("intIn", grpcmc.IntegerArray, True),
-        ("strIn", grpcmc.StringArrayVariable, True),
+        ("boolIn", grpcmc.BooleanDatapin, False),
+        ("realIn", grpcmc.RealDatapin, False),
+        ("intIn", grpcmc.IntegerDatapin, False),
+        ("strIn", grpcmc.StringDatapin, False),
+        ("boolIn", grpcmc.BooleanArrayDatapin, True),
+        ("realIn", grpcmc.RealArrayDatapin, True),
+        ("intIn", grpcmc.IntegerArrayDatapin, True),
+        ("strIn", grpcmc.StringArrayDatapin, True),
     ],
 )
 def test_can_get_basic_variable_information(workflow, name, var_type, is_array) -> None:
@@ -32,7 +32,7 @@ def test_can_get_basic_variable_information(workflow, name, var_type, is_array) 
     full_name: str = parent.full_name + "." + name
 
     # Act
-    variable: mcapi.IVariable = workflow.get_variable(full_name)
+    variable: mcapi.IDatapin = workflow.get_variable(full_name)
 
     # Assert
     assert isinstance(variable, var_type)
@@ -47,7 +47,7 @@ def test_can_get_basic_variable_information(workflow, name, var_type, is_array) 
 
 def test_can_manipulate_variable_properties(workflow) -> None:
     # Arrange
-    variable: mcapi.IVariable = workflow.get_variable("ワークフロー.all_types_コンポーネント.realIn")
+    variable: mcapi.IDatapin = workflow.get_variable("ワークフロー.all_types_コンポーネント.realIn")
     prop_name: str = "lowerBound"
     prop_value: acvi.IVariableValue = acvi.RealValue(5.5)
 
@@ -63,7 +63,7 @@ def test_can_manipulate_variable_properties(workflow) -> None:
     assert props[prop_name] == prop
 
 
-def do_bool_setup(variable: mcapi.IVariable, is_array: bool) -> None:
+def do_bool_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
     meta_type = acvi.BooleanArrayMetadata if is_array else acvi.BooleanMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
@@ -72,14 +72,14 @@ def do_bool_setup(variable: mcapi.IVariable, is_array: bool) -> None:
     cast.set_metadata(metadata)
 
 
-def do_bool_assert(variable: mcapi.IVariable) -> None:
+def do_bool_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
     assert metadata.description == "boolブール"
     assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
 
 
-def do_real_setup(variable: mcapi.IVariable, is_array: bool) -> None:
+def do_real_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
     meta_type = acvi.RealArrayMetadata if is_array else acvi.RealMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
@@ -94,7 +94,7 @@ def do_real_setup(variable: mcapi.IVariable, is_array: bool) -> None:
     cast.set_metadata(metadata)
 
 
-def do_real_assert(variable: mcapi.IVariable) -> None:
+def do_real_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
     assert metadata.description == "real浮動小数点数"
@@ -107,7 +107,7 @@ def do_real_assert(variable: mcapi.IVariable) -> None:
     assert metadata.enumerated_aliases == ["1ඞ", "2ඞ", "3ඞ"]
 
 
-def do_int_setup(variable: mcapi.IVariable, is_array: bool) -> None:
+def do_int_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
     meta_type = acvi.IntegerArrayMetadata if is_array else acvi.IntegerMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
@@ -122,7 +122,7 @@ def do_int_setup(variable: mcapi.IVariable, is_array: bool) -> None:
     cast.set_metadata(metadata)
 
 
-def do_int_assert(variable: mcapi.IVariable) -> None:
+def do_int_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
     assert metadata.description == "int整数"
@@ -135,7 +135,7 @@ def do_int_assert(variable: mcapi.IVariable) -> None:
     assert metadata.enumerated_aliases == ["1ඞ", "2ඞ", "3ඞ"]
 
 
-def do_string_setup(variable: mcapi.IVariable, is_array: bool) -> None:
+def do_string_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
     meta_type = acvi.StringArrayMetadata if is_array else acvi.StringMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
@@ -146,7 +146,7 @@ def do_string_setup(variable: mcapi.IVariable, is_array: bool) -> None:
     cast.set_metadata(metadata)
 
 
-def do_string_assert(variable: mcapi.IVariable) -> None:
+def do_string_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
     assert metadata.description == "string文字"
@@ -230,7 +230,7 @@ def test_can_manipulate_type_specific_variable_information(
     workflow, var_name, val_type, value, var_setup, var_assert, is_array
 ) -> None:
     # Arrange
-    variable: mcapi.IVariable = workflow.get_variable(var_name)
+    variable: mcapi.IDatapin = workflow.get_variable(var_name)
     var_setup(variable, is_array)
 
     # Act

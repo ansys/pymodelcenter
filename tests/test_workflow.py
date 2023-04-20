@@ -314,7 +314,7 @@ def setup_function(monkeypatch):
     monkeypatch_client_creation(monkeypatch, grpcmc.RealDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.RealArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.IntegerDatapin, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.IntegerArray, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.IntegerArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayDatapin, mock_client)
 
@@ -998,7 +998,7 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
         pytest.param("model.double", grpcmc.RealDatapin),
         pytest.param("model.doubles", grpcmc.RealArrayDatapin),
         pytest.param("model.integer", grpcmc.IntegerDatapin),
-        pytest.param("model.integers", grpcmc.IntegerArray),
+        pytest.param("model.integers", grpcmc.IntegerArrayDatapin),
         pytest.param("model.string", grpcmc.StringDatapin),
         pytest.param("model.strings", grpcmc.StringArrayDatapin),
     ],

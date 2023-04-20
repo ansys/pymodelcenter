@@ -11,7 +11,7 @@ def test_can_get_group_variables(workflow) -> None:
     group: mcapi.IGroup = next(iter(component.groups.values()))
 
     # Act
-    variables: Mapping[str, mcapi.IVariable] = group.get_variables()
+    variables: Mapping[str, mcapi.IDatapin] = group.get_datapins()
 
     # Assert
     assert variables == {

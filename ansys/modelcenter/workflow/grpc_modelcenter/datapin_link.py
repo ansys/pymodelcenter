@@ -28,7 +28,7 @@ class DatapinLink(wfapi.IDatapinLink):
 
     @overrides
     def __eq__(self, other):
-        return isinstance(other, VariableLink) and self.lhs == other.lhs and self.rhs == other.rhs
+        return isinstance(other, DatapinLink) and self.lhs == other.lhs and self.rhs == other.rhs
 
     @overrides
     def __str__(self):

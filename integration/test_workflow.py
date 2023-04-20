@@ -37,7 +37,7 @@ def test_getting_elements_by_name(workflow) -> None:
     assert assembly.full_name == "ワークフロー"
     assert isinstance(component, grpcmc.Component)
     assert component.full_name == "ワークフロー.all_types_コンポーネント"
-    assert isinstance(variable, grpcmc.BooleanVariable)
+    assert isinstance(variable, grpcmc.BooleanDatapin)
     assert variable.full_name == "ワークフロー.all_types_コンポーネント.boolIn"
 
 
@@ -100,7 +100,7 @@ def test_getting_and_setting_a_variable_value(workflow) -> None:
 
 def test_getting_a_variable_and_its_metadata(workflow) -> None:
     # Act
-    variable: mcapi.IVariable = workflow.get_variable(name="ワークフロー.all_types_コンポーネント.realIn")
+    variable: mcapi.IDatapin = workflow.get_variable(name="ワークフロー.all_types_コンポーネント.realIn")
     metadata: acvi.CommonVariableMetadata = workflow.get_variable_meta_data(
         name="ワークフロー.all_types_コンポーネント.realIn"
     )
@@ -115,7 +115,7 @@ def test_creating_and_getting_links(workflow) -> None:
     workflow.create_link(
         variable="ワークフロー.all_types_コンポーネント.realIn", equation="ワークフロー.all_types_コンポーネント.intIn"
     )
-    links: List[mcapi.IVariableLink] = list(workflow.get_links())
+    links: List[mcapi.IDatapinLink] = list(workflow.get_links())
 
     # Assert
     assert len(links) == 1
@@ -135,7 +135,7 @@ def test_auto_linking(workflow) -> None:
     )
 
     # Act
-    links: List[mcapi.IVariableLink] = list(workflow.auto_link(src_comp=quad1, dest_comp=quad2))
+    links: List[mcapi.IDatapinLink] = list(workflow.auto_link(src_comp=quad1, dest_comp=quad2))
 
     # Assert
     expected_rhs_list: Collection[str] = [

@@ -12,7 +12,7 @@ def test_can_get_link_information(workflow) -> None:
     case = unittest.TestCase()
 
     # Act
-    links: List[mcapi.IVariableLink] = list(workflow.get_links())
+    links: List[mcapi.IDatapinLink] = list(workflow.get_links())
 
     # Assert
     expected_rhs_to_lhs_map = {
@@ -27,7 +27,7 @@ def test_can_get_link_information(workflow) -> None:
 
 @pytest.mark.workflow_name("linked_quadratics.pxcz")
 def test_can_break_a_link(workflow) -> None:
-    link: mcapi.IVariableLink = list(workflow.get_links())[0]
+    link: mcapi.IDatapinLink = list(workflow.get_links())[0]
 
     # Act
     link.break_link()
