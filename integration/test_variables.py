@@ -1,5 +1,5 @@
 import typing
-from typing import Mapping
+from typing import Any, Mapping
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as ewapi
@@ -64,28 +64,24 @@ def test_can_manipulate_variable_properties(workflow) -> None:
 
 
 def do_bool_setup(variable: mcapi.IVariable, is_array: bool) -> None:
-    var_type = grpcmc.BooleanArrayVariable if is_array else grpcmc.BooleanVariable
     meta_type = acvi.BooleanArrayMetadata if is_array else acvi.BooleanMetadata
-    cast = typing.cast(var_type, variable)
+    cast = typing.cast(Any, variable)
     metadata = meta_type()
     metadata.description = "boolブール"
     metadata.custom_metadata["blargඞ"] = acvi.RealValue(0.00000007)
     cast.set_metadata(metadata)
 
 
-def do_bool_assert(variable: mcapi.IVariable, is_array: bool) -> None:
-    var_type = grpcmc.BooleanArrayVariable if is_array else grpcmc.BooleanVariable
-    meta_type = acvi.BooleanArrayMetadata if is_array else acvi.BooleanMetadata
-    cast = typing.cast(var_type, variable)
-    metadata: meta_type = cast.get_metadata()
+def do_bool_assert(variable: mcapi.IVariable) -> None:
+    cast = typing.cast(Any, variable)
+    metadata = cast.get_metadata()
     assert metadata.description == "boolブール"
     assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
 
 
 def do_real_setup(variable: mcapi.IVariable, is_array: bool) -> None:
-    var_type = grpcmc.RealArrayVariable if is_array else grpcmc.RealVariable
     meta_type = acvi.RealArrayMetadata if is_array else acvi.RealMetadata
-    cast = typing.cast(var_type, variable)
+    cast = typing.cast(Any, variable)
     metadata = meta_type()
     metadata.description = "real浮動小数点数"
     metadata.custom_metadata["blargඞ"] = acvi.RealValue(0.00000007)
@@ -98,11 +94,9 @@ def do_real_setup(variable: mcapi.IVariable, is_array: bool) -> None:
     cast.set_metadata(metadata)
 
 
-def do_real_assert(variable: mcapi.IVariable, is_array: bool) -> None:
-    var_type = grpcmc.RealArrayVariable if is_array else grpcmc.RealVariable
-    meta_type = acvi.RealArrayMetadata if is_array else acvi.RealMetadata
-    cast = typing.cast(var_type, variable)
-    metadata: meta_type = cast.get_metadata()
+def do_real_assert(variable: mcapi.IVariable) -> None:
+    cast = typing.cast(Any, variable)
+    metadata = cast.get_metadata()
     assert metadata.description == "real浮動小数点数"
     assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
     assert metadata.units == "cd/m²"
@@ -114,9 +108,8 @@ def do_real_assert(variable: mcapi.IVariable, is_array: bool) -> None:
 
 
 def do_int_setup(variable: mcapi.IVariable, is_array: bool) -> None:
-    var_type = grpcmc.IntegerArray if is_array else grpcmc.IntegerVariable
     meta_type = acvi.IntegerArrayMetadata if is_array else acvi.IntegerMetadata
-    cast = typing.cast(var_type, variable)
+    cast = typing.cast(Any, variable)
     metadata = meta_type()
     metadata.description = "int整数"
     metadata.custom_metadata["blargඞ"] = acvi.RealValue(0.00000007)
@@ -129,11 +122,9 @@ def do_int_setup(variable: mcapi.IVariable, is_array: bool) -> None:
     cast.set_metadata(metadata)
 
 
-def do_int_assert(variable: mcapi.IVariable, is_array: bool) -> None:
-    var_type = grpcmc.IntegerArray if is_array else grpcmc.IntegerVariable
-    meta_type = grpcmc.IntegerArray if is_array else acvi.IntegerMetadata
-    cast = typing.cast(var_type, variable)
-    metadata: meta_type = cast.get_metadata()
+def do_int_assert(variable: mcapi.IVariable) -> None:
+    cast = typing.cast(Any, variable)
+    metadata = cast.get_metadata()
     assert metadata.description == "int整数"
     assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
     assert metadata.units == "cd/m²"
@@ -145,9 +136,8 @@ def do_int_assert(variable: mcapi.IVariable, is_array: bool) -> None:
 
 
 def do_string_setup(variable: mcapi.IVariable, is_array: bool) -> None:
-    var_type = grpcmc.StringArrayVariable if is_array else grpcmc.StringVariable
     meta_type = acvi.StringArrayMetadata if is_array else acvi.StringMetadata
-    cast = typing.cast(var_type, variable)
+    cast = typing.cast(Any, variable)
     metadata = meta_type()
     metadata.description = "string文字"
     metadata.custom_metadata["blargඞ"] = acvi.RealValue(0.00000007)
@@ -156,11 +146,9 @@ def do_string_setup(variable: mcapi.IVariable, is_array: bool) -> None:
     cast.set_metadata(metadata)
 
 
-def do_string_assert(variable: mcapi.IVariable, is_array: bool) -> None:
-    var_type = grpcmc.StringArrayVariable if is_array else grpcmc.StringVariable
-    meta_type = acvi.StringArrayMetadata if is_array else acvi.StringMetadata
-    cast = typing.cast(var_type, variable)
-    metadata: meta_type = cast.get_metadata()
+def do_string_assert(variable: mcapi.IVariable) -> None:
+    cast = typing.cast(Any, variable)
+    metadata = cast.get_metadata()
     assert metadata.description == "string文字"
     assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
     assert metadata.enumerated_values == ["a", "b", "c"]
@@ -176,7 +164,7 @@ def do_string_assert(variable: mcapi.IVariable, is_array: bool) -> None:
             ewapi.VariableState(value=acvi.BooleanValue(True), is_valid=True),
             do_bool_setup,
             do_bool_assert,
-            False
+            False,
         ),
         (
             "ワークフロー.all_types_コンポーネント.realIn",
@@ -184,7 +172,7 @@ def do_string_assert(variable: mcapi.IVariable, is_array: bool) -> None:
             ewapi.VariableState(value=acvi.RealValue(1.0), is_valid=True),
             do_real_setup,
             do_real_assert,
-            False
+            False,
         ),
         (
             "ワークフロー.all_types_コンポーネント.intIn",
@@ -192,7 +180,7 @@ def do_string_assert(variable: mcapi.IVariable, is_array: bool) -> None:
             ewapi.VariableState(value=acvi.IntegerValue(1), is_valid=True),
             do_int_setup,
             do_int_assert,
-            False
+            False,
         ),
         (
             "ワークフロー.all_types_コンポーネント.strIn",
@@ -200,16 +188,17 @@ def do_string_assert(variable: mcapi.IVariable, is_array: bool) -> None:
             ewapi.VariableState(value=acvi.StringValue("a"), is_valid=True),
             do_string_setup,
             do_string_assert,
-            False
+            False,
         ),
         (
             "ワークフロー.all_types_コンポーネント.arrays.boolIn",
             acvi.VariableType.BOOLEAN_ARRAY,
-            ewapi.VariableState(value=acvi.BooleanArrayValue(values=[True, False, True]),
-                                is_valid=True),
+            ewapi.VariableState(
+                value=acvi.BooleanArrayValue(values=[True, False, True]), is_valid=True
+            ),
             do_bool_setup,
             do_bool_assert,
-            True
+            True,
         ),
         (
             "ワークフロー.all_types_コンポーネント.arrays.realIn",
@@ -217,7 +206,7 @@ def do_string_assert(variable: mcapi.IVariable, is_array: bool) -> None:
             ewapi.VariableState(value=acvi.RealArrayValue(values=[1.0, 2.0, 3.0]), is_valid=True),
             do_real_setup,
             do_real_assert,
-            True
+            True,
         ),
         (
             "ワークフロー.all_types_コンポーネント.arrays.intIn",
@@ -225,7 +214,7 @@ def do_string_assert(variable: mcapi.IVariable, is_array: bool) -> None:
             ewapi.VariableState(value=acvi.IntegerArrayValue(values=[1, 2, 3]), is_valid=True),
             do_int_setup,
             do_int_assert,
-            True
+            True,
         ),
         (
             "ワークフロー.all_types_コンポーネント.arrays.strIn",
@@ -233,7 +222,7 @@ def do_string_assert(variable: mcapi.IVariable, is_array: bool) -> None:
             ewapi.VariableState(value=acvi.StringArrayValue(values=["a", "b", "c"]), is_valid=True),
             do_string_setup,
             do_string_assert,
-            True
+            True,
         ),
     ],
 )
@@ -252,4 +241,4 @@ def test_can_manipulate_type_specific_variable_information(
     # TODO: need VariableState.__eq__ branch merged
     # assert value_result == value
     assert variable.value_type == val_type
-    var_assert(variable, is_array)
+    var_assert(variable)
