@@ -20,7 +20,7 @@ from .var_value_convert import convert_grpc_value_to_acvi, grpc_type_enum_to_int
 
 
 class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
-    """Represents a variable in the workflow."""
+    """Represents a datapin in the workflow."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """

@@ -75,15 +75,15 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def create_link(self, variable: Union[IDatapin, str], equation: Union[str, IDatapin]) -> None:
         """
-        Create a link to the specified variable based on the specified equation.
+        Create a link to the specified datapin based on the specified equation.
 
         Parameters
         ----------
-        variable : Union[IVariable, str]
+        variable : Union[IDatapin, str]
             The variable that the link should target,
             or its full name.
         equation : Union[str, IDatapin]
-            Equation of the link. You may also pass an IVariable object here,
+            Equation of the link. You may also pass an IDatapin object here,
             and its name will become the equation.
         """
 

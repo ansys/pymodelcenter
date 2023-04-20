@@ -14,7 +14,7 @@ class DatapinWithUnsupportedTypeException(BaseException):
     def __init__(self):
         """Create a new instance."""
         super(DatapinWithUnsupportedTypeException, self).__init__(
-            "The pyModelCenter API does not currently support this interaction on variables of "
+            "The pyModelCenter API does not currently support this interaction on datapins of "
             "this type."
         )
 
