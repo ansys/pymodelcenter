@@ -234,9 +234,9 @@ def test_set_metadata_invalid_custom_metadata(
     "description,sut_type,metadata_type",
     [
         ("", BooleanDatapin, acvi.BooleanMetadata),
-        ("This is a mock variable description.", BooleanDatapin, acvi.BooleanMetadata),
+        ("This is a mock datapin description.", BooleanDatapin, acvi.BooleanMetadata),
         ("", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
-        ("This is a mock variable description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
+        ("This is a mock datapin description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
@@ -270,9 +270,9 @@ def test_set_metadata_empty_custom_metadata(
     "description,sut_type,metadata_type",
     [
         ("", BooleanDatapin, acvi.BooleanMetadata),
-        ("This is a mock variable description.", BooleanDatapin, acvi.BooleanMetadata),
+        ("This is a mock datapin description.", BooleanDatapin, acvi.BooleanMetadata),
         ("", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
-        ("This is a mock variable description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
+        ("This is a mock datapin description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(

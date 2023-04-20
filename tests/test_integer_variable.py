@@ -62,9 +62,9 @@ class MockWorkflowClientForIntegerVarTest:
     "description_string,sut_type,expected_metadata_type",
     [
         ("", IntegerDatapin, acvi.IntegerMetadata),
-        ("This is a mock variable description.", IntegerDatapin, acvi.IntegerMetadata),
+        ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
         ("", IntegerArray, acvi.IntegerArrayMetadata),
-        ("This is a mock variable description.", IntegerArray, acvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArray, acvi.IntegerArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
@@ -289,9 +289,9 @@ def test_set_metadata_invalid_custom_metadata(
     "description,sut_type,metadata_type",
     [
         ("", IntegerDatapin, acvi.IntegerMetadata),
-        ("This is a mock variable description.", IntegerDatapin, acvi.IntegerMetadata),
+        ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
         ("", IntegerArray, acvi.IntegerArrayMetadata),
-        ("This is a mock variable description.", IntegerArray, acvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArray, acvi.IntegerArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
@@ -328,9 +328,9 @@ def test_set_metadata_empty_custom_metadata(
     "description,sut_type,metadata_type",
     [
         ("", IntegerDatapin, acvi.IntegerMetadata),
-        ("This is a mock variable description.", IntegerDatapin, acvi.IntegerMetadata),
+        ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
         ("", IntegerArray, acvi.IntegerArrayMetadata),
-        ("This is a mock variable description.", IntegerArray, acvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArray, acvi.IntegerArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(

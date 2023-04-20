@@ -56,9 +56,9 @@ class MockWorkflowClientForDoubleVarTest:
     "description_string,sut_type,expected_metadata_type",
     [
         ("", RealDatapin, acvi.RealMetadata),
-        ("This is a mock variable description.", RealDatapin, acvi.RealMetadata),
+        ("This is a mock datapin description.", RealDatapin, acvi.RealMetadata),
         ("", RealArrayDatapin, acvi.RealArrayMetadata),
-        ("This is a mock variable description.", RealArrayDatapin, acvi.RealArrayMetadata),
+        ("This is a mock datapin description.", RealArrayDatapin, acvi.RealArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
@@ -251,9 +251,9 @@ def test_set_metadata_invalid_custom_metadata(
     "description,sut_type,metadata_type",
     [
         ("", RealDatapin, acvi.RealMetadata),
-        ("This is a mock variable description.", RealDatapin, acvi.RealMetadata),
+        ("This is a mock datapin description.", RealDatapin, acvi.RealMetadata),
         ("", RealArrayDatapin, acvi.RealArrayMetadata),
-        ("This is a mock variable description.", RealArrayDatapin, acvi.RealArrayMetadata),
+        ("This is a mock datapin description.", RealArrayDatapin, acvi.RealArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
@@ -290,9 +290,9 @@ def test_set_metadata_empty_custom_metadata(
     "description,sut_type,metadata_type",
     [
         ("", RealDatapin, acvi.RealMetadata),
-        ("This is a mock variable description.", RealDatapin, acvi.RealMetadata),
+        ("This is a mock datapin description.", RealDatapin, acvi.RealMetadata),
         ("", RealArrayDatapin, acvi.RealArrayMetadata),
-        ("This is a mock variable description.", RealArrayDatapin, acvi.RealArrayMetadata),
+        ("This is a mock datapin description.", RealArrayDatapin, acvi.RealArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(
