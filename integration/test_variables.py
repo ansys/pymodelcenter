@@ -24,10 +24,12 @@ import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 )
 def test_can_get_basic_variable_information(workflow, name, var_type, is_array) -> None:
     # Arrange
-    parent: ewapi.IElement = workflow.get_component("ワークフロー.all_types_コンポーネント")
-    full_name: str = parent.full_name + "." + name
+    parent: typing.Union[grpcmc.Component, mcapi.IGroup] = workflow.get_component(
+        "ワークフロー.all_types_コンポーネント"
+    )
     if is_array:
-        full_name = parent.full_name + ".arrays." + name
+        parent = next(iter(parent.groups.values()))
+    full_name: str = parent.full_name + "." + name
 
     # Act
     variable: mcapi.IVariable = workflow.get_variable(full_name)
@@ -37,10 +39,8 @@ def test_can_get_basic_variable_information(workflow, name, var_type, is_array) 
     assert variable.name == name
     assert variable.full_name == full_name
     assert variable.element_id is not None
-    # the parent of array variables is a group; no way to get it via workflow or component though
-    if not is_array:
-        assert variable.parent_element_id == parent.element_id
-        assert variable.get_parent_element() == parent
+    assert variable.parent_element_id == parent.element_id
+    assert variable.get_parent_element() == parent
     assert variable.is_input_to_workflow
     assert variable.is_input_to_component
 
