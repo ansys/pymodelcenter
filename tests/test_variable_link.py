@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 
-from ansys.modelcenter.workflow.grpc_modelcenter import VariableLink
+from ansys.modelcenter.workflow.grpc_modelcenter import DatapinLink
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
@@ -29,7 +29,7 @@ def test_break_existing_link(monkeypatch) -> None:
     with unittest.mock.patch.object(
         mock_client, "WorkflowBreakLink", return_value=mock_response
     ) as mock_grpc_method:
-        sut = VariableLink(mock_client, mock_lhs, mock_rhs)
+        sut = DatapinLink(mock_client, mock_lhs, mock_rhs)
 
         # SUT
         sut.break_link()
@@ -50,7 +50,7 @@ def test_break_missing_link(monkeypatch) -> None:
     with unittest.mock.patch.object(
         mock_client, "WorkflowBreakLink", return_value=mock_response
     ) as mock_grpc_method:
-        sut = VariableLink(mock_client, mock_lhs, mock_rhs)
+        sut = DatapinLink(mock_client, mock_lhs, mock_rhs)
 
         # SUT
         with pytest.raises(ValueError):

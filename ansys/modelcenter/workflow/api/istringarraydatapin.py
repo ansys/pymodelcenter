@@ -4,11 +4,11 @@ from abc import ABC, abstractmethod
 import ansys.common.variableinterop as acvi
 from overrides import overrides
 
-from .ivariable import IVariable
+from .idatapin import IDatapin
 
 
-class IStringArrayVariable(IVariable, ABC):
-    """Represents a string variable on the workflow."""
+class IStringArrayDatapin(IDatapin, ABC):
+    """Represents a string datapin on the workflow."""
 
     @overrides
     @abstractmethod

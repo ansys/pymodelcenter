@@ -309,14 +309,14 @@ def setup_function(monkeypatch):
     monkeypatch_client_creation(monkeypatch, grpcmc.Workflow, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.Assembly, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.Component, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.BooleanVariable, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.BooleanArrayVariable, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.RealVariable, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.RealArrayVariable, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.IntegerVariable, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.BooleanDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.BooleanArrayDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.RealDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.RealArrayDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.IntegerDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.IntegerArray, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.StringVariable, mock_client)
-    monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayVariable, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.StringDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayDatapin, mock_client)
 
     global workflow
     workflow = grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz")
@@ -682,7 +682,7 @@ def test_get_links(setup_function, workflow_id: str, link_lhs_values: Iterable[s
     workflow._id = workflow_id
 
     # Execute
-    links: Iterable[mcapi.IVariableLink] = workflow.get_links()
+    links: Iterable[mcapi.IDatapinLink] = workflow.get_links()
 
     # Verify
     assert [link.lhs for link in links] == link_lhs_values
@@ -709,7 +709,7 @@ def test_halt(setup_function) -> None:
 
 def test_auto_link(setup_function) -> None:
     # Execute
-    links: List[mcapi.IVariableLink] = workflow.auto_link(
+    links: List[mcapi.IDatapinLink] = workflow.auto_link(
         "Workflow.source_comp", "Workflow.dest_comp"
     )
 
@@ -726,7 +726,7 @@ def test_auto_link_with_objects(setup_function) -> None:
     dest_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_DEST_COMP"), None)
 
     # Execute
-    links: List[mcapi.IVariableLink] = workflow.auto_link(source_comp, dest_comp)
+    links: List[mcapi.IDatapinLink] = workflow.auto_link(source_comp, dest_comp)
 
     # Verify
     assert len(links) == 2
@@ -929,9 +929,9 @@ def test_create_link(setup_function) -> None:
 
 def test_create_link_with_objects(setup_function) -> None:
     lhs = elem_msgs.ElementId(id_string="INPUTS_VAR1")
-    test_var = grpcmc.RealVariable(lhs, workflow._channel)
+    test_var = grpcmc.RealDatapin(lhs, workflow._channel)
     rhs = elem_msgs.ElementId(id_string="WORKFLOW_COMP_OUTPUT4")
-    test_eqn_var = grpcmc.RealVariable(rhs, workflow._channel)
+    test_eqn_var = grpcmc.RealDatapin(rhs, workflow._channel)
 
     # Execute
     workflow.create_link(test_var, test_eqn_var)
@@ -993,19 +993,19 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
 @pytest.mark.parametrize(
     "name,expected_type",
     [
-        pytest.param("model.boolean", grpcmc.BooleanVariable),
-        pytest.param("model.booleans", grpcmc.BooleanArrayVariable),
-        pytest.param("model.double", grpcmc.RealVariable),
-        pytest.param("model.doubles", grpcmc.RealArrayVariable),
-        pytest.param("model.integer", grpcmc.IntegerVariable),
+        pytest.param("model.boolean", grpcmc.BooleanDatapin),
+        pytest.param("model.booleans", grpcmc.BooleanArrayDatapin),
+        pytest.param("model.double", grpcmc.RealDatapin),
+        pytest.param("model.doubles", grpcmc.RealArrayDatapin),
+        pytest.param("model.integer", grpcmc.IntegerDatapin),
         pytest.param("model.integers", grpcmc.IntegerArray),
-        pytest.param("model.string", grpcmc.StringVariable),
-        pytest.param("model.strings", grpcmc.StringArrayVariable),
+        pytest.param("model.string", grpcmc.StringDatapin),
+        pytest.param("model.strings", grpcmc.StringArrayDatapin),
     ],
 )
 def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
     # Execute
-    result: mcapi.IVariable = workflow.get_variable(name)
+    result: mcapi.IDatapin = workflow.get_variable(name)
 
     # Verify
     assert type(result) == expected_type
@@ -1014,7 +1014,7 @@ def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
 def test_get_variable_on_wrong_type(setup_function) -> None:
     # Execute
     with pytest.raises(ValueError) as err:
-        result: mcapi.IVariable = workflow.get_variable("fail")
+        result: mcapi.IDatapin = workflow.get_variable("fail")
     assert err.value.args[0] == "Element is not a variable."
 
 
@@ -1023,10 +1023,10 @@ def test_get_variable_on_wrong_type(setup_function) -> None:
     [
         ("a.component", mcapi.IComponent, "A_COMPONENT"),
         ("a.assembly", mcapi.IAssembly, "A_ASSEMBLY"),
-        ("model.boolean", mcapi.IBooleanVariable, "MODEL_BOOLEAN"),
-        ("model.integer", mcapi.IIntegerVariable, "MODEL_INTEGER"),
-        ("model.string", mcapi.IStringVariable, "MODEL_STRING"),
-        ("model.double", mcapi.IRealVariable, "MODEL_DOUBLE"),
+        ("model.boolean", mcapi.IBooleanDatapin, "MODEL_BOOLEAN"),
+        ("model.integer", mcapi.IIntegerDatapin, "MODEL_INTEGER"),
+        ("model.string", mcapi.IStringDatapin, "MODEL_STRING"),
+        ("model.double", mcapi.IRealDatapin, "MODEL_DOUBLE"),
     ],
 )
 def test_get_element_by_name(

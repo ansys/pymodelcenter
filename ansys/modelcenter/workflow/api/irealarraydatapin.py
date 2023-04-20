@@ -4,11 +4,11 @@ from abc import ABC, abstractmethod
 import ansys.common.variableinterop as acvi
 from overrides import overrides
 
-from .ivariable import IVariable
+from .idatapin import IDatapin
 
 
-class IRealArrayVariable(IVariable, ABC):
-    """Represents a variable storing an array of reals on the workflow."""
+class IRealArrayDatapin(IDatapin, ABC):
+    """Represents a datapin storing an array of reals on the workflow."""
 
     @overrides
     @abstractmethod

@@ -57,7 +57,7 @@ class IFormat(ABC):
         * ($#,##0.00000) : Negative braces, 5 decimal places
 
         3. Percentage:
-        Percentage formats multiply the variable value by 100 and
+        Percentage formats multiply the datapin value by 100 and
         display the result with a percent sign.
 
         Specification:

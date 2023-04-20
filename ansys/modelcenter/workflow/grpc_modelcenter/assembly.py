@@ -10,8 +10,9 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
 
+from .abstract_datapin_container import AbstractGRPCDatapinContainer
 from .abstract_renamable import AbstractRenamableElement
-from .create_variable import create_variable
+from .create_datapin import create_datapin
 from .element_wrapper import create_element
 from .group import Group
 from .grpc_error_interpretation import (
@@ -34,12 +35,11 @@ from .proto.workflow_messages_pb2 import (
     NamedElementInWorkflow,
 )
 from .var_value_convert import interop_type_to_mc_type_string, mc_type_string_to_interop_type
-from .variable_container import AbstractGRPCVariableContainer
 
 
 class Assembly(
     AbstractRenamableElement,
-    AbstractGRPCVariableContainer,
+    AbstractGRPCDatapinContainer,
     aachild.AbstractAssemblyChild,
     mc_api.IAssembly,
 ):
@@ -72,7 +72,7 @@ class Assembly(
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION})
     @overrides
-    def add_variable(self, name: str, mc_type: acvi.VariableType) -> mc_api.IVariable:
+    def add_datapin(self, name: str, mc_type: acvi.VariableType) -> mc_api.IDatapin:
         type_in_request: str = interop_type_to_mc_type_string(mc_type)
         result: AddAssemblyVariableResponse = self._client.AssemblyAddVariable(
             AddAssemblyVariableRequest(
@@ -81,13 +81,13 @@ class Assembly(
                 variable_type=type_in_request,
             )
         )
-        return create_variable(
+        return create_datapin(
             mc_type_string_to_interop_type(type_in_request), result.id, self._channel
         )
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def delete_variable(self, name: str) -> bool:
+    def delete_datapin(self, name: str) -> bool:
         assembly_name = self.name
         var_name = f"{assembly_name}.{name}"
         request = DeleteAssemblyVariableRequest(

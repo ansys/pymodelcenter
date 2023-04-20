@@ -4,10 +4,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Mapping
 
-from ansys.engineeringworkflow.api import IVariableContainer
+from ansys.engineeringworkflow.api import IDatapinContainer
 
 
-class IGroupOwner(IVariableContainer, ABC):
+class IGroupOwner(IDatapinContainer, ABC):
     """Represents a workflow element which has groups in ModelCenter."""
 
     @property

@@ -1,4 +1,4 @@
-"""Contains definition for RealVariable and RealArrayVariable."""
+"""Contains definition for IntegerDatapin and IntegerArray."""
 import ansys.common.variableinterop as acvi
 from grpc import Channel
 from overrides import overrides
@@ -6,23 +6,23 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
+from .base_datapin import BaseDatapin
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
 from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import SetDoubleVariableMetadataRequest
+from .proto.variable_value_messages_pb2 import SetIntegerVariableMetadataRequest
 from .var_metadata_convert import (
-    convert_grpc_real_array_metadata,
-    convert_grpc_real_metadata,
-    fill_real_metadata_message,
+    convert_grpc_integer_array_metadata,
+    convert_grpc_integer_metadata,
+    fill_integer_metadata_message,
 )
-from .variable import BaseVariable
 
 
-class RealVariable(BaseVariable, mc_api.IRealVariable):
-    """Represents a gRPC double / real variable on the workflow."""
+class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
+    """Represents an integer datapin."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -35,26 +35,26 @@ class RealVariable(BaseVariable, mc_api.IRealVariable):
         channel: Channel
             The gRPC channel to use.
         """
-        super(RealVariable, self).__init__(element_id=element_id, channel=channel)
+        super(IntegerDatapin, self).__init__(element_id=element_id, channel=channel)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> acvi.RealMetadata:
-        response = self._client.DoubleVariableGetMetadata(self._element_id)
-        return convert_grpc_real_metadata(response)
+    def get_metadata(self) -> acvi.IntegerMetadata:
+        response = self._client.IntegerVariableGetMetadata(self._element_id)
+        return convert_grpc_integer_metadata(response)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        if not isinstance(new_metadata, acvi.RealMetadata):
+        if not isinstance(new_metadata, acvi.IntegerMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {acvi.RealMetadata} "
+                f"Expected {acvi.IntegerMetadata} "
                 f"but received {new_metadata.__class__}"
             )
-        request = SetDoubleVariableMetadataRequest(target=self._element_id)
-        fill_real_metadata_message(new_metadata, request.new_metadata)
-        self._client.DoubleVariableSetMetadata(request)
+        request = SetIntegerVariableMetadataRequest(target=self._element_id)
+        fill_integer_metadata_message(new_metadata, request.new_metadata)
+        self._client.IntegerVariableSetMetadata(request)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
@@ -62,12 +62,12 @@ class RealVariable(BaseVariable, mc_api.IRealVariable):
         self._do_set_value(value.value)
 
     @acvi.implicit_coerce
-    def _do_set_value(self, value: acvi.RealValue) -> None:
+    def _do_set_value(self, value: acvi.IntegerValue) -> None:
         value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
-class RealArrayVariable(BaseVariable, mc_api.IRealArrayVariable):
-    """Represents a gRPC double / real array variable on the workflow."""
+class IntegerArray(BaseDatapin, mc_api.IIntegerArray):
+    """Represents an integer array datapin."""
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -80,32 +80,29 @@ class RealArrayVariable(BaseVariable, mc_api.IRealArrayVariable):
         channel: Channel
             The gRPC channel to use.
         """
-        super(RealArrayVariable, self).__init__(element_id=element_id, channel=channel)
+        super(IntegerArray, self).__init__(element_id=element_id, channel=channel)
 
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.RealArrayMetadata:
-        response = self._client.DoubleVariableGetMetadata(self._element_id)
-        return convert_grpc_real_array_metadata(response)
+        response = self._client.IntegerVariableGetMetadata(self._element_id)
+        return convert_grpc_integer_array_metadata(response)
 
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        if not isinstance(new_metadata, acvi.RealArrayMetadata):
+        if not isinstance(new_metadata, acvi.IntegerArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {acvi.RealArrayMetadata} "
+                f"Expected {acvi.IntegerArrayMetadata} "
                 f"but received {new_metadata.__class__}"
             )
-        request = SetDoubleVariableMetadataRequest(target=self._element_id)
-        fill_real_metadata_message(new_metadata, request.new_metadata)
-        self._client.DoubleVariableSetMetadata(request)
+        request = SetIntegerVariableMetadataRequest(target=self._element_id)
+        fill_integer_metadata_message(new_metadata, request.new_metadata)
+        self._client.IntegerVariableSetMetadata(request)
 
-    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: acvi.VariableState) -> None:
         self._do_set_value(value.value)
 
     @acvi.implicit_coerce
-    def _do_set_value(self, value: acvi.RealArrayValue) -> None:
+    def _do_set_value(self, value: acvi.IntegerArrayValue) -> None:
         value.accept(VariableValueVisitor(self._element_id, self._client))
