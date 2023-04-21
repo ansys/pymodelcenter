@@ -7,11 +7,13 @@ from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_wfe
-import ansys.modelcenter.workflow.grpc_modelcenter.assembly as assembly
 
-from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
-from .proto.element_messages_pb2 import ElementId, ElementType
-from .proto.workflow_messages_pb2 import ElementInfo
+from .grpc_error_interpretation import (
+    WRAP_TARGET_NOT_FOUND,
+    EngineInternalError,
+    interpret_rpc_error,
+)
+from .proto.element_messages_pb2 import ElementId
 
 
 class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemblyChild, ABC):
@@ -32,17 +34,14 @@ class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemb
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def parent_assembly(self) -> Optional[mc_api.IAssembly]:
-        result: ElementInfo = self._client.ElementGetParentElement(self._element_id)
-        if not result.id.id_string:
-            return None
+        result = self.get_parent_element()
+        if not (result is None or isinstance(result, mc_api.IAssembly)):
+            raise EngineInternalError(
+                f"The parent of an assembly or component should only ever be an assembly, "
+                f"but found a {result.__class__} instead"
+            )
         else:
-            if (
-                result.type == ElementType.ELEMTYPE_ASSEMBLY
-                or result.type == ElementType.ELEMTYPE_IFCOMPONENT
-            ):
-                return assembly.Assembly(result.id, self._channel)
-            else:
-                return None
+            return result
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
