@@ -89,7 +89,7 @@ class Assembly(
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return Group(element_id, self._channel)
 
-    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION})
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION, **WRAP_INVALID_ARG})
     @overrides
     def add_datapin(self, name: str, mc_type: acvi.VariableType) -> mc_api.IDatapin:
         type_in_request: str = interop_type_to_mc_type_string(mc_type)
