@@ -109,7 +109,7 @@ def test_adding_data_assembly_to_empty_data_assembly(data_assembly_workflow):
     # Setup
     target_assembly: mc_api.IAssembly = data_assembly_workflow.get_assembly("Model.empty_assembly")
 
-    new_child_assembly = target_assembly.add_assembly("new_assembly", None, None)
+    new_child_assembly = target_assembly.add_assembly("new_assembly")
 
     assert isinstance(new_child_assembly, mc_api.IAssembly)
     assert new_child_assembly.full_name == "Model.empty_assembly.new_assembly"
@@ -119,7 +119,7 @@ def test_adding_data_assembly_to_empty_data_assembly_with_position(data_assembly
     # Setup
     target_assembly: mc_api.IAssembly = data_assembly_workflow.get_assembly("Model.empty_assembly")
 
-    new_child_assembly = target_assembly.add_assembly("new_assembly", 47, 500)
+    new_child_assembly = target_assembly.add_assembly("new_assembly", (47, 500))
 
     assert isinstance(new_child_assembly, mc_api.IAssembly)
     assert new_child_assembly.full_name == "Model.empty_assembly.new_assembly"
@@ -131,7 +131,7 @@ def test_adding_data_assembly_to_empty_data_assembly_invalid_name(data_assembly_
     target_assembly: mc_api.IAssembly = data_assembly_workflow.get_assembly("Model.empty_assembly")
 
     with pytest.raises(ValueError, match="invalid"):
-        target_assembly.add_assembly("&&&", None, None)
+        target_assembly.add_assembly("&&&")
 
     assert len(target_assembly.get_elements()) == 0, "The assembly should still be empty."
 
@@ -144,7 +144,7 @@ def test_adding_data_assembly_to_populated_data_assembly_name_collision(data_ass
     ), "The number of assemblies should be 4 before taking any action."
 
     with pytest.raises(grpcmc.NameCollisionError):
-        target_assembly.add_assembly("Quad", None, None)
+        target_assembly.add_assembly("Quad")
 
     assert len(target_assembly.get_elements()) == 4, "No new subassemblies should be added."
 
