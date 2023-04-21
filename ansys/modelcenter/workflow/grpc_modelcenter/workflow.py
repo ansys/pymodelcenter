@@ -115,10 +115,10 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def run(
         self,
-        inputs: Mapping[str, acvi.VariableState],
-        reset: bool,
-        validation_names: AbstractSet[str],
-        collect_names: AbstractSet[str],
+        inputs: Mapping[str, acvi.VariableState] = {},
+        reset: bool = False,
+        validation_names: AbstractSet[str] = set(),
+        collect_names: AbstractSet[str] = set(),
     ) -> Mapping[str, acvi.VariableState]:
         request: workflow_msg.WorkflowRunRequest = self._create_run_request(
             inputs, reset, validation_names, collect_names

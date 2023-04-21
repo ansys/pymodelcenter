@@ -1,6 +1,6 @@
 """Integration tests around Component functionality"""
 import os
-from typing import AbstractSet, Mapping, Set
+from typing import AbstractSet, Mapping
 
 import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import Property
@@ -80,6 +80,34 @@ def test_handle_invoke_unknown_method(workflow) -> None:
         component.invoke_method("method_yet_unknown")
 
 
+def test_handle_invoke_method(engine) -> None:
+    """
+    Verify properly handling invoke of existing method.
+    Test requires running MCRE server.
+    """
+    # Arrange
+    workflow_name = "mcre.pxcz"
+    workflow_path: str = os.path.join(os.getcwd(), "test_files", workflow_name)
+    with engine.load_workflow(file_name=workflow_path) as workflow:
+        component: grpcmc.Component = workflow.get_component("Model.vehicle")
+        variables: Mapping[str, mc_api.IDatapin] = component.get_datapins()
+        time = variables["stopTime"]
+        distance = variables["stopDistance"]
+
+        # Run the workflow to validate outputs.
+        workflow.run()
+
+        assert time.get_value(None).is_valid
+        assert distance.get_value(None).is_valid
+
+        # Act
+        component.invoke_method("Reload Input Values")
+
+        # Verify
+        assert time.get_value(None).is_valid is False
+        assert distance.get_value(None).is_valid is False
+
+
 def test_handle_downloading_values_from_local_component(workflow) -> None:
     """Verify properly handling downloading values from local component."""
     # Arrange
@@ -91,28 +119,31 @@ def test_handle_downloading_values_from_local_component(workflow) -> None:
 
 
 def test_can_download_variables(engine) -> None:
-    """Verify downloading variables from MCRE component."""
+    """
+    Verify downloading variables from MCRE component.
+    Test requires running MCRE server.
+    """
     # Arrange
     workflow_name = "mcre.pxcz"
     workflow_path: str = os.path.join(os.getcwd(), "test_files", workflow_name)
 
     with engine.load_workflow(file_name=workflow_path) as workflow:
-        component: grpcmc.Component = workflow.get_component("Model.Rectangle")
+        component: grpcmc.Component = workflow.get_component("Model.vehicle")
         variables: Mapping[str, mc_api.IDatapin] = component.get_datapins()
-        width = variables["width"]
-        height = variables["height"]
+        speed = variables["speed"]
+        weight = variables["grossWeight"]
 
-        width.set_value(acvi.VariableState(value=acvi.RealValue(20.0), is_valid=True))
-        height.set_value(acvi.VariableState(value=acvi.RealValue(30.5), is_valid=True))
-        assert width.get_value(None).value == 20.0
-        assert height.get_value(None).value == 30.5
+        speed.set_value(acvi.VariableState(value=acvi.RealValue(20.0), is_valid=True))
+        weight.set_value(acvi.VariableState(value=acvi.RealValue(2750.5), is_valid=True))
+        assert speed.get_value(None).value == 20.0
+        assert weight.get_value(None).value == 2750.5
 
         # Act
         component.download_values()
 
         # Verify
-        assert width.get_value(None).value == 0
-        assert height.get_value(None).value == 0
+        assert speed.get_value(None).value == 60
+        assert weight.get_value(None).value == 3200
 
 
 def test_invalidate_component(workflow) -> None:
@@ -121,26 +152,7 @@ def test_invalidate_component(workflow) -> None:
     component: grpcmc.Component = workflow.get_component("ワークフロー.all_types_コンポーネント")
     variables: Mapping[str, mc_api.IDatapin] = component.get_datapins()
 
-    validation_names: Set[str] = set()
-    collection_names: Set[str] = {"ワークフロー.all_types_コンポーネント"}
-    inputs: Mapping[str, acvi.VariableState] = {
-        "ワークフロー.all_types_コンポーネント.boolIn": acvi.VariableState(
-            value=acvi.BooleanValue(True), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.realIn": acvi.VariableState(
-            value=acvi.RealValue(984.65646754), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.intIn": acvi.VariableState(
-            value=acvi.IntegerValue(1431655765), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.strIn": acvi.VariableState(
-            value=acvi.StringValue("•-•• --- •••- •"), is_valid=True
-        ),
-    }
-
-    result: Mapping[str, acvi.VariableState] = workflow.run(
-        inputs=inputs, reset=True, validation_names=validation_names, collect_names=collection_names
-    )
+    workflow.run()
 
     # Make sure outputs are valid.
     assert variables["boolOut"].get_value(None).is_valid
