@@ -62,8 +62,6 @@ def test_correctly_gets_parent_element_dd(data_assembly_workflow):
     assert parent_assembly.full_name == "Model.has_children"
 
 
-# TODO: Correct this bug and un-skip this test.
-@pytest.mark.skip(reason="Bug in get_parent_element")
 def test_parent_of_root_is_None_dd(data_assembly_workflow):
     # Setup
     assembly: mc_api.IAssembly = data_assembly_workflow.get_assembly(None)
