@@ -465,13 +465,32 @@ def test_add_assembly(monkeypatch) -> None:
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
-        result = sut.add_assembly("new_assembly_name", 867, 5309, "Assembly")
+        result = sut.add_assembly("new_assembly_name", (867, 5309), "Assembly")
         mock_method.assert_called_once_with(
             AddAssemblyRequest(
                 name=ElementName(name="new_assembly_name"),
                 parent=ElementId(id_string="TARGET_ASSEMBLY"),
                 assembly_type="Assembly",
                 av_pos=AnalysisViewPosition(x_pos=867, y_pos=5309),
+            )
+        )
+        assert isinstance(result, Assembly)
+        assert result.element_id == "BRAND_NEW_ASSEMBLY"
+
+
+def test_add_assembly_no_position(monkeypatch) -> None:
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AddAssemblyResponse(id=ElementId(id_string="BRAND_NEW_ASSEMBLY"))
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyAddAssembly", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
+        result = sut.add_assembly("new_assembly_name")
+        mock_method.assert_called_once_with(
+            AddAssemblyRequest(
+                name=ElementName(name="new_assembly_name"),
+                parent=ElementId(id_string="TARGET_ASSEMBLY"),
             )
         )
         assert isinstance(result, Assembly)
