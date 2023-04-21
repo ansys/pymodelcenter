@@ -1,7 +1,7 @@
 """Defines an abstract base class for gRPC-backed workflow elements."""
 
 from abc import ABC
-from typing import AbstractSet, Mapping
+from typing import AbstractSet, Mapping, Optional
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -101,9 +101,12 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_parent_element(self) -> aew_api.IElement:
+    def get_parent_element(self) -> Optional[aew_api.IElement]:
         result = self._client.ElementGetParentElement(self._element_id)
-        return elem_wrapper.create_element(result, self._channel)
+        if not result.id.id_string:
+            return None
+        else:
+            return elem_wrapper.create_element(result, self._channel)
 
 
 class UnsupportedWorkflowElement(AbstractWorkflowElement):
