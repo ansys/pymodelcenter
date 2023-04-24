@@ -158,7 +158,8 @@ class IFormat(ABC):
 
         Returns
         -------
-        The format string used to format values.
+        str
+            The format string used to format values.
         """
 
     @format.setter
@@ -181,7 +182,8 @@ class IFormat(ABC):
 
         Returns
         -------
-        The value of the string.
+        int64
+            The value of the string.
         """
 
     @abstractmethod
@@ -199,7 +201,8 @@ class IFormat(ABC):
 
         Returns
         -------
-        The value of the string.
+        float64
+            The value of the string.
         """
 
     @abstractmethod
@@ -214,7 +217,8 @@ class IFormat(ABC):
 
         Returns
         -------
-        The formatted string.
+        str
+            The formatted string.
         """
 
     @abstractmethod
@@ -229,7 +233,8 @@ class IFormat(ABC):
 
         Returns
         -------
-        The formatted string.
+        str
+            The formatted string.
         """
 
     @abstractmethod
@@ -244,7 +249,8 @@ class IFormat(ABC):
 
         Returns
         -------
-        The formatted string.
+        str
+            The formatted string.
         """
 
     @abstractmethod
@@ -260,7 +266,8 @@ class IFormat(ABC):
 
         Returns
         -------
-        The formatted string.
+        str
+            The formatted string.
         """
 
     @abstractmethod
@@ -276,5 +283,6 @@ class IFormat(ABC):
 
         Returns
         -------
-        The formatted string.
+        str
+            The formatted string.
         """

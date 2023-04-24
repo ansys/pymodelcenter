@@ -17,6 +17,7 @@ cname = os.getenv("DOCUMENTATION_CNAME", "nocname.com")
 # use the default ansys logo
 html_logo = logo
 html_theme = "ansys_sphinx_theme"
+html_short_title = html_title = "ansys-modelcenter-workflow"
 
 # specify the location of your github repo
 html_theme_options = {
@@ -36,22 +37,23 @@ html_theme_options = {
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.autosectionlabel",
     "numpydoc",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
 ]
-autosummary_generate = True
 
 # Intersphinx mapping
 intersphinx_mapping = {
     "python": ("https://docs.python.org/dev", None),
-    # kept here as an example
-    # "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
-    # "numpy": ("https://numpy.org/devdocs", None),
-    # "matplotlib": ("https://matplotlib.org/stable", None),
-    # "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    # "pyvista": ("https://docs.pyvista.org/", None),
+    "numpy": ("https://numpy.org/devdocs", None),
 }
+
+# options affecting autodoc generation
+autosummary_generate = True
+add_module_names = False
+
+autodoc_default_options = {"autodoc_typehints_format": "short", "autodoc_typehints": "description"}
 
 # numpydoc configuration
 numpydoc_show_class_members = False
@@ -68,13 +70,14 @@ numpydoc_validation_checks = {
     "GL10",  # reST directives {directives} must be followed by two colons
     "SS01",  # No summary found
     "SS02",  # Summary does not start with a capital letter
-    # "SS03", # Summary does not end with a period
+    "SS03",  # Summary does not end with a period
     "SS04",  # Summary contains heading whitespaces
-    # "SS05", # Summary must start with infinitive verb, not third person
+    "SS05",  # Summary must start with infinitive verb, not third person
     "RT02",  # The first line of the Returns section should contain only the
-    # type, unless multiple values are being returned"
+    # type, unless multiple values are being returned
 }
 
+exclude_patterns = ["ansys/modelcenter/workflow/grpc_modelcenter/proto*"]
 
 # static path
 html_static_path = ["_static"]
@@ -87,3 +90,6 @@ source_suffix = ".rst"
 
 # The master toctree document.
 master_doc = "index"
+
+# Generate section labels up to four levels deep
+autosectionlabel_maxdepth = 4

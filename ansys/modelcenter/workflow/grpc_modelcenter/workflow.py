@@ -169,7 +169,8 @@ class Workflow(wfapi.IWorkflow):
 
         Returns
         -------
-        The workflow directory.
+        str
+            The workflow directory.
         """
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(
@@ -309,7 +310,7 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def create_assembly(
         self, name: str, parent: Union[wfapi.IAssembly, str], assembly_type: Optional[str] = None
-    ):
+    ) -> Assembly:
         request = element_msg.AddAssemblyRequest(
             name=element_msg.ElementName(name=name), av_pos=None, assembly_type=assembly_type
         )
