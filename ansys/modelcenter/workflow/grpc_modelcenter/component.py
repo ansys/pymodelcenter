@@ -1,5 +1,5 @@
 """Definition of Component."""
-from typing import Optional, Tuple
+from typing import Optional
 
 from grpc import Channel, StatusCode
 from overrides import overrides
@@ -91,12 +91,6 @@ class Component(
     @overrides
     def download_values(self) -> None:
         self._client.ComponentDownloadValues(self._element_id)
-
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def get_analysis_view_position(self) -> Tuple[int, int]:
-        response = self._client.AssemblyGetAnalysisViewPosition(self._element_id)
-        return response.x_pos, response.y_pos
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)

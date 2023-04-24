@@ -28,6 +28,17 @@ class IAssemblyChild(ABC):
         The parent assembly or None if this assembly is the root of the workflow.
         """
 
+    @abstractmethod
+    def get_analysis_view_position(self) -> Tuple[int, int]:
+        """
+        Get the position on the analysis view.
+
+        Returns
+        -------
+        A 2-tuple where the first element is the x-coordinate
+        and the second element is the y-coordinate.
+        """
+
 
 class IAssembly(
     renamable_element.IRenamableElement,

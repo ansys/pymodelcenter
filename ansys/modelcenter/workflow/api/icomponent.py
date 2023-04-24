@@ -1,6 +1,5 @@
 """Definition of IComponent."""
 from abc import ABC, abstractmethod
-from typing import Tuple
 
 import ansys.engineeringworkflow.api as aew_api
 
@@ -78,14 +77,3 @@ class IComponent(
     def download_values(self) -> None:
         """Download the component's datapin values from the server if\
         it is a ModelCenter Remote Execution component."""
-
-    @abstractmethod
-    def get_analysis_view_position(self) -> Tuple[int, int]:
-        """
-        Get the position on the analysis view.
-
-        Returns
-        -------
-        A 2-tuple where the first element is the x-coordinate
-        and the second element is the y-coordinate.
-        """
