@@ -1,6 +1,6 @@
 """Implementation of Assembly."""
 
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Tuple
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -76,7 +76,7 @@ class Assembly(
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return Group(element_id, self._channel)
 
-    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION})
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION, **WRAP_INVALID_ARG})
     @overrides
     def add_datapin(self, name: str, mc_type: acvi.VariableType) -> mc_api.IDatapin:
         type_in_request: str = interop_type_to_mc_type_string(mc_type)
@@ -108,14 +108,14 @@ class Assembly(
     def add_assembly(
         self,
         name: str,
-        x_pos: Optional[int],
-        y_pos: Optional[int],
+        av_pos: Optional[Tuple[int, int]] = None,
         assembly_type: Optional[str] = None,
     ) -> mc_api.IAssembly:
         request = AddAssemblyRequest(
             name=ElementName(name=name), parent=self._element_id, assembly_type=assembly_type
         )
-        if x_pos is not None and y_pos is not None:
+        if av_pos is not None:
+            (x_pos, y_pos) = av_pos
             request.av_pos.x_pos = x_pos
             request.av_pos.y_pos = y_pos
         response = self._client.AssemblyAddAssembly(request)

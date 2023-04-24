@@ -6,12 +6,11 @@ import ansys.engineeringworkflow.api.datatypes
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
+from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component, EngineInternalError
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.assembly import Assembly
 from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
-from ansys.modelcenter.workflow.grpc_modelcenter.component import Component
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
     MetadataGetValueRequest,
     MetadataSetValueRequest,
@@ -82,8 +81,11 @@ class MockWorkflowClientForAssemblyTest:
     def RegistryGetControlType(self, request: ElementId) -> ElementName:
         return AssemblyType(type=self._control_type_responses[request.id_string])
 
-    def ElementGetParentElement(self, request: ElementId) -> ElementId:
-        return ElementId(id_string=self._parent_id_responses[request.id_string])
+    def ElementGetParentElement(self, request: ElementId) -> ElementInfo:
+        return ElementInfo(
+            id=ElementId(id_string=self._parent_id_responses[request.id_string]),
+            type=ElementType.ELEMTYPE_ASSEMBLY,
+        )
 
     def RegistryGetVariables(self, request: ElementId) -> ElementIdCollection:
         return ElementIdCollection()
@@ -149,6 +151,25 @@ def test_parent_element(monkeypatch) -> None:
     awe_tests.do_test_parent_element(monkeypatch, Assembly, ElementType.ELEMTYPE_ASSEMBLY, Assembly)
 
 
+def test_parent_element_root(monkeypatch) -> None:
+    mock_client = MockWorkflowClientForAssemblyTest()
+    id_in_response = ""
+    sut_element_id = ElementId(id_string="SUT_ELEMENT")
+    mock_response = ElementInfo(
+        id=ElementId(id_string=id_in_response), type=ElementType.ELEMTYPE_ASSEMBLY
+    )
+    with unittest.mock.patch.object(
+        mock_client, "ElementGetParentElement", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(sut_element_id, None)
+
+        result = sut.get_parent_element()
+
+        assert result is None
+        mock_grpc_method.assert_called_once_with(sut_element_id)
+
+
 def test_get_property_names(monkeypatch) -> None:
     awe_tests.do_test_get_property_names(monkeypatch, Assembly)
 
@@ -196,6 +217,33 @@ def test_can_get_parent_has_parent(monkeypatch) -> None:
 
     assert isinstance(result, Assembly)
     assert result.element_id == parent_id_string
+
+
+def test_can_get_parent_grpc_reports_nonassembly(monkeypatch) -> None:
+    """
+    Verify that an error is raised if a nonassembly is ever found by parent_assembly.
+
+    This case should not happen in production;
+    if it does, it indicates a serious internal error.
+    """
+    mock_client = MockWorkflowClientForAssemblyTest()
+    id_in_response = "VAR_ID"
+    sut_element_id = ElementId(id_string="SUT_ELEMENT")
+    mock_response = ElementInfo(
+        id=ElementId(id_string=id_in_response),
+        type=ElementType.ELEMTYPE_VARIABLE,
+        var_type=VariableType.VARTYPE_INTEGER,
+    )
+    with unittest.mock.patch.object(
+        mock_client, "ElementGetParentElement", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(sut_element_id, None)
+
+        with pytest.raises(EngineInternalError):
+            sut.parent_assembly
+
+        mock_grpc_method.assert_called_once_with(sut_element_id)
 
 
 def test_get_child_elements_empty(monkeypatch) -> None:
@@ -465,13 +513,32 @@ def test_add_assembly(monkeypatch) -> None:
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
-        result = sut.add_assembly("new_assembly_name", 867, 5309, "Assembly")
+        result = sut.add_assembly("new_assembly_name", (867, 5309), "Assembly")
         mock_method.assert_called_once_with(
             AddAssemblyRequest(
                 name=ElementName(name="new_assembly_name"),
                 parent=ElementId(id_string="TARGET_ASSEMBLY"),
                 assembly_type="Assembly",
                 av_pos=AnalysisViewPosition(x_pos=867, y_pos=5309),
+            )
+        )
+        assert isinstance(result, Assembly)
+        assert result.element_id == "BRAND_NEW_ASSEMBLY"
+
+
+def test_add_assembly_no_position(monkeypatch) -> None:
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AddAssemblyResponse(id=ElementId(id_string="BRAND_NEW_ASSEMBLY"))
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyAddAssembly", return_value=mock_response
+    ) as mock_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
+        result = sut.add_assembly("new_assembly_name")
+        mock_method.assert_called_once_with(
+            AddAssemblyRequest(
+                name=ElementName(name="new_assembly_name"),
+                parent=ElementId(id_string="TARGET_ASSEMBLY"),
             )
         )
         assert isinstance(result, Assembly)
