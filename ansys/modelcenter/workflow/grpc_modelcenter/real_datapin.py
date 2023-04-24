@@ -26,7 +26,7 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
     Represents a real (double-precision floating point) datapin.
 
     .. note::
-        This class should not be directly instantiated by the user. Get a Workflow object from
+        This class should not be directly instantiated by clients. Get a Workflow object from
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
@@ -77,7 +77,7 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
     Represents a real (double-precision floating point) array datapin.
 
     .. note::
-        This class should not be directly instantiated by the user. Get a Workflow object from
+        This class should not be directly instantiated by clients. Get a Workflow object from
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 

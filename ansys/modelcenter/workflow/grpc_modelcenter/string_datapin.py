@@ -27,7 +27,7 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
     Represents a gRPC string variable on the workflow.
 
     .. note::
-        This class should not be directly instantiated by the user. Get a Workflow object from
+        This class should not be directly instantiated by clients. Get a Workflow object from
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
@@ -78,7 +78,7 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
     Represents a gRPC double / real array variable on the workflow.
 
     .. note::
-        This class should not be directly instantiated by the user. Get a Workflow object from
+        This class should not be directly instantiated by clients. Get a Workflow object from
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 

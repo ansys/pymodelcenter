@@ -22,7 +22,7 @@ class Format(IFormat):
     Formatter for converting between strings and values.
 
     .. note::
-        This class should not be directly instantiated by the user. Create an Engine, and use it to
+        This class should not be directly instantiated by clients. Create an Engine, and use it to
         get a valid instance of this object.
     """
 

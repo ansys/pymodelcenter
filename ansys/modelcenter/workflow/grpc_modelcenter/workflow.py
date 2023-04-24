@@ -43,7 +43,7 @@ class Workflow(wfapi.IWorkflow):
     Represents a Workflow or Model in ModelCenter.
 
     .. note::
-        This class should not be directly instantiated by the user. Create an Engine, and use it to
+        This class should not be directly instantiated by clients. Create an Engine, and use it to
         get a valid instance of this object.
     """
 

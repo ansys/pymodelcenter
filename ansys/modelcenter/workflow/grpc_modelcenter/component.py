@@ -36,7 +36,7 @@ class Component(
     A component in a Workflow.
 
     .. note::
-        This class should not be directly instantiated by the user. Get a Workflow object from
+        This class should not be directly instantiated by clients. Get a Workflow object from
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
