@@ -1,6 +1,6 @@
 """Contains definitions for assemblies."""
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Tuple
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -51,8 +51,7 @@ class IAssembly(
     def add_assembly(
         self,
         name: str,
-        x_pos: Optional[int],
-        y_pos: Optional[int],
+        av_pos: Optional[Tuple[int, int]] = None,
         assembly_type: Optional[str] = None,
     ) -> "IAssembly":
         """
@@ -63,10 +62,8 @@ class IAssembly(
         ----------
         name : str
             the name of the subassembly
-        x_pos : Optional[int]
-            the position of the sub-assembly on the x axis. Ignored if y_pos is not also specified.
-        y_pos : Optional[int]
-            the position of the sub-assembly on the y axis. Ignored if x_pos is not also specified.
+        av_pos : Optional[Tuple[int,int]]
+            the position of the subassembly in the parent assembly's analysis view
         assembly_type :
 
         Returns

@@ -1,6 +1,6 @@
 """Implementation of Assembly."""
 
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Tuple
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -102,14 +102,14 @@ class Assembly(
     def add_assembly(
         self,
         name: str,
-        x_pos: Optional[int],
-        y_pos: Optional[int],
+        av_pos: Optional[Tuple[int, int]] = None,
         assembly_type: Optional[str] = None,
     ) -> mc_api.IAssembly:
         request = AddAssemblyRequest(
             name=ElementName(name=name), parent=self._element_id, assembly_type=assembly_type
         )
-        if x_pos is not None and y_pos is not None:
+        if av_pos is not None:
+            (x_pos, y_pos) = av_pos
             request.av_pos.x_pos = x_pos
             request.av_pos.y_pos = y_pos
         response = self._client.AssemblyAddAssembly(request)
