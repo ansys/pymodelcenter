@@ -9,7 +9,13 @@ from .grpc_error_interpretation import interpret_rpc_error
 
 
 class DatapinLink(wfapi.IDatapinLink):
-    """GRPC implementation of IDatapinLink."""
+    """
+    A link between datapins in a workflow.
+
+    .. note::
+        This class should not be directly instantiated by the user. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(
         self, stub: grpc_mcd_workflow.ModelCenterWorkflowServiceStub, lhs_id: str, rhs: str

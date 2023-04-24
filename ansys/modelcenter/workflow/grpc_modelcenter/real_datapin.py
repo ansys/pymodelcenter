@@ -22,7 +22,13 @@ from .var_metadata_convert import (
 
 
 class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
-    """Represents a real (double-precision floating point) datapin."""
+    """
+    Represents a real (double-precision floating point) datapin.
+
+    .. note::
+        This class should not be directly instantiated by the user. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -67,7 +73,13 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
 
 
 class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
-    """Represents a real (double-precision floating point) array datapin."""
+    """
+    Represents a real (double-precision floating point) array datapin.
+
+    .. note::
+        This class should not be directly instantiated by the user. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
