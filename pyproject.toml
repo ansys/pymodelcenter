@@ -58,9 +58,9 @@ pre-commit = {version="^2.17.0", optional=true}
 mypy = {version="^0.940", optional=true}
 
 # TODO: The AEW commit listed below is unmerged. Before merging this branch to main,
-#       ensure that the commit below is merged in AEW (#14) and update the listed rev.
-ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "3e79f11e0ba5964f3d682c8978e1c592d2e34482"}
-ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "3c0a8f7"}
+#       ensure that the commit below is merged in AEW (#19) and update the listed rev.
+ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "7005484da7ef5f24f8dd534b7e5f4286bfb89e47"}
+ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "ac4311c"}
 
 [tool.poetry.extras]
 dev = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton", "codespell",
