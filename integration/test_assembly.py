@@ -123,7 +123,7 @@ def test_adding_data_assembly_to_empty_data_assembly_with_position(data_assembly
 
     assert isinstance(new_child_assembly, mc_api.IAssembly)
     assert new_child_assembly.full_name == "Model.empty_assembly.new_assembly"
-    # TODO: There should be a getter for AV position on child_assembly.
+    assert new_child_assembly.get_analysis_view_position() == (47, 500)
 
 
 def test_adding_data_assembly_to_empty_data_assembly_invalid_name(data_assembly_workflow):
