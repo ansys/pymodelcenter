@@ -163,8 +163,7 @@ jobs:
       - name: "Run gRPC compiler"
         run: |
           protos/generate-proto.bat
-          ls .
-          ls ansys/modelcenter/workflow/api/grpc_modelcenter/proto
+          ls ansys/modelcenter/workflow/grpc_modelcenter/proto
 
       - name: "Build HTML"
         run: doc/make.bat html
