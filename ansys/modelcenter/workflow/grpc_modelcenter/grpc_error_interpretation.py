@@ -50,12 +50,6 @@ class InvalidInstanceError(Exception):
         )
 
 
-class NameCollisionError(ValueError):
-    """Raised when an operation that creates a named item requests a valid name already in use."""
-
-    ...
-
-
 class ValueOutOfRangeError(ValueError):
     """Raised when a gRPC error indicates that an argument value is out of range."""
 
@@ -123,7 +117,7 @@ def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exceptio
 
 
 WRAP_NAME_COLLISION: Mapping[grpc.StatusCode, Type[Exception]] = {
-    grpc.StatusCode.ALREADY_EXISTS: NameCollisionError
+    grpc.StatusCode.ALREADY_EXISTS: aew_api.NameCollisionError
 }
 """
 Pass this to wrap_rpcerror to wrap ALREADY_EXISTS as a NameCollisionError.

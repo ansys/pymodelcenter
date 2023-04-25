@@ -19,7 +19,6 @@ from .group import Group
 from .grpc_error_interpretation import (
     EngineDisconnectedError,
     InvalidInstanceError,
-    NameCollisionError,
     UnexpectedEngineError,
     ValueOutOfRangeError,
 )
