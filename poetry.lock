@@ -78,8 +78,8 @@ test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/pyansys/ansys-engineeringworkflow-api.git"
-reference = "6682bf5"
-resolved_reference = "6682bf582da7142464e53f57c3a532e5a7429cde"
+reference = "14efb73"
+resolved_reference = "14efb7326512486ae9405684583f9ba8db35b0ff"
 
 [[package]]
 name = "ansys-sphinx-theme"
@@ -1179,14 +1179,14 @@ files = [
 
 [[package]]
 name = "sphinx"
-version = "6.2.0"
+version = "6.2.1"
 description = "Python documentation generator"
 category = "main"
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "Sphinx-6.2.0.tar.gz", hash = "sha256:9ef22c2941bc3d0ff080d25a797f7521fc317e857395c712ddde97a19d5bb440"},
-    {file = "sphinx-6.2.0-py3-none-any.whl", hash = "sha256:ff1c2a1167bef9cdcd8ec71339e85fe10f26d4e9ef9382ef10b2687c876c936b"},
+    {file = "Sphinx-6.2.1.tar.gz", hash = "sha256:6d56a34697bb749ffa0152feafc4b19836c755d90a7c59b72bc7dfd371b9cc6b"},
+    {file = "sphinx-6.2.1-py3-none-any.whl", hash = "sha256:97787ff1fa3256a3eef9eda523a63dbf299f7b47e053cfcf684a1c2a8380c912"},
 ]
 
 [package.dependencies]
@@ -1414,4 +1414,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "9ea2c970cd5708cf1096002d8a1703fd4334a5231d533c9b5f86d74b71421339"
+content-hash = "4efaab5a545058e13191578413f1d3d1da1f50cf8d772ccd7598ab5a3d6539ec"
