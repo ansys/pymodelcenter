@@ -1,11 +1,11 @@
 """Implementation of Workflow."""
 import os
-from grpc import Channel
 from typing import AbstractSet, Any, Collection, List, Mapping, Optional, Tuple, Type, Union
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
 import grpc
+from grpc import Channel
 import numpy as np
 from numpy.typing import ArrayLike
 from overrides import overrides
