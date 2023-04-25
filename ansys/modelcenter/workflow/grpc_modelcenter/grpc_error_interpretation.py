@@ -3,6 +3,7 @@
 import functools
 from typing import Mapping, Type
 
+import ansys.engineeringworkflow.api as aew_api
 import grpc
 
 
@@ -25,12 +26,6 @@ class UnexpectedEngineError(Exception):
             f"Message:{message}\n"
             f"Code:{code}\n"
         )
-
-
-class EngineInternalError(Exception):
-    """Raised when the gRPC client reports an internal error in the ModelCenter engine."""
-
-    ...
 
 
 class EngineDisconnectedError(Exception):
@@ -69,7 +64,7 @@ class ValueOutOfRangeError(ValueError):
 
 __DEFAULT_STATUS_EXCEPTION_TYPE_MAP: Mapping[grpc.StatusCode, Type[Exception]] = {
     grpc.StatusCode.UNAVAILABLE: EngineDisconnectedError,
-    grpc.StatusCode.INTERNAL: EngineInternalError,
+    grpc.StatusCode.INTERNAL: aew_api.EngineInternalError,
 }
 """
 The default map of entirely unambiguous status codes to the exception types they should raise.

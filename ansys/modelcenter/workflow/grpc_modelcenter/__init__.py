@@ -18,7 +18,6 @@ from .format import Format
 from .group import Group
 from .grpc_error_interpretation import (
     EngineDisconnectedError,
-    EngineInternalError,
     InvalidInstanceError,
     NameCollisionError,
     UnexpectedEngineError,
