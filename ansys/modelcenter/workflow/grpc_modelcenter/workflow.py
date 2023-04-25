@@ -1,5 +1,6 @@
 """Implementation of Workflow."""
 import os
+from grpc import Channel
 from typing import AbstractSet, Any, Collection, List, Mapping, Optional, Tuple, Type, Union
 
 import ansys.common.variableinterop as acvi
@@ -41,7 +42,7 @@ class WorkflowRunFailedError(Exception):
 class Workflow(wfapi.IWorkflow):
     """Represents a Workflow or Model in ModelCenter."""
 
-    def __init__(self, workflow_id: str, file_path: str):
+    def __init__(self, workflow_id: str, file_path: str, channel: Channel):
         """
         Initialize a new Workflow instance.
 
@@ -55,8 +56,7 @@ class Workflow(wfapi.IWorkflow):
         self._state = engapi.WorkflowInstanceState.UNKNOWN
         self._id = workflow_id
         self._file_name = os.path.basename(file_path)
-        # (MPP): Unsure if we should pass this in from Engine
-        self._channel = grpc.insecure_channel("localhost:50051")
+        self._channel = channel
         self._stub = self._create_client(self._channel)
 
     def __enter__(self):

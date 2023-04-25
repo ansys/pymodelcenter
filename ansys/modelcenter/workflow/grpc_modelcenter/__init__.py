@@ -5,6 +5,7 @@ This implementation will find a local installation of ModelCenter, launch it,
 and attempt to communicate with it via gRPC.
 """
 
+from .abstract_workflow_element import UnsupportedWorkflowElement
 from .assembly import Assembly
 from .boolean_datapin import BooleanArrayDatapin, BooleanDatapin
 from .component import (
