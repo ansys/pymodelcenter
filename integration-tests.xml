@@ -1,0 +1,32 @@
+<project name="XML Plug-In" default="all" >
+   <property environment="env"/>
+
+   <!-- Main Targets -->
+
+   <target name="all">
+       <!-- Download the last MC_Build -->
+
+       <!-- Install it -->
+
+       <!-- Setup Python? -->
+
+       <!-- Install dev dependencies -->
+       <exec name="pip">
+           <arg value="install"/>
+           <arg value=".[dev]"/>
+       </exec>
+
+       <!-- Run gRPC compiler -->
+       <exec name="./protos/generate-proto.bat"/>
+
+       <!-- Integration testing -->
+       <exec name="python" dir="integration">
+           <arg value="-m"/>
+           <arg value="pytest"/>
+           <arg value="-vx"/>
+       </exec>
+
+       <!-- Archive test results -->
+   </target>
+
+</project>
