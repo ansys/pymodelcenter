@@ -182,3 +182,38 @@ def test_adding_datapin_to_data_assembly_name_collision(process_sequence_workflo
     assert isinstance(previous_datapin, mc_api.IIntegerDatapin)
     assert previous_datapin.full_name == "Model.main_branch.データ"
     assert previous_datapin.element_id == datapin.element_id
+
+
+def test_rename_affects_child_elements(process_sequence_workflow):
+    # Setup
+    model: mc_api.IAssembly = process_sequence_workflow.get_assembly()
+    main_branch: mc_api.IAssembly = process_sequence_workflow.get_assembly("Model.main_branch")
+    has_items: mc_api.IAssembly = process_sequence_workflow.get_assembly(
+        "Model.main_branch.has_items"
+    )
+
+    # Execute
+    main_branch.rename("the_big_parallel")
+
+    # Verify
+    assert model.full_name == "Model"
+    assert main_branch.full_name == "Model.the_big_parallel"
+    assert has_items.full_name == "Model.the_big_parallel.has_items"
+    assert has_items.get_parent_element() == main_branch
+    assert main_branch.get_parent_element() == model
+
+
+def test_rename_name_collision(process_sequence_workflow):
+    # Setup
+    has_items: mc_api.IAssembly = process_sequence_workflow.get_assembly(
+        "Model.main_branch.has_items"
+    )
+    no_children: mc_api.IAssembly = process_sequence_workflow.get_assembly(
+        "Model.main_branch.empty_seq"
+    )
+
+    with pytest.raises(grpcmc.NameCollisionError):
+        no_children.rename("has_items")
+
+    assert no_children.full_name == "Model.main_branch.empty_seq"
+    assert has_items.full_name == "Model.main_branch.has_items"
