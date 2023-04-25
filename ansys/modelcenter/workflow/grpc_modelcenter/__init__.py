@@ -20,7 +20,6 @@ from .grpc_error_interpretation import (
     EngineDisconnectedError,
     InvalidInstanceError,
     UnexpectedEngineError,
-    ValueOutOfRangeError,
 )
 from .integer_datapin import IntegerArray, IntegerDatapin
 from .mcd_process import MCDProcess

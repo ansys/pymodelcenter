@@ -150,7 +150,7 @@ Do not attempt to modify this map.
 """
 
 WRAP_OUT_OF_BOUNDS: Mapping[grpc.StatusCode, Type[Exception]] = {
-    grpc.StatusCode.OUT_OF_RANGE: ValueOutOfRangeError
+    grpc.StatusCode.OUT_OF_RANGE: aew_api.ValueOutOfRangeError
 }
 """
 Pass this to wrap_rpcerror when the responsibility for out-of-range arguments is the caller's.
