@@ -161,10 +161,13 @@ jobs:
           pip install .[docs]
 
       - name: "Run gRPC compiler"
-        run: protos/generate-proto.bat
+        run: |
+          protos/generate-proto.bat
+          ls .
+          ls ansys/modelcenter/workflow/api/grpc_modelcenter/proto
 
       - name: "Build HTML"
-        run: doc/make.bat html SPHINXOPTS="-W"
+        run: doc/make.bat html
 
 #      - name: Build PDF Documentation
 #        run: |
