@@ -11,7 +11,7 @@ class IGroupOwner(IDatapinContainer, ABC):
     """Represents a workflow element which has groups in ModelCenter."""
 
     @abstractmethod
-    def get_groups(self) -> Mapping[str, "IGroup"]:
+    def get_groups(self) -> Mapping[str, IGroup]:
         """Get the groups that this item contains."""
 
 
