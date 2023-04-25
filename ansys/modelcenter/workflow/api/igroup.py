@@ -16,6 +16,6 @@ class IGroupOwner(IDatapinContainer, ABC):
 
 
 class IGroup(IGroupOwner, ABC):
-    """Represents a variable group in ModelCenter."""
+    """Represents a datapin group in ModelCenter."""
 
     ...  # pragma: no cover
