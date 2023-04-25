@@ -135,7 +135,7 @@ The tests can then be run via pytest. To test and generate a code coverage repor
 
     pytest tests/ --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html tests/
 
-If a local copy of ModelCenter Desktop is installed, the integration tests can be run with:
+If a local copy of ModelCenter Desktop is installed, and a local copy of ModelCenter Remote Execution is installed and running, the integration tests can be run with:
 
     pytest integration/
 
