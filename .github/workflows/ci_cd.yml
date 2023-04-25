@@ -161,9 +161,7 @@ jobs:
           pip install .[docs]
 
       - name: "Run gRPC compiler"
-        run: |
-          protos/generate-proto.bat
-          ls ansys/modelcenter/workflow/grpc_modelcenter/proto
+        run: protos/generate-proto.bat
 
       - name: "Build HTML"
         run: doc/make.bat html
