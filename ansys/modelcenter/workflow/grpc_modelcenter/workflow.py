@@ -5,6 +5,7 @@ from typing import AbstractSet, Any, Collection, List, Mapping, Optional, Tuple,
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
 import grpc
+from grpc import Channel
 import numpy as np
 from numpy.typing import ArrayLike
 from overrides import overrides
@@ -47,7 +48,7 @@ class Workflow(wfapi.IWorkflow):
         get a valid instance of this object.
     """
 
-    def __init__(self, workflow_id: str, file_path: str):
+    def __init__(self, workflow_id: str, file_path: str, channel: Channel):
         """
         Initialize a new Workflow instance.
 
@@ -61,8 +62,7 @@ class Workflow(wfapi.IWorkflow):
         self._state = engapi.WorkflowInstanceState.UNKNOWN
         self._id = workflow_id
         self._file_name = os.path.basename(file_path)
-        # (MPP): Unsure if we should pass this in from Engine
-        self._channel = grpc.insecure_channel("localhost:50051")
+        self._channel = channel
         self._stub = self._create_client(self._channel)
 
     def __enter__(self):

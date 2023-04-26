@@ -68,7 +68,7 @@ class Engine(IEngine):
             workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
         )
         response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
-        return Workflow(response.workflow_id, name)
+        return Workflow(response.workflow_id, name, self._channel)
 
     @interpret_rpc_error({grpc.StatusCode.NOT_FOUND: FileNotFoundError, **WRAP_INVALID_ARG})
     @overrides
@@ -80,11 +80,11 @@ class Engine(IEngine):
             connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
         )
         response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
-        return Workflow(response.workflow_id, request.path)
+        return Workflow(response.workflow_id, request.path, self._channel)
 
     @overrides
     def get_formatter(self, fmt: str) -> IFormat:
-        formatter: Format = Format(fmt)
+        formatter: Format = Format(fmt, self._channel)
         return formatter
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
