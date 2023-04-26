@@ -1,5 +1,4 @@
 """Integration tests around Component functionality"""
-import os
 from typing import AbstractSet, Mapping
 
 import ansys.common.variableinterop as acvi
