@@ -317,9 +317,10 @@ def setup_function(monkeypatch):
     monkeypatch_client_creation(monkeypatch, grpcmc.IntegerArray, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.UnsupportedWorkflowElement, mock_client)
 
     global workflow
-    workflow = grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz")
+    workflow = grpcmc.Workflow(workflow_id="123", file_path="C:\\asdf\\qwerty.pxcz", channel=None)
 
 
 def test_get_root(setup_function) -> None:
@@ -361,7 +362,7 @@ def test_workflow_auto_close(setup_function) -> None:
     with unittest.mock.patch.object(
         mock_client, "WorkflowClose", return_value=wkf_msgs.WorkflowCloseResponse()
     ) as mock_grpc_method:
-        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz") as sut:
+        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz", None) as sut:
             # SUT
             pass
 
