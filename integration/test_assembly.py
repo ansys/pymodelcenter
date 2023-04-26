@@ -22,13 +22,13 @@ def load_process_sequence_workflow(engine) -> Generator[mc_api.IWorkflow, None, 
         yield workflow
 
 
-def test_correctly_gets_child_elements_dd_empty(data_assembly_workflow: mc_api.IWorkflow):
+def test_correctly_gets_child_elements_data_model_empty(data_assembly_workflow: mc_api.IWorkflow):
     assembly: mc_api.IAssembly = data_assembly_workflow.get_assembly("Model.empty_assembly")
     child_elements = assembly.get_elements()
     assert len(child_elements) == 0
 
 
-def test_correctly_gets_child_elements_dd_haschildren(data_assembly_workflow):
+def test_correctly_gets_child_elements_data_model_haschildren(data_assembly_workflow):
     # Setup
     assembly: mc_api.IAssembly = data_assembly_workflow.get_assembly("Model.has_children")
 
@@ -48,7 +48,7 @@ def test_correctly_gets_child_elements_dd_haschildren(data_assembly_workflow):
     assert child_elements[3].full_name == "Model.has_children.Cube"
 
 
-def test_correctly_gets_parent_element_dd(data_assembly_workflow):
+def test_correctly_gets_parent_element_data_model(data_assembly_workflow):
     # Setup
     assembly: mc_api.IAssembly = data_assembly_workflow.get_assembly(
         "Model.has_children.child_assembly_one"
@@ -62,7 +62,7 @@ def test_correctly_gets_parent_element_dd(data_assembly_workflow):
     assert parent_assembly.full_name == "Model.has_children"
 
 
-def test_parent_of_root_is_None_dd(data_assembly_workflow):
+def test_parent_of_root_is_None_data_model(data_assembly_workflow):
     # Setup
     assembly: mc_api.IAssembly = data_assembly_workflow.get_assembly(None)
 
