@@ -109,6 +109,9 @@ class MockWorkflowClientForAssemblyTest:
     ) -> MetadataSetValueResponse:
         return MetadataSetValueResponse()
 
+    def AssemblyGetAnalysisViewPosition(self, request: ElementId) -> AnalysisViewPosition:
+        return AnalysisViewPosition()
+
     def AssemblyGetIcon(self, request: ElementId) -> AssemblyIconResponse:
         return AssemblyIconResponse()
 
@@ -543,3 +546,19 @@ def test_add_assembly_no_position(monkeypatch) -> None:
         )
         assert isinstance(result, Assembly)
         assert result.element_id == "BRAND_NEW_ASSEMBLY"
+
+
+def test_get_analysis_view_position(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AnalysisViewPosition(x_pos=47, y_pos=9001)
+    sut_id = ElementId(id_string="SUT_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyGetAnalysisViewPosition", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(sut_id, None)
+
+        result = sut.get_analysis_view_position()
+
+        mock_grpc_method.assert_called_once_with(sut_id)
+        assert result == (47, 9001)
