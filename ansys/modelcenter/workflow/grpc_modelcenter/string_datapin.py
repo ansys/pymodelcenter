@@ -23,7 +23,13 @@ from .var_metadata_convert import (
 
 
 class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
-    """Represents a gRPC string variable on the workflow."""
+    """
+    Represents a gRPC string variable on the workflow.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -72,7 +78,13 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
 
 class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
-    """Represents a gRPC double / real array variable on the workflow."""
+    """
+    Represents a gRPC double / real array variable on the workflow.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """

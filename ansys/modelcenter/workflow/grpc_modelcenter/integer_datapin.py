@@ -22,7 +22,13 @@ from .var_metadata_convert import (
 
 
 class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
-    """Represents an integer datapin."""
+    """
+    Represents an integer datapin.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -71,7 +77,13 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
 
 
 class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
-    """Represents an integer array datapin."""
+    """
+    Represents an integer array datapin.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """

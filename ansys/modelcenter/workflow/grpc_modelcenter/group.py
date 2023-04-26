@@ -10,7 +10,13 @@ from .proto.element_messages_pb2 import ElementId
 
 
 class Group(AbstractGRPCDatapinContainer, api.IGroup):
-    """Represents a group in the workflow."""
+    """
+    Represents a group in the workflow.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return Group(element_id, self._channel)

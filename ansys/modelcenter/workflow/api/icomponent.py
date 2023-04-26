@@ -26,7 +26,8 @@ class IComponent(
 
         Returns
         -------
-        The source of the component.
+        str
+            The source of the component.
         """
 
     @property
@@ -46,7 +47,8 @@ class IComponent(
 
         Returns
         -------
-        The type of the component.
+        str
+            The type of the component.
         """
 
     @abstractmethod
