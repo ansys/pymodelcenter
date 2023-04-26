@@ -37,7 +37,8 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Returns
         -------
-        A new Workflow instance.
+        IWorkflow
+            A new Workflow instance.
         """
 
     @abstractmethod
@@ -53,7 +54,8 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Returns
         -------
-        A Format object that formats in the given style.
+        IFormat
+            A Format object that formats in the given style.
         """
 
     @abstractmethod
@@ -72,7 +74,8 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Returns
         -------
-        The value of the given preference.
+        Union[bool, int, float, str]
+            The value of the given preference.
         """
 
     @abstractmethod
@@ -98,9 +101,10 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Returns
         -------
-        A mapping representing the units available in the engine.
-        The keys in the map are the names of unit categories,
-        and the values are collections containing all the unit names for that category.
+        Mapping[str, Collection[str]]
+            A mapping representing the units available in the engine.
+            The keys in the map are the names of unit categories,
+            and the values are collections containing all the unit names for that category.
         """
 
     @abstractmethod
@@ -113,5 +117,6 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Returns
         -------
-        True if in Run-Only mode; otherwise, False.
+        bool
+            True if in Run-Only mode; otherwise, False.
         """

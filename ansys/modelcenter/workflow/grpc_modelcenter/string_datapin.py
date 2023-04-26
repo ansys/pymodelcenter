@@ -23,7 +23,13 @@ from .var_metadata_convert import (
 
 
 class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
-    """Represents a gRPC string variable on the workflow."""
+    """
+    Represents a gRPC string variable on the workflow.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -37,6 +43,10 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
             The gRPC channel to use.
         """
         super(StringDatapin, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, StringDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -68,7 +78,13 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
 
 class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
-    """Represents a gRPC double / real array variable on the workflow."""
+    """
+    Represents a gRPC double / real array variable on the workflow.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -82,6 +98,10 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
             The gRPC channel to use.
         """
         super(StringArrayDatapin, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, StringArrayDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

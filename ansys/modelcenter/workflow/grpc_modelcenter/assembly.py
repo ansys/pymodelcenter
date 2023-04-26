@@ -19,6 +19,7 @@ from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
     WRAP_NAME_COLLISION,
     WRAP_TARGET_NOT_FOUND,
+    InvalidInstanceError,
     interpret_rpc_error,
 )
 from .proto.element_messages_pb2 import (
@@ -43,7 +44,13 @@ class Assembly(
     aachild.AbstractAssemblyChild,
     mc_api.IAssembly,
 ):
-    """Represents an assembly in ModelCenter."""
+    """
+    Represents an assembly in ModelCenter.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -55,6 +62,24 @@ class Assembly(
             The id of the .
         """
         super(Assembly, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, Assembly) and self.element_id == other.element_id
+
+    @property
+    @overrides
+    def parent_element_id(self) -> str:
+        result: str
+        try:
+            result = super().parent_element_id
+        except InvalidInstanceError:
+            # return empty string instead of an error if this is the root
+            if self.full_name.find(".") == -1:
+                result = ""
+            else:
+                raise
+        return result
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

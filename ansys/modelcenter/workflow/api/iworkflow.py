@@ -50,7 +50,8 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Returns
         -------
-        The value as a VariableState.
+        VariableState
+            The value as a VariableState.
         """
 
     @abstractmethod
@@ -67,7 +68,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Returns
         -------
-        CommonVariableMetadata :
+        CommonVariableMetadata
             The metadata, in the form of a CommonVariableMetadata
             implementation.
         """
@@ -118,7 +119,8 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Returns
         -------
-        The variable.
+        IDatapin
+            The variable.
         """
 
     @abstractmethod
@@ -133,7 +135,8 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Returns
         -------
-        The component.
+        IComponent
+            The component.
         """
 
     @abstractmethod
@@ -150,7 +153,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def create_assembly(
         self, name: str, parent: Union[IAssembly, str], assembly_type: Optional[str] = None
-    ):
+    ) -> IAssembly:
         """
         Create a new Assembly in the workflow.
 
@@ -165,7 +168,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Returns
         -------
-        Assembly.
+        IAssembly
         """
         # TODO: document / define enumeration for allowed assembly types.
 
@@ -185,7 +188,8 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Returns
         -------
-        A collection of the created links.
+        Collection[IDatapinLink]
+            A collection of the created links.
         """
 
     @abstractmethod
@@ -195,7 +199,8 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Returns
         -------
-        Iterable over variable links.
+        Collection[IDatapinLink]
+            Iterable over datapin links.
         """
 
     @abstractmethod
@@ -226,7 +231,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def get_assembly(self, name: Optional[str] = None) -> IAssembly:
         """
-        Gets the named assembly or the top level assembly.
+        Get the named assembly or the top level assembly.
 
         Parameters
         ----------
@@ -247,7 +252,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         insert_before: Optional[Union[IComponent, IAssembly, str]] = None
     ) -> IComponent:
         """
-        Creates a new component.
+        Create a new component.
 
         Parameters
         ----------
@@ -265,5 +270,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
             The component before which this component should be inserted.
         Returns
         -------
-        The created component.
+        IComponent
+            The created component.
         """

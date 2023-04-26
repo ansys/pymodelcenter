@@ -8,5 +8,5 @@ API Reference
    :template: custom-module-template.rst
    :recursive:
 
-   ansys.modelcenter.workflow.api
-   ansys.modelcenter.workflow.grpc_modelcenter
+   api
+   grpc_modelcenter

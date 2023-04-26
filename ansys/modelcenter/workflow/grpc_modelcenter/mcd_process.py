@@ -22,7 +22,7 @@ def _find_exe_location() -> str:  # pragma: no cover
 
 
 class MCDProcess:
-    """Responsible for launching and keeping track of MCD process."""
+    """Responsible for launching and keeping track of a MCD process."""
 
     def __init__(self) -> None:
         """Initialize a new MCDProcess instance."""
