@@ -17,6 +17,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_
     MetadataSetValueResponse,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
+    ELEMTYPE_ASSEMBLY,
     AddAssemblyRequest,
     AddAssemblyResponse,
     AddAssemblyVariableRequest,
@@ -84,7 +85,7 @@ class MockWorkflowClientForAssemblyTest:
     def ElementGetParentElement(self, request: ElementId) -> ElementInfo:
         return ElementInfo(
             id=ElementId(id_string=self._parent_id_responses[request.id_string]),
-            type=ElementType.ELEMTYPE_ASSEMBLY,
+            type=ELEMTYPE_ASSEMBLY,
         )
 
     def RegistryGetVariables(self, request: ElementId) -> ElementIdCollection:
@@ -339,7 +340,7 @@ def test_get_variables_empty(monkeypatch) -> None:
         (VariableType.VARTYPE_BOOLEAN, mc_api.IBooleanDatapin),
         (VariableType.VARTYPE_STRING, mc_api.IStringDatapin),
         (VariableType.VARTYPE_FILE, UnsupportedTypeDatapin),
-        (VariableType.VARTYPE_INTEGER_ARRAY, mc_api.IIntegerArray),
+        (VariableType.VARTYPE_INTEGER_ARRAY, mc_api.IIntegerArrayDatapin),
         (VariableType.VARTYPE_REAL_ARRAY, mc_api.IRealArrayDatapin),
         (VariableType.VARTYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayDatapin),
         (VariableType.VARTYPE_STRING_ARRAY, mc_api.IStringArrayDatapin),

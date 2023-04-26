@@ -44,9 +44,13 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
         """
         super(BooleanDatapin, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, BooleanDatapin) and self.element_id == other.element_id
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> acvi.BooleanArrayMetadata:
+    def get_metadata(self) -> acvi.BooleanMetadata:
         response = self._client.BooleanVariableGetMetadata(self._element_id)
         return convert_grpc_boolean_metadata(response)
 
@@ -82,6 +86,10 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
         This class should not be directly instantiated by clients. Get a Workflow object from
         an instantiated Engine, and use it to get a valid instance of this object.
     """
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, BooleanArrayDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

@@ -8,7 +8,7 @@ from .idatapin_link import IDatapinLink
 from .iengine import IEngine, WorkflowType
 from .iformat import IFormat
 from .igroup import IGroup, IGroupOwner
-from .iintegerarraydatapin import IIntegerArray
+from .iintegerarraydatapin import IIntegerArrayDatapin
 from .iintegerdatapin import IIntegerDatapin
 from .irealarraydatapin import IRealArrayDatapin
 from .irealdatapin import IRealDatapin

@@ -42,7 +42,7 @@ class _DatapinCreationVisitor(acvi.IVariableTypePseudoVisitor[mc_api.IDatapin]):
         )
 
     def visit_int_array(self) -> T:
-        return int_pin_impl.IntegerArray(element_id=self._element_id, channel=self._channel)
+        return int_pin_impl.IntegerArrayDatapin(element_id=self._element_id, channel=self._channel)
 
     def visit_real_array(self) -> T:
         return double_pin_impl.RealArrayDatapin(element_id=self._element_id, channel=self._channel)
