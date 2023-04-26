@@ -79,32 +79,30 @@ def test_handle_invoke_unknown_method(workflow) -> None:
         component.invoke_method("method_yet_unknown")
 
 
-def test_handle_invoke_method(engine) -> None:
+@pytest.mark.workflow_name("mcre.pxcz")
+def test_handle_invoke_method(workflow) -> None:
     """
     Verify properly handling invoke of existing method.
     Test requires running MCRE server.
     """
     # Arrange
-    workflow_name = "mcre.pxcz"
-    workflow_path: str = os.path.join(os.getcwd(), "test_files", workflow_name)
-    with engine.load_workflow(file_name=workflow_path) as workflow:
-        component: grpcmc.Component = workflow.get_component("Model.vehicle")
-        variables: Mapping[str, mc_api.IDatapin] = component.get_datapins()
-        time = variables["stopTime"]
-        distance = variables["stopDistance"]
+    component: grpcmc.Component = workflow.get_component("Model.vehicle")
+    variables: Mapping[str, mc_api.IDatapin] = component.get_datapins()
+    time = variables["stopTime"]
+    distance = variables["stopDistance"]
 
-        # Run the workflow to validate outputs.
-        workflow.run()
+    # Run the workflow to validate outputs.
+    workflow.run()
 
-        assert time.get_value(None).is_valid
-        assert distance.get_value(None).is_valid
+    assert time.get_value(None).is_valid
+    assert distance.get_value(None).is_valid
 
-        # Act
-        component.invoke_method("Reload Input Values")
+    # Act
+    component.invoke_method("Reload Input Values")
 
-        # Verify
-        assert time.get_value(None).is_valid is False
-        assert distance.get_value(None).is_valid is False
+    # Verify
+    assert time.get_value(None).is_valid is False
+    assert distance.get_value(None).is_valid is False
 
 
 def test_handle_downloading_values_from_local_component(workflow) -> None:
@@ -117,32 +115,29 @@ def test_handle_downloading_values_from_local_component(workflow) -> None:
         component.download_values()
 
 
-def test_can_download_variables(engine) -> None:
+@pytest.mark.workflow_name("mcre.pxcz")
+def test_can_download_variables(workflow) -> None:
     """
     Verify downloading variables from MCRE component.
     Test requires running MCRE server.
     """
     # Arrange
-    workflow_name = "mcre.pxcz"
-    workflow_path: str = os.path.join(os.getcwd(), "test_files", workflow_name)
+    component: grpcmc.Component = workflow.get_component("Model.vehicle")
+    variables: Mapping[str, mc_api.IDatapin] = component.get_datapins()
+    speed = variables["speed"]
+    weight = variables["grossWeight"]
 
-    with engine.load_workflow(file_name=workflow_path) as workflow:
-        component: grpcmc.Component = workflow.get_component("Model.vehicle")
-        variables: Mapping[str, mc_api.IDatapin] = component.get_datapins()
-        speed = variables["speed"]
-        weight = variables["grossWeight"]
+    speed.set_value(acvi.VariableState(value=acvi.RealValue(20.0), is_valid=True))
+    weight.set_value(acvi.VariableState(value=acvi.RealValue(2750.5), is_valid=True))
+    assert speed.get_value(None).value == 20.0
+    assert weight.get_value(None).value == 2750.5
 
-        speed.set_value(acvi.VariableState(value=acvi.RealValue(20.0), is_valid=True))
-        weight.set_value(acvi.VariableState(value=acvi.RealValue(2750.5), is_valid=True))
-        assert speed.get_value(None).value == 20.0
-        assert weight.get_value(None).value == 2750.5
+    # Act
+    component.download_values()
 
-        # Act
-        component.download_values()
-
-        # Verify
-        assert speed.get_value(None).value == 60
-        assert weight.get_value(None).value == 3200
+    # Verify
+    assert speed.get_value(None).value == 60
+    assert weight.get_value(None).value == 3200
 
 
 def test_invalidate_component(workflow) -> None:
