@@ -39,7 +39,7 @@ class Engine(IEngine):
 
     @interpret_rpc_error()
     def close(self):
-        """Shuts down the grpc server and clear out all objects."""
+        """Shut down the grpc server and clear out all objects."""
         request = eng_msg.ShutdownRequest()
         self._stub.Shutdown(request)
         self._stub = None

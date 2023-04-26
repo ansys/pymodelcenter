@@ -23,7 +23,13 @@ from .var_metadata_convert import (
 
 
 class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
-    """Represents a boolean datapin."""
+    """
+    Represents a boolean datapin.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -69,7 +75,13 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
 
 
 class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
-    """Represents a boolean array datapin."""
+    """
+    Represents a boolean array datapin.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

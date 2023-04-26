@@ -18,7 +18,13 @@ from .proto.grpc_modelcenter_format_pb2_grpc import ModelCenterFormatServiceStub
 
 
 class Format(IFormat):
-    """GRPC implementation of IFormat."""
+    """
+    Formatter for converting between strings and values.
+
+    .. note::
+        This class should not be directly instantiated by clients. Create an Engine, and use it to
+        get a valid instance of this object.
+    """
 
     def __init__(self, fmt: str, channel: Channel):
         """Initialize."""

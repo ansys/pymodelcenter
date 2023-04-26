@@ -27,7 +27,8 @@ class IComponent(
 
         Returns
         -------
-        The source of the component.
+        str
+            The source of the component.
         """
 
     @property
@@ -47,7 +48,8 @@ class IComponent(
 
         Returns
         -------
-        The type of the component.
+        str
+            The type of the component.
         """
 
     @abstractmethod
@@ -86,6 +88,7 @@ class IComponent(
 
         Returns
         -------
-        A 2-tuple where the first element is the x-coordinate
-        and the second element is the y-coordinate.
+        Tuple[int, int]
+            A 2-tuple where the first element is the x-coordinate and the second element is the
+            y-coordinate.
         """
