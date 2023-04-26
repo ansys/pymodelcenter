@@ -32,7 +32,13 @@ class Component(
     aachild.AbstractAssemblyChild,
     mc_api.IComponent,
 ):
-    """A component in a Workflow."""
+    """
+    A component in a Workflow.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """

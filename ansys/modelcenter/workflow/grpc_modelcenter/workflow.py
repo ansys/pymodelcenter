@@ -5,6 +5,7 @@ from typing import AbstractSet, Any, Collection, List, Mapping, Optional, Tuple,
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
 import grpc
+from grpc import Channel
 import numpy as np
 from numpy.typing import ArrayLike
 from overrides import overrides
@@ -39,9 +40,15 @@ class WorkflowRunFailedError(Exception):
 
 
 class Workflow(wfapi.IWorkflow):
-    """Represents a Workflow or Model in ModelCenter."""
+    """
+    Represents a Workflow or Model in ModelCenter.
 
-    def __init__(self, workflow_id: str, file_path: str):
+    .. note::
+        This class should not be directly instantiated by clients. Create an Engine, and use it to
+        get a valid instance of this object.
+    """
+
+    def __init__(self, workflow_id: str, file_path: str, channel: Channel):
         """
         Initialize a new Workflow instance.
 
@@ -55,8 +62,7 @@ class Workflow(wfapi.IWorkflow):
         self._state = engapi.WorkflowInstanceState.UNKNOWN
         self._id = workflow_id
         self._file_name = os.path.basename(file_path)
-        # (MPP): Unsure if we should pass this in from Engine
-        self._channel = grpc.insecure_channel("localhost:50051")
+        self._channel = channel
         self._stub = self._create_client(self._channel)
 
     def __enter__(self):
@@ -169,7 +175,8 @@ class Workflow(wfapi.IWorkflow):
 
         Returns
         -------
-        The workflow directory.
+        str
+            The workflow directory.
         """
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(
@@ -309,7 +316,7 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def create_assembly(
         self, name: str, parent: Union[wfapi.IAssembly, str], assembly_type: Optional[str] = None
-    ):
+    ) -> Assembly:
         request = element_msg.AddAssemblyRequest(
             name=element_msg.ElementName(name=name), av_pos=None, assembly_type=assembly_type
         )

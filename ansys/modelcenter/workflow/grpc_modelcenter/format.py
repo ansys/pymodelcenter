@@ -1,5 +1,5 @@
 """Implementation of Format."""
-import grpc
+from grpc import Channel
 from numpy import float64, int64
 from overrides import overrides
 
@@ -18,15 +18,20 @@ from .proto.grpc_modelcenter_format_pb2_grpc import ModelCenterFormatServiceStub
 
 
 class Format(IFormat):
-    """GRPC implementation of IFormat."""
+    """
+    Formatter for converting between strings and values.
 
-    def __init__(self, fmt: str):
+    .. note::
+        This class should not be directly instantiated by clients. Create an Engine, and use it to
+        get a valid instance of this object.
+    """
+
+    def __init__(self, fmt: str, channel: Channel):
         """Initialize."""
         self._format: str = fmt
         if self._format == "":
             self._format = "General"
-        # (MPP): Unsure if we should pass this in from Engine
-        self._channel = grpc.insecure_channel("localhost:50051")
+        self._channel = channel
         self._stub = self._create_client(self._channel)
 
     @staticmethod
