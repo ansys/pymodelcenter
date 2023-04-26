@@ -75,7 +75,6 @@ def test_handle_invoke_unknown_method(workflow) -> None:
     component: grpcmc.Component = workflow.get_component("ワークフロー.all_types_コンポーネント")
 
     # Act and Verify
-    # TODO: Prepare a test for invoking method.
     with pytest.raises(ValueError):
         component.invoke_method("method_yet_unknown")
 
