@@ -147,6 +147,11 @@ def convert_grpc_value_to_acvi(original: VariableValue) -> acvi.IVariableValue:
             "The provided gRPC value has a file type, "
             "but this is not yet supported by the pyModelCenter API."
         )
+    elif original.HasField("file_array_value"):
+        raise ValueTypeNotSupportedError(
+            "The provided gRPC value has a file type, "
+            "but this is not yet supported by the pyModelCenter API."
+        )
     else:
         raise ValueError(
             "The provided gRPC value could not be converted to a common variable " "interop value."

@@ -7,7 +7,10 @@ import pytest
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin import IntegerArray, IntegerDatapin
+from ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin import (
+    IntegerArrayDatapin,
+    IntegerDatapin,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     ArrayDimensions,
@@ -63,14 +66,14 @@ class MockWorkflowClientForIntegerVarTest:
     [
         ("", IntegerDatapin, acvi.IntegerMetadata),
         ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
-        ("", IntegerArray, acvi.IntegerArrayMetadata),
-        ("This is a mock datapin description.", IntegerArray, acvi.IntegerArrayMetadata),
+        ("", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
@@ -99,11 +102,11 @@ def test_retrieved_metadata_should_include_description(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArray, acvi.IntegerArrayMetadata)],
+    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArrayDatapin, acvi.IntegerArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
@@ -131,11 +134,11 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArray, acvi.IntegerArrayMetadata)],
+    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArrayDatapin, acvi.IntegerArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
@@ -173,11 +176,11 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArray, acvi.IntegerArrayMetadata)],
+    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArrayDatapin, acvi.IntegerArrayMetadata)],
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
@@ -209,15 +212,15 @@ def test_retrieved_metadata_includes_unsupported_type(
         (IntegerDatapin, acvi.IntegerMetadata, -47, True, -47, 9000, True, 9000),
         (IntegerDatapin, acvi.IntegerMetadata, 0, False, None, 9000, True, 9000),
         (IntegerDatapin, acvi.IntegerMetadata, -47, True, -47, 0, False, None),
-        (IntegerArray, acvi.IntegerArrayMetadata, 0, False, None, 0, False, None),
-        (IntegerArray, acvi.IntegerArrayMetadata, -47, True, -47, 9000, True, 9000),
-        (IntegerArray, acvi.IntegerArrayMetadata, 0, False, None, 9000, True, 9000),
-        (IntegerArray, acvi.IntegerArrayMetadata, -47, True, -47, 0, False, None),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, 0, False, None, 0, False, None),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, -47, True, -47, 9000, True, 9000),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, 0, False, None, 9000, True, 9000),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, -47, True, -47, 0, False, None),
     ],
 )
 def test_retrieved_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
     upper_bound: int,
     set_upper_bound: bool,
@@ -260,11 +263,11 @@ def test_retrieved_metadata_should_convert_bounds(
     "sut_type",
     [
         IntegerDatapin,
-        IntegerArray,
+        IntegerArrayDatapin,
     ],
 )
 def test_set_metadata_invalid_custom_metadata(
-    monkeypatch, sut_type: Union[IntegerDatapin, IntegerArray]
+    monkeypatch, sut_type: Union[IntegerDatapin, IntegerArrayDatapin]
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -290,14 +293,14 @@ def test_set_metadata_invalid_custom_metadata(
     [
         ("", IntegerDatapin, acvi.IntegerMetadata),
         ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
-        ("", IntegerArray, acvi.IntegerArrayMetadata),
-        ("This is a mock datapin description.", IntegerArray, acvi.IntegerArrayMetadata),
+        ("", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
@@ -329,14 +332,14 @@ def test_set_metadata_empty_custom_metadata(
     [
         ("", IntegerDatapin, acvi.IntegerMetadata),
         ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
-        ("", IntegerArray, acvi.IntegerArrayMetadata),
-        ("This is a mock datapin description.", IntegerArray, acvi.IntegerArrayMetadata),
+        ("", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
@@ -379,15 +382,15 @@ def test_set_metadata_populated_custom_metadata(
         (IntegerDatapin, acvi.IntegerMetadata, -47, -47, True, 9001, 9001, True),
         (IntegerDatapin, acvi.IntegerMetadata, None, 0, False, 9001, 9001, True),
         (IntegerDatapin, acvi.IntegerMetadata, -47, -47, True, None, 0, False),
-        (IntegerArray, acvi.IntegerArrayMetadata, None, 0, False, None, 0, False),
-        (IntegerArray, acvi.IntegerArrayMetadata, -47, -47, True, 9001, 9001, True),
-        (IntegerArray, acvi.IntegerArrayMetadata, None, 0, False, 9001, 9001, True),
-        (IntegerArray, acvi.IntegerArrayMetadata, -47, -47, True, None, 0, False),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, None, 0, False, None, 0, False),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, -47, -47, True, 9001, 9001, True),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, None, 0, False, 9001, 9001, True),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, -47, -47, True, None, 0, False),
     ],
 )
 def test_set_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
     original_lower_bound: Optional[int],
     expected_lower_bound: int,
@@ -429,12 +432,12 @@ def test_set_metadata_should_convert_bounds(
     "sut_type,metadata_type",
     [
         (IntegerDatapin, acvi.IntegerMetadata),
-        (IntegerArray, acvi.IntegerArrayMetadata),
+        (IntegerArrayDatapin, acvi.IntegerArrayMetadata),
     ],
 )
 def test_set_metadata_populated_enums(
     monkeypatch,
-    sut_type: Union[IntegerDatapin, IntegerArray],
+    sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
     metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
 ):
     # Set up
@@ -550,7 +553,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_client, "IntegerArraySetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = IntegerArray(sut_element_id, None)
+        sut = IntegerArrayDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute
@@ -583,7 +586,7 @@ def test_array_set_disallowed(monkeypatch, set_value):
         mock_client, "IntegerArraySetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = IntegerArray(sut_element_id, None)
+        sut = IntegerArrayDatapin(sut_element_id, None)
         new_value = acvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -603,7 +606,7 @@ def test_scalar_get_type(monkeypatch):
 def test_array_get_type(monkeypatch):
     do_get_type_test(
         monkeypatch,
-        IntegerArray,
+        IntegerArrayDatapin,
         VariableType.VARTYPE_INTEGER_ARRAY,
         acvi.VariableType.INTEGER_ARRAY,
     )
@@ -653,7 +656,7 @@ def test_scalar_get_state(
 def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
     do_get_state_test(
         monkeypatch,
-        IntegerArray,
+        IntegerArrayDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(int_array_value=value_in_response)
         ),
@@ -666,8 +669,8 @@ def test_array_get_state(monkeypatch, value_in_response, validity_in_response, e
     [
         (IntegerDatapin, True),
         (IntegerDatapin, False),
-        (IntegerArray, True),
-        (IntegerArray, False),
+        (IntegerArrayDatapin, True),
+        (IntegerArrayDatapin, False),
     ],
 )
 def test_is_input_component(monkeypatch, sut_type, flag_in_response):
@@ -679,8 +682,8 @@ def test_is_input_component(monkeypatch, sut_type, flag_in_response):
     [
         (IntegerDatapin, True),
         (IntegerDatapin, False),
-        (IntegerArray, True),
-        (IntegerArray, False),
+        (IntegerArrayDatapin, True),
+        (IntegerArrayDatapin, False),
     ],
 )
 def test_is_input_workflow(monkeypatch, sut_type, flag_in_response):

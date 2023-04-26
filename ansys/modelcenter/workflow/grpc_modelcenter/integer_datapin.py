@@ -22,7 +22,13 @@ from .var_metadata_convert import (
 
 
 class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
-    """Represents an integer datapin."""
+    """
+    Represents an integer datapin.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -36,6 +42,10 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
             The gRPC channel to use.
         """
         super(IntegerDatapin, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, IntegerDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -66,8 +76,14 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
         value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
-class IntegerArray(BaseDatapin, mc_api.IIntegerArray):
-    """Represents an integer array datapin."""
+class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
+    """
+    Represents an integer array datapin.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -80,7 +96,11 @@ class IntegerArray(BaseDatapin, mc_api.IIntegerArray):
         channel: Channel
             The gRPC channel to use.
         """
-        super(IntegerArray, self).__init__(element_id=element_id, channel=channel)
+        super(IntegerArrayDatapin, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, IntegerArrayDatapin) and self.element_id == other.element_id
 
     @overrides
     def get_metadata(self) -> acvi.RealArrayMetadata:
