@@ -14,7 +14,7 @@ from .component import (
     ComponentReconnectionFailedError,
 )
 from .datapin_link import DatapinLink
-from .engine import Engine
+from .engine import Engine, WorkflowAlreadyLoadedError
 from .format import Format
 from .group import Group
 from .grpc_error_interpretation import (
