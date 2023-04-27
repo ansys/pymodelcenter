@@ -43,6 +43,10 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
         """
         super(RealDatapin, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, RealDatapin) and self.element_id == other.element_id
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.RealMetadata:
@@ -93,6 +97,10 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
             The gRPC channel to use.
         """
         super(RealArrayDatapin, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, RealArrayDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

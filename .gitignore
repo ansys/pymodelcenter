@@ -38,6 +38,7 @@ _autosummary
 .coverage
 *,cover
 test-output.xml
+/integration/*.pxcz
 
 \#*
 .\#*

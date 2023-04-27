@@ -7,7 +7,7 @@ from overrides import overrides
 from .idatapin import IDatapin
 
 
-class IIntegerArray(IDatapin, ABC):
+class IIntegerArrayDatapin(IDatapin, ABC):
     """Represents an integer array datapin on the workflow."""
 
     @overrides

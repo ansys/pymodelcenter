@@ -33,6 +33,10 @@ class DatapinLink(wfapi.IDatapinLink):
         self._rhs = rhs
 
     @overrides
+    def __eq__(self, other):
+        return isinstance(other, DatapinLink) and self.lhs == other.lhs and self.rhs == other.rhs
+
+    @overrides
     def __str__(self):
         return "{LHS: " + self._lhs_id + ", RHS: " + self._rhs + "}"  # pragma: no cover
 

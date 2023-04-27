@@ -1,6 +1,6 @@
 """Implementation of Assembly."""
 
-from typing import Optional, Sequence, Tuple
+from typing import Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -19,6 +19,7 @@ from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
     WRAP_NAME_COLLISION,
     WRAP_TARGET_NOT_FOUND,
+    InvalidInstanceError,
     interpret_rpc_error,
 )
 from .proto.element_messages_pb2 import (
@@ -62,15 +63,35 @@ class Assembly(
         """
         super(Assembly, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, Assembly) and self.element_id == other.element_id
+
+    @property
+    @overrides
+    def parent_element_id(self) -> str:
+        result: str
+        try:
+            result = super().parent_element_id
+        except InvalidInstanceError:
+            # return empty string instead of an error if this is the root
+            if self.full_name.find(".") == -1:
+                result = ""
+            else:
+                raise
+        return result
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_elements(self) -> Sequence[aew_api.IElement]:
+    def get_elements(self) -> Mapping[str, aew_api.IElement]:
         result = self._client.AssemblyGetAssembliesAndComponents(self._element_id)
-        one_child_element: ElementInfo
-        return [
-            create_element(one_child_element, self._channel)
-            for one_child_element in result.elements
+        one_child_element_info: ElementInfo
+        child_elements = [
+            create_element(one_child_element_info, self._channel)
+            for one_child_element_info in result.elements
         ]
+        one_child_element: aew_api.IElement
+        return {element.name: element for element in child_elements}
 
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:

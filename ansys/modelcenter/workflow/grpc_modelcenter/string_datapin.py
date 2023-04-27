@@ -44,6 +44,10 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
         """
         super(StringDatapin, self).__init__(element_id=element_id, channel=channel)
 
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, StringDatapin) and self.element_id == other.element_id
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> acvi.StringArrayMetadata:
@@ -94,6 +98,10 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
             The gRPC channel to use.
         """
         super(StringArrayDatapin, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, StringArrayDatapin) and self.element_id == other.element_id
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

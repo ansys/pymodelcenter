@@ -64,6 +64,7 @@ class Workflow(wfapi.IWorkflow):
         self._file_name = os.path.basename(file_path)
         self._channel = channel
         self._stub = self._create_client(self._channel)
+        self._closed = False
 
     def __enter__(self):
         """Initialization when created in a 'with' statement."""
@@ -71,7 +72,8 @@ class Workflow(wfapi.IWorkflow):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Clean up when leaving a 'with' block."""
-        self.close_workflow()
+        if not self._closed:
+            self.close_workflow()
 
     @staticmethod
     def _create_client(grpc_channel) -> grpc_mcd_workflow.ModelCenterWorkflowServiceStub:
@@ -119,10 +121,10 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def run(
         self,
-        inputs: Mapping[str, acvi.VariableState],
-        reset: bool,
-        validation_names: AbstractSet[str],
-        collect_names: AbstractSet[str],
+        inputs: Mapping[str, acvi.VariableState] = {},
+        reset: bool = False,
+        validation_names: AbstractSet[str] = set(),
+        collect_names: AbstractSet[str] = set(),
     ) -> Mapping[str, acvi.VariableState]:
         request: workflow_msg.WorkflowRunRequest = self._create_run_request(
             inputs, reset, validation_names, collect_names
@@ -150,7 +152,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_root(self) -> engapi.IControlStatement:
+    def get_root(self) -> Assembly:
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
         root: element_msg.ElementId = response.id
@@ -267,6 +269,7 @@ class Workflow(wfapi.IWorkflow):
         request = workflow_msg.WorkflowId()
         request.id = self._id
         response: workflow_msg.WorkflowCloseResponse = self._stub.WorkflowClose(request)
+        self._closed = True
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
@@ -290,7 +293,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_component(self, name: str) -> wfapi.IComponent:
+    def get_component(self, name: str) -> Component:
         request = workflow_msg.NamedElementInWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),
