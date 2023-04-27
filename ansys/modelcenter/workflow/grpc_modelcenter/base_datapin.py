@@ -53,7 +53,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_value(self, hid: Optional[str]) -> acvi.VariableState:
+    def get_value(self, hid: Optional[str] = None) -> acvi.VariableState:
         response = self._client.VariableGetState(ElementIdOrName(target_id=self._element_id))
         interop_value: acvi.IVariableValue
         try:
