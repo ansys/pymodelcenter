@@ -1,6 +1,6 @@
 """Implementation of Assembly."""
 
-from typing import Optional, Sequence, Tuple
+from typing import Mapping, Optional, Tuple
 
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
@@ -83,13 +83,15 @@ class Assembly(
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_elements(self) -> Sequence[aew_api.IElement]:
+    def get_elements(self) -> Mapping[str, aew_api.IElement]:
         result = self._client.AssemblyGetAssembliesAndComponents(self._element_id)
-        one_child_element: ElementInfo
-        return [
-            create_element(one_child_element, self._channel)
-            for one_child_element in result.elements
+        one_child_element_info: ElementInfo
+        child_elements = [
+            create_element(one_child_element_info, self._channel)
+            for one_child_element_info in result.elements
         ]
+        one_child_element: aew_api.IElement
+        return {element.name: element for element in child_elements}
 
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:

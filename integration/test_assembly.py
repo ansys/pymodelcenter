@@ -17,20 +17,19 @@ def test_correctly_gets_child_elements_data_model_haschildren(workflow):
     # Setup
     assembly: mc_api.IAssembly = workflow.get_assembly("Model.has_children")
 
-    # TODO: get_elements should be typed as returning a Sequence, not a Collection.
     # Execute
-    child_elements = [element for element in assembly.get_elements()]
+    child_elements = assembly.get_elements()
 
     # Verify
     assert len(child_elements) == 4
-    assert isinstance(child_elements[0], mc_api.IAssembly)
-    assert child_elements[0].full_name == "Model.has_children.child_assembly_one"
-    assert isinstance(child_elements[1], mc_api.IAssembly)
-    assert child_elements[1].full_name == "Model.has_children.child_assembly_two"
-    assert isinstance(child_elements[2], mc_api.IComponent)
-    assert child_elements[2].full_name == "Model.has_children.Quad"
-    assert isinstance(child_elements[3], mc_api.IComponent)
-    assert child_elements[3].full_name == "Model.has_children.Cube"
+    assert isinstance(child_elements["child_assembly_one"], mc_api.IAssembly)
+    assert child_elements["child_assembly_one"].full_name == "Model.has_children.child_assembly_one"
+    assert isinstance(child_elements["child_assembly_two"], mc_api.IAssembly)
+    assert child_elements["child_assembly_two"].full_name == "Model.has_children.child_assembly_two"
+    assert isinstance(child_elements["Quad"], mc_api.IComponent)
+    assert child_elements["Quad"].full_name == "Model.has_children.Quad"
+    assert isinstance(child_elements["Cube"], mc_api.IComponent)
+    assert child_elements["Cube"].full_name == "Model.has_children.Cube"
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
@@ -76,21 +75,50 @@ def test_correctly_gets_child_elements_proc_haschildren(workflow):
     assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch.has_items")
 
     # Execute
-    # TODO: get_elements should be typed as returning a Sequence, not a Collection.
-    child_elements = [element for element in assembly.get_elements()]
+    child_elements = assembly.get_elements()
+
+    # Verify
+    assert len(child_elements) == 4
+    assert isinstance(child_elements["quads"], mc_api.IAssembly)
+    assert child_elements["quads"].full_name == "Model.main_branch.has_items.quads"
+    assert isinstance(child_elements["Sum"], mc_api.IComponent)
+    assert child_elements["Sum"].full_name == "Model.main_branch.has_items.Sum"
+    assert isinstance(child_elements["cubes"], mc_api.IAssembly)
+    assert child_elements["cubes"].full_name == "Model.main_branch.has_items.cubes"
+    assert isinstance(child_elements["Script"], mc_api.IComponent)
+    assert child_elements["Script"].full_name == "Model.main_branch.has_items.Script"
+
+    # The order in which the elements appear is important;
+    # it should correspond with the actual order in the sequence.
+    child_element_order = [name for name in child_elements]
+    assert child_element_order == ["quads", "Sum", "cubes", "Script"]
+
+
+@pytest.mark.workflow_name("process_sequence_tests.pxcz")
+def test_correctly_gets_child_elements_proc_after_move(workflow):
+    # Setup
+    assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch.has_items")
+
+    comp_to_move: mc_api.IComponent = workflow.get_component("Model.main_branch.has_items.Script")
+    workflow.move_component(comp_to_move, assembly, 1)
+
+    # Execute
+    child_elements = assembly.get_elements()
 
     # Verify: There should be four child elements.
     assert len(child_elements) == 4
+    assert isinstance(child_elements["quads"], mc_api.IAssembly)
+    assert child_elements["quads"].full_name == "Model.main_branch.has_items.quads"
+    assert isinstance(child_elements["Sum"], mc_api.IComponent)
+    assert child_elements["Sum"].full_name == "Model.main_branch.has_items.Sum"
+    assert isinstance(child_elements["cubes"], mc_api.IAssembly)
+    assert child_elements["cubes"].full_name == "Model.main_branch.has_items.cubes"
+    assert isinstance(child_elements["Script"], mc_api.IComponent)
+    assert child_elements["Script"].full_name == "Model.main_branch.has_items.Script"
     # The order in which the elements appear is important;
     # it should correspond with the actual order in the sequence.
-    assert isinstance(child_elements[0], mc_api.IAssembly)
-    assert child_elements[0].full_name == "Model.main_branch.has_items.quads"
-    assert isinstance(child_elements[1], mc_api.IComponent)
-    assert child_elements[1].full_name == "Model.main_branch.has_items.Sum"
-    assert isinstance(child_elements[2], mc_api.IAssembly)
-    assert child_elements[2].full_name == "Model.main_branch.has_items.cubes"
-    assert isinstance(child_elements[3], mc_api.IComponent)
-    assert child_elements[3].full_name == "Model.main_branch.has_items.Script"
+    child_element_order = [name for name in child_elements]
+    assert child_element_order == ["quads", "Script", "Sum", "cubes"]
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
