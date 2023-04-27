@@ -66,7 +66,7 @@ def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state)
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(element_id=sut_element_id, channel=None)
 
-        result: acvi.VariableState = sut.get_value(None)
+        result: acvi.VariableState = sut.get_value()
 
         mock_grpc_method.assert_called_once_with(ElementIdOrName(target_id=sut_element_id))
         assert result.value == expected_acvi_state.value
