@@ -73,6 +73,23 @@ def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state)
         assert result.is_valid == expected_acvi_state.is_valid
 
 
+def do_get_state_test_with_hid(monkeypatch, sut_type) -> None:
+    """Perform a test of get_state on a particular base variable."""
+
+    mock_client = MockWorkflowClientForVariableTest()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "VariableGetState", return_value=VariableState()
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(element_id=sut_element_id, channel=None)
+
+        with pytest.raises(ValueError, match="does not yet support HIDs."):
+            sut.get_value("some_hid")
+
+        mock_grpc_method.assert_not_called()
+
+
 def do_test_is_input_component(monkeypatch, sut_type, flag_in_response) -> None:
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
