@@ -68,7 +68,7 @@ Do not attempt to modify this map at runtime.
 
 
 def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exception]] = {}):
-    """
+    r"""
     Decorate a function so that grpc.RpcErrors it raises are wrapped in a more meaningful way.
 
     By default, the status codes UNAVAILABLE and INTERNAL are mapped to EngineDisconnectedError
@@ -82,15 +82,16 @@ def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exceptio
     predefined maps that represent commonplace mappings between gRPC error codes and exception
     types. These are not universally applicable, but can be passed to the decorator when
     appropriate for the gRPC call in question. Remember that you can create a merged dictionary
-    on the fly with the following syntax: {**DICT_ONE, **DICT_TWO, additional_key: additional_value}
+    on the fly with the following syntax:
+    {\**DICT_ONE, \**DICT_TWO, additional_key: additional_value}
 
     If a code is not specified (or one of the default codes) it will be wrapped as
     UnexpectedEngineError.
 
     Parameters
     ----------
-        additional_codes: Mapping[grpc.StatusCode, Type[Exception]]
-            a map of additional codes to wrap
+    additional_codes : Mapping[grpc.StatusCode, Type[Exception]]
+        a map of additional codes to wrap
     """
 
     def interpret_rpc_error_parameterized(orig_func):

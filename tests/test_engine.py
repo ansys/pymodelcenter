@@ -22,6 +22,7 @@ class MockEngineClientForEngineTest:
         self.password: str = ""
         self.pref_value: Optional[Union[bool, int, float, str]] = None
         self.raise_error_on_info: Optional[grpc.StatusCode] = None
+        self.workflow_already_open = False
 
     def GetEngineInfo(
         self, request: eng_msgs.GetServerInfoRequest
@@ -98,6 +99,10 @@ class MockEngineClientForEngineTest:
     def EngineCreateWorkflow(
         self, request: eng_msgs.NewWorkflowRequest
     ) -> eng_msgs.NewWorkflowResponse:
+        if self.workflow_already_open:
+            raise MockGrpcError(
+                code=grpc.StatusCode.RESOURCE_EXHAUSTED, details="We've already got one!"
+            )
         response = eng_msgs.NewWorkflowResponse()
         response.workflow_id = "8675309"
         return response
@@ -105,6 +110,10 @@ class MockEngineClientForEngineTest:
     def EngineLoadWorkflow(
         self, request: eng_msgs.LoadWorkflowRequest
     ) -> eng_msgs.LoadWorkflowResponse:
+        if self.workflow_already_open:
+            raise MockGrpcError(
+                code=grpc.StatusCode.RESOURCE_EXHAUSTED, details="We've already got one!"
+            )
         response = eng_msgs.LoadWorkflowResponse()
         response.workflow_id = "147258369"
         return response
@@ -181,6 +190,17 @@ def test_new_workflow(setup_function, workflow_type: mcapi.WorkflowType) -> None
     assert result._id == "8675309"
 
 
+def test_new_workflow_already_loaded(setup_function) -> None:
+    engine = grpcapi.Engine()
+
+    # SUT
+    engine = grpcapi.Engine()
+    mock_client.workflow_already_open = True
+
+    with pytest.raises(grpcapi.WorkflowAlreadyLoadedError, match="We've already got one"):
+        engine.new_workflow("workflow.pxcz", mcapi.WorkflowType.DATA)
+
+
 def test_load_workflow(setup_function) -> None:
     """
     Verify that load_workflow works as expected.
@@ -195,6 +215,17 @@ def test_load_workflow(setup_function) -> None:
     # Verification
     assert isinstance(result, grpcapi.Workflow)
     assert result._id == "147258369"
+
+
+def test_load_workflow_already_loaded(setup_function) -> None:
+    engine = grpcapi.Engine()
+
+    # SUT
+    engine = grpcapi.Engine()
+    mock_client.workflow_already_open = True
+
+    with pytest.raises(grpcapi.WorkflowAlreadyLoadedError, match="We've already got one"):
+        engine.load_workflow("workflow.pxcz", False)
 
 
 @pytest.mark.parametrize(

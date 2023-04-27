@@ -60,7 +60,9 @@
    :template: custom-module-template.rst
    :recursive:
 {% for item in modules %}
+{% if not item.endswith('.proto') %}
    {{ item }}
+{%- endif %}
 {%- endfor %}
 {% endif %}
 {% endblock %}

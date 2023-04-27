@@ -25,7 +25,20 @@ class IAssemblyChild(ABC):
 
         Returns
         -------
-        The parent assembly or None if this assembly is the root of the workflow.
+        Optional[IAssembly]
+            The parent assembly or None if this assembly is the root of the workflow.
+        """
+
+    @abstractmethod
+    def get_analysis_view_position(self) -> Tuple[int, int]:
+        """
+        Get the position on the analysis view.
+
+        Returns
+        -------
+        Tuple[int, int]
+            A 2-tuple where the first element is the x-coordinate and the second element is the
+            y-coordinate.
         """
 
 
@@ -55,8 +68,7 @@ class IAssembly(
         assembly_type: Optional[str] = None,
     ) -> "IAssembly":
         """
-        This method creates a sub-Assembly in the current Assembly \
-        with a specific type and position.
+        Create a sub-Assembly in the current Assembly with a specific type and position.
 
         Parameters
         ----------
@@ -68,7 +80,8 @@ class IAssembly(
 
         Returns
         -------
-        The created assembly object.
+        IAssembly
+            The created assembly object.
         """
 
     def add_datapin(self, name: str, mc_type: acvi.VariableType) -> aew_api.IDatapin:
@@ -85,7 +98,8 @@ class IAssembly(
 
         Returns
         -------
-        An object representing the created datapin.
+        IDatapin
+            An object representing the created datapin.
         """
 
     @abstractmethod
@@ -103,6 +117,7 @@ class IAssembly(
 
         Returns
         -------
-        True if the specified datapin was located and deleted,
-        False if it was not and no action was taken.
+        bool
+            True if the specified datapin was located and deleted,
+            False if it was not and no action was taken.
         """

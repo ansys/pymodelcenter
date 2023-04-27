@@ -17,6 +17,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_
     MetadataSetValueResponse,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
+    ELEMTYPE_ASSEMBLY,
     AddAssemblyRequest,
     AddAssemblyResponse,
     AddAssemblyVariableRequest,
@@ -84,7 +85,7 @@ class MockWorkflowClientForAssemblyTest:
     def ElementGetParentElement(self, request: ElementId) -> ElementInfo:
         return ElementInfo(
             id=ElementId(id_string=self._parent_id_responses[request.id_string]),
-            type=ElementType.ELEMTYPE_ASSEMBLY,
+            type=ELEMTYPE_ASSEMBLY,
         )
 
     def RegistryGetVariables(self, request: ElementId) -> ElementIdCollection:
@@ -108,6 +109,9 @@ class MockWorkflowClientForAssemblyTest:
         self, request: MetadataSetValueRequest
     ) -> MetadataSetValueResponse:
         return MetadataSetValueResponse()
+
+    def AssemblyGetAnalysisViewPosition(self, request: ElementId) -> AnalysisViewPosition:
+        return AnalysisViewPosition()
 
     def AssemblyGetIcon(self, request: ElementId) -> AssemblyIconResponse:
         return AssemblyIconResponse()
@@ -266,6 +270,7 @@ def test_get_child_elements_empty(monkeypatch) -> None:
 def test_get_child_elements_one_child(monkeypatch, type_in_response, expected_wrapper_type) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     child_id = "CHILD_ID_STRING"
+    mock_client.name_responses[child_id] = "child"
     one_child_assembly = ElementInfo(id=ElementId(id_string=child_id), type=type_in_response)
     response = ElementInfoCollection(elements=[one_child_assembly])
     fake_name = ElementName(name="FAKE_NAME")
@@ -279,9 +284,9 @@ def test_get_child_elements_one_child(monkeypatch, type_in_response, expected_wr
             sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
             result = sut.get_elements()
             assert len(result) == 1
-            assert isinstance(result[0], expected_wrapper_type)
+            assert isinstance(result["child"], expected_wrapper_type)
             mock_get_assembly_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
-            name = result[0].full_name
+            name = result["child"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string=child_id))
 
 
@@ -290,12 +295,15 @@ def test_get_child_assemblies_multiple_children(monkeypatch) -> None:
     larry_assembly_info = ElementInfo(
         id=ElementId(id_string="IDASSEMBLY_LARRY"), type=ElementType.ELEMTYPE_ASSEMBLY
     )
+    mock_client.name_responses["IDASSEMBLY_LARRY"] = "larry"
     moe_comp_info = ElementInfo(
         id=ElementId(id_string="IDCOMP_MOE"), type=ElementType.ELEMTYPE_COMPONENT
     )
+    mock_client.name_responses["IDCOMP_MOE"] = "moe"
     curly_assembly_info = ElementInfo(
         id=ElementId(id_string="IDASSEMBLY_CURLY"), type=ElementType.ELEMTYPE_ASSEMBLY
     )
+    mock_client.name_responses["IDASSEMBLY_CURLY"] = "curly"
     response = ElementInfoCollection(
         elements=[larry_assembly_info, moe_comp_info, curly_assembly_info]
     )
@@ -310,17 +318,17 @@ def test_get_child_assemblies_multiple_children(monkeypatch) -> None:
             sut = Assembly(ElementId(id_string="STOOGES"), None)
             result = sut.get_elements()
             assert len(result) == 3
-            assert isinstance(result[0], Assembly)
-            assert isinstance(result[1], Component)
-            assert isinstance(result[2], Assembly)
+            assert isinstance(result["larry"], Assembly)
+            assert isinstance(result["moe"], Component)
+            assert isinstance(result["curly"], Assembly)
             mock_get_assembly_method.assert_called_once_with(ElementId(id_string="STOOGES"))
-            name = result[0].full_name
+            name = result["larry"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string="IDASSEMBLY_LARRY"))
             mock_get_name_method.reset_mock()
-            name = result[1].full_name
+            name = result["moe"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string="IDCOMP_MOE"))
             mock_get_name_method.reset_mock()
-            name = result[2].full_name
+            name = result["curly"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string="IDASSEMBLY_CURLY"))
 
 
@@ -336,7 +344,7 @@ def test_get_variables_empty(monkeypatch) -> None:
         (VariableType.VARTYPE_BOOLEAN, mc_api.IBooleanDatapin),
         (VariableType.VARTYPE_STRING, mc_api.IStringDatapin),
         (VariableType.VARTYPE_FILE, UnsupportedTypeDatapin),
-        (VariableType.VARTYPE_INTEGER_ARRAY, mc_api.IIntegerArray),
+        (VariableType.VARTYPE_INTEGER_ARRAY, mc_api.IIntegerArrayDatapin),
         (VariableType.VARTYPE_REAL_ARRAY, mc_api.IRealArrayDatapin),
         (VariableType.VARTYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayDatapin),
         (VariableType.VARTYPE_STRING_ARRAY, mc_api.IStringArrayDatapin),
@@ -543,3 +551,19 @@ def test_add_assembly_no_position(monkeypatch) -> None:
         )
         assert isinstance(result, Assembly)
         assert result.element_id == "BRAND_NEW_ASSEMBLY"
+
+
+def test_get_analysis_view_position(monkeypatch):
+    mock_client = MockWorkflowClientForAssemblyTest()
+    mock_response = AnalysisViewPosition(x_pos=47, y_pos=9001)
+    sut_id = ElementId(id_string="SUT_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "AssemblyGetAnalysisViewPosition", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = Assembly(sut_id, None)
+
+        result = sut.get_analysis_view_position()
+
+        mock_grpc_method.assert_called_once_with(sut_id)
+        assert result == (47, 9001)

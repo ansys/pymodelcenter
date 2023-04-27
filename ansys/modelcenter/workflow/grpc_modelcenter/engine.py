@@ -17,6 +17,17 @@ from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
 
 
+class WorkflowAlreadyLoadedError(Exception):
+    """
+    Raised to indicate that a workflow is already loaded.
+
+    This error may be raised if the underlying ModelCenter engine only supports
+    a single workflow loaded at a time.
+    """
+
+    ...
+
+
 class Engine(IEngine):
     """GRPC implementation of IEngine."""
 
@@ -39,7 +50,7 @@ class Engine(IEngine):
 
     @interpret_rpc_error()
     def close(self):
-        """Shuts down the grpc server and clear out all objects."""
+        """Shut down the grpc server and clear out all objects."""
         request = eng_msg.ShutdownRequest()
         self._stub.Shutdown(request)
         self._stub = None
@@ -60,7 +71,9 @@ class Engine(IEngine):
         # Can also get this via grpc if we want.
         return self._process.get_process_id()  # pragma: no cover
 
-    @interpret_rpc_error(WRAP_INVALID_ARG)
+    @interpret_rpc_error(
+        {grpc.StatusCode.RESOURCE_EXHAUSTED: WorkflowAlreadyLoadedError, **WRAP_INVALID_ARG}
+    )
     @overrides
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
         request = eng_msg.NewWorkflowRequest(
@@ -68,9 +81,15 @@ class Engine(IEngine):
             workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
         )
         response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
-        return Workflow(response.workflow_id, name)
+        return Workflow(response.workflow_id, name, self._channel)
 
-    @interpret_rpc_error({grpc.StatusCode.NOT_FOUND: FileNotFoundError, **WRAP_INVALID_ARG})
+    @interpret_rpc_error(
+        {
+            grpc.StatusCode.NOT_FOUND: FileNotFoundError,
+            grpc.StatusCode.RESOURCE_EXHAUSTED: WorkflowAlreadyLoadedError,
+            **WRAP_INVALID_ARG,
+        }
+    )
     @overrides
     def load_workflow(
         self, file_name: Union[PathLike, str], ignore_connection_errors: Optional[bool] = None
@@ -80,11 +99,11 @@ class Engine(IEngine):
             connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
         )
         response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
-        return Workflow(response.workflow_id, request.path)
+        return Workflow(response.workflow_id, request.path, self._channel)
 
     @overrides
     def get_formatter(self, fmt: str) -> IFormat:
-        formatter: Format = Format(fmt)
+        formatter: Format = Format(fmt, self._channel)
         return formatter
 
     @interpret_rpc_error(WRAP_INVALID_ARG)

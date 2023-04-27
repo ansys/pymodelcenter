@@ -1,6 +1,6 @@
 """Defines an abstract base class for children of assemblies (including assemblies themselves)."""
 from abc import ABC
-from typing import Optional
+from typing import Optional, Tuple
 
 import ansys.engineeringworkflow.api as aew_api
 from grpc import Channel
@@ -46,3 +46,9 @@ class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemb
         """Get the control type of this item."""
         result = self._client.RegistryGetControlType(self._element_id)
         return result.type
+
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def get_analysis_view_position(self) -> Tuple[int, int]:
+        response = self._client.AssemblyGetAnalysisViewPosition(self._element_id)
+        return response.x_pos, response.y_pos

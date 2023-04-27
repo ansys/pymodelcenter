@@ -1,5 +1,5 @@
 """Definition of Component."""
-from typing import Optional, Tuple
+from typing import Optional
 
 from grpc import Channel, StatusCode
 from overrides import overrides
@@ -32,7 +32,13 @@ class Component(
     aachild.AbstractAssemblyChild,
     mc_api.IComponent,
 ):
-    """A component in a Workflow."""
+    """
+    A component in a Workflow.
+
+    .. note::
+        This class should not be directly instantiated by clients. Get a Workflow object from
+        an instantiated Engine, and use it to get a valid instance of this object.
+    """
 
     def __init__(self, element_id: ElementId, channel: Channel):
         """
@@ -45,6 +51,10 @@ class Component(
         channel : Channel
         """
         super(Component, self).__init__(element_id=element_id, channel=channel)
+
+    @overrides
+    def __eq__(self, other):
+        return isinstance(other, Component) and self.element_id == other.element_id
 
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
@@ -91,12 +101,6 @@ class Component(
     @overrides
     def download_values(self) -> None:
         self._client.ComponentDownloadValues(self._element_id)
-
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def get_analysis_view_position(self) -> Tuple[int, int]:
-        response = self._client.AssemblyGetAnalysisViewPosition(self._element_id)
-        return response.x_pos, response.y_pos
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)

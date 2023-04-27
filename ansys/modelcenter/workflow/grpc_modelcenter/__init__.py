@@ -5,6 +5,7 @@ This implementation will find a local installation of ModelCenter, launch it,
 and attempt to communicate with it via gRPC.
 """
 
+from .abstract_workflow_element import UnsupportedWorkflowElement
 from .assembly import Assembly
 from .boolean_datapin import BooleanArrayDatapin, BooleanDatapin
 from .component import (
@@ -13,7 +14,7 @@ from .component import (
     ComponentReconnectionFailedError,
 )
 from .datapin_link import DatapinLink
-from .engine import Engine
+from .engine import Engine, WorkflowAlreadyLoadedError
 from .format import Format
 from .group import Group
 from .grpc_error_interpretation import (
@@ -21,7 +22,7 @@ from .grpc_error_interpretation import (
     InvalidInstanceError,
     UnexpectedEngineError,
 )
-from .integer_datapin import IntegerArray, IntegerDatapin
+from .integer_datapin import IntegerArrayDatapin, IntegerDatapin
 from .mcd_process import MCDProcess
 from .real_datapin import RealArrayDatapin, RealDatapin
 from .string_datapin import StringArrayDatapin, StringDatapin
