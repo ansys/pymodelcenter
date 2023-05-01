@@ -19,9 +19,6 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     def workflow_file_name(self) -> str:
         """Full path of the current Workflow."""
 
-    # TODO: We need to come up with a consistent convention (and document)
-    #       whether incoming variable values will have their types coerced or not
-    #       for this and the actual IDatapin objects.
     @abstractmethod
     def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
         """
