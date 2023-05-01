@@ -1,12 +1,15 @@
 from typing import Collection, Mapping, Optional, Union
 import unittest
+from unittest.mock import create_autospec
 
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
+import ansys.platform.instancemanagement as pypim
 import grpc
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcapi
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation import (
     EngineDisconnectedError,
 )
@@ -344,3 +347,44 @@ def test_close(setup_function) -> None:
 
         # Verification
         mock_grpc_method.assert_called_once_with(eng_msgs.ShutdownRequest())
+
+
+def test_creation_via_pypim(monkeypatch) -> None:
+    # Arrange
+    mock_instance = pypim.Instance(
+        definition_name="definitions/fake-modelcenter-desktop",
+        name="instances/fake-modelcenter-desktop",
+        ready=True,
+        status_message=None,
+        services={"grpc": pypim.Service(uri="localhost:50052", headers={})},
+    )
+    pim_channel = grpc.insecure_channel("localhost:50052")
+    mock_instance.wait_for_ready = create_autospec(mock_instance.wait_for_ready)
+    mock_instance.build_grpc_channel = create_autospec(
+        mock_instance.build_grpc_channel, return_value=pim_channel
+    )
+    mock_instance.delete = create_autospec(mock_instance.delete)
+    mock_client = pypim.Client(channel=grpc.insecure_channel("localhost:12345"))
+    mock_client.create_instance = create_autospec(
+        mock_client.create_instance, return_value=mock_instance
+    )
+    mock_connect = create_autospec(pypim.connect, return_value=mock_client)
+    mock_is_configured = create_autospec(pypim.is_configured, return_value=True)
+    monkeypatch.setattr(pypim, "connect", mock_connect)
+    monkeypatch.setattr(pypim, "is_configured", mock_is_configured)
+
+    # Act
+    engine = grpcmc.Engine()
+    result_channel = engine._channel
+    engine.close()
+
+    # Assert
+    assert mock_is_configured.called
+    assert mock_connect.called
+    mock_client.create_instance.assert_called_with(
+        product_name="modelcenter-desktop", product_version=None
+    )
+    assert mock_instance.wait_for_ready.called
+    assert mock_instance.build_grpc_channel.called
+    assert result_channel == pim_channel
+    assert mock_instance.delete.called

@@ -4,6 +4,7 @@ from string import Template
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
 from ansys.engineeringworkflow.api import IWorkflowInstance, WorkflowEngineInfo
+import ansys.platform.instancemanagement as pypim
 import grpc
 from overrides import overrides
 
@@ -34,9 +35,10 @@ class Engine(IEngine):
     def __init__(self, is_run_only: bool = False):
         """Initialize a new Engine instance."""
         self._is_run_only: bool = is_run_only
-        self._process = MCDProcess()
-        port: int = self._process.start(is_run_only)
-        self._channel = grpc.insecure_channel("localhost:" + str(port))
+        self._instance: Optional[pypim.Instance] = None
+        self._process: Optional[MCDProcess] = None
+        self._channel: Optional[grpc.Channel] = None
+        self._launch_modelcenter()
         self._stub = self._create_client(self._channel)
         self._workflow_id: Optional[str] = None
 
@@ -48,11 +50,31 @@ class Engine(IEngine):
         """Clean up when leaving a 'with' block."""
         self.close()
 
+    def _launch_modelcenter(self) -> None:
+        """Launch ModelCenter, using pypim if it is configured."""
+        if pypim.is_configured():
+            if self._is_run_only:
+                raise Exception("pypim does not support running ModelCenter in run-only mode.")
+            else:
+                pim = pypim.connect()
+                self._instance = pim.create_instance(
+                    product_name="modelcenter-desktop", product_version=None
+                )
+                self._instance.wait_for_ready()
+                self._channel = self._instance.build_grpc_channel()
+        else:
+            self._process = MCDProcess()
+            port: int = self._process.start(self._is_run_only)
+            self._channel = grpc.insecure_channel("localhost:" + str(port))
+
     @interpret_rpc_error()
     def close(self):
         """Shut down the grpc server and clear out all objects."""
-        request = eng_msg.ShutdownRequest()
-        self._stub.Shutdown(request)
+        if self._instance is not None:
+            self._instance.delete()
+        else:
+            request = eng_msg.ShutdownRequest()
+            self._stub.Shutdown(request)
         self._stub = None
 
         self._channel.close()
@@ -68,8 +90,11 @@ class Engine(IEngine):
     @property
     def process_id(self) -> int:
         """Get the id of the connected process; useful for debugging."""
-        # Can also get this via grpc if we want.
-        return self._process.get_process_id()  # pragma: no cover
+        if self._process is not None:
+            return self._process.get_process_id()  # pragma: no cover
+        else:
+            # Can get this via grpc if we want; just useful for debugging, so leaving out for now.
+            return -1
 
     @interpret_rpc_error(
         {grpc.StatusCode.RESOURCE_EXHAUSTED: WorkflowAlreadyLoadedError, **WRAP_INVALID_ARG}
