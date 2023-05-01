@@ -2,11 +2,11 @@ from typing import Dict, Optional
 import unittest.mock
 
 import ansys.common.variableinterop as acvi
-import ansys.engineeringworkflow.api.datatypes
+import ansys.engineeringworkflow.api as aew_api
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
-from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component, EngineInternalError
+from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
@@ -244,7 +244,7 @@ def test_can_get_parent_grpc_reports_nonassembly(monkeypatch) -> None:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(sut_element_id, None)
 
-        with pytest.raises(EngineInternalError):
+        with pytest.raises(aew_api.EngineInternalError):
             sut.parent_assembly
 
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -457,7 +457,7 @@ def test_assembly_get_int_metadata_property(monkeypatch) -> None:
                 id=ElementId(id_string="GET_METADATA"), property_name="mock_property_name"
             )
         )
-        assert isinstance(result, ansys.engineeringworkflow.api.datatypes.Property)
+        assert isinstance(result, aew_api.Property)
         assert result.property_name == "mock_property_name"
         assert result.parent_element_id == "GET_METADATA"
         assert result.property_value == acvi.IntegerValue(47)

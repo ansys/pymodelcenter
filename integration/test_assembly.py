@@ -1,8 +1,8 @@
 import ansys.common.variableinterop as acvi
+import ansys.engineeringworkflow.api as aew_api
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
@@ -170,7 +170,7 @@ def test_adding_data_assembly_to_populated_data_assembly_name_collision(workflow
     ), "The number of assemblies should be 4 before taking any action."
 
     # Execute
-    with pytest.raises(grpcmc.NameCollisionError):
+    with pytest.raises(aew_api.NameCollisionError):
         target_assembly.add_assembly("Quad")
 
     # Verify
@@ -212,7 +212,7 @@ def test_adding_datapin_to_data_assembly_name_collision(workflow):
     assert datapin.full_name == "Model.main_branch.データ"
 
     # Execute
-    with pytest.raises(grpcmc.NameCollisionError):
+    with pytest.raises(aew_api.NameCollisionError):
         target_assembly.add_datapin("データ", acvi.VariableType.BOOLEAN)
 
     # Verify
@@ -247,7 +247,7 @@ def test_rename_name_collision(workflow):
     no_children: mc_api.IAssembly = workflow.get_assembly("Model.main_branch.empty_seq")
 
     # Execute
-    with pytest.raises(grpcmc.NameCollisionError):
+    with pytest.raises(aew_api.NameCollisionError):
         no_children.rename("has_items")
 
     # Verify
