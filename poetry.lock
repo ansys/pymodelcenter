@@ -78,8 +78,8 @@ test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/pyansys/ansys-engineeringworkflow-api.git"
-reference = "80576ed"
-resolved_reference = "80576eda16a77feea6a1afb553e7a3e3161154cc"
+reference = "316f643"
+resolved_reference = "316f6435a8ba8b7e14d6550ed935e5ef42250dea"
 
 [[package]]
 name = "ansys-sphinx-theme"
@@ -1414,4 +1414,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "b5697e7d72f2ede73ac86de882f13f056b564f3e0d751fb6f0227e857200f063"
+content-hash = "0a9719ef8fb8ccc804bf0cbd3e31e7111f0a8ba29b0e9cb0a6fae0c69a232287"

@@ -235,7 +235,7 @@ def test_can_manipulate_type_specific_variable_information(
 
     # Act
     variable.set_value(value)
-    value_result: ewapi.VariableState = variable.get_value(hid=None)
+    value_result: ewapi.VariableState = variable.get_value()
 
     # Assert
     assert value_result == value

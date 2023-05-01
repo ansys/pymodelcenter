@@ -27,6 +27,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.real_datapin import RealArrayDa
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .test_variable import (
     do_get_state_test,
+    do_get_state_test_with_hid,
     do_get_type_test,
     do_test_is_input_component,
     do_test_is_input_workflow,
@@ -600,6 +601,14 @@ def test_scalar_get_state(
         ),
         expected_acvi_state,
     )
+
+
+def test_scalar_get_state_with_hid(monkeypatch):
+    do_get_state_test_with_hid(monkeypatch, RealDatapin)
+
+
+def test_array_get_state_with_hid(monkeypatch):
+    do_get_state_test_with_hid(monkeypatch, RealArrayDatapin)
 
 
 @pytest.mark.parametrize(
