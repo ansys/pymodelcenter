@@ -33,6 +33,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .test_variable import (
     do_get_state_test,
+    do_get_state_test_with_hid,
     do_get_type_test,
     do_test_is_input_component,
     do_test_is_input_workflow,
@@ -472,6 +473,10 @@ def test_scalar_get_state(
     )
 
 
+def test_scalar_get_state_with_hid(monkeypatch):
+    do_get_state_test_with_hid(monkeypatch, BooleanDatapin)
+
+
 @pytest.mark.parametrize(
     "value_in_response,validity_in_response,expected_acvi_state",
     [
@@ -500,6 +505,10 @@ def test_array_get_state(monkeypatch, value_in_response, validity_in_response, e
         ),
         expected_acvi_state,
     )
+
+
+def test_array_get_state_with_hid(monkeypatch):
+    do_get_state_test_with_hid(monkeypatch, BooleanArrayDatapin)
 
 
 @pytest.mark.parametrize(

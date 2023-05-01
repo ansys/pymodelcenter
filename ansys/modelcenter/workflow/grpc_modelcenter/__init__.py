@@ -19,11 +19,8 @@ from .format import Format
 from .group import Group
 from .grpc_error_interpretation import (
     EngineDisconnectedError,
-    EngineInternalError,
     InvalidInstanceError,
-    NameCollisionError,
     UnexpectedEngineError,
-    ValueOutOfRangeError,
 )
 from .integer_datapin import IntegerArrayDatapin, IntegerDatapin
 from .mcd_process import MCDProcess

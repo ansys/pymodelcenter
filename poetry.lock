@@ -95,8 +95,8 @@ test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/pyansys/ansys-engineeringworkflow-api.git"
-reference = "9cce44c"
-resolved_reference = "9cce44c1a06d6c15187d78ceae3c106da97ae4ff"
+reference = "316f643"
+resolved_reference = "316f6435a8ba8b7e14d6550ed935e5ef42250dea"
 
 [[package]]
 name = "ansys-platform-instancemanagement"
