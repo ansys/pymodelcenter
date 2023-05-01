@@ -1,5 +1,5 @@
 """ansys.modelcenter.workflow.api module initialization."""
-from .iassembly import IAssembly, IAssemblyChild
+from .iassembly import AssemblyType, IAssembly, IAssemblyChild
 from .ibooleanarraydatapin import IBooleanArrayDatapin
 from .ibooleandatapin import IBooleanDatapin
 from .icomponent import IComponent
