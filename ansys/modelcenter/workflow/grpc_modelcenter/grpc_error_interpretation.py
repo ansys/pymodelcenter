@@ -3,6 +3,7 @@
 import functools
 from typing import Mapping, Type
 
+import ansys.engineeringworkflow.api as aew_api
 import grpc
 
 
@@ -27,12 +28,6 @@ class UnexpectedEngineError(Exception):
         )
 
 
-class EngineInternalError(Exception):
-    """Raised when the gRPC client reports an internal error in the ModelCenter engine."""
-
-    ...
-
-
 class EngineDisconnectedError(Exception):
     """Raised when the gRPC client indicates that the ModelCenter service is not available."""
 
@@ -55,12 +50,6 @@ class InvalidInstanceError(Exception):
         )
 
 
-class NameCollisionError(ValueError):
-    """Raised when an operation that creates a named item requests a valid name already in use."""
-
-    ...
-
-
 class ValueOutOfRangeError(ValueError):
     """Raised when a gRPC error indicates that an argument value is out of range."""
 
@@ -69,7 +58,7 @@ class ValueOutOfRangeError(ValueError):
 
 __DEFAULT_STATUS_EXCEPTION_TYPE_MAP: Mapping[grpc.StatusCode, Type[Exception]] = {
     grpc.StatusCode.UNAVAILABLE: EngineDisconnectedError,
-    grpc.StatusCode.INTERNAL: EngineInternalError,
+    grpc.StatusCode.INTERNAL: aew_api.EngineInternalError,
 }
 """
 The default map of entirely unambiguous status codes to the exception types they should raise.
@@ -129,7 +118,7 @@ def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exceptio
 
 
 WRAP_NAME_COLLISION: Mapping[grpc.StatusCode, Type[Exception]] = {
-    grpc.StatusCode.ALREADY_EXISTS: NameCollisionError
+    grpc.StatusCode.ALREADY_EXISTS: aew_api.NameCollisionError
 }
 """
 Pass this to wrap_rpcerror to wrap ALREADY_EXISTS as a NameCollisionError.
@@ -162,7 +151,7 @@ Do not attempt to modify this map.
 """
 
 WRAP_OUT_OF_BOUNDS: Mapping[grpc.StatusCode, Type[Exception]] = {
-    grpc.StatusCode.OUT_OF_RANGE: ValueOutOfRangeError
+    grpc.StatusCode.OUT_OF_RANGE: aew_api.ValueOutOfRangeError
 }
 """
 Pass this to wrap_rpcerror when the responsibility for out-of-range arguments is the caller's.

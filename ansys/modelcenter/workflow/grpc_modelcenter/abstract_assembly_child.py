@@ -2,17 +2,14 @@
 from abc import ABC
 from typing import Optional, Tuple
 
+import ansys.engineeringworkflow.api as aew_api
 from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_wfe
 
-from .grpc_error_interpretation import (
-    WRAP_TARGET_NOT_FOUND,
-    EngineInternalError,
-    interpret_rpc_error,
-)
+from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
 
 
@@ -36,7 +33,7 @@ class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemb
     def parent_assembly(self) -> Optional[mc_api.IAssembly]:
         result = self.get_parent_element()
         if not (result is None or isinstance(result, mc_api.IAssembly)):
-            raise EngineInternalError(
+            raise aew_api.EngineInternalError(
                 f"The parent of an assembly or component should only ever be an assembly, "
                 f"but found a {result.__class__} instead"
             )

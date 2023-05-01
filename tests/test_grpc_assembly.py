@@ -2,11 +2,11 @@ from typing import Dict, Optional
 import unittest.mock
 
 import ansys.common.variableinterop as acvi
-import ansys.engineeringworkflow.api.datatypes
+import ansys.engineeringworkflow.api as aew_api
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
-from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component, EngineInternalError
+from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
@@ -244,7 +244,7 @@ def test_can_get_parent_grpc_reports_nonassembly(monkeypatch) -> None:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(sut_element_id, None)
 
-        with pytest.raises(EngineInternalError):
+        with pytest.raises(aew_api.EngineInternalError):
             sut.parent_assembly
 
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -270,6 +270,7 @@ def test_get_child_elements_empty(monkeypatch) -> None:
 def test_get_child_elements_one_child(monkeypatch, type_in_response, expected_wrapper_type) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     child_id = "CHILD_ID_STRING"
+    mock_client.name_responses[child_id] = "child"
     one_child_assembly = ElementInfo(id=ElementId(id_string=child_id), type=type_in_response)
     response = ElementInfoCollection(elements=[one_child_assembly])
     fake_name = ElementName(name="FAKE_NAME")
@@ -283,9 +284,9 @@ def test_get_child_elements_one_child(monkeypatch, type_in_response, expected_wr
             sut = Assembly(ElementId(id_string="SINGLE_CHILD"), None)
             result = sut.get_elements()
             assert len(result) == 1
-            assert isinstance(result[0], expected_wrapper_type)
+            assert isinstance(result["child"], expected_wrapper_type)
             mock_get_assembly_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
-            name = result[0].full_name
+            name = result["child"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string=child_id))
 
 
@@ -294,12 +295,15 @@ def test_get_child_assemblies_multiple_children(monkeypatch) -> None:
     larry_assembly_info = ElementInfo(
         id=ElementId(id_string="IDASSEMBLY_LARRY"), type=ElementType.ELEMTYPE_ASSEMBLY
     )
+    mock_client.name_responses["IDASSEMBLY_LARRY"] = "larry"
     moe_comp_info = ElementInfo(
         id=ElementId(id_string="IDCOMP_MOE"), type=ElementType.ELEMTYPE_COMPONENT
     )
+    mock_client.name_responses["IDCOMP_MOE"] = "moe"
     curly_assembly_info = ElementInfo(
         id=ElementId(id_string="IDASSEMBLY_CURLY"), type=ElementType.ELEMTYPE_ASSEMBLY
     )
+    mock_client.name_responses["IDASSEMBLY_CURLY"] = "curly"
     response = ElementInfoCollection(
         elements=[larry_assembly_info, moe_comp_info, curly_assembly_info]
     )
@@ -314,17 +318,17 @@ def test_get_child_assemblies_multiple_children(monkeypatch) -> None:
             sut = Assembly(ElementId(id_string="STOOGES"), None)
             result = sut.get_elements()
             assert len(result) == 3
-            assert isinstance(result[0], Assembly)
-            assert isinstance(result[1], Component)
-            assert isinstance(result[2], Assembly)
+            assert isinstance(result["larry"], Assembly)
+            assert isinstance(result["moe"], Component)
+            assert isinstance(result["curly"], Assembly)
             mock_get_assembly_method.assert_called_once_with(ElementId(id_string="STOOGES"))
-            name = result[0].full_name
+            name = result["larry"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string="IDASSEMBLY_LARRY"))
             mock_get_name_method.reset_mock()
-            name = result[1].full_name
+            name = result["moe"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string="IDCOMP_MOE"))
             mock_get_name_method.reset_mock()
-            name = result[2].full_name
+            name = result["curly"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string="IDASSEMBLY_CURLY"))
 
 
@@ -453,7 +457,7 @@ def test_assembly_get_int_metadata_property(monkeypatch) -> None:
                 id=ElementId(id_string="GET_METADATA"), property_name="mock_property_name"
             )
         )
-        assert isinstance(result, ansys.engineeringworkflow.api.datatypes.Property)
+        assert isinstance(result, aew_api.Property)
         assert result.property_name == "mock_property_name"
         assert result.parent_element_id == "GET_METADATA"
         assert result.property_value == acvi.IntegerValue(47)
