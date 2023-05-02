@@ -554,6 +554,7 @@ def test_add_assembly_no_position(monkeypatch) -> None:
             AddAssemblyRequest(
                 name=ElementName(name="new_assembly_name"),
                 parent=ElementId(id_string="TARGET_ASSEMBLY"),
+                assembly_type="Assembly",
             )
         )
         assert isinstance(result, Assembly)
