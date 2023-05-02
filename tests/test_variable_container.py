@@ -128,7 +128,7 @@ def do_test_get_groups_empty(monkeypatch, sut_type) -> None:
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(ElementId(id_string="NO_GROUPS"), None)
-        result = sut.groups
+        result = sut.get_groups()
         assert len(result) == 0
         mock_method.assert_called_once_with(ElementId(id_string="NO_GROUPS"))
 
@@ -143,7 +143,7 @@ def do_test_get_groups_one_group(monkeypatch, sut_type) -> None:
     ) as mock_get_group_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(ElementId(id_string="SINGLE_CHILD"), None)
-        result = sut.groups
+        result = sut.get_groups()
         mock_get_group_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
         assert len(result) == 1
         assert isinstance(result["child_group"], Group)
@@ -167,7 +167,7 @@ def do_test_get_groups_multiple_groups(monkeypatch, sut_type) -> None:
     ) as mock_get_group_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(ElementId(id_string="STOOGES"), None)
-        result = sut.groups
+        result = sut.get_groups()
         mock_get_group_method.assert_called_once_with(ElementId(id_string="STOOGES"))
         assert len(result) == 3
         assert isinstance(result["larry"], Group)

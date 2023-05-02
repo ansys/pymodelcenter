@@ -42,10 +42,9 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
         """
         super(AbstractGRPCDatapinContainer, self).__init__(element_id=element_id, channel=channel)
 
-    @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def groups(self) -> Mapping[str, mc_api.IGroup]:
+    def get_groups(self) -> Mapping[str, mc_api.IGroup]:
         # LTTODO: alter gRPC response so that short names are included in the first place.
         """Get the child groups of this element."""
         result = self._client.RegistryGetGroups(self._element_id)
