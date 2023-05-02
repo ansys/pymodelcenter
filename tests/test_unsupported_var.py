@@ -1,4 +1,4 @@
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
@@ -26,7 +26,7 @@ def test_set_metadata(monkeypatch) -> None:
 
     # SUT/Verification
     with pytest.raises(DatapinWithUnsupportedTypeException):
-        sut.set_metadata(acvi.BooleanMetadata())
+        sut.set_metadata(atvi.BooleanMetadata())
 
 
 def test_set_value(monkeypatch) -> None:

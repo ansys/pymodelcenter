@@ -3,9 +3,9 @@
 from abc import ABC
 from typing import AbstractSet, Mapping, Optional
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 from ansys.engineeringworkflow.api import Property
+import ansys.tools.variableinterop as atvi
 import grpc
 from overrides import overrides
 
@@ -70,11 +70,11 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
         grpc_value: VariableValue = self._client.PropertyOwnerGetPropertyValue(
             MetadataGetValueRequest(id=self._element_id, property_name=property_name)
         )
-        acvi_value = convert_grpc_value_to_acvi(grpc_value)
+        atvi_value = convert_grpc_value_to_acvi(grpc_value)
         return aew_api.Property(
             parent_element_id=self._element_id.id_string,
             property_name=property_name,
-            property_value=acvi_value,
+            property_value=atvi_value,
         )
 
     @interpret_rpc_error({**WRAP_INVALID_ARG, **WRAP_TARGET_NOT_FOUND})
@@ -91,7 +91,7 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
 
     @interpret_rpc_error({**WRAP_INVALID_ARG, **WRAP_TARGET_NOT_FOUND})
     @overrides
-    def set_property(self, property_name: str, property_value: acvi.IVariableValue) -> None:
+    def set_property(self, property_name: str, property_value: atvi.IVariableValue) -> None:
         grpc_value = convert_interop_value_to_grpc(property_value)
         self._client.PropertyOwnerSetPropertyValue(
             MetadataSetValueRequest(

@@ -2,8 +2,8 @@
 import os
 from typing import AbstractSet, Any, Collection, List, Mapping, Optional, Tuple, Type, Union
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as engapi
+import ansys.tools.variableinterop as atvi
 import grpc
 from grpc import Channel
 import numpy as np
@@ -90,7 +90,7 @@ class Workflow(wfapi.IWorkflow):
 
     def _create_run_request(
         self,
-        inputs: Mapping[str, acvi.VariableState],
+        inputs: Mapping[str, atvi.VariableState],
         reset: bool,
         validation_names: AbstractSet[str],
         collection_names: AbstractSet[str],
@@ -103,7 +103,7 @@ class Workflow(wfapi.IWorkflow):
         )
 
         var_id: str
-        var_state: acvi.VariableState
+        var_state: atvi.VariableState
         for var_id, var_state in inputs.items():
             request.inputs[var_id].is_valid = var_state.is_valid
             request.inputs[var_id].value.MergeFrom(convert_interop_value_to_grpc(var_state.value))
@@ -121,11 +121,11 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def run(
         self,
-        inputs: Mapping[str, acvi.VariableState] = {},
+        inputs: Mapping[str, atvi.VariableState] = {},
         reset: bool = False,
         validation_names: AbstractSet[str] = set(),
         collect_names: AbstractSet[str] = set(),
-    ) -> Mapping[str, acvi.VariableState]:
+    ) -> Mapping[str, atvi.VariableState]:
         request: workflow_msg.WorkflowRunRequest = self._create_run_request(
             inputs, reset, validation_names, collect_names
         )
@@ -133,7 +133,7 @@ class Workflow(wfapi.IWorkflow):
         elem_id: str
         response_var_state: var_val_msg.VariableState
         return {
-            elem_id: acvi.VariableState(
+            elem_id: atvi.VariableState(
                 is_valid=response_var_state.is_valid,
                 value=convert_grpc_value_to_acvi(response_var_state.value),
             )
@@ -144,7 +144,7 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def start_run(
         self,
-        inputs: Mapping[str, acvi.VariableState],
+        inputs: Mapping[str, atvi.VariableState],
         reset: bool,
         validation_names: AbstractSet[str],
     ) -> None:
@@ -193,7 +193,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_value(self, var_name: str) -> acvi.VariableState:
+    def get_value(self, var_name: str) -> atvi.VariableState:
         request = workflow_msg.ElementIdOrName(
             target_name=workflow_msg.NamedElementInWorkflow(
                 element_full_name=element_msg.ElementName(name=var_name),
@@ -202,34 +202,34 @@ class Workflow(wfapi.IWorkflow):
         )
         response: var_val_msg.VariableState = self._stub.VariableGetState(request)
 
-        def convert(val: ArrayLike, dims: ArrayLike, val_type: Type) -> acvi.IVariableValue:
+        def convert(val: ArrayLike, dims: ArrayLike, val_type: Type) -> atvi.IVariableValue:
             return val_type(shape_=dims, values=np.array(val).flatten())
 
         attr: Optional[str] = response.value.WhichOneof("value")
         value: Any = None
         if attr is not None:
             value = getattr(response.value, attr)
-        acvi_value: acvi.IVariableValue
+        atvi_value: atvi.IVariableValue
         if isinstance(value, bool):
-            acvi_value = acvi.BooleanValue(value)
+            atvi_value = atvi.BooleanValue(value)
         elif isinstance(value, float):
-            acvi_value = acvi.RealValue(value)
+            atvi_value = atvi.RealValue(value)
         elif isinstance(value, int):
-            acvi_value = acvi.IntegerValue(value)
+            atvi_value = atvi.IntegerValue(value)
         elif isinstance(value, str):
-            acvi_value = acvi.StringValue(value)
+            atvi_value = atvi.StringValue(value)
         elif isinstance(value, var_val_msg.DoubleArrayValue):
-            acvi_value = convert(value.values, value.dims.dims, acvi.RealArrayValue)
+            atvi_value = convert(value.values, value.dims.dims, atvi.RealArrayValue)
         elif isinstance(value, var_val_msg.IntegerArrayValue):
-            acvi_value = convert(value.values, value.dims.dims, acvi.IntegerArrayValue)
+            atvi_value = convert(value.values, value.dims.dims, atvi.IntegerArrayValue)
         elif isinstance(value, var_val_msg.BooleanArrayValue):
-            acvi_value = convert(value.values, value.dims.dims, acvi.BooleanArrayValue)
+            atvi_value = convert(value.values, value.dims.dims, atvi.BooleanArrayValue)
         elif isinstance(value, var_val_msg.StringArrayValue):
-            acvi_value = convert(value.values, value.dims.dims, acvi.StringArrayValue)
+            atvi_value = convert(value.values, value.dims.dims, atvi.StringArrayValue)
         else:
             # unsupported type (should be impossible)
             raise TypeError(f"Unsupported type was returned: {type(value)}")
-        return acvi.VariableState(acvi_value, response.is_valid)
+        return atvi.VariableState(atvi_value, response.is_valid)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
@@ -446,8 +446,8 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
-        metadata: acvi.CommonVariableMetadata = None
+    def get_variable_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
+        metadata: atvi.CommonVariableMetadata = None
         request = workflow_msg.NamedElementInWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),
@@ -460,34 +460,34 @@ class Workflow(wfapi.IWorkflow):
         var_type: var_val_msg.VariableType = response.var_type
 
         if var_type == var_val_msg.VARTYPE_BOOLEAN:
-            metadata = acvi.BooleanMetadata()
+            metadata = atvi.BooleanMetadata()
             self._set_bool_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_INTEGER:
-            metadata = acvi.IntegerMetadata()
+            metadata = atvi.IntegerMetadata()
             self._set_int_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_REAL:
-            metadata = acvi.RealMetadata()
+            metadata = atvi.RealMetadata()
             self._set_real_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_STRING:
-            metadata = acvi.StringMetadata()
+            metadata = atvi.StringMetadata()
             self._set_string_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_FILE:
-            metadata = acvi.FileMetadata()
+            metadata = atvi.FileMetadata()
             self._set_file_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
-            metadata = acvi.BooleanArrayMetadata()
+            metadata = atvi.BooleanArrayMetadata()
             self._set_bool_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
-            metadata = acvi.IntegerArrayMetadata()
+            metadata = atvi.IntegerArrayMetadata()
             self._set_int_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
-            metadata = acvi.RealArrayMetadata()
+            metadata = atvi.RealArrayMetadata()
             self._set_real_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
-            metadata = acvi.StringArrayMetadata()
+            metadata = atvi.StringArrayMetadata()
             self._set_string_metadata(elem_id, metadata)
         elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
-            metadata = acvi.FileArrayMetadata()
+            metadata = atvi.FileArrayMetadata()
             self._set_file_metadata(elem_id, metadata)
         else:
             raise ValueError("Unknown variable type.")
@@ -496,7 +496,7 @@ class Workflow(wfapi.IWorkflow):
     def _set_bool_metadata(
         self,
         var_id: element_msg.ElementId,
-        metadata: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+        metadata: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
     ) -> None:
         """
         Query grpc for metadata for a boolean variable, and populate the given metadata object.
@@ -505,7 +505,7 @@ class Workflow(wfapi.IWorkflow):
         ----------
         var_id: ElementId
         The id of the variable.
-        metadata: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata]
+        metadata: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata]
         The metadata object to populate.
         """
         response: var_val_msg.BooleanVariableMetadata = self._stub.BooleanVariableGetMetadata(
@@ -516,7 +516,7 @@ class Workflow(wfapi.IWorkflow):
     def _set_real_metadata(
         self,
         var_id: element_msg.ElementId,
-        metadata: Union[acvi.RealMetadata, acvi.RealArrayMetadata],
+        metadata: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
     ) -> None:
         """
         Query grpc for metadata for a real variable, and populate the given metadata object.
@@ -525,7 +525,7 @@ class Workflow(wfapi.IWorkflow):
         ----------
         var_id: ElementId
         The id of the variable.
-        metadata: Union[acvi.RealMetadata, acvi.RealArrayMetadata]
+        metadata: Union[atvi.RealMetadata, atvi.RealArrayMetadata]
         The metadata object to populate.
         """
         response: var_val_msg.DoubleVariableMetadata = self._stub.DoubleVariableGetMetadata(var_id)
@@ -540,7 +540,7 @@ class Workflow(wfapi.IWorkflow):
     def _set_int_metadata(
         self,
         var_id: element_msg.ElementId,
-        metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+        metadata: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
     ) -> None:
         """
         Query grpc for metadata for an integer variable, and populate the given metadata object.
@@ -549,7 +549,7 @@ class Workflow(wfapi.IWorkflow):
         ----------
         var_id: ElementId
         The id of the variable.
-        metadata: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata]
+        metadata: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata]
         The metadata object to populate.
         """
         response: var_val_msg.IntegerVariableMetadata = self._stub.IntegerVariableGetMetadata(
@@ -566,7 +566,7 @@ class Workflow(wfapi.IWorkflow):
     def _set_string_metadata(
         self,
         var_id: element_msg.ElementId,
-        metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata],
+        metadata: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
     ) -> None:
         """
         Query grpc for metadata for a string variable, and populate the given metadata object.
@@ -575,7 +575,7 @@ class Workflow(wfapi.IWorkflow):
         ----------
         var_id: ElementId
         The id of the variable.
-        metadata: Union[acvi.StringMetadata, acvi.StringArrayMetadata]
+        metadata: Union[atvi.StringMetadata, atvi.StringArrayMetadata]
         The metadata object to populate.
         """
         response: var_val_msg.StringVariableMetadata = self._stub.StringVariableGetMetadata(var_id)
@@ -586,7 +586,7 @@ class Workflow(wfapi.IWorkflow):
     def _set_file_metadata(
         self,
         var_id: element_msg.ElementId,
-        metadata: Union[acvi.FileMetadata, acvi.FileArrayMetadata],
+        metadata: Union[atvi.FileMetadata, atvi.FileArrayMetadata],
     ) -> None:
         """
         Query grpc for metadata for a file variable, and populate the given metadata object.
@@ -595,7 +595,7 @@ class Workflow(wfapi.IWorkflow):
         ----------
         var_id: ElementId
         The id of the variable.
-        metadata: Union[acvi.FileMetadata, acvi.FileArrayMetadata]
+        metadata: Union[atvi.FileMetadata, atvi.FileArrayMetadata]
         The metadata object to populate.
         """
         response: var_val_msg.FileVariableMetadata = self._stub.FileVariableGetMetadata(var_id)
@@ -603,6 +603,6 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
+    def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
         var = self.get_variable(var_name)
-        var.set_value(acvi.VariableState(value, True))
+        var.set_value(atvi.VariableState(value, True))

@@ -1,7 +1,7 @@
 """Definitions for array of doubles variables."""
 from abc import ABC, abstractmethod
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
 from .idatapin import IDatapin
@@ -12,5 +12,5 @@ class IRealArrayDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> acvi.RealArrayMetadata:
+    def get_metadata(self) -> atvi.RealArrayMetadata:
         ...  # pragma: no cover

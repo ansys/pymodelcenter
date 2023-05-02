@@ -1,8 +1,8 @@
 from typing import Dict, Optional
 import unittest.mock
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
@@ -377,20 +377,20 @@ def test_get_groups_multiple_groups(monkeypatch) -> None:
 @pytest.mark.parametrize(
     "var_type,expected_var_type_in_request",
     [
-        (acvi.VariableType.INTEGER, "int"),
-        (acvi.VariableType.REAL, "real"),
-        (acvi.VariableType.BOOLEAN, "bool"),
-        (acvi.VariableType.STRING, "string"),
-        (acvi.VariableType.FILE, "file"),
-        (acvi.VariableType.INTEGER_ARRAY, "int[]"),
-        (acvi.VariableType.REAL_ARRAY, "real[]"),
-        (acvi.VariableType.BOOLEAN_ARRAY, "bool[]"),
-        (acvi.VariableType.STRING_ARRAY, "string[]"),
-        (acvi.VariableType.FILE_ARRAY, "file[]"),
+        (atvi.VariableType.INTEGER, "int"),
+        (atvi.VariableType.REAL, "real"),
+        (atvi.VariableType.BOOLEAN, "bool"),
+        (atvi.VariableType.STRING, "string"),
+        (atvi.VariableType.FILE, "file"),
+        (atvi.VariableType.INTEGER_ARRAY, "int[]"),
+        (atvi.VariableType.REAL_ARRAY, "real[]"),
+        (atvi.VariableType.BOOLEAN_ARRAY, "bool[]"),
+        (atvi.VariableType.STRING_ARRAY, "string[]"),
+        (atvi.VariableType.FILE_ARRAY, "file[]"),
     ],
 )
 def test_assembly_create_variable(
-    monkeypatch, var_type: acvi.VariableType, expected_var_type_in_request: str
+    monkeypatch, var_type: atvi.VariableType, expected_var_type_in_request: str
 ) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = AddAssemblyVariableResponse(id=ElementId(id_string="CREATED_VAR"))
@@ -422,7 +422,7 @@ def test_assembly_create_variable_unknown_type(monkeypatch) -> None:
         with pytest.raises(
             ValueError, match="Cannot determine a ModelCenter type for an unknown variable type."
         ):
-            sut.add_datapin("created_variable_name", acvi.VariableType.UNKNOWN)
+            sut.add_datapin("created_variable_name", atvi.VariableType.UNKNOWN)
         mock_add_var_method.assert_not_called()
 
 
@@ -460,7 +460,7 @@ def test_assembly_get_int_metadata_property(monkeypatch) -> None:
         assert isinstance(result, aew_api.Property)
         assert result.property_name == "mock_property_name"
         assert result.parent_element_id == "GET_METADATA"
-        assert result.property_value == acvi.IntegerValue(47)
+        assert result.property_value == atvi.IntegerValue(47)
 
 
 def test_assembly_set_int_metadata_property(monkeypatch) -> None:
@@ -471,7 +471,7 @@ def test_assembly_set_int_metadata_property(monkeypatch) -> None:
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="SET_METADATA"), None)
-        sut.set_property("mock_property_name", acvi.IntegerValue(47))
+        sut.set_property("mock_property_name", atvi.IntegerValue(47))
         mock_method.assert_called_once_with(
             MetadataSetValueRequest(
                 id=ElementId(id_string="SET_METADATA"),

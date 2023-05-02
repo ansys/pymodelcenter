@@ -1,6 +1,6 @@
 """Defines functions for converting between ACVI metadata and gRPC messages."""
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 
 from .proto.variable_value_messages_pb2 import (
     BaseVariableMetadata,
@@ -23,7 +23,7 @@ class CustomMetadataValueNotSupportedError(ValueTypeNotSupportedError):
 
 
 def _extract_base_metadata(
-    source: BaseVariableMetadata, target: acvi.CommonVariableMetadata
+    source: BaseVariableMetadata, target: atvi.CommonVariableMetadata
 ) -> None:
     """Extract ACVI CommonVariableMetadata fields from the corresponding gRPC message type."""
     target.description = source.description
@@ -42,30 +42,30 @@ def _extract_base_metadata(
 
 
 def _extract_numeric_metadata(
-    source: NumericVariableMetadata, target: acvi.NumericMetadata
+    source: NumericVariableMetadata, target: atvi.NumericMetadata
 ) -> None:
     """Extract ACVI NumericVariableMetadata fields from the corresponding gRPC message type."""
     target.units = source.units
     target.display_format = source.display_format
 
 
-def convert_grpc_boolean_metadata(source: BooleanVariableMetadata) -> acvi.BooleanMetadata:
+def convert_grpc_boolean_metadata(source: BooleanVariableMetadata) -> atvi.BooleanMetadata:
     """Given a gRPC boolean variable metadata message, produce an equivalent ACVI metadata."""
-    target = acvi.BooleanMetadata()
+    target = atvi.BooleanMetadata()
     _extract_base_metadata(source.base_metadata, target)
     return target
 
 
 def convert_grpc_boolean_array_metadata(
     source: BooleanVariableMetadata,
-) -> acvi.BooleanArrayMetadata:
+) -> atvi.BooleanArrayMetadata:
     """Given a gRPC boolean array variable metadata message, produce an equivalent ACVI metadata."""
-    target = acvi.BooleanArrayMetadata()
+    target = atvi.BooleanArrayMetadata()
     _extract_base_metadata(source.base_metadata, target)
     return target
 
 
-def _fill_base_metadata(source: acvi.CommonVariableMetadata, target: BaseVariableMetadata):
+def _fill_base_metadata(source: atvi.CommonVariableMetadata, target: BaseVariableMetadata):
     """Fill out a gRPC message representing ACVI common variable metadata."""
     target.description = source.description
     # Can't use a dict comprehension here because you can't assign the dict directly.
@@ -74,7 +74,7 @@ def _fill_base_metadata(source: acvi.CommonVariableMetadata, target: BaseVariabl
 
 
 def fill_boolean_metadata_message(
-    source: acvi.BooleanMetadata, target: BooleanVariableMetadata
+    source: atvi.BooleanMetadata, target: BooleanVariableMetadata
 ) -> None:
     """
     Fill out a gRPC message representing ACVI boolean metadata.
@@ -84,19 +84,19 @@ def fill_boolean_metadata_message(
     _fill_base_metadata(source, target.base_metadata)
 
 
-def _extract_real_metadata(source: DoubleVariableMetadata, target: acvi.RealMetadata) -> None:
+def _extract_real_metadata(source: DoubleVariableMetadata, target: atvi.RealMetadata) -> None:
     """Extract information for an ACVI real metadata from a gRPC message."""
     _extract_base_metadata(source.base_metadata, target)
     _extract_numeric_metadata(source.numeric_metadata, target)
     target.lower_bound = source.lower_bound if source.HasField("lower_bound") else None
     target.upper_bound = source.upper_bound if source.HasField("upper_bound") else None
     target.enumerated_values = [
-        acvi.RealValue(source_enum_value) for source_enum_value in source.enum_values
+        atvi.RealValue(source_enum_value) for source_enum_value in source.enum_values
     ]
     target.enumerated_aliases = [source_alias for source_alias in source.enum_aliases]
 
 
-def _fill_numeric_metadata(source: acvi.NumericMetadata, target: NumericVariableMetadata) -> None:
+def _fill_numeric_metadata(source: atvi.NumericMetadata, target: NumericVariableMetadata) -> None:
     """
     Fill out a gRPC message representing a numeric metadata.
 
@@ -107,7 +107,7 @@ def _fill_numeric_metadata(source: acvi.NumericMetadata, target: NumericVariable
     target.display_format = source.display_format
 
 
-def fill_real_metadata_message(source: acvi.RealMetadata, target: DoubleVariableMetadata) -> None:
+def fill_real_metadata_message(source: atvi.RealMetadata, target: DoubleVariableMetadata) -> None:
     """
     Fill out a gRPC message representing real metadata.
 
@@ -126,22 +126,22 @@ def fill_real_metadata_message(source: acvi.RealMetadata, target: DoubleVariable
         target.enum_aliases.append(source_enum_alias)
 
 
-def convert_grpc_real_metadata(source: DoubleVariableMetadata) -> acvi.RealMetadata:
+def convert_grpc_real_metadata(source: DoubleVariableMetadata) -> atvi.RealMetadata:
     """Create an ACVI metadata object for a real variable from a gRPC message."""
-    target = acvi.RealMetadata()
+    target = atvi.RealMetadata()
     _extract_real_metadata(source, target)
     return target
 
 
-def convert_grpc_real_array_metadata(source: DoubleVariableMetadata) -> acvi.RealArrayMetadata:
+def convert_grpc_real_array_metadata(source: DoubleVariableMetadata) -> atvi.RealArrayMetadata:
     """Create an ACVI metadata object for a real array variable from a gRPC message."""
-    target = acvi.RealArrayMetadata()
+    target = atvi.RealArrayMetadata()
     _extract_real_metadata(source, target)
     return target
 
 
 def _extract_integer_metadata(
-    source: IntegerVariableMetadata, target: acvi.IntegerMetadata
+    source: IntegerVariableMetadata, target: atvi.IntegerMetadata
 ) -> None:
     """Extract information from an integer metadata gRPC message onto an ACVI metadata object."""
     _extract_base_metadata(source.base_metadata, target)
@@ -149,13 +149,13 @@ def _extract_integer_metadata(
     target.lower_bound = source.lower_bound if source.HasField("lower_bound") else None
     target.upper_bound = source.upper_bound if source.HasField("upper_bound") else None
     target.enumerated_values = [
-        acvi.IntegerValue(source_enum_value) for source_enum_value in source.enum_values
+        atvi.IntegerValue(source_enum_value) for source_enum_value in source.enum_values
     ]
     target.enumerated_aliases = [source_alias for source_alias in source.enum_aliases]
 
 
 def fill_integer_metadata_message(
-    source: acvi.IntegerMetadata, target: IntegerVariableMetadata
+    source: atvi.IntegerMetadata, target: IntegerVariableMetadata
 ) -> None:
     """
     Fill out a gRPC message representing integer metadata.
@@ -175,33 +175,33 @@ def fill_integer_metadata_message(
         target.enum_aliases.append(source_enum_alias)
 
 
-def convert_grpc_integer_metadata(source: IntegerVariableMetadata) -> acvi.IntegerMetadata:
+def convert_grpc_integer_metadata(source: IntegerVariableMetadata) -> atvi.IntegerMetadata:
     """Create an ACVI metadata object for an integer variable from a gRPC message."""
-    target = acvi.IntegerMetadata()
+    target = atvi.IntegerMetadata()
     _extract_integer_metadata(source, target)
     return target
 
 
 def convert_grpc_integer_array_metadata(
     source: IntegerVariableMetadata,
-) -> acvi.IntegerArrayMetadata:
+) -> atvi.IntegerArrayMetadata:
     """Create an ACVI metadata object for an integer array variable from a gRPC message."""
-    target = acvi.IntegerArrayMetadata()
+    target = atvi.IntegerArrayMetadata()
     _extract_integer_metadata(source, target)
     return target
 
 
-def _extract_string_metadata(source: StringVariableMetadata, target: acvi.StringMetadata) -> None:
+def _extract_string_metadata(source: StringVariableMetadata, target: atvi.StringMetadata) -> None:
     """Extract information from a string metadata gRPC message onto an ACVI metadata object."""
     _extract_base_metadata(source.base_metadata, target)
     target.enumerated_values = [
-        acvi.StringValue(source_enum_value) for source_enum_value in source.enum_values
+        atvi.StringValue(source_enum_value) for source_enum_value in source.enum_values
     ]
     target.enumerated_aliases = [source_alias for source_alias in source.enum_aliases]
 
 
 def fill_string_metadata_message(
-    source: acvi.StringMetadata, target: StringVariableMetadata
+    source: atvi.StringMetadata, target: StringVariableMetadata
 ) -> None:
     """
     Fill out a gRPC message representing string metadata.
@@ -216,15 +216,15 @@ def fill_string_metadata_message(
     _fill_base_metadata(source, target.base_metadata)
 
 
-def convert_grpc_string_metadata(source: StringVariableMetadata) -> acvi.StringMetadata:
+def convert_grpc_string_metadata(source: StringVariableMetadata) -> atvi.StringMetadata:
     """Create an ACVI metadata object for a string variable from a gRPC message."""
-    target = acvi.StringMetadata()
+    target = atvi.StringMetadata()
     _extract_string_metadata(source, target)
     return target
 
 
-def convert_grpc_string_array_metadata(source: StringVariableMetadata) -> acvi.StringArrayMetadata:
+def convert_grpc_string_array_metadata(source: StringVariableMetadata) -> atvi.StringArrayMetadata:
     """Create an ACVI metadata object for a string array variable from a gRPC message."""
-    target = acvi.StringArrayMetadata()
+    target = atvi.StringArrayMetadata()
     _extract_string_metadata(source, target)
     return target

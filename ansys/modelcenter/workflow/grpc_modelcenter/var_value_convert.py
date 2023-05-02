@@ -1,7 +1,6 @@
 """Methods to convert between gRPC messages and Ansys Common Variable Interop's IVariableValue."""
 
-import ansys.common.variableinterop as acvi
-from ansys.common.variableinterop.ivariable_visitor import T
+import ansys.tools.variableinterop as atvi
 import numpy as np
 from overrides import overrides
 
@@ -20,93 +19,93 @@ class ValueTypeNotSupportedError(ValueError):
     """Indicates that an attempt was made to convert a value with a known but unsupported type."""
 
 
-class _ModelCenterTypeStringConverter(acvi.IVariableTypePseudoVisitor):
-    def visit_unknown(self) -> T:
+class _ModelCenterTypeStringConverter(atvi.IVariableTypePseudoVisitor[str]):
+    def visit_unknown(self) -> str:
         raise ValueError("Cannot determine a ModelCenter type for an unknown variable type.")
 
-    def visit_int(self) -> T:
+    def visit_int(self) -> str:
         return "int"
 
-    def visit_real(self) -> T:
+    def visit_real(self) -> str:
         return "real"
 
-    def visit_boolean(self) -> T:
+    def visit_boolean(self) -> str:
         return "bool"
 
-    def visit_string(self) -> T:
+    def visit_string(self) -> str:
         return "string"
 
-    def visit_file(self) -> T:
+    def visit_file(self) -> str:
         return "file"
 
-    def visit_int_array(self) -> T:
+    def visit_int_array(self) -> str:
         return "int[]"
 
-    def visit_real_array(self) -> T:
+    def visit_real_array(self) -> str:
         return "real[]"
 
-    def visit_bool_array(self) -> T:
+    def visit_bool_array(self) -> str:
         return "bool[]"
 
-    def visit_string_array(self) -> T:
+    def visit_string_array(self) -> str:
         return "string[]"
 
-    def visit_file_array(self) -> T:
+    def visit_file_array(self) -> str:
         return "file[]"
 
 
-def interop_type_to_mc_type_string(original: acvi.VariableType) -> str:
-    """Given an acvi interop type, create the corresponding ModelCenter type string."""
-    return acvi.vartype_accept(_ModelCenterTypeStringConverter(), original)
+def interop_type_to_mc_type_string(original: atvi.VariableType) -> str:
+    """Given an atvi interop type, create the corresponding ModelCenter type string."""
+    return atvi.vartype_accept(_ModelCenterTypeStringConverter(), original)
 
 
 __MCDSTR_TO_INTEROP_TYPE_MAP = {
-    "int": acvi.VariableType.INTEGER,
-    "real": acvi.VariableType.REAL,
-    "bool": acvi.VariableType.BOOLEAN,
-    "string": acvi.VariableType.STRING,
-    "file": acvi.VariableType.FILE,
-    "int[]": acvi.VariableType.INTEGER_ARRAY,
-    "real[]": acvi.VariableType.REAL_ARRAY,
-    "bool[]": acvi.VariableType.BOOLEAN_ARRAY,
-    "string[]": acvi.VariableType.STRING_ARRAY,
-    "file[]": acvi.VariableType.FILE_ARRAY,
+    "int": atvi.VariableType.INTEGER,
+    "real": atvi.VariableType.REAL,
+    "bool": atvi.VariableType.BOOLEAN,
+    "string": atvi.VariableType.STRING,
+    "file": atvi.VariableType.FILE,
+    "int[]": atvi.VariableType.INTEGER_ARRAY,
+    "real[]": atvi.VariableType.REAL_ARRAY,
+    "bool[]": atvi.VariableType.BOOLEAN_ARRAY,
+    "string[]": atvi.VariableType.STRING_ARRAY,
+    "file[]": atvi.VariableType.FILE_ARRAY,
 }
 
 
-def mc_type_string_to_interop_type(original: str) -> acvi.VariableType:
-    """Given a ModelCenter type string, create the corresponding acvi interop type."""
+def mc_type_string_to_interop_type(original: str) -> atvi.VariableType:
+    """Given a ModelCenter type string, create the corresponding atvi interop type."""
     return (
         __MCDSTR_TO_INTEROP_TYPE_MAP[original]
         if original in __MCDSTR_TO_INTEROP_TYPE_MAP
-        else acvi.VariableType.UNKNOWN
+        else atvi.VariableType.UNKNOWN
     )
 
 
 __GRPC_TO_INTEROP_TYPE_MAP = {
-    VariableType.VARTYPE_INTEGER: acvi.VariableType.INTEGER,
-    VariableType.VARTYPE_REAL: acvi.VariableType.REAL,
-    VariableType.VARTYPE_BOOLEAN: acvi.VariableType.BOOLEAN,
-    VariableType.VARTYPE_STRING: acvi.VariableType.STRING,
-    VariableType.VARTYPE_FILE: acvi.VariableType.FILE,
-    VariableType.VARTYPE_INTEGER_ARRAY: acvi.VariableType.INTEGER_ARRAY,
-    VariableType.VARTYPE_REAL_ARRAY: acvi.VariableType.REAL_ARRAY,
-    VariableType.VARTYPE_BOOLEAN_ARRAY: acvi.VariableType.BOOLEAN_ARRAY,
-    VariableType.VARTYPE_STRING_ARRAY: acvi.VariableType.STRING_ARRAY,
-    VariableType.VARTYPE_FILE_ARRAY: acvi.VariableType.FILE_ARRAY,
+    VariableType.VARTYPE_INTEGER: atvi.VariableType.INTEGER,
+    VariableType.VARTYPE_REAL: atvi.VariableType.REAL,
+    VariableType.VARTYPE_BOOLEAN: atvi.VariableType.BOOLEAN,
+    VariableType.VARTYPE_STRING: atvi.VariableType.STRING,
+    VariableType.VARTYPE_FILE: atvi.VariableType.FILE,
+    VariableType.VARTYPE_INTEGER_ARRAY: atvi.VariableType.INTEGER_ARRAY,
+    VariableType.VARTYPE_REAL_ARRAY: atvi.VariableType.REAL_ARRAY,
+    VariableType.VARTYPE_BOOLEAN_ARRAY: atvi.VariableType.BOOLEAN_ARRAY,
+    VariableType.VARTYPE_STRING_ARRAY: atvi.VariableType.STRING_ARRAY,
+    VariableType.VARTYPE_FILE_ARRAY: atvi.VariableType.FILE_ARRAY,
 }
 
 
-def grpc_type_enum_to_interop_type(original: VariableType) -> acvi.VariableType:
+def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
     """Given a value of the GRPC type enumeration, return the appropriate value of the ACVI enum."""
     return (
         __GRPC_TO_INTEROP_TYPE_MAP[original]
         if original in __GRPC_TO_INTEROP_TYPE_MAP
-        else acvi.VariableType.UNKNOWN
+        else atvi.VariableType.UNKNOWN
     )
 
 
-def convert_grpc_value_to_acvi(original: VariableValue) -> acvi.IVariableValue:
+def convert_grpc_value_to_acvi(original: VariableValue) -> atvi.IVariableValue:
     """
     Produce an equivalent IVariableValue from Ansys Common Variable Interop from a gRPC message.
 
@@ -114,30 +113,30 @@ def convert_grpc_value_to_acvi(original: VariableValue) -> acvi.IVariableValue:
     @return the converted value
     """
     if original.HasField("int_value"):
-        return acvi.IntegerValue(original.int_value)
+        return atvi.IntegerValue(original.int_value)
     elif original.HasField("double_value"):
-        return acvi.RealValue(original.double_value)
+        return atvi.RealValue(original.double_value)
     elif original.HasField("bool_value"):
-        return acvi.BooleanValue(original.bool_value)
+        return atvi.BooleanValue(original.bool_value)
     elif original.HasField("string_value"):
-        return acvi.StringValue(original.string_value)
+        return atvi.StringValue(original.string_value)
     elif original.HasField("int_array_value"):
-        return acvi.IntegerArrayValue(
+        return atvi.IntegerArrayValue(
             original.int_array_value.dims.dims,
             np.reshape(original.int_array_value.values, original.int_array_value.dims.dims),
         )
     elif original.HasField("double_array_value"):
-        return acvi.RealArrayValue(
+        return atvi.RealArrayValue(
             original.double_array_value.dims.dims,
             np.reshape(original.double_array_value.values, original.double_array_value.dims.dims),
         )
     elif original.HasField("bool_array_value"):
-        return acvi.BooleanArrayValue(
+        return atvi.BooleanArrayValue(
             original.bool_array_value.dims.dims,
             np.reshape(original.bool_array_value.values, original.bool_array_value.dims.dims),
         )
     elif original.HasField("string_array_value"):
-        return acvi.StringArrayValue(
+        return atvi.StringArrayValue(
             original.string_array_value.dims.dims,
             np.reshape(original.string_array_value.values, original.string_array_value.dims.dims),
         )
@@ -158,27 +157,27 @@ def convert_grpc_value_to_acvi(original: VariableValue) -> acvi.IVariableValue:
         )
 
 
-class ToGRPCVisitor(acvi.IVariableValueVisitor[VariableValue]):
+class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
     """Produces a gRPC VariableValue message for a given IVariableValue."""
 
     @overrides
-    def visit_integer(self, value: acvi.IntegerValue) -> VariableValue:
+    def visit_integer(self, value: atvi.IntegerValue) -> VariableValue:
         return VariableValue(int_value=int(value))
 
     @overrides
-    def visit_real(self, value: acvi.RealValue) -> VariableValue:
+    def visit_real(self, value: atvi.RealValue) -> VariableValue:
         return VariableValue(double_value=float(value))
 
     @overrides
-    def visit_boolean(self, value: acvi.BooleanValue) -> VariableValue:
+    def visit_boolean(self, value: atvi.BooleanValue) -> VariableValue:
         return VariableValue(bool_value=bool(value))
 
     @overrides
-    def visit_string(self, value: acvi.StringValue) -> T:
+    def visit_string(self, value: atvi.StringValue) -> VariableValue:
         return VariableValue(string_value=str(value))
 
     @overrides
-    def visit_integer_array(self, value: acvi.IntegerArrayValue) -> T:
+    def visit_integer_array(self, value: atvi.IntegerArrayValue) -> VariableValue:
         return VariableValue(
             int_array_value=IntegerArrayValue(
                 values=value.flatten(), dims=ArrayDimensions(dims=value.shape)
@@ -186,13 +185,13 @@ class ToGRPCVisitor(acvi.IVariableValueVisitor[VariableValue]):
         )
 
     @overrides
-    def visit_file(self, value: acvi.FileValue) -> T:
+    def visit_file(self, value: atvi.FileValue) -> VariableValue:
         raise ValueTypeNotSupportedError(
             "A file value was provided, but pyModelCenter currently does not support this type."
         )
 
     @overrides
-    def visit_real_array(self, value: acvi.RealArrayValue) -> T:
+    def visit_real_array(self, value: atvi.RealArrayValue) -> VariableValue:
         return VariableValue(
             double_array_value=DoubleArrayValue(
                 values=value.flatten(), dims=ArrayDimensions(dims=value.shape)
@@ -200,7 +199,7 @@ class ToGRPCVisitor(acvi.IVariableValueVisitor[VariableValue]):
         )
 
     @overrides
-    def visit_boolean_array(self, value: acvi.BooleanArrayValue) -> T:
+    def visit_boolean_array(self, value: atvi.BooleanArrayValue) -> VariableValue:
         return VariableValue(
             bool_array_value=BooleanArrayValue(
                 values=value.flatten(), dims=ArrayDimensions(dims=value.shape)
@@ -208,7 +207,7 @@ class ToGRPCVisitor(acvi.IVariableValueVisitor[VariableValue]):
         )
 
     @overrides
-    def visit_string_array(self, value: acvi.StringArrayValue) -> T:
+    def visit_string_array(self, value: atvi.StringArrayValue) -> VariableValue:
         return VariableValue(
             string_array_value=StringArrayValue(
                 values=value.flatten(), dims=ArrayDimensions(dims=value.shape)
@@ -216,13 +215,13 @@ class ToGRPCVisitor(acvi.IVariableValueVisitor[VariableValue]):
         )
 
     @overrides
-    def visit_file_array(self, value: acvi.FileArrayValue) -> T:
+    def visit_file_array(self, value: atvi.FileArrayValue) -> VariableValue:
         raise ValueTypeNotSupportedError(
             "A file array value was provided, but pyModelCenter currently does not support this "
             "type."
         )
 
 
-def convert_interop_value_to_grpc(original: acvi.IVariableValue) -> VariableValue:
+def convert_interop_value_to_grpc(original: atvi.IVariableValue) -> VariableValue:
     """Produce an equivalent gRPC VariableValue message from an IVariableValue."""
     return original.accept(ToGRPCVisitor())
