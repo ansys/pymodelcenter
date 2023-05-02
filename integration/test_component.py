@@ -25,7 +25,7 @@ def test_can_get_component_properties(workflow) -> None:
     assert component.control_type == "Component"
     assert component.index_in_parent == 0
     assert component.parent_assembly is not None
-    assert component.groups is not None
+    assert component.get_groups() is not None
 
     # Verify methods getting data.
     source: str = component.get_source()  # it's a method, should be a property?

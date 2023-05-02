@@ -8,7 +8,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 def test_can_get_group_variables(workflow) -> None:
     # Arrange
     component: grpcmc.Component = workflow.get_component("ワークフロー.all_types_コンポーネント")
-    group: mcapi.IGroup = next(iter(component.groups.values()))
+    group: mcapi.IGroup = next(iter(component.get_groups().values()))
 
     # Act
     variables: Mapping[str, mcapi.IDatapin] = group.get_datapins()

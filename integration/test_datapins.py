@@ -28,7 +28,7 @@ def test_can_get_basic_variable_information(workflow, name, var_type, is_array) 
         "ワークフロー.all_types_コンポーネント"
     )
     if is_array:
-        parent = next(iter(parent.groups.values()))
+        parent = next(iter(parent.get_groups().values()))
     full_name: str = parent.full_name + "." + name
 
     # Act

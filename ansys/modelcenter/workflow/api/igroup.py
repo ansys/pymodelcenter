@@ -10,13 +10,12 @@ from ansys.engineeringworkflow.api import IDatapinContainer
 class IGroupOwner(IDatapinContainer, ABC):
     """Represents a workflow element which has groups in ModelCenter."""
 
-    @property
     @abstractmethod
-    def groups(self) -> Mapping[str, "IGroup"]:
-        """The groups that this item contains."""
+    def get_groups(self) -> Mapping[str, IGroup]:
+        """Get the groups that this item contains."""
 
 
 class IGroup(IGroupOwner, ABC):
-    """Represents a variable group in ModelCenter."""
+    """Represents a datapin group in ModelCenter."""
 
     ...  # pragma: no cover
