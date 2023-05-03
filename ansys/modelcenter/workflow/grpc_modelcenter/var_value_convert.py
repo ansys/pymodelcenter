@@ -74,7 +74,7 @@ __MCDSTR_TO_INTEROP_TYPE_MAP = {
 
 
 def mc_type_string_to_interop_type(original: str) -> atvi.VariableType:
-    """Given a ModelCenter type string, create the corresponding atvi interop type."""
+    """Given a ModelCenter type string, create the corresponding ATVI interop type."""
     return (
         __MCDSTR_TO_INTEROP_TYPE_MAP[original]
         if original in __MCDSTR_TO_INTEROP_TYPE_MAP
@@ -97,7 +97,7 @@ __GRPC_TO_INTEROP_TYPE_MAP = {
 
 
 def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
-    """Given a value of the GRPC type enumeration, return the appropriate value of the ACVI enum."""
+    """Given a value of the GRPC type enumeration, return the appropriate value of the ATVI enum."""
     return (
         __GRPC_TO_INTEROP_TYPE_MAP[original]
         if original in __GRPC_TO_INTEROP_TYPE_MAP
@@ -105,9 +105,9 @@ def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
     )
 
 
-def convert_grpc_value_to_acvi(original: VariableValue) -> atvi.IVariableValue:
+def convert_grpc_value_to_atvi(original: VariableValue) -> atvi.IVariableValue:
     """
-    Produce an equivalent IVariableValue from Ansys Common Variable Interop from a gRPC message.
+    Produce an IVariableValue from the Python variable interop library from a grpc message.
 
     @param original: the original gRPC message
     @return the converted value

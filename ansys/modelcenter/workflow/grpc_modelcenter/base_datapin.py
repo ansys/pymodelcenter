@@ -13,7 +13,7 @@ from .abstract_workflow_element import AbstractWorkflowElement
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
 from .proto.workflow_messages_pb2 import ElementIdOrName
-from .var_value_convert import convert_grpc_value_to_acvi, grpc_type_enum_to_interop_type
+from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
 
 
 class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
@@ -59,7 +59,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
         response = self._client.VariableGetState(ElementIdOrName(target_id=self._element_id))
         interop_value: atvi.IVariableValue
         try:
-            interop_value = convert_grpc_value_to_acvi(response.value)
+            interop_value = convert_grpc_value_to_atvi(response.value)
         except ValueError as convert_failure:
             raise aew_api.EngineInternalError(
                 "Unexpected failure converting gRPC value response"

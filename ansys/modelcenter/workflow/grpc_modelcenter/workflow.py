@@ -29,7 +29,7 @@ from .grpc_error_interpretation import (
     interpret_rpc_error,
 )
 from .var_value_convert import (
-    convert_grpc_value_to_acvi,
+    convert_grpc_value_to_atvi,
     convert_interop_value_to_grpc,
     grpc_type_enum_to_interop_type,
 )
@@ -135,7 +135,7 @@ class Workflow(wfapi.IWorkflow):
         return {
             elem_id: atvi.VariableState(
                 is_valid=response_var_state.is_valid,
-                value=convert_grpc_value_to_acvi(response_var_state.value),
+                value=convert_grpc_value_to_atvi(response_var_state.value),
             )
             for elem_id, response_var_state in response.results.items()
         }
