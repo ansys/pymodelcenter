@@ -168,8 +168,6 @@ class Workflow(wfapi.IWorkflow):
         response = self._stub.WorkflowGetElementByName(request)
         return create_element(response, self._channel)
 
-    # TODO: Should we just delete this? Should probably remove from
-    #       GRPC api if so.
     @property
     def workflow_directory(self) -> str:
         """
