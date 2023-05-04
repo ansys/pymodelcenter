@@ -32,13 +32,23 @@ class WorkflowAlreadyLoadedError(Exception):
 class Engine(IEngine):
     """GRPC implementation of IEngine."""
 
-    def __init__(self, is_run_only: bool = False):
-        """Initialize a new Engine instance."""
+    def __init__(self, is_run_only: bool = False, force_local: bool = False):
+        """
+        Initialize a new Engine instance.
+
+        Parameters
+        ----------
+        is_run_only: bool
+            True if ModelCenter should be started in run-only mode, otherwise False.
+        force_local: bool
+            True if ModelCenter should be started on the local machine even if pypim is configured,
+            otherwise False.
+        """
         self._is_run_only: bool = is_run_only
         self._instance: Optional[pypim.Instance] = None
         self._process: Optional[MCDProcess] = None
         self._channel: Optional[grpc.Channel] = None
-        self._launch_modelcenter()
+        self._launch_modelcenter(force_local)
         self._stub = self._create_client(self._channel)
         self._workflow_id: Optional[str] = None
 
@@ -50,9 +60,9 @@ class Engine(IEngine):
         """Clean up when leaving a 'with' block."""
         self.close()
 
-    def _launch_modelcenter(self) -> None:
+    def _launch_modelcenter(self, force_local: bool) -> None:
         """Launch ModelCenter, using pypim if it is configured."""
-        if pypim.is_configured():
+        if pypim.is_configured() and not force_local:
             if self._is_run_only:
                 raise Exception("pypim does not support running ModelCenter in run-only mode.")
             else:
