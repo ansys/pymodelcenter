@@ -318,10 +318,17 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_NAME_COLLISION})
     @overrides
     def create_assembly(
-        self, name: str, parent: Union[wfapi.IAssembly, str], assembly_type: Optional[str] = None
+        self,
+        name: str,
+        parent: Union[wfapi.IAssembly, str],
+        assembly_type: Optional[wfapi.AssemblyType] = None,
     ) -> Assembly:
         request = element_msg.AddAssemblyRequest(
-            name=element_msg.ElementName(name=name), av_pos=None, assembly_type=assembly_type
+            name=element_msg.ElementName(name=name),
+            av_pos=None,
+            assembly_type=assembly_type.value
+            if assembly_type is not None
+            else wfapi.AssemblyType.ASSEMBLY.value,
         )
         if parent is not None:
             if isinstance(parent, str):
