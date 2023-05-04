@@ -5,7 +5,7 @@ from typing import Collection, Optional, Tuple, Union
 import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
 
-from ansys.modelcenter.workflow.api.iassembly import IAssembly
+from ansys.modelcenter.workflow.api.iassembly import AssemblyType, IAssembly
 from ansys.modelcenter.workflow.api.icomponent import IComponent
 from ansys.modelcenter.workflow.api.idatapin import IDatapin
 from ansys.modelcenter.workflow.api.idatapin_link import IDatapinLink
@@ -149,7 +149,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def create_assembly(
-        self, name: str, parent: Union[IAssembly, str], assembly_type: Optional[str] = None
+        self, name: str, parent: Union[IAssembly, str], assembly_type: Optional[AssemblyType] = None
     ) -> IAssembly:
         """
         Create a new Assembly in the workflow.
@@ -161,7 +161,8 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         parent : Union[IAssembly, str]
             Full ModelCenter path of the parent Assembly, or an IAssembly that represents it.
         assembly_type : str, optional
-            Type of the assembly to create.
+            Type of the assembly to create. Pass None to create a regular data-dependency assembly
+            (equivalent to passing AssemblyType.ASSEMBLY).
 
         Returns
         -------
