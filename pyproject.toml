@@ -57,11 +57,8 @@ pytest-cov = {version="^3.0", optional=true}
 pre-commit = {version="^2.17.0", optional=true}
 mypy = {version="^0.940", optional=true}
 
-# TODO: The referenced commits below for AEW and ATVI are not merged.
-#       Additionally, the github URL for the variable interop library will change.
-#       Before merging this commit, the commits below should be merged and everything updated.
-ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "f386b87"}
-pyansys-tools-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "c8e4295"}
+ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "8e40cb7585d877ca8d5d1e30e8d068c0503c3c59"}
+pyansys-tools-variableinterop = {git = "https://github.com/pyansys/pyansys-tools-variableinterop.git", rev = "0988df6c6aa4df885082cc4dd88acdcecdc97b68"}
 
 [tool.poetry.extras]
 dev = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton", "codespell",
