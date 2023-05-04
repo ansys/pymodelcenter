@@ -1,5 +1,6 @@
 """Contains definitions for assemblies."""
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import Optional, Tuple
 
 import ansys.engineeringworkflow.api as aew_api
@@ -7,6 +8,21 @@ import ansys.tools.variableinterop as atvi
 
 import ansys.modelcenter.workflow.api.igroup as igroup
 import ansys.modelcenter.workflow.api.irenamable_elements as renamable_element
+
+
+class AssemblyType(Enum):
+    """Represents an allowed assembly type in ModelCenter."""
+
+    ASSEMBLY = "Assembly"
+    SEQUENCE = "Sequence"
+    IF = "If"
+    PARALLEL = "Parallel"
+    EMPTY = "Empty"
+    LOOP = "Loop"
+    FOR_EACH = "ForEach"
+    FOR = "For"
+    WHILE = "While"
+    REPEAT_UNTIL = "RepeatUntil"
 
 
 class IAssemblyChild(ABC):
@@ -65,7 +81,7 @@ class IAssembly(
         self,
         name: str,
         av_pos: Optional[Tuple[int, int]] = None,
-        assembly_type: Optional[str] = None,
+        assembly_type: Optional[AssemblyType] = None,
     ) -> "IAssembly":
         """
         Create a sub-Assembly in the current Assembly with a specific type and position.
@@ -76,8 +92,9 @@ class IAssembly(
             the name of the subassembly
         av_pos : Optional[Tuple[int,int]]
             the position of the subassembly in the parent assembly's analysis view
-        assembly_type :
-
+        assembly_type : AssemblyType
+            the type of assembly to create. If None is passed, a regular data-dependency assembly
+            is created (same as passing AssemblyType.ASSEMBLY).
         Returns
         -------
         IAssembly

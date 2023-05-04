@@ -513,7 +513,14 @@ def test_delete_variable(monkeypatch) -> None:
         )
 
 
-def test_add_assembly(monkeypatch) -> None:
+@pytest.mark.parametrize(
+    "assembly_type_in_call,expected_type_in_request",
+    [
+        (None, "Assembly"),
+        *((assembly_type, assembly_type.value) for assembly_type in mc_api.AssemblyType),
+    ],
+)
+def test_add_assembly(monkeypatch, assembly_type_in_call, expected_type_in_request) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_response = AddAssemblyResponse(id=ElementId(id_string="BRAND_NEW_ASSEMBLY"))
     with unittest.mock.patch.object(
@@ -521,12 +528,12 @@ def test_add_assembly(monkeypatch) -> None:
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="TARGET_ASSEMBLY"), None)
-        result = sut.add_assembly("new_assembly_name", (867, 5309), "Assembly")
+        result = sut.add_assembly("new_assembly_name", (867, 5309), assembly_type_in_call)
         mock_method.assert_called_once_with(
             AddAssemblyRequest(
                 name=ElementName(name="new_assembly_name"),
                 parent=ElementId(id_string="TARGET_ASSEMBLY"),
-                assembly_type="Assembly",
+                assembly_type=expected_type_in_request,
                 av_pos=AnalysisViewPosition(x_pos=867, y_pos=5309),
             )
         )
@@ -547,6 +554,7 @@ def test_add_assembly_no_position(monkeypatch) -> None:
             AddAssemblyRequest(
                 name=ElementName(name="new_assembly_name"),
                 parent=ElementId(id_string="TARGET_ASSEMBLY"),
+                assembly_type="Assembly",
             )
         )
         assert isinstance(result, Assembly)

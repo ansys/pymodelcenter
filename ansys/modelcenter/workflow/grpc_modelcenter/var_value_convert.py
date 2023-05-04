@@ -140,7 +140,6 @@ def convert_grpc_value_to_atvi(original: VariableValue) -> atvi.IVariableValue:
             original.string_array_value.dims.dims,
             np.reshape(original.string_array_value.values, original.string_array_value.dims.dims),
         )
-    # TODO: FileValue missing from gRPC API, need to add, update this case
     elif original.HasField("file_value"):
         raise ValueTypeNotSupportedError(
             "The provided gRPC value has a file type, "
