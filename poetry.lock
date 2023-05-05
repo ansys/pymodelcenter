@@ -28,33 +28,6 @@ files = [
 ]
 
 [[package]]
-name = "ansys-common-variableinterop"
-version = "0.1.dev0"
-description = "Optional variable specifications for interoperability between languages and capabilities"
-category = "main"
-optional = false
-python-versions = ">=3.8,<4.0"
-files = []
-develop = false
-
-[package.dependencies]
-anyio = "^3.5.0"
-numpy = "1.22.4"
-overrides = "^6.1"
-
-[package.extras]
-dev = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "mypy (>=0.940,<0.941)", "numpydoc (>=1.2,<2.0)", "pre-commit (>=2.17.0,<3.0.0)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4.0)", "sphinx-copybutton (>=0.5,<0.6)"]
-docs = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "numpydoc (>=1.2,<2.0)", "sphinx-copybutton (>=0.5,<0.6)"]
-style = ["codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)"]
-test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/pyansys/ansys-common-variableinterop.git"
-reference = "ac4311c"
-resolved_reference = "ac4311c59236f78b8cd99e0933f0d0219f857cfe"
-
-[[package]]
 name = "ansys-engineeringworkflow-api"
 version = "0.1.dev0"
 description = "API specification for an engineering workflow engine"
@@ -65,9 +38,9 @@ files = []
 develop = false
 
 [package.dependencies]
-ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "ac4311c"}
 anyio = "^3.6.2"
 numpy = "^1.22.4"
+pyansys-tools-variableinterop = {git = "https://github.com/pyansys/pyansys-tools-variableinterop.git", rev = "0988df6c6aa4df885082cc4dd88acdcecdc97b68"}
 
 [package.extras]
 dev = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "mypy (>=0.940,<0.941)", "numpydoc (>=1.2,<2.0)", "pre-commit (>=2.18,<3.0)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "sphinx-copybutton (>=0.4,<0.5)"]
@@ -78,8 +51,8 @@ test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/pyansys/ansys-engineeringworkflow-api.git"
-reference = "316f643"
-resolved_reference = "316f6435a8ba8b7e14d6550ed935e5ef42250dea"
+reference = "8e40cb7585d877ca8d5d1e30e8d068c0503c3c59"
+resolved_reference = "8e40cb7585d877ca8d5d1e30e8d068c0503c3c59"
 
 [[package]]
 name = "ansys-sphinx-theme"
@@ -933,6 +906,33 @@ files = [
 ]
 
 [[package]]
+name = "pyansys-tools-variableinterop"
+version = "0.1.dev0"
+description = "Optional variable specifications for interoperability between languages and capabilities"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = []
+develop = false
+
+[package.dependencies]
+anyio = "^3.5.0"
+numpy = "1.22.4"
+overrides = "^6.1"
+
+[package.extras]
+dev = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "mypy (>=0.940,<0.941)", "numpydoc (>=1.2,<2.0)", "pre-commit (>=2.17.0,<3.0.0)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4.0)", "sphinx-copybutton (>=0.5,<0.6)"]
+docs = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "numpydoc (>=1.2,<2.0)", "sphinx-copybutton (>=0.5,<0.6)"]
+style = ["codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)"]
+test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/pyansys/pyansys-tools-variableinterop.git"
+reference = "0988df6c6aa4df885082cc4dd88acdcecdc97b68"
+resolved_reference = "0988df6c6aa4df885082cc4dd88acdcecdc97b68"
+
+[[package]]
 name = "pycodestyle"
 version = "2.7.0"
 description = "Python style guide checker"
@@ -1414,4 +1414,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "0a9719ef8fb8ccc804bf0cbd3e31e7111f0a8ba29b0e9cb0a6fae0c69a232287"
+content-hash = "1cef385bb87a74a64f11bae17dd8351e837776efa21f7590185733ddbb6eaaba"

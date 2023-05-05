@@ -1,5 +1,5 @@
 """Contains definition for IntegerDatapin and IntegerArray."""
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from grpc import Channel
 from overrides import overrides
 
@@ -49,17 +49,17 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> acvi.IntegerMetadata:
+    def get_metadata(self) -> atvi.IntegerMetadata:
         response = self._client.IntegerVariableGetMetadata(self._element_id)
         return convert_grpc_integer_metadata(response)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        if not isinstance(new_metadata, acvi.IntegerMetadata):
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, atvi.IntegerMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {acvi.IntegerMetadata} "
+                f"Expected {atvi.IntegerMetadata} "
                 f"but received {new_metadata.__class__}"
             )
         request = SetIntegerVariableMetadataRequest(target=self._element_id)
@@ -68,11 +68,11 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: acvi.VariableState) -> None:
+    def set_value(self, value: atvi.VariableState) -> None:
         self._do_set_value(value.value)
 
-    @acvi.implicit_coerce
-    def _do_set_value(self, value: acvi.IntegerValue) -> None:
+    @atvi.implicit_coerce
+    def _do_set_value(self, value: atvi.IntegerValue) -> None:
         value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
@@ -103,16 +103,16 @@ class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
         return isinstance(other, IntegerArrayDatapin) and self.element_id == other.element_id
 
     @overrides
-    def get_metadata(self) -> acvi.RealArrayMetadata:
+    def get_metadata(self) -> atvi.RealArrayMetadata:
         response = self._client.IntegerVariableGetMetadata(self._element_id)
         return convert_grpc_integer_array_metadata(response)
 
     @overrides
-    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        if not isinstance(new_metadata, acvi.IntegerArrayMetadata):
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, atvi.IntegerArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {acvi.IntegerArrayMetadata} "
+                f"Expected {atvi.IntegerArrayMetadata} "
                 f"but received {new_metadata.__class__}"
             )
         request = SetIntegerVariableMetadataRequest(target=self._element_id)
@@ -120,9 +120,9 @@ class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
         self._client.IntegerVariableSetMetadata(request)
 
     @overrides
-    def set_value(self, value: acvi.VariableState) -> None:
+    def set_value(self, value: atvi.VariableState) -> None:
         self._do_set_value(value.value)
 
-    @acvi.implicit_coerce
-    def _do_set_value(self, value: acvi.IntegerArrayValue) -> None:
+    @atvi.implicit_coerce
+    def _do_set_value(self, value: atvi.IntegerArrayValue) -> None:
         value.accept(VariableValueVisitor(self._element_id, self._client))

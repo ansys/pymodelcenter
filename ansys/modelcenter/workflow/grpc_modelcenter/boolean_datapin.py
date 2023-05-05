@@ -1,6 +1,6 @@
 """Contains definition for BooleanDatapin and BooleanArrayDatapin."""
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from grpc import Channel
 from overrides import overrides
 
@@ -50,17 +50,17 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> acvi.BooleanMetadata:
+    def get_metadata(self) -> atvi.BooleanMetadata:
         response = self._client.BooleanVariableGetMetadata(self._element_id)
         return convert_grpc_boolean_metadata(response)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        if not isinstance(new_metadata, acvi.BooleanMetadata):
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, atvi.BooleanMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {acvi.BooleanMetadata} "
+                f"Expected {atvi.BooleanMetadata} "
                 f"but received {new_metadata.__class__}"
             )
         request = SetBooleanVariableMetadataRequest(target=self._element_id)
@@ -69,10 +69,10 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: acvi.VariableState) -> None:
-        if not isinstance(value.value, acvi.BooleanValue):
-            raise acvi.IncompatibleTypesException(
-                value.value.variable_type, acvi.VariableType.BOOLEAN
+    def set_value(self, value: atvi.VariableState) -> None:
+        if not isinstance(value.value, atvi.BooleanValue):
+            raise atvi.IncompatibleTypesException(
+                value.value.variable_type, atvi.VariableType.BOOLEAN
             )
         set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
         value.value.accept(set_visitor)
@@ -93,17 +93,17 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> acvi.BooleanArrayMetadata:
+    def get_metadata(self) -> atvi.BooleanArrayMetadata:
         response = self._client.BooleanVariableGetMetadata(self._element_id)
         return convert_grpc_boolean_array_metadata(response)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        if not isinstance(new_metadata, acvi.BooleanArrayMetadata):
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, atvi.BooleanArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {acvi.BooleanArrayMetadata} "
+                f"Expected {atvi.BooleanArrayMetadata} "
                 f"but received {new_metadata.__class__}"
             )
         request = SetBooleanVariableMetadataRequest(target=self._element_id)
@@ -112,10 +112,10 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: acvi.VariableState) -> None:
-        if not isinstance(value.value, acvi.BooleanArrayValue):
-            raise acvi.IncompatibleTypesException(
-                value.value.variable_type, acvi.VariableType.BOOLEAN_ARRAY
+    def set_value(self, value: atvi.VariableState) -> None:
+        if not isinstance(value.value, atvi.BooleanArrayValue):
+            raise atvi.IncompatibleTypesException(
+                value.value.variable_type, atvi.VariableType.BOOLEAN_ARRAY
             )
         set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
         value.value.accept(set_visitor)

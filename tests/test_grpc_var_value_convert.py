@@ -1,6 +1,6 @@
 import sys
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as grpc_msg
@@ -8,9 +8,9 @@ import ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert as test_mod
 
 
 @pytest.mark.parametrize("internal_value", [0, -1, 1, -47, 47, 2147483647, -2147483648])
-def test_int_value_acvi_to_grpc(internal_value: int):
+def test_int_value_atvi_to_grpc(internal_value: int):
     # Setup
-    original = acvi.IntegerValue(internal_value)
+    original = atvi.IntegerValue(internal_value)
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -21,15 +21,15 @@ def test_int_value_acvi_to_grpc(internal_value: int):
 
 
 @pytest.mark.parametrize("internal_value", [0, -1, 1, -47, 47, 2147483647, -2147483648])
-def test_int_value_grpc_to_acvi(internal_value: int):
+def test_int_value_grpc_to_atvi(internal_value: int):
     # Setup
     original = grpc_msg.VariableValue(int_value=internal_value)
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.IntegerValue)
+    assert isinstance(converted, atvi.IntegerValue)
     assert internal_value == converted
 
 
@@ -45,9 +45,9 @@ def test_int_value_grpc_to_acvi(internal_value: int):
         sys.float_info.min,
     ],
 )
-def test_double_value_acvi_to_grpc(internal_value: float):
+def test_double_value_atvi_to_grpc(internal_value: float):
     # Setup
-    original = acvi.RealValue(internal_value)
+    original = atvi.RealValue(internal_value)
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -69,24 +69,24 @@ def test_double_value_acvi_to_grpc(internal_value: float):
         sys.float_info.min,
     ],
 )
-def test_double_value_grpc_to_acvi(internal_value: float):
+def test_double_value_grpc_to_atvi(internal_value: float):
     # Setup
     original = grpc_msg.VariableValue(double_value=internal_value)
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.RealValue)
+    assert isinstance(converted, atvi.RealValue)
     assert internal_value == converted
 
 
 @pytest.mark.parametrize(
     "internal_value", ["test", "has a space", "has a line\r\nbreak", "\t\r\n  ", " (╯°□°）╯︵ ┻━┻"]
 )
-def test_string_value_acvi_to_grpc(internal_value: str):
+def test_string_value_atvi_to_grpc(internal_value: str):
     # Setup
-    original = acvi.StringValue(internal_value)
+    original = atvi.StringValue(internal_value)
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -99,22 +99,22 @@ def test_string_value_acvi_to_grpc(internal_value: str):
 @pytest.mark.parametrize(
     "internal_value", ["test", "has a space", "has a line\r\nbreak", "\t\r\n  ", " (╯°□°）╯︵ ┻━┻"]
 )
-def test_string_value_grpc_to_acvi(internal_value: str):
+def test_string_value_grpc_to_atvi(internal_value: str):
     # Setup
     original = grpc_msg.VariableValue(string_value=internal_value)
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.StringValue)
+    assert isinstance(converted, atvi.StringValue)
     assert internal_value == converted
 
 
 @pytest.mark.parametrize("internal_value", [True, False])
-def test_boolean_value_acvi_to_grpc(internal_value: bool):
+def test_boolean_value_atvi_to_grpc(internal_value: bool):
     # Setup
-    original = acvi.BooleanValue(internal_value)
+    original = atvi.BooleanValue(internal_value)
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -125,19 +125,19 @@ def test_boolean_value_acvi_to_grpc(internal_value: bool):
 
 
 @pytest.mark.parametrize("internal_value", [True, False])
-def test_boolean_value_grpc_to_acvi(internal_value: bool):
+def test_boolean_value_grpc_to_atvi(internal_value: bool):
     # Setup
     original = grpc_msg.VariableValue(bool_value=internal_value)
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.BooleanValue)
+    assert isinstance(converted, atvi.BooleanValue)
     assert internal_value == converted
 
 
-def test_integer_array_value_grpc_to_acvi_empty():
+def test_integer_array_value_grpc_to_atvi_empty():
     # Setup
     original = grpc_msg.VariableValue(
         int_array_value=grpc_msg.IntegerArrayValue(
@@ -146,14 +146,14 @@ def test_integer_array_value_grpc_to_acvi_empty():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.IntegerArrayValue)
+    assert isinstance(converted, atvi.IntegerArrayValue)
     assert converted == []
 
 
-def test_integer_array_value_grpc_to_acvi_one_dimensional():
+def test_integer_array_value_grpc_to_atvi_one_dimensional():
     # Setup
     original = grpc_msg.VariableValue(
         int_array_value=grpc_msg.IntegerArrayValue(
@@ -162,14 +162,14 @@ def test_integer_array_value_grpc_to_acvi_one_dimensional():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.IntegerArrayValue)
+    assert isinstance(converted, atvi.IntegerArrayValue)
     assert converted == [47, -8675309, 9001]
 
 
-def test_integer_array_value_grpc_to_acvi_multi_dimensional():
+def test_integer_array_value_grpc_to_atvi_multi_dimensional():
     # Setup
     original = grpc_msg.VariableValue(
         int_array_value=grpc_msg.IntegerArrayValue(
@@ -178,16 +178,16 @@ def test_integer_array_value_grpc_to_acvi_multi_dimensional():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.IntegerArrayValue)
+    assert isinstance(converted, atvi.IntegerArrayValue)
     assert converted == [[1, 2, 3], [10, 20, 30], [100, 200, 300]]
 
 
-def test_integer_array_value_acvi_to_grpc_empty():
+def test_integer_array_value_atvi_to_grpc_empty():
     # Setup
-    original = acvi.IntegerArrayValue(0, [])
+    original = atvi.IntegerArrayValue(0, [])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -198,9 +198,9 @@ def test_integer_array_value_acvi_to_grpc_empty():
     assert converted.int_array_value.dims.dims == [0]
 
 
-def test_integer_array_value_acvi_to_grpc_one_dimensional():
+def test_integer_array_value_atvi_to_grpc_one_dimensional():
     # Setup
-    original = acvi.IntegerArrayValue(3, [47, -8675309, 9001])
+    original = atvi.IntegerArrayValue(3, [47, -8675309, 9001])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -211,9 +211,9 @@ def test_integer_array_value_acvi_to_grpc_one_dimensional():
     assert converted.int_array_value.dims.dims == [3]
 
 
-def test_integer_array_value_acvi_to_grpc_multi_dimensional():
+def test_integer_array_value_atvi_to_grpc_multi_dimensional():
     # Setup
-    original = acvi.IntegerArrayValue((3, 3), [[1, 2, 3], [10, 20, 30], [100, 200, 300]])
+    original = atvi.IntegerArrayValue((3, 3), [[1, 2, 3], [10, 20, 30], [100, 200, 300]])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -224,7 +224,7 @@ def test_integer_array_value_acvi_to_grpc_multi_dimensional():
     assert converted.int_array_value.dims.dims == [3, 3]
 
 
-def test_double_array_value_grpc_to_acvi_empty():
+def test_double_array_value_grpc_to_atvi_empty():
     # Setup
     original = grpc_msg.VariableValue(
         double_array_value=grpc_msg.DoubleArrayValue(
@@ -233,14 +233,14 @@ def test_double_array_value_grpc_to_acvi_empty():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.RealArrayValue)
+    assert isinstance(converted, atvi.RealArrayValue)
     assert converted == []
 
 
-def test_double_array_value_grpc_to_acvi_one_dimensional():
+def test_double_array_value_grpc_to_atvi_one_dimensional():
     # Setup
     original = grpc_msg.VariableValue(
         double_array_value=grpc_msg.DoubleArrayValue(
@@ -249,14 +249,14 @@ def test_double_array_value_grpc_to_acvi_one_dimensional():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.RealArrayValue)
+    assert isinstance(converted, atvi.RealArrayValue)
     assert converted == [47.0, -867.5309, 9000.1]
 
 
-def test_double_array_value_grpc_to_acvi_multi_dimensional():
+def test_double_array_value_grpc_to_atvi_multi_dimensional():
     # Setup
     original = grpc_msg.VariableValue(
         double_array_value=grpc_msg.DoubleArrayValue(
@@ -266,16 +266,16 @@ def test_double_array_value_grpc_to_acvi_multi_dimensional():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.RealArrayValue)
+    assert isinstance(converted, atvi.RealArrayValue)
     assert converted == [[1.1, 2.1, 3.1], [1.2, 2.2, 3.2], [1.3, 2.3, 3.3]]
 
 
-def test_double_array_value_acvi_to_grpc_empty():
+def test_double_array_value_atvi_to_grpc_empty():
     # Setup
-    original = acvi.RealArrayValue(0, [])
+    original = atvi.RealArrayValue(0, [])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -286,9 +286,9 @@ def test_double_array_value_acvi_to_grpc_empty():
     assert converted.double_array_value.dims.dims == [0]
 
 
-def test_double_array_value_acvi_to_grpc_one_dimensional():
+def test_double_array_value_atvi_to_grpc_one_dimensional():
     # Setup
-    original = acvi.RealArrayValue(3, [47.0, -867.5309, 9000.1])
+    original = atvi.RealArrayValue(3, [47.0, -867.5309, 9000.1])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -299,9 +299,9 @@ def test_double_array_value_acvi_to_grpc_one_dimensional():
     assert converted.double_array_value.dims.dims == [3]
 
 
-def test_double_array_value_acvi_to_grpc_multi_dimensional():
+def test_double_array_value_atvi_to_grpc_multi_dimensional():
     # Setup
-    original = acvi.RealArrayValue((3, 3), [[1.1, 2.1, 3.1], [1.2, 2.2, 3.2], [1.3, 2.3, 3.3]])
+    original = atvi.RealArrayValue((3, 3), [[1.1, 2.1, 3.1], [1.2, 2.2, 3.2], [1.3, 2.3, 3.3]])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -312,7 +312,7 @@ def test_double_array_value_acvi_to_grpc_multi_dimensional():
     assert converted.double_array_value.dims.dims == [3, 3]
 
 
-def test_string_array_value_grpc_to_acvi_empty():
+def test_string_array_value_grpc_to_atvi_empty():
     # Setup
     original = grpc_msg.VariableValue(
         string_array_value=grpc_msg.StringArrayValue(
@@ -321,14 +321,14 @@ def test_string_array_value_grpc_to_acvi_empty():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.StringArrayValue)
+    assert isinstance(converted, atvi.StringArrayValue)
     assert converted.size == 0
 
 
-def test_string_array_value_grpc_to_acvi_one_dimensional():
+def test_string_array_value_grpc_to_atvi_one_dimensional():
     # Setup
     original = grpc_msg.VariableValue(
         string_array_value=grpc_msg.StringArrayValue(
@@ -337,14 +337,14 @@ def test_string_array_value_grpc_to_acvi_one_dimensional():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.StringArrayValue)
+    assert isinstance(converted, atvi.StringArrayValue)
     assert converted == ["test", "check", "trial"]
 
 
-def test_string_array_value_grpc_to_acvi_multi_dimensional():
+def test_string_array_value_grpc_to_atvi_multi_dimensional():
     # Setup
     original = grpc_msg.VariableValue(
         string_array_value=grpc_msg.StringArrayValue(
@@ -364,10 +364,10 @@ def test_string_array_value_grpc_to_acvi_multi_dimensional():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.StringArrayValue)
+    assert isinstance(converted, atvi.StringArrayValue)
     assert converted == [
         ["one", "two", "three"],
         ["first", "second", "third"],
@@ -375,9 +375,9 @@ def test_string_array_value_grpc_to_acvi_multi_dimensional():
     ]
 
 
-def test_string_array_value_acvi_to_grpc_empty():
+def test_string_array_value_atvi_to_grpc_empty():
     # Setup
-    original = acvi.StringArrayValue(0, [])
+    original = atvi.StringArrayValue(0, [])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -388,9 +388,9 @@ def test_string_array_value_acvi_to_grpc_empty():
     assert converted.string_array_value.dims.dims == [0]
 
 
-def test_string_array_value_acvi_to_grpc_one_dimensional():
+def test_string_array_value_atvi_to_grpc_one_dimensional():
     # Setup
-    original = acvi.StringArrayValue(3, ["test", "check", "inspect"])
+    original = atvi.StringArrayValue(3, ["test", "check", "inspect"])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -401,9 +401,9 @@ def test_string_array_value_acvi_to_grpc_one_dimensional():
     assert converted.string_array_value.dims.dims == [3]
 
 
-def test_string_array_value_acvi_to_grpc_multi_dimensional():
+def test_string_array_value_atvi_to_grpc_multi_dimensional():
     # Setup
-    original = acvi.StringArrayValue(
+    original = atvi.StringArrayValue(
         (3, 3),
         [
             ["one", "two", "three"],
@@ -431,7 +431,7 @@ def test_string_array_value_acvi_to_grpc_multi_dimensional():
     assert converted.string_array_value.dims.dims == [3, 3]
 
 
-def test_bool_array_value_grpc_to_acvi_empty():
+def test_bool_array_value_grpc_to_atvi_empty():
     # Setup
     original = grpc_msg.VariableValue(
         bool_array_value=grpc_msg.BooleanArrayValue(
@@ -440,14 +440,14 @@ def test_bool_array_value_grpc_to_acvi_empty():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.BooleanArrayValue)
+    assert isinstance(converted, atvi.BooleanArrayValue)
     assert converted == []
 
 
-def test_bool_array_value_grpc_to_acvi_one_dimensional():
+def test_bool_array_value_grpc_to_atvi_one_dimensional():
     # Setup
     original = grpc_msg.VariableValue(
         bool_array_value=grpc_msg.BooleanArrayValue(
@@ -456,14 +456,14 @@ def test_bool_array_value_grpc_to_acvi_one_dimensional():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.BooleanArrayValue)
+    assert isinstance(converted, atvi.BooleanArrayValue)
     assert converted == [True, False, False]
 
 
-def test_bool_array_value_grpc_to_acvi_multi_dimensional():
+def test_bool_array_value_grpc_to_atvi_multi_dimensional():
     # Setup
     original = grpc_msg.VariableValue(
         bool_array_value=grpc_msg.BooleanArrayValue(
@@ -473,16 +473,16 @@ def test_bool_array_value_grpc_to_acvi_multi_dimensional():
     )
 
     # Execute
-    converted = test_module.convert_grpc_value_to_acvi(original)
+    converted = test_module.convert_grpc_value_to_atvi(original)
 
     # Verify
-    assert isinstance(converted, acvi.BooleanArrayValue)
+    assert isinstance(converted, atvi.BooleanArrayValue)
     assert converted == [[True, True, True], [False, False, False], [True, False, True]]
 
 
-def test_bool_array_value_acvi_to_grpc_empty():
+def test_bool_array_value_atvi_to_grpc_empty():
     # Setup
-    original = acvi.BooleanArrayValue(0, [])
+    original = atvi.BooleanArrayValue(0, [])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -493,9 +493,9 @@ def test_bool_array_value_acvi_to_grpc_empty():
     assert converted.bool_array_value.dims.dims == [0]
 
 
-def test_bool_array_value_acvi_to_grpc_one_dimensional():
+def test_bool_array_value_atvi_to_grpc_one_dimensional():
     # Setup
-    original = acvi.BooleanArrayValue(3, [True, False, True])
+    original = atvi.BooleanArrayValue(3, [True, False, True])
 
     # Execute
     converted = test_module.convert_interop_value_to_grpc(original)
@@ -506,9 +506,9 @@ def test_bool_array_value_acvi_to_grpc_one_dimensional():
     assert converted.bool_array_value.dims.dims == [3]
 
 
-def test_bool_array_value_acvi_to_grpc_multi_dimensional():
+def test_bool_array_value_atvi_to_grpc_multi_dimensional():
     # Setup
-    original = acvi.BooleanArrayValue(
+    original = atvi.BooleanArrayValue(
         (3, 3), [[True, True, True], [False, False, True], [True, False, False]]
     )
 

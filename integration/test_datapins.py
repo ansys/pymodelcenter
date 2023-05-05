@@ -1,8 +1,8 @@
 import typing
 from typing import Any, Mapping
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as ewapi
+import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
@@ -49,7 +49,7 @@ def test_can_manipulate_variable_properties(workflow) -> None:
     # Arrange
     variable: mcapi.IDatapin = workflow.get_variable("ワークフロー.all_types_コンポーネント.realIn")
     prop_name: str = "lowerBound"
-    prop_value: acvi.IVariableValue = acvi.RealValue(5.5)
+    prop_value: atvi.IVariableValue = atvi.RealValue(5.5)
 
     # Act
     variable.set_property(property_name=prop_name, property_value=prop_value)
@@ -64,11 +64,11 @@ def test_can_manipulate_variable_properties(workflow) -> None:
 
 
 def do_bool_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
-    meta_type = acvi.BooleanArrayMetadata if is_array else acvi.BooleanMetadata
+    meta_type = atvi.BooleanArrayMetadata if is_array else atvi.BooleanMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
     metadata.description = "boolブール"
-    metadata.custom_metadata["blargඞ"] = acvi.RealValue(0.00000007)
+    metadata.custom_metadata["blargඞ"] = atvi.RealValue(0.00000007)
     cast.set_metadata(metadata)
 
 
@@ -76,15 +76,15 @@ def do_bool_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
     assert metadata.description == "boolブール"
-    assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
+    assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
 
 
 def do_real_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
-    meta_type = acvi.RealArrayMetadata if is_array else acvi.RealMetadata
+    meta_type = atvi.RealArrayMetadata if is_array else atvi.RealMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
     metadata.description = "real浮動小数点数"
-    metadata.custom_metadata["blargඞ"] = acvi.RealValue(0.00000007)
+    metadata.custom_metadata["blargඞ"] = atvi.RealValue(0.00000007)
     metadata.units = "cd/m²"
     metadata.display_format = "$#,##"
     metadata.lower_bound = 1.0
@@ -98,7 +98,7 @@ def do_real_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
     assert metadata.description == "real浮動小数点数"
-    assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
+    assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
     assert metadata.units == "cd/m²"
     assert metadata.display_format == "$#,##0"
     assert metadata.lower_bound == 1.0
@@ -108,11 +108,11 @@ def do_real_assert(variable: mcapi.IDatapin) -> None:
 
 
 def do_int_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
-    meta_type = acvi.IntegerArrayMetadata if is_array else acvi.IntegerMetadata
+    meta_type = atvi.IntegerArrayMetadata if is_array else atvi.IntegerMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
     metadata.description = "int整数"
-    metadata.custom_metadata["blargඞ"] = acvi.RealValue(0.00000007)
+    metadata.custom_metadata["blargඞ"] = atvi.RealValue(0.00000007)
     metadata.units = "cd/m²"
     metadata.display_format = "$#,##"
     metadata.lower_bound = 1
@@ -126,7 +126,7 @@ def do_int_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
     assert metadata.description == "int整数"
-    assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
+    assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
     assert metadata.units == "cd/m²"
     assert metadata.display_format == "$#,##0"
     assert metadata.lower_bound == 1
@@ -136,11 +136,11 @@ def do_int_assert(variable: mcapi.IDatapin) -> None:
 
 
 def do_string_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
-    meta_type = acvi.StringArrayMetadata if is_array else acvi.StringMetadata
+    meta_type = atvi.StringArrayMetadata if is_array else atvi.StringMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
     metadata.description = "string文字"
-    metadata.custom_metadata["blargඞ"] = acvi.RealValue(0.00000007)
+    metadata.custom_metadata["blargඞ"] = atvi.RealValue(0.00000007)
     metadata.enumerated_values = ["a", "b", "c"]
     metadata.enumerated_aliases = ["aඞ", "bඞ", "cඞ"]
     cast.set_metadata(metadata)
@@ -150,7 +150,7 @@ def do_string_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
     assert metadata.description == "string文字"
-    assert metadata.custom_metadata["blargඞ"] == acvi.RealValue(0.00000007)
+    assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
     assert metadata.enumerated_values == ["a", "b", "c"]
     assert metadata.enumerated_aliases == ["aඞ", "bඞ", "cඞ"]
 
@@ -160,41 +160,41 @@ def do_string_assert(variable: mcapi.IDatapin) -> None:
     [
         (
             "ワークフロー.all_types_コンポーネント.boolIn",
-            acvi.VariableType.BOOLEAN,
-            ewapi.VariableState(value=acvi.BooleanValue(True), is_valid=True),
+            atvi.VariableType.BOOLEAN,
+            ewapi.VariableState(value=atvi.BooleanValue(True), is_valid=True),
             do_bool_setup,
             do_bool_assert,
             False,
         ),
         (
             "ワークフロー.all_types_コンポーネント.realIn",
-            acvi.VariableType.REAL,
-            ewapi.VariableState(value=acvi.RealValue(1.0), is_valid=True),
+            atvi.VariableType.REAL,
+            ewapi.VariableState(value=atvi.RealValue(1.0), is_valid=True),
             do_real_setup,
             do_real_assert,
             False,
         ),
         (
             "ワークフロー.all_types_コンポーネント.intIn",
-            acvi.VariableType.INTEGER,
-            ewapi.VariableState(value=acvi.IntegerValue(1), is_valid=True),
+            atvi.VariableType.INTEGER,
+            ewapi.VariableState(value=atvi.IntegerValue(1), is_valid=True),
             do_int_setup,
             do_int_assert,
             False,
         ),
         (
             "ワークフロー.all_types_コンポーネント.strIn",
-            acvi.VariableType.STRING,
-            ewapi.VariableState(value=acvi.StringValue("a"), is_valid=True),
+            atvi.VariableType.STRING,
+            ewapi.VariableState(value=atvi.StringValue("a"), is_valid=True),
             do_string_setup,
             do_string_assert,
             False,
         ),
         (
             "ワークフロー.all_types_コンポーネント.arrays.boolIn",
-            acvi.VariableType.BOOLEAN_ARRAY,
+            atvi.VariableType.BOOLEAN_ARRAY,
             ewapi.VariableState(
-                value=acvi.BooleanArrayValue(values=[True, False, True]), is_valid=True
+                value=atvi.BooleanArrayValue(values=[True, False, True]), is_valid=True
             ),
             do_bool_setup,
             do_bool_assert,
@@ -202,24 +202,24 @@ def do_string_assert(variable: mcapi.IDatapin) -> None:
         ),
         (
             "ワークフロー.all_types_コンポーネント.arrays.realIn",
-            acvi.VariableType.REAL_ARRAY,
-            ewapi.VariableState(value=acvi.RealArrayValue(values=[1.0, 2.0, 3.0]), is_valid=True),
+            atvi.VariableType.REAL_ARRAY,
+            ewapi.VariableState(value=atvi.RealArrayValue(values=[1.0, 2.0, 3.0]), is_valid=True),
             do_real_setup,
             do_real_assert,
             True,
         ),
         (
             "ワークフロー.all_types_コンポーネント.arrays.intIn",
-            acvi.VariableType.INTEGER_ARRAY,
-            ewapi.VariableState(value=acvi.IntegerArrayValue(values=[1, 2, 3]), is_valid=True),
+            atvi.VariableType.INTEGER_ARRAY,
+            ewapi.VariableState(value=atvi.IntegerArrayValue(values=[1, 2, 3]), is_valid=True),
             do_int_setup,
             do_int_assert,
             True,
         ),
         (
             "ワークフロー.all_types_コンポーネント.arrays.strIn",
-            acvi.VariableType.STRING_ARRAY,
-            ewapi.VariableState(value=acvi.StringArrayValue(values=["a", "b", "c"]), is_valid=True),
+            atvi.VariableType.STRING_ARRAY,
+            ewapi.VariableState(value=atvi.StringArrayValue(values=["a", "b", "c"]), is_valid=True),
             do_string_setup,
             do_string_assert,
             True,

@@ -1,7 +1,7 @@
 """Definition of integer array variable."""
 from abc import ABC, abstractmethod
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
 from .idatapin import IDatapin
@@ -12,5 +12,5 @@ class IIntegerArrayDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> acvi.IntegerArrayMetadata:
+    def get_metadata(self) -> atvi.IntegerArrayMetadata:
         ...  # pragma: no cover

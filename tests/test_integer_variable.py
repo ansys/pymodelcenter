@@ -1,7 +1,7 @@
 from typing import Optional, Union
 import unittest
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
@@ -65,17 +65,17 @@ class MockWorkflowClientForIntegerVarTest:
 @pytest.mark.parametrize(
     "description_string,sut_type,expected_metadata_type",
     [
-        ("", IntegerDatapin, acvi.IntegerMetadata),
-        ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
-        ("", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
-        ("This is a mock datapin description.", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
+        ("", IntegerDatapin, atvi.IntegerMetadata),
+        ("This is a mock datapin description.", IntegerDatapin, atvi.IntegerMetadata),
+        ("", IntegerArrayDatapin, atvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArrayDatapin, atvi.IntegerArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    expected_metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -89,7 +89,7 @@ def test_retrieved_metadata_should_include_description(
         sut = sut_type(sut_element_id, None)
 
         # Execute
-        result: acvi.IntegerMetadata = sut.get_metadata()
+        result: atvi.IntegerMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -103,12 +103,12 @@ def test_retrieved_metadata_should_include_description(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArrayDatapin, acvi.IntegerArrayMetadata)],
+    [(IntegerDatapin, atvi.IntegerMetadata), (IntegerArrayDatapin, atvi.IntegerArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    expected_metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -121,7 +121,7 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
         sut = sut_type(sut_element_id, None)
 
         # Execute
-        result: acvi.IntegerMetadata = sut.get_metadata()
+        result: atvi.IntegerMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -135,12 +135,12 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArrayDatapin, acvi.IntegerArrayMetadata)],
+    [(IntegerDatapin, atvi.IntegerMetadata), (IntegerArrayDatapin, atvi.IntegerArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    expected_metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -159,7 +159,7 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
         sut = sut_type(sut_element_id, None)
 
         # Execute
-        result: acvi.IntegerMetadata = sut.get_metadata()
+        result: atvi.IntegerMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -167,8 +167,8 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
             result, expected_metadata_type
         ), "The metadata should have the correct type."
         expected_custom_metadata = {
-            "test_integer_value": acvi.IntegerValue(47),
-            "test_double_value": acvi.RealValue(-867.5309),
+            "test_integer_value": atvi.IntegerValue(47),
+            "test_double_value": atvi.RealValue(-867.5309),
         }
         assert (
             result.custom_metadata == expected_custom_metadata
@@ -177,12 +177,12 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(IntegerDatapin, acvi.IntegerMetadata), (IntegerArrayDatapin, acvi.IntegerArrayMetadata)],
+    [(IntegerDatapin, atvi.IntegerMetadata), (IntegerArrayDatapin, atvi.IntegerArrayMetadata)],
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    expected_metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -209,20 +209,20 @@ def test_retrieved_metadata_includes_unsupported_type(
     "sut_type,expected_metadata_type,upper_bound,set_upper_bound,expected_upper_bound,"
     "lower_bound,set_lower_bound,expected_lower_bound",
     [
-        (IntegerDatapin, acvi.IntegerMetadata, 0, False, None, 0, False, None),
-        (IntegerDatapin, acvi.IntegerMetadata, -47, True, -47, 9000, True, 9000),
-        (IntegerDatapin, acvi.IntegerMetadata, 0, False, None, 9000, True, 9000),
-        (IntegerDatapin, acvi.IntegerMetadata, -47, True, -47, 0, False, None),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, 0, False, None, 0, False, None),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, -47, True, -47, 9000, True, 9000),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, 0, False, None, 9000, True, 9000),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, -47, True, -47, 0, False, None),
+        (IntegerDatapin, atvi.IntegerMetadata, 0, False, None, 0, False, None),
+        (IntegerDatapin, atvi.IntegerMetadata, -47, True, -47, 9000, True, 9000),
+        (IntegerDatapin, atvi.IntegerMetadata, 0, False, None, 9000, True, 9000),
+        (IntegerDatapin, atvi.IntegerMetadata, -47, True, -47, 0, False, None),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata, 0, False, None, 0, False, None),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata, -47, True, -47, 9000, True, 9000),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata, 0, False, None, 9000, True, 9000),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata, -47, True, -47, 0, False, None),
     ],
 )
 def test_retrieved_metadata_should_convert_bounds(
     monkeypatch,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    expected_metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    expected_metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
     upper_bound: int,
     set_upper_bound: bool,
     expected_upper_bound: Optional[int],
@@ -245,7 +245,7 @@ def test_retrieved_metadata_should_convert_bounds(
         sut = sut_type(sut_element_id, None)
 
         # Execute
-        result: acvi.IntegerMetadata = sut.get_metadata()
+        result: atvi.IntegerMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -279,7 +279,7 @@ def test_set_metadata_invalid_custom_metadata(
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, None)
-        new_metadata = acvi.FileMetadata()
+        new_metadata = atvi.FileMetadata()
 
         # Execute
         with pytest.raises(TypeError):
@@ -292,17 +292,17 @@ def test_set_metadata_invalid_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", IntegerDatapin, acvi.IntegerMetadata),
-        ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
-        ("", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
-        ("This is a mock datapin description.", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
+        ("", IntegerDatapin, atvi.IntegerMetadata),
+        ("This is a mock datapin description.", IntegerDatapin, atvi.IntegerMetadata),
+        ("", IntegerArrayDatapin, atvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArrayDatapin, atvi.IntegerArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -331,17 +331,17 @@ def test_set_metadata_empty_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", IntegerDatapin, acvi.IntegerMetadata),
-        ("This is a mock datapin description.", IntegerDatapin, acvi.IntegerMetadata),
-        ("", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
-        ("This is a mock datapin description.", IntegerArrayDatapin, acvi.IntegerArrayMetadata),
+        ("", IntegerDatapin, atvi.IntegerMetadata),
+        ("This is a mock datapin description.", IntegerDatapin, atvi.IntegerMetadata),
+        ("", IntegerArrayDatapin, atvi.IntegerArrayMetadata),
+        ("This is a mock datapin description.", IntegerArrayDatapin, atvi.IntegerArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -354,8 +354,8 @@ def test_set_metadata_populated_custom_metadata(
         sut = sut_type(sut_element_id, None)
         new_metadata = metadata_type()
         new_metadata.description = description
-        new_metadata.custom_metadata["int_value"] = acvi.IntegerValue(47)
-        new_metadata.custom_metadata["real_value"] = acvi.RealValue(-867.5309)
+        new_metadata.custom_metadata["int_value"] = atvi.IntegerValue(47)
+        new_metadata.custom_metadata["real_value"] = atvi.RealValue(-867.5309)
 
         # Execute
         sut.set_metadata(new_metadata)
@@ -379,20 +379,20 @@ def test_set_metadata_populated_custom_metadata(
     "sut_type,metadata_type,original_lower_bound,expected_lower_bound,expected_lower_bound_set,"
     "original_upper_bound,expected_upper_bound,expected_upper_bound_set",
     [
-        (IntegerDatapin, acvi.IntegerMetadata, None, 0, False, None, 0, False),
-        (IntegerDatapin, acvi.IntegerMetadata, -47, -47, True, 9001, 9001, True),
-        (IntegerDatapin, acvi.IntegerMetadata, None, 0, False, 9001, 9001, True),
-        (IntegerDatapin, acvi.IntegerMetadata, -47, -47, True, None, 0, False),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, None, 0, False, None, 0, False),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, -47, -47, True, 9001, 9001, True),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, None, 0, False, 9001, 9001, True),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata, -47, -47, True, None, 0, False),
+        (IntegerDatapin, atvi.IntegerMetadata, None, 0, False, None, 0, False),
+        (IntegerDatapin, atvi.IntegerMetadata, -47, -47, True, 9001, 9001, True),
+        (IntegerDatapin, atvi.IntegerMetadata, None, 0, False, 9001, 9001, True),
+        (IntegerDatapin, atvi.IntegerMetadata, -47, -47, True, None, 0, False),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata, None, 0, False, None, 0, False),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata, -47, -47, True, 9001, 9001, True),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata, None, 0, False, 9001, 9001, True),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata, -47, -47, True, None, 0, False),
     ],
 )
 def test_set_metadata_should_convert_bounds(
     monkeypatch,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
     original_lower_bound: Optional[int],
     expected_lower_bound: int,
     expected_lower_bound_set: bool,
@@ -432,14 +432,14 @@ def test_set_metadata_should_convert_bounds(
 @pytest.mark.parametrize(
     "sut_type,metadata_type",
     [
-        (IntegerDatapin, acvi.IntegerMetadata),
-        (IntegerArrayDatapin, acvi.IntegerArrayMetadata),
+        (IntegerDatapin, atvi.IntegerMetadata),
+        (IntegerArrayDatapin, atvi.IntegerArrayMetadata),
     ],
 )
 def test_set_metadata_populated_enums(
     monkeypatch,
     sut_type: Union[IntegerDatapin, IntegerArrayDatapin],
-    metadata_type: Union[acvi.IntegerMetadata, acvi.IntegerArrayMetadata],
+    metadata_type: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForIntegerVarTest()
@@ -451,7 +451,7 @@ def test_set_metadata_populated_enums(
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, None)
         new_metadata = metadata_type()
-        new_metadata.enumerated_values = [acvi.IntegerValue(1), acvi.IntegerValue(2)]
+        new_metadata.enumerated_values = [atvi.IntegerValue(1), atvi.IntegerValue(2)]
         new_metadata.enumerated_aliases = ["a", "b"]
 
         # Execute
@@ -461,7 +461,7 @@ def test_set_metadata_populated_enums(
         expected_request = SetIntegerVariableMetadataRequest(target=sut_element_id)
         expected_request.new_metadata.base_metadata.description = ""
         expected_request.new_metadata.enum_values.MergeFrom(
-            [acvi.IntegerValue(1), acvi.IntegerValue(2)]
+            [atvi.IntegerValue(1), atvi.IntegerValue(2)]
         )
         expected_request.new_metadata.enum_aliases.MergeFrom(["a", "b"])
         expected_request.new_metadata.numeric_metadata.MergeFrom(
@@ -473,10 +473,10 @@ def test_set_metadata_populated_enums(
 @pytest.mark.parametrize(
     "set_value,expected_value_in_request",
     [
-        (acvi.IntegerValue(-47), -47),
-        (acvi.IntegerValue(47), 47),
-        (acvi.BooleanValue(True), 1),
-        (acvi.BooleanValue(False), 0),
+        (atvi.IntegerValue(-47), -47),
+        (atvi.IntegerValue(47), 47),
+        (atvi.BooleanValue(True), 1),
+        (atvi.BooleanValue(False), 0),
     ],
 )
 def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
@@ -489,7 +489,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = IntegerDatapin(sut_element_id, None)
-        new_value = acvi.VariableState(set_value, True)
+        new_value = atvi.VariableState(set_value, True)
 
         # Execute
         sut.set_value(new_value)
@@ -504,12 +504,12 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
 @pytest.mark.parametrize(
     "set_value",
     [
-        acvi.RealValue(4.0),
-        acvi.StringValue("47"),
-        acvi.IntegerArrayValue(),
-        acvi.RealArrayValue(),
-        acvi.BooleanArrayValue(),
-        acvi.StringArrayValue(),
+        atvi.RealValue(4.0),
+        atvi.StringValue("47"),
+        atvi.IntegerArrayValue(),
+        atvi.RealArrayValue(),
+        atvi.BooleanArrayValue(),
+        atvi.StringArrayValue(),
     ],
 )
 def test_scalar_set_disallowed(monkeypatch, set_value):
@@ -522,7 +522,7 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = IntegerDatapin(sut_element_id, None)
-        new_value = acvi.VariableState(set_value, True)
+        new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
         with pytest.raises(TypeError):
@@ -536,11 +536,11 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
     "set_value,expected_value_in_request",
     [
         (
-            acvi.IntegerArrayValue(shape_=(2, 2), values=[[101, 102], [201, 202]]),
+            atvi.IntegerArrayValue(shape_=(2, 2), values=[[101, 102], [201, 202]]),
             IntegerArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[101, 102, 201, 202]),
         ),
         (
-            acvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]),
+            atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]),
             IntegerArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[1, 0, 0, 1]),
         ),
     ],
@@ -555,7 +555,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = IntegerArrayDatapin(sut_element_id, None)
-        new_value = acvi.VariableState(set_value, True)
+        new_value = atvi.VariableState(set_value, True)
 
         # Execute
         sut.set_value(new_value)
@@ -570,12 +570,12 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
 @pytest.mark.parametrize(
     "set_value",
     [
-        acvi.IntegerValue(0),
-        acvi.RealValue(0.0),
-        acvi.BooleanValue(True),
-        acvi.StringValue("0"),
-        acvi.RealArrayValue(),
-        acvi.StringArrayValue(),
+        atvi.IntegerValue(0),
+        atvi.RealValue(0.0),
+        atvi.BooleanValue(True),
+        atvi.StringValue("0"),
+        atvi.RealArrayValue(),
+        atvi.StringArrayValue(),
     ],
 )
 def test_array_set_disallowed(monkeypatch, set_value):
@@ -588,7 +588,7 @@ def test_array_set_disallowed(monkeypatch, set_value):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = IntegerArrayDatapin(sut_element_id, None)
-        new_value = acvi.VariableState(set_value, True)
+        new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
         with pytest.raises(TypeError):
@@ -600,7 +600,7 @@ def test_array_set_disallowed(monkeypatch, set_value):
 
 def test_scalar_get_type(monkeypatch):
     do_get_type_test(
-        monkeypatch, IntegerDatapin, VariableType.VARTYPE_INTEGER, acvi.VariableType.INTEGER
+        monkeypatch, IntegerDatapin, VariableType.VARTYPE_INTEGER, atvi.VariableType.INTEGER
     )
 
 
@@ -609,17 +609,17 @@ def test_array_get_type(monkeypatch):
         monkeypatch,
         IntegerArrayDatapin,
         VariableType.VARTYPE_INTEGER_ARRAY,
-        acvi.VariableType.INTEGER_ARRAY,
+        atvi.VariableType.INTEGER_ARRAY,
     )
 
 
 @pytest.mark.parametrize(
     "value_in_response,validity_in_response,expected_acvi_state",
     [
-        (47, True, acvi.VariableState(acvi.IntegerValue(47), True)),
-        (-8675309, False, acvi.VariableState(acvi.IntegerValue(-8675309), False)),
-        (0, True, acvi.VariableState(acvi.IntegerValue(0), True)),
-        (1, False, acvi.VariableState(acvi.IntegerValue(1), False)),
+        (47, True, atvi.VariableState(atvi.IntegerValue(47), True)),
+        (-8675309, False, atvi.VariableState(atvi.IntegerValue(-8675309), False)),
+        (0, True, atvi.VariableState(atvi.IntegerValue(0), True)),
+        (1, False, atvi.VariableState(atvi.IntegerValue(1), False)),
     ],
 )
 def test_scalar_get_state(
@@ -649,15 +649,15 @@ def test_array_get_state_with_hid(monkeypatch):
         (
             IntegerArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[-8675309, 47, -1, 0]),
             True,
-            acvi.VariableState(
-                acvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]), True
+            atvi.VariableState(
+                atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]), True
             ),
         ),
         (
             IntegerArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[101, 102, 201, 202]),
             False,
-            acvi.VariableState(
-                acvi.IntegerArrayValue(shape_=(2, 2), values=[[101, 102], [201, 202]]), False
+            atvi.VariableState(
+                atvi.IntegerArrayValue(shape_=(2, 2), values=[[101, 102], [201, 202]]), False
             ),
         ),
     ],

@@ -1,6 +1,6 @@
 """Classes for representing variables that exist in ModelCenter with unsupported value types."""
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 import grpc
 from overrides import overrides
 
@@ -33,13 +33,13 @@ class UnsupportedTypeDatapin(BaseDatapin):
         super(BaseDatapin, self).__init__(element_id=element_id, channel=channel)
 
     @overrides
-    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
         raise DatapinWithUnsupportedTypeException()
 
     @overrides
-    def set_value(self, value: acvi.VariableState) -> None:
+    def set_value(self, value: atvi.VariableState) -> None:
         raise DatapinWithUnsupportedTypeException()
 
     @overrides
-    def get_metadata(self) -> acvi.CommonVariableMetadata:
+    def get_metadata(self) -> atvi.CommonVariableMetadata:
         raise DatapinWithUnsupportedTypeException()

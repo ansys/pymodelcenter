@@ -3,8 +3,8 @@ import os
 from typing import Collection, List, Mapping, Set
 import unittest
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as ewapi
+import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
@@ -80,7 +80,7 @@ def test_removing_a_component(workflow) -> None:
 
 def test_getting_and_setting_a_variable_value(workflow) -> None:
     # Arrange
-    new_value: acvi.IVariableValue = acvi.RealValue(87.32498)
+    new_value: atvi.IVariableValue = atvi.RealValue(87.32498)
 
     # Act
     initial_state: ewapi.VariableState = workflow.get_value(
@@ -101,13 +101,13 @@ def test_getting_and_setting_a_variable_value(workflow) -> None:
 def test_getting_a_variable_and_its_metadata(workflow) -> None:
     # Act
     variable: mcapi.IDatapin = workflow.get_variable(name="ワークフロー.all_types_コンポーネント.realIn")
-    metadata: acvi.CommonVariableMetadata = workflow.get_variable_meta_data(
+    metadata: atvi.CommonVariableMetadata = workflow.get_variable_meta_data(
         name="ワークフロー.all_types_コンポーネント.realIn"
     )
 
     # Assert
     assert variable.full_name == "ワークフロー.all_types_コンポーネント.realIn"
-    assert metadata.variable_type == acvi.VariableType.REAL
+    assert metadata.variable_type == atvi.VariableType.REAL
 
 
 def test_creating_and_getting_links(workflow) -> None:
@@ -205,63 +205,63 @@ def test_running_and_getting_results(workflow) -> None:
     # Arrange
     validation_names: Set[str] = set()
     collection_names: Set[str] = {"ワークフロー.all_types_コンポーネント"}
-    inputs: Mapping[str, acvi.VariableState] = {
-        "ワークフロー.all_types_コンポーネント.boolIn": acvi.VariableState(
-            value=acvi.BooleanValue(True), is_valid=True
+    inputs: Mapping[str, atvi.VariableState] = {
+        "ワークフロー.all_types_コンポーネント.boolIn": atvi.VariableState(
+            value=atvi.BooleanValue(True), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.realIn": acvi.VariableState(
-            value=acvi.RealValue(984.65646754), is_valid=True
+        "ワークフロー.all_types_コンポーネント.realIn": atvi.VariableState(
+            value=atvi.RealValue(984.65646754), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.intIn": acvi.VariableState(
-            value=acvi.IntegerValue(1431655765), is_valid=True
+        "ワークフロー.all_types_コンポーネント.intIn": atvi.VariableState(
+            value=atvi.IntegerValue(1431655765), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.strIn": acvi.VariableState(
-            value=acvi.StringValue("•-•• --- •••- •"), is_valid=True
+        "ワークフロー.all_types_コンポーネント.strIn": atvi.VariableState(
+            value=atvi.StringValue("•-•• --- •••- •"), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.arrays.boolIn": acvi.VariableState(
-            value=acvi.BooleanArrayValue(values=[True, False, False, True]), is_valid=True
+        "ワークフロー.all_types_コンポーネント.arrays.boolIn": atvi.VariableState(
+            value=atvi.BooleanArrayValue(values=[True, False, False, True]), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.arrays.realIn": acvi.VariableState(
-            value=acvi.RealArrayValue(values=[1.1, 2.2, 3.3, 4.4]), is_valid=True
+        "ワークフロー.all_types_コンポーネント.arrays.realIn": atvi.VariableState(
+            value=atvi.RealArrayValue(values=[1.1, 2.2, 3.3, 4.4]), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.arrays.intIn": acvi.VariableState(
-            value=acvi.IntegerArrayValue(values=[9, 8, 7, 6]), is_valid=True
+        "ワークフロー.all_types_コンポーネント.arrays.intIn": atvi.VariableState(
+            value=atvi.IntegerArrayValue(values=[9, 8, 7, 6]), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.arrays.strIn": acvi.VariableState(
-            value=acvi.StringArrayValue(values=["風", "林", "火", "山"]), is_valid=True
+        "ワークフロー.all_types_コンポーネント.arrays.strIn": atvi.VariableState(
+            value=atvi.StringArrayValue(values=["風", "林", "火", "山"]), is_valid=True
         ),
     }
 
     # Act
-    result: Mapping[str, acvi.VariableState] = workflow.run(
+    result: Mapping[str, atvi.VariableState] = workflow.run(
         inputs=inputs, reset=True, validation_names=validation_names, collect_names=collection_names
     )
 
     # Assert
-    expected_results: Mapping[str, acvi.VariableState] = {
-        "ワークフロー.all_types_コンポーネント.boolOut": acvi.VariableState(
-            value=acvi.BooleanValue(True), is_valid=True
+    expected_results: Mapping[str, atvi.VariableState] = {
+        "ワークフロー.all_types_コンポーネント.boolOut": atvi.VariableState(
+            value=atvi.BooleanValue(True), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.realOut": acvi.VariableState(
-            value=acvi.RealValue(984.65646754), is_valid=True
+        "ワークフロー.all_types_コンポーネント.realOut": atvi.VariableState(
+            value=atvi.RealValue(984.65646754), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.intOut": acvi.VariableState(
-            value=acvi.IntegerValue(1431655765), is_valid=True
+        "ワークフロー.all_types_コンポーネント.intOut": atvi.VariableState(
+            value=atvi.IntegerValue(1431655765), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.strOut": acvi.VariableState(
-            value=acvi.StringValue("•-•• --- •••- •"), is_valid=True
+        "ワークフロー.all_types_コンポーネント.strOut": atvi.VariableState(
+            value=atvi.StringValue("•-•• --- •••- •"), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.arrays.boolOut": acvi.VariableState(
-            value=acvi.BooleanArrayValue(values=[True, False, False, True]), is_valid=True
+        "ワークフロー.all_types_コンポーネント.arrays.boolOut": atvi.VariableState(
+            value=atvi.BooleanArrayValue(values=[True, False, False, True]), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.arrays.realOut": acvi.VariableState(
-            value=acvi.RealArrayValue(values=[1.1, 2.2, 3.3, 4.4]), is_valid=True
+        "ワークフロー.all_types_コンポーネント.arrays.realOut": atvi.VariableState(
+            value=atvi.RealArrayValue(values=[1.1, 2.2, 3.3, 4.4]), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.arrays.intOut": acvi.VariableState(
-            value=acvi.IntegerArrayValue(values=[9, 8, 7, 6]), is_valid=True
+        "ワークフロー.all_types_コンポーネント.arrays.intOut": atvi.VariableState(
+            value=atvi.IntegerArrayValue(values=[9, 8, 7, 6]), is_valid=True
         ),
-        "ワークフロー.all_types_コンポーネント.arrays.strOut": acvi.VariableState(
-            value=acvi.StringArrayValue(values=["風", "林", "火", "山"]), is_valid=True
+        "ワークフロー.all_types_コンポーネント.arrays.strOut": atvi.VariableState(
+            value=atvi.StringArrayValue(values=["風", "林", "火", "山"]), is_valid=True
         ),
     }
     assert expected_results == result

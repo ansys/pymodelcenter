@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Optional, Tuple
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
 
 import ansys.modelcenter.workflow.api.igroup as igroup
 import ansys.modelcenter.workflow.api.irenamable_elements as renamable_element
@@ -101,7 +101,7 @@ class IAssembly(
             The created assembly object.
         """
 
-    def add_datapin(self, name: str, mc_type: acvi.VariableType) -> aew_api.IDatapin:
+    def add_datapin(self, name: str, mc_type: atvi.VariableType) -> aew_api.IDatapin:
         """
         Create a datapin on this assembly.
 

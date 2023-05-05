@@ -1,8 +1,8 @@
 """Integration tests around Component functionality"""
 from typing import AbstractSet, Mapping
 
-import ansys.common.variableinterop as acvi
 from ansys.engineeringworkflow.api import Property
+import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
@@ -126,8 +126,8 @@ def test_can_download_variables(workflow) -> None:
     speed = variables["speed"]
     weight = variables["grossWeight"]
 
-    speed.set_value(acvi.VariableState(value=acvi.RealValue(20.0), is_valid=True))
-    weight.set_value(acvi.VariableState(value=acvi.RealValue(2750.5), is_valid=True))
+    speed.set_value(atvi.VariableState(value=atvi.RealValue(20.0), is_valid=True))
+    weight.set_value(atvi.VariableState(value=atvi.RealValue(2750.5), is_valid=True))
     assert speed.get_value().value == 20.0
     assert weight.get_value().value == 2750.5
 
@@ -165,13 +165,13 @@ def test_can_set_component_properties(workflow) -> None:
 
     # Act
     component.rename("all_types_新しいコンポーネント")
-    component.set_property("xposition", acvi.StringValue("600"))
-    component.set_property("shouldArchive", acvi.BooleanValue(False))
+    component.set_property("xposition", atvi.StringValue("600"))
+    component.set_property("shouldArchive", atvi.BooleanValue(False))
 
     # Verify
     assert component.name == "all_types_新しいコンポーネント"
     assert component.get_property("xposition").property_value == "600"
-    assert component.get_property("shouldArchive").property_value == acvi.BooleanValue(False)
+    assert component.get_property("shouldArchive").property_value == atvi.BooleanValue(False)
 
 
 expected_properties = {
@@ -219,12 +219,12 @@ mhgbvq7rypzpgjwkqm1n2lqph65rcx5ivfng22ixewi3m8wja8h26th.png",
 }
 
 expected_variables = {
-    "realIn": acvi.VariableType.REAL,
-    "realOut": acvi.VariableType.REAL,
-    "boolIn": acvi.VariableType.BOOLEAN,
-    "intIn": acvi.VariableType.INTEGER,
-    "strIn": acvi.VariableType.STRING,
-    "boolOut": acvi.VariableType.BOOLEAN,
-    "intOut": acvi.VariableType.INTEGER,
-    "strOut": acvi.VariableType.STRING,
+    "realIn": atvi.VariableType.REAL,
+    "realOut": atvi.VariableType.REAL,
+    "boolIn": atvi.VariableType.BOOLEAN,
+    "intIn": atvi.VariableType.INTEGER,
+    "strIn": atvi.VariableType.STRING,
+    "boolOut": atvi.VariableType.BOOLEAN,
+    "intOut": atvi.VariableType.INTEGER,
+    "strOut": atvi.VariableType.STRING,
 }

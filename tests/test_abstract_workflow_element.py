@@ -1,7 +1,7 @@
 import unittest
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
 
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
@@ -167,7 +167,7 @@ def do_test_get_properties(monkeypatch, sut_type) -> None:
                 name: aew_api.Property(
                     parent_element_id=sut_get_prop_names.id_string,
                     property_name=name,
-                    property_value=acvi.IntegerValue(value_response.int_value),
+                    property_value=atvi.IntegerValue(value_response.int_value),
                 )
                 for name in names_in_response
             }

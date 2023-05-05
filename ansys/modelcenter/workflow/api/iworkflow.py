@@ -2,8 +2,8 @@
 from abc import ABC, abstractmethod
 from typing import Collection, Optional, Tuple, Union
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
 
 from ansys.modelcenter.workflow.api.iassembly import AssemblyType, IAssembly
 from ansys.modelcenter.workflow.api.icomponent import IComponent
@@ -20,7 +20,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """Full path of the current Workflow."""
 
     @abstractmethod
-    def set_value(self, var_name: str, value: acvi.IVariableValue) -> None:
+    def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
         """
         Set the value of a variable.
 
@@ -36,7 +36,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
 
     @abstractmethod
-    def get_value(self, var_name: str) -> acvi.VariableState:
+    def get_value(self, var_name: str) -> atvi.VariableState:
         """
         Get the value of a variable.
 
@@ -52,7 +52,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
 
     @abstractmethod
-    def get_variable_meta_data(self, name: str) -> acvi.CommonVariableMetadata:
+    def get_variable_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
         """
         Get metadata from a variable.
 
