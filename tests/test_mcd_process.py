@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from ansys.modelcenter.workflow.grpc_modelcenter import MCDProcess
+from ansys.modelcenter.workflow.grpc_modelcenter import EngineLicensingFailedException, MCDProcess
 
 
 class MockProcess:
@@ -34,6 +34,21 @@ def test_start(monkeypatch) -> None:
             ["C:\\ModelCenter.exe", "/Grpc", "/Automation"], stdout=subprocess.PIPE
         )
         assert result == 50051
+
+
+@patch(
+    "ansys.modelcenter.workflow.grpc_modelcenter.mcd_process._find_exe_location",
+    mock_find_exe_location,
+)
+def test_start(monkeypatch) -> None:
+    # Setup
+    sut = MCDProcess()
+    mock_process = MockProcess()
+    mock_process.stdout = io.BytesIO(b"garbage\r\n\r\ngrpcmc: licensing failed\n")
+    with unittest.mock.patch.object(subprocess, "Popen", return_value=mock_process) as mock_popoen:
+        # SUT
+        with pytest.raises(EngineLicensingFailedException):
+            sut.start()
 
 
 @patch(
