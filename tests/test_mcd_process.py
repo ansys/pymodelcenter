@@ -40,7 +40,7 @@ def test_start(monkeypatch) -> None:
     "ansys.modelcenter.workflow.grpc_modelcenter.mcd_process._find_exe_location",
     mock_find_exe_location,
 )
-def test_start(monkeypatch) -> None:
+def test_start_license_failure(monkeypatch) -> None:
     # Setup
     sut = MCDProcess()
     mock_process = MockProcess()
