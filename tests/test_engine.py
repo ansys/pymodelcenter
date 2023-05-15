@@ -388,3 +388,12 @@ def test_creation_via_pypim(monkeypatch) -> None:
     assert mock_instance.build_grpc_channel.called
     assert result_channel == pim_channel
     assert mock_instance.delete.called
+    assert engine.is_local is False
+
+
+def test_is_local(setup_function) -> None:
+    # SUT
+    engine = grpcapi.Engine()
+
+    # Verification
+    assert engine.is_local is True

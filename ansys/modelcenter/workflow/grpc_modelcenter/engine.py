@@ -98,6 +98,10 @@ class Engine(IEngine):
         return GRPCModelCenterServiceStub(grpc_channel)
 
     @property
+    def is_local(self) -> bool:
+        return self._process is not None
+
+    @property
     def process_id(self) -> int:
         """Get the id of the connected process; useful for debugging."""
         if self._process is not None:
