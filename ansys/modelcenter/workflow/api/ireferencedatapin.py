@@ -1,6 +1,6 @@
 """Contains interface definitions for reference and reference array datapins."""
 from abc import ABC, abstractmethod
-from typing import Collection, Optional, Union
+from typing import Collection, Optional, Sequence, Union
 
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
@@ -9,12 +9,11 @@ from overrides import overrides
 from .idatapin import IDatapin
 
 
-class IReferenceDatapin(aew_api.IDatapin, ABC):
+class IDatapinReferenceBase(ABC):
     """
-    Represents a reference datapin in the workflow.
+    Defines methods common to an individual reference to another datapin.
 
-    Reference datapins allow components to have configurable connections to other datapins
-    without creating a full link relationship.
+    This could be a single reference datapin or an element in a reference array datapin, etc.
     """
 
     @abstractmethod
@@ -40,27 +39,32 @@ class IReferenceDatapin(aew_api.IDatapin, ABC):
         """
 
     @abstractmethod
-    @overrides
-    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
-        """
-        Get the values of the reference equation.
-        """
+    def get_value(self) -> atvi.VariableState:
+        """Get the value of the reference equation."""
 
     @abstractmethod
-    @overrides
     def set_value(self, value: atvi.VariableState) -> None:
         """
-        Set the value of the referenced variable.
+        Set the value of the referenced datapin.
 
-        This method only works if the datapin is a direct reference; that is,
+        This method only works if this is a direct reference; that is,
         if the equation is just the name of a single other variable with no modification.
-        If the datapin is not a direct reference, a ValueError is raised.
+        If this is not a direct reference, a ValueError is raised.
         A ValueError will additionally be raised if the referenced datapin would not be allowed
         to be set directly in the first place (for example, if it is an output or linked input).
         """
 
 
-class IReferenceArrayDatapin(aew_api.IDatapin, ABC):
+class IReferenceDatapin(aew_api.IDatapin, IDatapinReferenceBase, ABC):
+    """
+    Represents a reference datapin in the workflow.
+
+    Reference datapins allow components to have configurable connections to other datapins
+    without creating a full link relationship.
+    """
+
+
+class IReferenceArrayDatapin(aew_api.IDatapin, Sequence[IDatapinReferenceBase], ABC):
     """
     Represents a reference array datapin in the workflow.
 
@@ -77,28 +81,6 @@ class IReferenceArrayDatapin(aew_api.IDatapin, ABC):
     """
 
     @abstractmethod
-    def get_reference_equation(self, index: int) -> str:
-        """Get the reference equation for the specified index of this reference array datapin."""
-
-    @abstractmethod
-    def set_reference_equation(self, new_equation: Union[str], index: int) -> str:
-        """Set the reference equation for the specified index of this reference array datapin."""
-
-    @abstractmethod
-    def get_referenced_variables(self, index: int) -> Collection[IDatapin]:
-        """Get the datapin(s) in the reference equation for the specified index."""
-
-    @abstractmethod
-    def is_direct_reference(self, index: int) -> bool:
-        """
-        Check whether the reference at the specified index is a direct reference.
-
-        Direct references refer to one specific other datapin exactly; their equations
-        are just the name of one other datapin. Only indices with direct-reference equations
-        can be set directly can use set_value to set the referenced datapin.
-        """
-
-    @abstractmethod
     @overrides
     def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
         """
@@ -110,10 +92,6 @@ class IReferenceArrayDatapin(aew_api.IDatapin, ABC):
         """
 
     @abstractmethod
-    def get_referenced_value_at(self, index: int) -> atvi.VariableState:
-        """Get the value of the reference equation at the specified index."""
-
-    @abstractmethod
     @overrides
     def set_value(self, value: atvi.VariableState) -> None:
         """
@@ -123,14 +101,4 @@ class IReferenceArrayDatapin(aew_api.IDatapin, ABC):
         Each element in the array corresponds to the desired value for the corresponding
         reference equation if it is a direct reference to a real-type datapin. Values for all
         other reference equations must be NaN.
-        """
-
-    @abstractmethod
-    def set_referenced_value_at(self, index: int) -> atvi.VariableState:
-        """
-        Set the value of the referenced variable at the specified index.
-
-        This method only works if the specified index is a direct reference; that is,
-        if the equation is just the name of a single other variable with no modification.
-        If the specified index is not a direct reference, a ValueError is raised.
         """
