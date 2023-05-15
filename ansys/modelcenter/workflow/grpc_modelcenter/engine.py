@@ -60,7 +60,7 @@ class Engine(IEngine):
         """Clean up when leaving a 'with' block."""
         self.close()
 
-    def _launch_modelcenter(self, force_local: bool) -> None:
+    def _launch_modelcenter(self, force_local: bool = False) -> None:
         """Launch ModelCenter, using pypim if it is configured."""
         if pypim.is_configured() and not force_local:
             if self._is_run_only:
@@ -99,7 +99,13 @@ class Engine(IEngine):
 
     @property
     def is_local(self) -> bool:
+        """Get if MCD was started locally, or remotely."""
         return self._process is not None
+
+    @property
+    def channel(self) -> Optional[grpc.Channel]:
+        """Get the grpc channel Used to communicate with MCD."""
+        return self._channel
 
     @property
     def process_id(self) -> int:

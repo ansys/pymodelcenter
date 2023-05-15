@@ -1,4 +1,4 @@
-from typing import Collection, Mapping, Optional, Union
+from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
 from unittest.mock import create_autospec
 
@@ -135,7 +135,7 @@ def setup_function(monkeypatch):
     """
 
     def mock_start(self, run_only: bool = False):
-        pass
+        return 12345
 
     def mock_init(self):
         pass
@@ -375,7 +375,7 @@ def test_creation_via_pypim(monkeypatch) -> None:
 
     # Act
     engine = grpcmc.Engine()
-    result_channel = engine._channel
+    result_channel = engine.channel
     engine.close()
 
     # Assert
@@ -397,3 +397,14 @@ def test_is_local(setup_function) -> None:
 
     # Verification
     assert engine.is_local is True
+
+
+def test_get_channel(setup_function) -> None:
+    # Setup
+    engine = grpcapi.Engine()
+
+    # SUT
+    channel = engine.channel
+
+    # Assert
+    assert cast(Any, channel)._channel.target() == b"localhost:12345"
