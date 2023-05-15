@@ -1,7 +1,7 @@
 from typing import Union
 import unittest
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
@@ -62,17 +62,17 @@ class MockWorkflowClientForBooleanVarTest:
 @pytest.mark.parametrize(
     "description_string,sut_type,expected_metadata_type",
     [
-        ("", BooleanDatapin, acvi.BooleanMetadata),
-        ("This is a mock datapin description.", BooleanDatapin, acvi.BooleanMetadata),
-        ("", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
-        ("This is a mock datapin description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
+        ("", BooleanDatapin, atvi.BooleanMetadata),
+        ("This is a mock datapin description.", BooleanDatapin, atvi.BooleanMetadata),
+        ("", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
+        ("This is a mock datapin description.", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     description_string: str,
     sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
-    expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    expected_metadata_type: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -86,7 +86,7 @@ def test_retrieved_metadata_should_include_description(
         sut = sut_type(sut_element_id, None)
 
         # Execute
-        result: acvi.BooleanMetadata = sut.get_metadata()
+        result: atvi.BooleanMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -100,12 +100,12 @@ def test_retrieved_metadata_should_include_description(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanDatapin, acvi.BooleanMetadata), (BooleanArrayDatapin, acvi.BooleanArrayMetadata)],
+    [(BooleanDatapin, atvi.BooleanMetadata), (BooleanArrayDatapin, atvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
     sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
-    expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    expected_metadata_type: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -118,7 +118,7 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
         sut = sut_type(sut_element_id, None)
 
         # Execute
-        result: acvi.BooleanMetadata = sut.get_metadata()
+        result: atvi.BooleanMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -132,12 +132,12 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanDatapin, acvi.BooleanMetadata), (BooleanArrayDatapin, acvi.BooleanArrayMetadata)],
+    [(BooleanDatapin, atvi.BooleanMetadata), (BooleanArrayDatapin, atvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
     sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
-    expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    expected_metadata_type: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -156,7 +156,7 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
         sut = sut_type(sut_element_id, None)
 
         # Execute
-        result: acvi.BooleanMetadata = sut.get_metadata()
+        result: atvi.BooleanMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -164,8 +164,8 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
             result, expected_metadata_type
         ), "The metadata should have the correct type."
         expected_custom_metadata = {
-            "test_integer_value": acvi.IntegerValue(47),
-            "test_double_value": acvi.RealValue(-867.5309),
+            "test_integer_value": atvi.IntegerValue(47),
+            "test_double_value": atvi.RealValue(-867.5309),
         }
         assert (
             result.custom_metadata == expected_custom_metadata
@@ -174,12 +174,12 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanDatapin, acvi.BooleanMetadata), (BooleanArrayDatapin, acvi.BooleanArrayMetadata)],
+    [(BooleanDatapin, atvi.BooleanMetadata), (BooleanArrayDatapin, atvi.BooleanArrayMetadata)],
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
     sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
-    expected_metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    expected_metadata_type: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -221,7 +221,7 @@ def test_set_metadata_invalid_custom_metadata(
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, None)
-        new_metadata = acvi.FileMetadata()
+        new_metadata = atvi.FileMetadata()
 
         # Execute
         with pytest.raises(TypeError):
@@ -234,17 +234,17 @@ def test_set_metadata_invalid_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", BooleanDatapin, acvi.BooleanMetadata),
-        ("This is a mock datapin description.", BooleanDatapin, acvi.BooleanMetadata),
-        ("", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
-        ("This is a mock datapin description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
+        ("", BooleanDatapin, atvi.BooleanMetadata),
+        ("This is a mock datapin description.", BooleanDatapin, atvi.BooleanMetadata),
+        ("", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
+        ("This is a mock datapin description.", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     description: str,
     sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
-    metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    metadata_type: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -270,17 +270,17 @@ def test_set_metadata_empty_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", BooleanDatapin, acvi.BooleanMetadata),
-        ("This is a mock datapin description.", BooleanDatapin, acvi.BooleanMetadata),
-        ("", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
-        ("This is a mock datapin description.", BooleanArrayDatapin, acvi.BooleanArrayMetadata),
+        ("", BooleanDatapin, atvi.BooleanMetadata),
+        ("This is a mock datapin description.", BooleanDatapin, atvi.BooleanMetadata),
+        ("", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
+        ("This is a mock datapin description.", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     description: str,
     sut_type: Union[BooleanDatapin, BooleanArrayDatapin],
-    metadata_type: Union[acvi.BooleanMetadata, acvi.BooleanArrayMetadata],
+    metadata_type: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
 ):
     # Set up
     mock_client = MockWorkflowClientForBooleanVarTest()
@@ -293,8 +293,8 @@ def test_set_metadata_populated_custom_metadata(
         sut = sut_type(sut_element_id, None)
         new_metadata = metadata_type()
         new_metadata.description = description
-        new_metadata.custom_metadata["int_value"] = acvi.IntegerValue(47)
-        new_metadata.custom_metadata["real_value"] = acvi.RealValue(-867.5309)
+        new_metadata.custom_metadata["int_value"] = atvi.IntegerValue(47)
+        new_metadata.custom_metadata["real_value"] = atvi.RealValue(-867.5309)
 
         # Execute
         sut.set_metadata(new_metadata)
@@ -313,7 +313,7 @@ def test_set_metadata_populated_custom_metadata(
 
 @pytest.mark.parametrize(
     "set_value,expected_value_in_request",
-    [(acvi.BooleanValue(True), True), (acvi.BooleanValue(False), False)],
+    [(atvi.BooleanValue(True), True), (atvi.BooleanValue(False), False)],
 )
 def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
     # Set up
@@ -325,7 +325,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = BooleanDatapin(sut_element_id, None)
-        new_value = acvi.VariableState(set_value, True)
+        new_value = atvi.VariableState(set_value, True)
 
         # Execute
         sut.set_value(new_value)
@@ -340,13 +340,13 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
 @pytest.mark.parametrize(
     "set_value",
     [
-        acvi.IntegerValue(0),
-        acvi.RealValue(0.0),
-        acvi.StringValue("False"),
-        acvi.IntegerArrayValue(),
-        acvi.RealArrayValue(),
-        acvi.BooleanArrayValue(),
-        acvi.StringArrayValue(),
+        atvi.IntegerValue(0),
+        atvi.RealValue(0.0),
+        atvi.StringValue("False"),
+        atvi.IntegerArrayValue(),
+        atvi.RealArrayValue(),
+        atvi.BooleanArrayValue(),
+        atvi.StringArrayValue(),
     ],
 )
 def test_scalar_set_disallowed(monkeypatch, set_value):
@@ -359,10 +359,10 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = BooleanDatapin(sut_element_id, None)
-        new_value = acvi.VariableState(set_value, True)
+        new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
-        with pytest.raises(acvi.IncompatibleTypesException):
+        with pytest.raises(atvi.IncompatibleTypesException):
             sut.set_value(new_value)
 
         # Verify
@@ -373,11 +373,11 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
     "set_value,expected_value_in_request",
     [
         (
-            acvi.BooleanArrayValue(shape_=(0,)),
+            atvi.BooleanArrayValue(shape_=(0,)),
             BooleanArrayValue(dims=ArrayDimensions(dims=[0]), values=[]),
         ),
         (
-            acvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]),
+            atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]),
             BooleanArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]),
         ),
     ],
@@ -392,7 +392,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = BooleanArrayDatapin(sut_element_id, None)
-        new_value = acvi.VariableState(set_value, True)
+        new_value = atvi.VariableState(set_value, True)
 
         # Execute
         sut.set_value(new_value)
@@ -407,13 +407,13 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
 @pytest.mark.parametrize(
     "set_value",
     [
-        acvi.IntegerValue(0),
-        acvi.RealValue(0.0),
-        acvi.BooleanValue(False),
-        acvi.StringValue("False"),
-        acvi.IntegerArrayValue(),
-        acvi.RealArrayValue(),
-        acvi.StringArrayValue(),
+        atvi.IntegerValue(0),
+        atvi.RealValue(0.0),
+        atvi.BooleanValue(False),
+        atvi.StringValue("False"),
+        atvi.IntegerArrayValue(),
+        atvi.RealArrayValue(),
+        atvi.StringArrayValue(),
     ],
 )
 def test_array_set_disallowed(monkeypatch, set_value):
@@ -426,10 +426,10 @@ def test_array_set_disallowed(monkeypatch, set_value):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = BooleanArrayDatapin(sut_element_id, None)
-        new_value = acvi.VariableState(set_value, True)
+        new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
-        with pytest.raises(acvi.IncompatibleTypesException):
+        with pytest.raises(atvi.IncompatibleTypesException):
             sut.set_value(new_value)
 
         # Verify
@@ -438,7 +438,7 @@ def test_array_set_disallowed(monkeypatch, set_value):
 
 def test_scalar_get_type(monkeypatch):
     do_get_type_test(
-        monkeypatch, BooleanDatapin, VariableType.VARTYPE_BOOLEAN, acvi.VariableType.BOOLEAN
+        monkeypatch, BooleanDatapin, VariableType.VARTYPE_BOOLEAN, atvi.VariableType.BOOLEAN
     )
 
 
@@ -447,21 +447,21 @@ def test_array_get_type(monkeypatch):
         monkeypatch,
         BooleanArrayDatapin,
         VariableType.VARTYPE_BOOLEAN_ARRAY,
-        acvi.VariableType.BOOLEAN_ARRAY,
+        atvi.VariableType.BOOLEAN_ARRAY,
     )
 
 
 @pytest.mark.parametrize(
-    "value_in_response,validity_in_response,expected_acvi_state",
+    "value_in_response,validity_in_response,expected_atvi_state",
     [
-        (True, True, acvi.VariableState(acvi.BooleanValue(True), True)),
-        (True, False, acvi.VariableState(acvi.BooleanValue(True), False)),
-        (False, True, acvi.VariableState(acvi.BooleanValue(False), True)),
-        (False, False, acvi.VariableState(acvi.BooleanValue(False), False)),
+        (True, True, atvi.VariableState(atvi.BooleanValue(True), True)),
+        (True, False, atvi.VariableState(atvi.BooleanValue(True), False)),
+        (False, True, atvi.VariableState(atvi.BooleanValue(False), True)),
+        (False, False, atvi.VariableState(atvi.BooleanValue(False), False)),
     ],
 )
 def test_scalar_get_state(
-    monkeypatch, value_in_response, validity_in_response, expected_acvi_state
+    monkeypatch, value_in_response, validity_in_response, expected_atvi_state
 ):
     do_get_state_test(
         monkeypatch,
@@ -469,7 +469,7 @@ def test_scalar_get_state(
         VariableState(
             is_valid=validity_in_response, value=VariableValue(bool_value=value_in_response)
         ),
-        expected_acvi_state,
+        expected_atvi_state,
     )
 
 
@@ -478,32 +478,32 @@ def test_scalar_get_state_with_hid(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "value_in_response,validity_in_response,expected_acvi_state",
+    "value_in_response,validity_in_response,expected_atvi_state",
     [
         (
             BooleanArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]),
             True,
-            acvi.VariableState(
-                acvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), True
+            atvi.VariableState(
+                atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), True
             ),
         ),
         (
             BooleanArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[False, True, True, False]),
             False,
-            acvi.VariableState(
-                acvi.BooleanArrayValue(shape_=(2, 2), values=[[False, True], [True, False]]), False
+            atvi.VariableState(
+                atvi.BooleanArrayValue(shape_=(2, 2), values=[[False, True], [True, False]]), False
             ),
         ),
     ],
 )
-def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_acvi_state):
+def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_atvi_state):
     do_get_state_test(
         monkeypatch,
         BooleanArrayDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(bool_array_value=value_in_response)
         ),
-        expected_acvi_state,
+        expected_atvi_state,
     )
 
 

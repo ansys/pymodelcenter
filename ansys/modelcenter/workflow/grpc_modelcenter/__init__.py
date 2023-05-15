@@ -23,7 +23,7 @@ from .grpc_error_interpretation import (
     UnexpectedEngineError,
 )
 from .integer_datapin import IntegerArrayDatapin, IntegerDatapin
-from .mcd_process import MCDProcess
+from .mcd_process import EngineLicensingFailedException, MCDProcess
 from .real_datapin import RealArrayDatapin, RealDatapin
 from .string_datapin import StringArrayDatapin, StringDatapin
 from .unsupported_type_datapin import DatapinWithUnsupportedTypeException, UnsupportedTypeDatapin

@@ -1,5 +1,5 @@
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
@@ -183,7 +183,7 @@ def test_adding_datapin_to_data_assembly_valid(workflow):
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch")
 
     # Execute
-    datapin = target_assembly.add_datapin("データ", acvi.VariableType.INTEGER)
+    datapin = target_assembly.add_datapin("データ", atvi.VariableType.INTEGER)
 
     # Verify
     assert isinstance(datapin, mc_api.IIntegerDatapin)
@@ -197,7 +197,7 @@ def test_adding_datapin_to_data_assembly_invalid_name(workflow):
 
     # Execute
     with pytest.raises(ValueError, match="invalid"):
-        target_assembly.add_datapin("&&&", acvi.VariableType.INTEGER)
+        target_assembly.add_datapin("&&&", atvi.VariableType.INTEGER)
 
     # Verify
     assert len(target_assembly.get_datapins()) == 0
@@ -207,13 +207,13 @@ def test_adding_datapin_to_data_assembly_invalid_name(workflow):
 def test_adding_datapin_to_data_assembly_name_collision(workflow):
     # Setup
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch")
-    datapin = target_assembly.add_datapin("データ", acvi.VariableType.INTEGER)
+    datapin = target_assembly.add_datapin("データ", atvi.VariableType.INTEGER)
     assert isinstance(datapin, mc_api.IIntegerDatapin)
     assert datapin.full_name == "Model.main_branch.データ"
 
     # Execute
     with pytest.raises(aew_api.NameCollisionError):
-        target_assembly.add_datapin("データ", acvi.VariableType.BOOLEAN)
+        target_assembly.add_datapin("データ", atvi.VariableType.BOOLEAN)
 
     # Verify
     previous_datapin = target_assembly.get_datapins()["データ"]

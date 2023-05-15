@@ -1,7 +1,7 @@
 """Boolean array implementation."""
 from abc import ABC, abstractmethod
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
 from .idatapin import IDatapin
@@ -12,5 +12,5 @@ class IBooleanArrayDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> acvi.BooleanMetadata:
+    def get_metadata(self) -> atvi.BooleanMetadata:
         ...  # pragma: no cover

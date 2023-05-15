@@ -21,6 +21,12 @@ def _find_exe_location() -> str:  # pragma: no cover
         return f"{install_dir}\\ModelCenter.exe"
 
 
+class EngineLicensingFailedException(Exception):
+    """Indicates that engine licensing has failed."""
+
+    ...
+
+
 class MCDProcess:
     """Responsible for launching and keeping track of a MCD process."""
 
@@ -50,6 +56,10 @@ class MCDProcess:
             elif line.startswith("grpc server listening on "):
                 colon_index = line.find(":") + 1  # MCD returns string like: 0.0.0.0:50051
                 return int(line[colon_index:].strip())
+            elif line.startswith("grpcmc: licensing failed"):
+                raise EngineLicensingFailedException(
+                    "The engine reported that licensing has failed."
+                )
             else:
                 time.sleep(0.1)
         raise Exception("Timed out waiting for ModelCenter to start.")

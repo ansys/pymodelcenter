@@ -1,7 +1,7 @@
 """Definitions of string variable."""
 from abc import ABC, abstractmethod
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
 from .idatapin import IDatapin
@@ -12,5 +12,5 @@ class IStringDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> acvi.StringMetadata:
+    def get_metadata(self) -> atvi.StringMetadata:
         ...  # pragma: no cover

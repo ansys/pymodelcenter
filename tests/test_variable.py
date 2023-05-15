@@ -1,7 +1,6 @@
 import unittest
 
-import ansys.common.variableinterop as acvi
-from ansys.common.variableinterop import CommonVariableMetadata
+import ansys.tools.variableinterop as atvi
 import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
@@ -48,7 +47,7 @@ def do_get_type_test(monkeypatch, sut_type, type_in_response, expected_acvi_type
         sut = sut_type(element_id=sut_element_id, channel=None)
 
         # Execute
-        result: acvi.VariableType = sut.value_type
+        result: atvi.VariableType = sut.value_type
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -66,7 +65,7 @@ def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state)
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(element_id=sut_element_id, channel=None)
 
-        result: acvi.VariableState = sut.get_value()
+        result: atvi.VariableState = sut.get_value()
 
         mock_grpc_method.assert_called_once_with(ElementIdOrName(target_id=sut_element_id))
         assert result.value == expected_acvi_state.value
@@ -129,10 +128,10 @@ def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
 class MockVariable(BaseDatapin):
     """Mock variable for generic tests."""
 
-    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
         pass
 
-    def get_metadata(self) -> CommonVariableMetadata:
+    def get_metadata(self) -> atvi.CommonVariableMetadata:
         pass
 
     def set_value(self, value: VariableState) -> None:
@@ -153,7 +152,7 @@ def test_get_state_conversion_failure(monkeypatch) -> None:
 
         with pytest.raises(Exception) as err:
             # SUT
-            result: acvi.VariableState = sut.get_value(None)
+            result: atvi.VariableState = sut.get_value(None)
 
         # Verification
         assert err.value.args[0] == "Unexpected failure converting gRPC value response"

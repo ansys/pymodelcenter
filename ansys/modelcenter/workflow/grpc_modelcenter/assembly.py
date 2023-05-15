@@ -2,8 +2,8 @@
 
 from typing import Mapping, Optional, Tuple
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
 from grpc import Channel
 from overrides import overrides
 
@@ -99,7 +99,7 @@ class Assembly(
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION, **WRAP_INVALID_ARG})
     @overrides
-    def add_datapin(self, name: str, mc_type: acvi.VariableType) -> mc_api.IDatapin:
+    def add_datapin(self, name: str, mc_type: atvi.VariableType) -> mc_api.IDatapin:
         type_in_request: str = interop_type_to_mc_type_string(mc_type)
         result: AddAssemblyVariableResponse = self._client.AssemblyAddVariable(
             AddAssemblyVariableRequest(
@@ -130,10 +130,14 @@ class Assembly(
         self,
         name: str,
         av_pos: Optional[Tuple[int, int]] = None,
-        assembly_type: Optional[str] = None,
+        assembly_type: Optional[mc_api.AssemblyType] = None,
     ) -> mc_api.IAssembly:
         request = AddAssemblyRequest(
-            name=ElementName(name=name), parent=self._element_id, assembly_type=assembly_type
+            name=ElementName(name=name),
+            parent=self._element_id,
+            assembly_type=assembly_type.value
+            if assembly_type is not None
+            else mc_api.AssemblyType.ASSEMBLY.value,
         )
         if av_pos is not None:
             (x_pos, y_pos) = av_pos

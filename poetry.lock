@@ -45,33 +45,6 @@ protobuf = ">=3.13,<4.0"
 protoc-gen-swagger = "*"
 
 [[package]]
-name = "ansys-common-variableinterop"
-version = "0.1.dev0"
-description = "Optional variable specifications for interoperability between languages and capabilities"
-category = "main"
-optional = false
-python-versions = ">=3.8,<4.0"
-files = []
-develop = false
-
-[package.dependencies]
-anyio = "^3.5.0"
-numpy = "1.22.4"
-overrides = "^6.1"
-
-[package.extras]
-dev = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "mypy (>=0.940,<0.941)", "numpydoc (>=1.2,<2.0)", "pre-commit (>=2.17.0,<3.0.0)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4.0)", "sphinx-copybutton (>=0.5,<0.6)"]
-docs = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "numpydoc (>=1.2,<2.0)", "sphinx-copybutton (>=0.5,<0.6)"]
-style = ["codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)"]
-test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/pyansys/ansys-common-variableinterop.git"
-reference = "ac4311c"
-resolved_reference = "ac4311c59236f78b8cd99e0933f0d0219f857cfe"
-
-[[package]]
 name = "ansys-engineeringworkflow-api"
 version = "0.1.dev0"
 description = "API specification for an engineering workflow engine"
@@ -82,9 +55,9 @@ files = []
 develop = false
 
 [package.dependencies]
-ansys-common-variableinterop = {git = "https://github.com/pyansys/ansys-common-variableinterop.git", rev = "ac4311c"}
 anyio = "^3.6.2"
 numpy = "^1.22.4"
+pyansys-tools-variableinterop = {git = "https://github.com/pyansys/pyansys-tools-variableinterop.git", rev = "0988df6c6aa4df885082cc4dd88acdcecdc97b68"}
 
 [package.extras]
 dev = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "mypy (>=0.940,<0.941)", "numpydoc (>=1.2,<2.0)", "pre-commit (>=2.18,<3.0)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "sphinx-copybutton (>=0.4,<0.5)"]
@@ -95,8 +68,8 @@ test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/pyansys/ansys-engineeringworkflow-api.git"
-reference = "316f643"
-resolved_reference = "316f6435a8ba8b7e14d6550ed935e5ef42250dea"
+reference = "8e40cb7585d877ca8d5d1e30e8d068c0503c3c59"
+resolved_reference = "8e40cb7585d877ca8d5d1e30e8d068c0503c3c59"
 
 [[package]]
 name = "ansys-platform-instancemanagement"
@@ -116,14 +89,14 @@ importlib-metadata = ">=4.0"
 
 [[package]]
 name = "ansys-sphinx-theme"
-version = "0.9.8"
+version = "0.9.9"
 description = "A theme devised by ANSYS, Inc. for Sphinx documentation."
 category = "main"
 optional = true
 python-versions = ">=3.7"
 files = [
-    {file = "ansys-sphinx-theme-0.9.8.tar.gz", hash = "sha256:308b39ee3f08b5fc3cd34b124d47c1eb8d189a05c0746471badcbaa7cd47acf3"},
-    {file = "ansys_sphinx_theme-0.9.8-py3-none-any.whl", hash = "sha256:1ab528ee08d16832a76f4cebb5cf646a7d3e6d8fbd074c07fb9ce210cacffb0d"},
+    {file = "ansys-sphinx-theme-0.9.9.tar.gz", hash = "sha256:1813e8d3d8d665512440911db91359dc850af6f359857aff6b80cb80a09b2f0c"},
+    {file = "ansys_sphinx_theme-0.9.9-py3-none-any.whl", hash = "sha256:dd2f0344cc0aeda361a95ec4750eb29cb8c782eeb7701f0c34ea64d14660b315"},
 ]
 
 [package.dependencies]
@@ -191,14 +164,14 @@ lxml = ["lxml"]
 
 [[package]]
 name = "certifi"
-version = "2022.12.7"
+version = "2023.5.7"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = true
 python-versions = ">=3.6"
 files = [
-    {file = "certifi-2022.12.7-py3-none-any.whl", hash = "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"},
-    {file = "certifi-2022.12.7.tar.gz", hash = "sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3"},
+    {file = "certifi-2023.5.7-py3-none-any.whl", hash = "sha256:c6c2e98f5c7869efca1f8916fed228dd91539f9f1b444c314c06eef02980c716"},
+    {file = "certifi-2023.5.7.tar.gz", hash = "sha256:0f0d56dc5a6ad56fd4ba36484d6cc34451e1c6548c61daad8c320169f91eddc7"},
 ]
 
 [[package]]
@@ -626,14 +599,14 @@ setuptools = "*"
 
 [[package]]
 name = "identify"
-version = "2.5.23"
+version = "2.5.24"
 description = "File identification library for Python"
 category = "main"
 optional = true
 python-versions = ">=3.7"
 files = [
-    {file = "identify-2.5.23-py2.py3-none-any.whl", hash = "sha256:17d9351c028a781456965e781ed2a435755cac655df1ebd930f7186b54399312"},
-    {file = "identify-2.5.23.tar.gz", hash = "sha256:50b01b9d5f73c6b53e5fa2caf9f543d3e657a9d0bbdeb203ebb8d45960ba7433"},
+    {file = "identify-2.5.24-py2.py3-none-any.whl", hash = "sha256:986dbfb38b1140e763e413e6feb44cd731faf72d1909543178aa79b0e258265d"},
+    {file = "identify-2.5.24.tar.gz", hash = "sha256:0aac67d5b4812498056d28a9a512a483f5085cc28640b02b258a59dac34301d4"},
 ]
 
 [package.extras]
@@ -842,14 +815,14 @@ files = [
 
 [[package]]
 name = "nodeenv"
-version = "1.7.0"
+version = "1.8.0"
 description = "Node.js virtual environment builder"
 category = "main"
 optional = true
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*"
 files = [
-    {file = "nodeenv-1.7.0-py2.py3-none-any.whl", hash = "sha256:27083a7b96a25f2f5e1d8cb4b6317ee8aeda3bdd121394e5ac54e498028a042e"},
-    {file = "nodeenv-1.7.0.tar.gz", hash = "sha256:e0e7f7dfb85fc5394c6fe1e8fa98131a2473e04311a45afb6508f7cf1836fa2b"},
+    {file = "nodeenv-1.8.0-py2.py3-none-any.whl", hash = "sha256:df865724bb3c3adc86b3876fa209771517b0cfe596beff01a92700e0e8be4cec"},
+    {file = "nodeenv-1.8.0.tar.gz", hash = "sha256:d51e0c37e64fbf47d017feac3145cdbb58836d7eee8c6f6d3b6880c5456227d2"},
 ]
 
 [package.dependencies]
@@ -932,18 +905,18 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "3.5.0"
+version = "3.5.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "main"
 optional = true
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.5.0-py3-none-any.whl", hash = "sha256:47692bc24c1958e8b0f13dd727307cff1db103fca36399f457da8e05f222fdc4"},
-    {file = "platformdirs-3.5.0.tar.gz", hash = "sha256:7954a68d0ba23558d753f73437c55f89027cf8f5108c19844d4b82e5af396335"},
+    {file = "platformdirs-3.5.1-py3-none-any.whl", hash = "sha256:e2378146f1964972c03c085bb5662ae80b2b8c06226c54b2ff4aa9483e8a13a5"},
+    {file = "platformdirs-3.5.1.tar.gz", hash = "sha256:412dae91f52a6f84830f39a8078cecd0e866cb72294a5c66808e74d5e88d251f"},
 ]
 
 [package.extras]
-docs = ["furo (>=2023.3.27)", "proselint (>=0.13)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.23,!=1.23.4)"]
+docs = ["furo (>=2023.3.27)", "proselint (>=0.13)", "sphinx (>=6.2.1)", "sphinx-autodoc-typehints (>=1.23,!=1.23.4)"]
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.3.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
 
 [[package]]
@@ -1026,6 +999,33 @@ files = [
 
 [package.dependencies]
 protobuf = ">=3.0.0"
+
+[[package]]
+name = "pyansys-tools-variableinterop"
+version = "0.1.dev0"
+description = "Optional variable specifications for interoperability between languages and capabilities"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = []
+develop = false
+
+[package.dependencies]
+anyio = "^3.5.0"
+numpy = "1.22.4"
+overrides = "^6.1"
+
+[package.extras]
+dev = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)", "mypy (>=0.940,<0.941)", "numpydoc (>=1.2,<2.0)", "pre-commit (>=2.17.0,<3.0.0)", "pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4.0)", "sphinx-copybutton (>=0.5,<0.6)"]
+docs = ["Sphinx (>=4.4,<5.0)", "ansys_sphinx_theme (>=0.9,<0.10)", "numpydoc (>=1.2,<2.0)", "sphinx-copybutton (>=0.5,<0.6)"]
+style = ["codespell (>=2.1,<3.0)", "flake8 (>=3.9,<4.0)"]
+test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)", "pytest-mock (>=3.7,<4.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/pyansys/pyansys-tools-variableinterop.git"
+reference = "0988df6c6aa4df885082cc4dd88acdcecdc97b68"
+resolved_reference = "0988df6c6aa4df885082cc4dd88acdcecdc97b68"
 
 [[package]]
 name = "pycodestyle"
@@ -1199,21 +1199,21 @@ files = [
 
 [[package]]
 name = "requests"
-version = "2.29.0"
+version = "2.30.0"
 description = "Python HTTP for Humans."
 category = "main"
 optional = true
 python-versions = ">=3.7"
 files = [
-    {file = "requests-2.29.0-py3-none-any.whl", hash = "sha256:e8f3c9be120d3333921d213eef078af392fba3933ab7ed2d1cba3b56f2568c3b"},
-    {file = "requests-2.29.0.tar.gz", hash = "sha256:f2e34a75f4749019bb0e3effb66683630e4ffeaf75819fb51bebef1bf5aef059"},
+    {file = "requests-2.30.0-py3-none-any.whl", hash = "sha256:10e94cc4f3121ee6da529d358cdaeaff2f1c409cd377dbc72b825852f2f7e294"},
+    {file = "requests-2.30.0.tar.gz", hash = "sha256:239d7d4458afcb28a692cdd298d87542235f4ca8d36d03a15bfc128a6559a2f4"},
 ]
 
 [package.dependencies]
 certifi = ">=2017.4.17"
 charset-normalizer = ">=2,<4"
 idna = ">=2.5,<4"
-urllib3 = ">=1.21.1,<1.27"
+urllib3 = ">=1.21.1,<3"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
@@ -1460,20 +1460,21 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "1.26.15"
+version = "2.0.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = true
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+python-versions = ">=3.7"
 files = [
-    {file = "urllib3-1.26.15-py2.py3-none-any.whl", hash = "sha256:aa751d169e23c7479ce47a0cb0da579e3ede798f994f5816a74e4f4500dcea42"},
-    {file = "urllib3-1.26.15.tar.gz", hash = "sha256:8a388717b9476f934a21484e8c8e61875ab60644d29b9b39e11e4b9dc1c6b305"},
+    {file = "urllib3-2.0.2-py3-none-any.whl", hash = "sha256:d055c2f9d38dc53c808f6fdc8eab7360b6fdbbde02340ed25cfbcd817c62469e"},
+    {file = "urllib3-2.0.2.tar.gz", hash = "sha256:61717a1095d7e155cdb737ac7bb2f4324a858a1e2e6466f6d03ff630ca68d3cc"},
 ]
 
 [package.extras]
-brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)", "brotlipy (>=0.6.0)"]
-secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "pyOpenSSL (>=0.14)", "urllib3-secure-extra"]
-socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
+brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
+secure = ["certifi", "cryptography (>=1.9)", "idna (>=2.0.0)", "pyopenssl (>=17.1.0)", "urllib3-secure-extra"]
+socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
+zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "virtualenv"
@@ -1521,4 +1522,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "1bad0328b57b2ac2322620f9113afa48449280bf6d613b11d7b4e4628f02dc83"
+content-hash = "018bd154f21dad48f88592c2515a4cbf86ebb8269166a0270b7c7a7c641c015e"

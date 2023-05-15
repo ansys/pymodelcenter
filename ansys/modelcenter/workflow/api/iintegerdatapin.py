@@ -1,7 +1,7 @@
 """Contains definitions for integer variables."""
 from abc import ABC, abstractmethod
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
 from .idatapin import IDatapin
@@ -12,5 +12,5 @@ class IIntegerDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> acvi.IntegerMetadata:
+    def get_metadata(self) -> atvi.IntegerMetadata:
         ...  # pragma: no cover

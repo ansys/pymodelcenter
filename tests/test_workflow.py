@@ -2,8 +2,8 @@
 from typing import Iterable, List, Mapping, Type
 import unittest
 
-import ansys.common.variableinterop as acvi
 import ansys.engineeringworkflow.api as ewapi
+import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
@@ -399,7 +399,7 @@ set_value_tests = [
         "BooleanVariableSetValue",
         "model.boolean",
         "MODEL_BOOLEAN",
-        acvi.BooleanValue(True),
+        atvi.BooleanValue(True),
         True,
         id="bool",
     ),
@@ -407,7 +407,7 @@ set_value_tests = [
         "IntegerVariableSetValue",
         "model.integer",
         "MODEL_INTEGER",
-        acvi.IntegerValue(42),
+        atvi.IntegerValue(42),
         42,
         id="int",
     ),
@@ -415,7 +415,7 @@ set_value_tests = [
         "DoubleVariableSetValue",
         "model.double",
         "MODEL_DOUBLE",
-        acvi.RealValue(3.14),
+        atvi.RealValue(3.14),
         3.14,
         id="read",
     ),
@@ -423,7 +423,7 @@ set_value_tests = [
         "StringVariableSetValue",
         "model.string",
         "MODEL_STRING",
-        acvi.StringValue("strVal"),
+        atvi.StringValue("strVal"),
         "strVal",
         id="str",
     ),
@@ -431,7 +431,7 @@ set_value_tests = [
         "BooleanArraySetValue",
         "model.booleans",
         "MODEL_BOOLEANS",
-        acvi.BooleanArrayValue(values=[True, False]),
+        atvi.BooleanArrayValue(values=[True, False]),
         var_msgs.BooleanArrayValue(values=[True, False], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="bool[]",
     ),
@@ -439,7 +439,7 @@ set_value_tests = [
         "IntegerArraySetValue",
         "model.integers",
         "MODEL_INTEGERS",
-        acvi.IntegerArrayValue(values=[86, 42]),
+        atvi.IntegerArrayValue(values=[86, 42]),
         var_msgs.IntegerArrayValue(values=[86, 42], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="int[]",
     ),
@@ -447,7 +447,7 @@ set_value_tests = [
         "DoubleArraySetValue",
         "model.doubles",
         "MODEL_DOUBLES",
-        acvi.RealArrayValue(values=[0.717, 1.414]),
+        atvi.RealArrayValue(values=[0.717, 1.414]),
         var_msgs.DoubleArrayValue(values=[0.717, 1.414], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="real[]",
     ),
@@ -455,7 +455,7 @@ set_value_tests = [
         "StringArraySetValue",
         "model.strings",
         "MODEL_STRINGS",
-        acvi.StringArrayValue(values=["one", "two"]),
+        atvi.StringArrayValue(values=["one", "two"]),
         var_msgs.StringArrayValue(values=["one", "two"], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="str[]",
     ),
@@ -468,7 +468,7 @@ def test_set_value(
     request_method: str,
     name: str,
     expected_id: str,
-    src: acvi.IVariableValue,
+    src: atvi.IVariableValue,
     expected: str,
 ):
     # Setup
@@ -487,26 +487,26 @@ def test_set_value(
 
 
 get_value_tests = [
-    pytest.param("model.boolean", acvi.BooleanValue(False), id="bool"),
-    pytest.param("model.integer", acvi.IntegerValue(42), id="int"),
-    pytest.param("model.double", acvi.RealValue(3.14), id="real"),
-    pytest.param("model.string", acvi.StringValue("sVal"), id="str"),
+    pytest.param("model.boolean", atvi.BooleanValue(False), id="bool"),
+    pytest.param("model.integer", atvi.IntegerValue(42), id="int"),
+    pytest.param("model.double", atvi.RealValue(3.14), id="real"),
+    pytest.param("model.string", atvi.StringValue("sVal"), id="str"),
     pytest.param(
-        "model.booleans", acvi.BooleanArrayValue(values=[True, False, True]), id="bool array"
+        "model.booleans", atvi.BooleanArrayValue(values=[True, False, True]), id="bool array"
     ),
-    pytest.param("model.integers", acvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
+    pytest.param("model.integers", atvi.IntegerArrayValue(values=[86, 42, 1]), id="int array"),
     pytest.param(
-        "model.doubles", acvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"
+        "model.doubles", atvi.RealArrayValue(values=[1.414, 0.717, 3.14]), id="real array"
     ),
     pytest.param(
-        "model.strings", acvi.StringArrayValue(values=["one", "two", "three"]), id="str array"
+        "model.strings", atvi.StringArrayValue(values=["one", "two", "three"]), id="str array"
     ),
 ]
 """Collection of tests for get_value, used in test_get_value."""
 
 
 @pytest.mark.parametrize("var_name,expected", get_value_tests)
-def test_get_value(setup_function, var_name: str, expected: acvi.IVariableValue):
+def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue):
     # SUT
     result: var_msgs.VariableState = workflow.get_value(var_name)
 
@@ -573,7 +573,7 @@ def test_get_assembly_on_wrong_type(setup_function):
 def test_get_bool_meta_data(setup_function, is_array: bool) -> None:
     # Setup
     var = "model.booleans" if is_array else "model.boolean"
-    expected_type = acvi.VariableType.BOOLEAN_ARRAY if is_array else acvi.VariableType.BOOLEAN
+    expected_type = atvi.VariableType.BOOLEAN_ARRAY if is_array else atvi.VariableType.BOOLEAN
 
     # SUT
     metadata = workflow.get_variable_meta_data(var)
@@ -587,7 +587,7 @@ def test_get_bool_meta_data(setup_function, is_array: bool) -> None:
 def test_get_int_meta_data(setup_function, is_array: bool) -> None:
     # Setup
     var = "model.integers" if is_array else "model.integer"
-    expected_type = acvi.VariableType.INTEGER_ARRAY if is_array else acvi.VariableType.INTEGER
+    expected_type = atvi.VariableType.INTEGER_ARRAY if is_array else atvi.VariableType.INTEGER
 
     # SUT
     metadata = workflow.get_variable_meta_data(var)
@@ -607,7 +607,7 @@ def test_get_int_meta_data(setup_function, is_array: bool) -> None:
 def test_get_real_meta_data(setup_function, is_array: bool) -> None:
     # Setup
     var = "model.doubles" if is_array else "model.double"
-    expected_type = acvi.VariableType.REAL_ARRAY if is_array else acvi.VariableType.REAL
+    expected_type = atvi.VariableType.REAL_ARRAY if is_array else atvi.VariableType.REAL
 
     # SUT
     metadata = workflow.get_variable_meta_data(var)
@@ -627,7 +627,7 @@ def test_get_real_meta_data(setup_function, is_array: bool) -> None:
 def test_get_string_meta_data(setup_function, is_array: bool) -> None:
     # Setup
     var = "model.strings" if is_array else "model.string"
-    expected_type = acvi.VariableType.STRING_ARRAY if is_array else acvi.VariableType.STRING
+    expected_type = atvi.VariableType.STRING_ARRAY if is_array else atvi.VariableType.STRING
 
     # SUT
     metadata = workflow.get_variable_meta_data(var)
@@ -644,7 +644,7 @@ def test_get_string_meta_data(setup_function, is_array: bool) -> None:
 def test_get_file_meta_data(setup_function, is_array: bool) -> None:
     # Setup
     var = "model.files" if is_array else "model.file"
-    expected_type = acvi.VariableType.FILE_ARRAY if is_array else acvi.VariableType.FILE
+    expected_type = atvi.VariableType.FILE_ARRAY if is_array else atvi.VariableType.FILE
 
     # SUT
     metadata = workflow.get_variable_meta_data(var)
@@ -946,12 +946,12 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
     # Using a dict as an ordered set
     validation_names = {"DESIRED_OUTPUT_VAR_1": None, "DESIRED_OUTPUT_VAR_2": None}
     collection_names = {"DESIRED_INTERMEDIATE_VAR_1": None, "DESIRED_OUTPUT_VAR_2": None}
-    inputs: Mapping[str, acvi.VariableState] = {
-        "INPUT_VAR_1": acvi.VariableState(is_valid=True, value=acvi.IntegerValue(47)),
-        "INPUT_VAR_2": acvi.VariableState(is_valid=False, value=acvi.RealValue(-867.5309)),
-        "INPUT_VAR_3": acvi.VariableState(is_valid=True, value=acvi.BooleanValue(True)),
-        "INPUT_VAR_4": acvi.VariableState(
-            is_valid=True, value=acvi.StringValue("this is a test string")
+    inputs: Mapping[str, atvi.VariableState] = {
+        "INPUT_VAR_1": atvi.VariableState(is_valid=True, value=atvi.IntegerValue(47)),
+        "INPUT_VAR_2": atvi.VariableState(is_valid=False, value=atvi.RealValue(-867.5309)),
+        "INPUT_VAR_3": atvi.VariableState(is_valid=True, value=atvi.BooleanValue(True)),
+        "INPUT_VAR_4": atvi.VariableState(
+            is_valid=True, value=atvi.StringValue("this is a test string")
         ),
     }
 

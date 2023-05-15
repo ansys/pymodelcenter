@@ -1,6 +1,6 @@
 from typing import Callable, Type
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 import numpy as np
 from overrides import overrides
 
@@ -11,7 +11,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
 
 
-class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
+class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
     """Visitor for setting variable values via ModelCenter gRPC API."""
 
     def __init__(self, var_id: element_msg.ElementId, stub: ModelCenterWorkflowServiceStub):
@@ -29,35 +29,35 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         self._stub = stub
 
     @overrides
-    def visit_integer(self, value: acvi.IntegerValue) -> bool:
+    def visit_integer(self, value: atvi.IntegerValue) -> bool:
         return self._scalar_request(
             value, var_val_msg.SetIntegerValueRequest, int, self._stub.IntegerVariableSetValue
         )
 
     @overrides
-    def visit_real(self, value: acvi.RealValue) -> bool:
+    def visit_real(self, value: atvi.RealValue) -> bool:
         return self._scalar_request(
             value, var_val_msg.SetDoubleValueRequest, float, self._stub.DoubleVariableSetValue
         )
 
     @overrides
-    def visit_boolean(self, value: acvi.BooleanValue) -> bool:
+    def visit_boolean(self, value: atvi.BooleanValue) -> bool:
         return self._scalar_request(
             value, var_val_msg.SetBooleanValueRequest, bool, self._stub.BooleanVariableSetValue
         )
 
     @overrides
-    def visit_string(self, value: acvi.StringValue) -> bool:
+    def visit_string(self, value: atvi.StringValue) -> bool:
         return self._scalar_request(
             value, var_val_msg.SetStringValueRequest, str, self._stub.StringVariableSetValue
         )
 
     @overrides
-    def visit_file(self, value: acvi.FileValue) -> bool:
+    def visit_file(self, value: atvi.FileValue) -> bool:
         raise NotImplementedError()  # pragma: no cover
 
     @overrides
-    def visit_integer_array(self, value: acvi.IntegerArrayValue) -> bool:
+    def visit_integer_array(self, value: atvi.IntegerArrayValue) -> bool:
         return self._array_request(
             value,
             var_val_msg.SetIntegerArrayValueRequest,
@@ -66,7 +66,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         )
 
     @overrides
-    def visit_real_array(self, value: acvi.RealArrayValue) -> bool:
+    def visit_real_array(self, value: atvi.RealArrayValue) -> bool:
         return self._array_request(
             value,
             var_val_msg.SetDoubleArrayValueRequest,
@@ -75,7 +75,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         )
 
     @overrides
-    def visit_boolean_array(self, value: acvi.BooleanArrayValue) -> bool:
+    def visit_boolean_array(self, value: atvi.BooleanArrayValue) -> bool:
         return self._array_request(
             value,
             var_val_msg.SetBooleanArrayValueRequest,
@@ -84,7 +84,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         )
 
     @overrides
-    def visit_string_array(self, value: acvi.StringArrayValue) -> bool:
+    def visit_string_array(self, value: atvi.StringArrayValue) -> bool:
         return self._array_request(
             value,
             var_val_msg.SetStringArrayValueRequest,
@@ -93,11 +93,11 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         )
 
     @overrides
-    def visit_file_array(self, value: acvi.FileArrayValue) -> bool:
+    def visit_file_array(self, value: atvi.FileArrayValue) -> bool:
         raise NotImplementedError  # pragma: no cover
 
     def _scalar_request(
-        self, value: acvi.IVariableValue, request_type: Type, value_type: Type, grpc_call: Callable
+        self, value: atvi.IVariableValue, request_type: Type, value_type: Type, grpc_call: Callable
     ) -> bool:
         """
         Helper method to send a gRPC request for setting scalar values.
@@ -124,7 +124,7 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
 
     def _array_request(
         self,
-        value: acvi.CommonArrayValue,
+        value: atvi.CommonArrayValue,
         request_type: Type,
         value_type: Type,
         grpc_call: Callable,
@@ -154,6 +154,6 @@ class VariableValueVisitor(acvi.IVariableValueVisitor[bool]):
         return response.was_changed
 
     @staticmethod
-    def _dims(array: acvi.CommonArrayValue) -> var_val_msg.ArrayDimensions:
+    def _dims(array: atvi.CommonArrayValue) -> var_val_msg.ArrayDimensions:
         """Helper method to get array dimensions (protobuf)."""
         return var_val_msg.ArrayDimensions(dims=np.array(array.get_lengths()).flatten())

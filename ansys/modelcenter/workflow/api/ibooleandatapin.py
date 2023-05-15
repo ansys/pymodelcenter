@@ -1,7 +1,7 @@
 """Contains definitions for boolean variables."""
 from abc import ABC, abstractmethod
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
 from .idatapin import IDatapin
@@ -12,5 +12,5 @@ class IBooleanDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> acvi.BooleanArrayMetadata:
+    def get_metadata(self) -> atvi.BooleanArrayMetadata:
         ...  # pragma: no cover

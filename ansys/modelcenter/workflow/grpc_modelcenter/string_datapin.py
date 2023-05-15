@@ -1,6 +1,6 @@
 """Contains definition for StringDatapin and StringArrayDatapin."""
 
-import ansys.common.variableinterop as acvi
+import ansys.tools.variableinterop as atvi
 from grpc import Channel
 from overrides import overrides
 
@@ -50,17 +50,17 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> acvi.StringArrayMetadata:
+    def get_metadata(self) -> atvi.StringArrayMetadata:
         response = self._client.StringVariableGetMetadata(self._element_id)
         return convert_grpc_string_metadata(response)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        if not isinstance(new_metadata, acvi.StringMetadata):
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, atvi.StringMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {acvi.StringArrayMetadata} "
+                f"Expected {atvi.StringArrayMetadata} "
                 f"but received {new_metadata.__class__}"
             )
         request = SetStringVariableMetadataRequest(target=self._element_id)
@@ -69,11 +69,11 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: acvi.VariableState) -> None:
+    def set_value(self, value: atvi.VariableState) -> None:
         self._do_set_value(value.value)
 
-    @acvi.implicit_coerce
-    def _do_set_value(self, value: acvi.StringValue) -> None:
+    @atvi.implicit_coerce
+    def _do_set_value(self, value: atvi.StringValue) -> None:
         value.accept(VariableValueVisitor(self._element_id, self._client))
 
 
@@ -105,17 +105,17 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> acvi.StringArrayMetadata:
+    def get_metadata(self) -> atvi.StringArrayMetadata:
         response = self._client.StringVariableGetMetadata(self._element_id)
         return convert_grpc_string_array_metadata(response)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def set_metadata(self, new_metadata: acvi.CommonVariableMetadata) -> None:
-        if not isinstance(new_metadata, acvi.StringArrayMetadata):
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, atvi.StringArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {acvi.StringArrayMetadata} "
+                f"Expected {atvi.StringArrayMetadata} "
                 f"but received {new_metadata.__class__}"
             )
         request = SetStringVariableMetadataRequest(target=self._element_id)
@@ -124,9 +124,9 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: acvi.VariableState) -> None:
+    def set_value(self, value: atvi.VariableState) -> None:
         self._do_set_value(value.value)
 
-    @acvi.implicit_coerce
-    def _do_set_value(self, value: acvi.StringArrayValue) -> None:
+    @atvi.implicit_coerce
+    def _do_set_value(self, value: atvi.StringArrayValue) -> None:
         value.accept(VariableValueVisitor(self._element_id, self._client))
