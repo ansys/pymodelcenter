@@ -11,6 +11,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 a
 
 
 class MockWorkflowClientForLinkTest(ModelCenterWorkflowServiceStub):
+    # noinspection PyMissingConstructor
     def __init__(self) -> None:
         pass
 

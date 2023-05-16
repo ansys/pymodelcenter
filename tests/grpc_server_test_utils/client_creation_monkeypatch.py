@@ -12,6 +12,7 @@ def monkeypatch_client_creation(
     :param target_class: the class to monkeypatch. This should be the implementation class
         from grpc_modelcenter that is under test. The class should have a method it uses
         to create a client from a grpc channel that can be replaced.
+    :param mock_client: the mock client to return
     :param client_creation_func: the name of the method to patch.
     """
     # Create a lambda that returns the mock client.

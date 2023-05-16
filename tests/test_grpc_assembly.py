@@ -270,7 +270,7 @@ def test_get_child_elements_empty(monkeypatch, engine) -> None:
     [(ElementType.ELEMTYPE_ASSEMBLY, Assembly), (ElementType.ELEMTYPE_COMPONENT, Component)],
 )
 def test_get_child_elements_one_child(
-    monkeypatch, engine, type_in_response, expected_wrapper_type
+    monkeypatch, engine, type_in_response: ElementType, expected_wrapper_type
 ) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     child_id = "CHILD_ID_STRING"

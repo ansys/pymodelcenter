@@ -138,7 +138,7 @@ class Engine(IEngine):
     @overrides
     def load_workflow(
         self, file_name: Union[PathLike, str], ignore_connection_errors: Optional[bool] = None
-    ) -> IWorkflowInstance:
+    ) -> Workflow:
         request = eng_msg.LoadWorkflowRequest(
             path=str(file_name),
             connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
