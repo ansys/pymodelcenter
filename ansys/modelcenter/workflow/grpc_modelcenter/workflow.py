@@ -1,11 +1,21 @@
 """Implementation of Workflow."""
 import os
-from typing import AbstractSet, Any, Collection, List, Mapping, Optional, Tuple, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    AbstractSet,
+    Any,
+    Collection,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+)
 
 import ansys.engineeringworkflow.api as engapi
 import ansys.tools.variableinterop as atvi
 import grpc
-from grpc import Channel
 import numpy as np
 from numpy.typing import ArrayLike
 from overrides import overrides
@@ -20,6 +30,10 @@ from .assembly import Assembly
 from .component import Component
 from .create_datapin import create_datapin
 from .datapin_link import DatapinLink
+
+if TYPE_CHECKING:
+    from .engine import Engine
+
 from .element_wrapper import create_element
 from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
@@ -48,7 +62,7 @@ class Workflow(wfapi.IWorkflow):
         get a valid instance of this object.
     """
 
-    def __init__(self, workflow_id: str, file_path: str, channel: Channel):
+    def __init__(self, workflow_id: str, file_path: str, engine: "Engine"):
         """
         Initialize a new Workflow instance.
 
@@ -58,12 +72,14 @@ class Workflow(wfapi.IWorkflow):
             The workflow's ID.
         file_path: str
             The path to the workflow file on disk.
+        engine: Engine
+            The Engine creating this Workflow.
         """
         self._state = engapi.WorkflowInstanceState.UNKNOWN
         self._id = workflow_id
         self._file_name = os.path.basename(file_path)
-        self._channel = channel
-        self._stub = self._create_client(self._channel)
+        self._engine = engine
+        self._stub = self._create_client(self._engine.channel)
         self._closed = False
 
     def __enter__(self):
@@ -156,7 +172,7 @@ class Workflow(wfapi.IWorkflow):
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetRootResponse = self._stub.WorkflowGetRoot(request)
         root: element_msg.ElementId = response.id
-        return Assembly(root, self._channel)
+        return Assembly(root, self._engine.channel)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
@@ -166,7 +182,7 @@ class Workflow(wfapi.IWorkflow):
             element_full_name=element_msg.ElementName(name=element_name),
         )
         response = self._stub.WorkflowGetElementByName(request)
-        return create_element(response, self._channel)
+        return create_element(response, self._engine.channel)
 
     @property
     def workflow_directory(self) -> str:
@@ -286,7 +302,7 @@ class Workflow(wfapi.IWorkflow):
         return create_datapin(
             var_value_type=grpc_type_enum_to_interop_type(var_type),
             element_id=response.id,
-            channel=self._channel,
+            channel=self._engine.channel,
         )
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
@@ -298,7 +314,7 @@ class Workflow(wfapi.IWorkflow):
         )
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
         if response.type == element_msg.ELEMTYPE_COMPONENT:
-            return Component(response.id, self._channel)
+            return Component(response.id, self._engine.channel)
         elif response.type == element_msg.ELEMTYPE_IFCOMPONENT:
             # return IfComponent(response.id.id_string)
             raise NotImplementedError()
@@ -334,7 +350,7 @@ class Workflow(wfapi.IWorkflow):
             else:
                 request.parent.id_string = parent.element_id
         response: element_msg.AddAssemblyResponse = self._stub.AssemblyAddAssembly(request)
-        return Assembly(response.id, self._channel)
+        return Assembly(response.id, self._engine.channel)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
@@ -414,7 +430,7 @@ class Workflow(wfapi.IWorkflow):
             response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
             if response.type == element_msg.ELEMTYPE_ASSEMBLY:
                 return Assembly(
-                    element_msg.ElementId(id_string=response.id.id_string), self._channel
+                    element_msg.ElementId(id_string=response.id.id_string), self._engine.channel
                 )
             else:
                 raise ValueError("Element is not an assembly.")
@@ -447,7 +463,7 @@ class Workflow(wfapi.IWorkflow):
         response: workflow_msg.WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(
             request
         )
-        return Component(response.created, self._channel)
+        return Component(response.created, self._engine.channel)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides

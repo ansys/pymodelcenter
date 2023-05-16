@@ -299,7 +299,7 @@ Workflow object under test.
 
 
 @pytest.fixture
-def setup_function(monkeypatch):
+def setup_function(monkeypatch) -> None:
     """
     Setup called before each test function in this module.
     """
@@ -319,8 +319,20 @@ def setup_function(monkeypatch):
     monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.UnsupportedWorkflowElement, mock_client)
 
+    def mock_start(self, run_only: bool = False):
+        return 12345
+
+    def mock_init(self):
+        pass
+
+    # mock Engine creation
+    monkeypatch.setattr(grpcmc.MCDProcess, "start", mock_start)
+    monkeypatch.setattr(grpcmc.MCDProcess, "__init__", mock_init)
+
     global workflow
-    workflow = grpcmc.Workflow(workflow_id="123", file_path="C:\\asdf\\qwerty.pxcz", channel=None)
+    workflow = grpcmc.Workflow(
+        workflow_id="123", file_path="C:\\asdf\\qwerty.pxcz", engine=grpcmc.Engine()
+    )
 
 
 def test_get_root(setup_function) -> None:
@@ -362,7 +374,7 @@ def test_workflow_auto_close(setup_function) -> None:
     with unittest.mock.patch.object(
         mock_client, "WorkflowClose", return_value=wkf_msgs.WorkflowCloseResponse()
     ) as mock_grpc_method:
-        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz", None) as sut:
+        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz", engine=grpcmc.Engine()) as sut:
             # SUT
             pass
 
@@ -930,9 +942,9 @@ def test_create_link(setup_function) -> None:
 
 def test_create_link_with_objects(setup_function) -> None:
     lhs = elem_msgs.ElementId(id_string="INPUTS_VAR1")
-    test_var = grpcmc.RealDatapin(lhs, workflow._channel)
+    test_var = grpcmc.RealDatapin(lhs, workflow._engine.channel)
     rhs = elem_msgs.ElementId(id_string="WORKFLOW_COMP_OUTPUT4")
-    test_eqn_var = grpcmc.RealDatapin(rhs, workflow._channel)
+    test_eqn_var = grpcmc.RealDatapin(rhs, workflow._engine.channel)
 
     # Execute
     workflow.create_link(test_var, test_eqn_var)
