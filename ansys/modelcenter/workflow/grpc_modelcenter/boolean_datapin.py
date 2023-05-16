@@ -1,13 +1,16 @@
 """Contains definition for BooleanDatapin and BooleanArrayDatapin."""
+from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
-from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
 from .base_datapin import BaseDatapin
+
+if TYPE_CHECKING:
+    from .engine import Engine
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
@@ -31,7 +34,7 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -39,10 +42,10 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
         ----------
         element_id: ElementId
             The id of the variable.
-        channel: Channel
-            The gRPC channel to use.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(BooleanDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(BooleanDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):
@@ -121,7 +124,7 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
         value.value.accept(set_visitor)
 
     @overrides
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -129,7 +132,7 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
         ----------
         element_id: ElementId
             The id of the variable.
-        channel: Channel
-            The gRPC channel to use.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(BooleanArrayDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(BooleanArrayDatapin, self).__init__(element_id=element_id, engine=engine)

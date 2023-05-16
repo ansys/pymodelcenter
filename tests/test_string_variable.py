@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Type, Union
 import unittest
 
 import ansys.tools.variableinterop as atvi
@@ -70,9 +70,10 @@ class MockWorkflowClientForStringVarTest:
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
+    engine,
     description_string: str,
-    sut_type: Union[StringDatapin, StringArrayDatapin],
-    expected_metadata_type: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
+    sut_type: Union[Type[StringDatapin], Type[StringArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.StringMetadata], Type[atvi.StringArrayMetadata]],
 ) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
@@ -83,7 +84,7 @@ def test_retrieved_metadata_should_include_description(
         mock_client, "StringVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         # Execute
         result: atvi.StringMetadata = sut.get_metadata()
@@ -104,8 +105,9 @@ def test_retrieved_metadata_should_include_description(
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Union[StringDatapin, StringArrayDatapin],
-    expected_metadata_type: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
+    engine,
+    sut_type: Union[Type[StringDatapin], Type[StringArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.StringMetadata], Type[atvi.StringArrayMetadata]],
 ) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
@@ -115,7 +117,7 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
         mock_client, "StringVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         # Execute
         result: atvi.StringMetadata = sut.get_metadata()
@@ -136,7 +138,8 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Union[StringDatapin, StringArrayDatapin],
+    engine,
+    sut_type: Union[Type[StringDatapin], Type[StringArrayDatapin]],
     expected_metadata_type: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
 ) -> None:
     # Set up
@@ -153,7 +156,7 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
         mock_client, "StringVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         # Execute
         result: atvi.StringMetadata = sut.get_metadata()
@@ -178,8 +181,9 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
-    sut_type: Union[StringDatapin, StringArrayDatapin],
-    expected_metadata_type: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
+    engine,
+    sut_type: Union[Type[StringDatapin], Type[StringArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.StringMetadata], Type[atvi.StringArrayMetadata]],
 ) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
@@ -192,7 +196,7 @@ def test_retrieved_metadata_includes_unsupported_type(
         mock_client, "StringVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         # Execute / Verify
         with pytest.raises(CustomMetadataValueNotSupportedError, match="unsupported type"):
@@ -210,7 +214,7 @@ def test_retrieved_metadata_includes_unsupported_type(
     ],
 )
 def test_set_metadata_invalid_custom_metadata(
-    monkeypatch, sut_type: Union[StringDatapin, StringArrayDatapin]
+    monkeypatch, engine, sut_type: Union[Type[StringDatapin], Type[StringArrayDatapin]]
 ):
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
@@ -220,7 +224,7 @@ def test_set_metadata_invalid_custom_metadata(
         mock_client, "StringVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = atvi.FileMetadata()
 
         # Execute
@@ -242,9 +246,10 @@ def test_set_metadata_invalid_custom_metadata(
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
+    engine,
     description: str,
-    sut_type: Union[StringDatapin, StringArrayDatapin],
-    metadata_type: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
+    sut_type: Union[Type[StringDatapin], Type[StringArrayDatapin]],
+    metadata_type: Union[Type[atvi.StringMetadata], Type[atvi.StringArrayMetadata]],
 ) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
@@ -254,7 +259,7 @@ def test_set_metadata_empty_custom_metadata(
         mock_client, "StringVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = metadata_type()
         new_metadata.description = description
 
@@ -278,9 +283,10 @@ def test_set_metadata_empty_custom_metadata(
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
+    engine,
     description: str,
-    sut_type: Union[StringDatapin, StringArrayDatapin],
-    metadata_type: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
+    sut_type: Union[Type[StringDatapin], Type[StringArrayDatapin]],
+    metadata_type: Union[Type[atvi.StringMetadata], Type[atvi.StringArrayMetadata]],
 ) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
@@ -290,7 +296,7 @@ def test_set_metadata_populated_custom_metadata(
         mock_client, "StringVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = metadata_type()
         new_metadata.description = description
         new_metadata.custom_metadata["int_value"] = atvi.IntegerValue(47)
@@ -320,8 +326,9 @@ def test_set_metadata_populated_custom_metadata(
 )
 def test_set_metadata_populated_enums(
     monkeypatch,
-    sut_type: Union[StringDatapin, StringArrayDatapin],
-    metadata_type: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
+    engine,
+    sut_type: Union[Type[StringDatapin], Type[StringArrayDatapin]],
+    metadata_type: Union[Type[atvi.StringMetadata], Type[atvi.StringArrayMetadata]],
 ):
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
@@ -331,7 +338,7 @@ def test_set_metadata_populated_enums(
         mock_client, "StringVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = metadata_type()
         new_metadata.enumerated_values = [atvi.StringValue("1"), atvi.StringValue("2")]
         new_metadata.enumerated_aliases = ["a", "b"]
@@ -363,7 +370,7 @@ def test_set_metadata_populated_enums(
         (atvi.BooleanValue(True), "True"),
     ],
 )
-def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request) -> None:
+def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetVariableValueResponse()
@@ -372,7 +379,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request) -
         mock_client, "StringVariableSetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = StringDatapin(sut_element_id, None)
+        sut = StringDatapin(sut_element_id, engine=engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute
@@ -394,7 +401,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request) -
         atvi.StringArrayValue(),
     ],
 )
-def test_scalar_set_disallowed(monkeypatch, set_value) -> None:
+def test_scalar_set_disallowed(monkeypatch, engine, set_value) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetVariableValueResponse()
@@ -403,7 +410,7 @@ def test_scalar_set_disallowed(monkeypatch, set_value) -> None:
         mock_client, "StringVariableSetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = StringDatapin(sut_element_id, None)
+        sut = StringDatapin(sut_element_id, engine=engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -443,7 +450,7 @@ def test_scalar_set_disallowed(monkeypatch, set_value) -> None:
         ),
     ],
 )
-def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request) -> None:
+def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetVariableValueResponse()
@@ -452,7 +459,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request) ->
         mock_client, "StringArraySetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = StringArrayDatapin(sut_element_id, None)
+        sut = StringArrayDatapin(sut_element_id, engine=engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute
@@ -474,7 +481,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request) ->
         atvi.StringValue("scalar"),
     ],
 )
-def test_array_set_disallowed(monkeypatch, set_value) -> None:
+def test_array_set_disallowed(monkeypatch, engine, set_value) -> None:
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = SetVariableValueResponse()
@@ -483,7 +490,7 @@ def test_array_set_disallowed(monkeypatch, set_value) -> None:
         mock_client, "StringArraySetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = StringArrayDatapin(sut_element_id, None)
+        sut = StringArrayDatapin(sut_element_id, engine=engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -494,15 +501,20 @@ def test_array_set_disallowed(monkeypatch, set_value) -> None:
         mock_grpc_method.assert_not_called()
 
 
-def test_scalar_get_type(monkeypatch) -> None:
+def test_scalar_get_type(monkeypatch, engine) -> None:
     do_get_type_test(
-        monkeypatch, StringDatapin, VariableType.VARTYPE_STRING, atvi.VariableType.STRING
+        monkeypatch,
+        engine,
+        StringDatapin,
+        VariableType.VARTYPE_STRING,
+        atvi.VariableType.STRING,
     )
 
 
-def test_array_get_type(monkeypatch) -> None:
+def test_array_get_type(monkeypatch, engine) -> None:
     do_get_type_test(
         monkeypatch,
+        engine,
         StringArrayDatapin,
         VariableType.VARTYPE_STRING_ARRAY,
         atvi.VariableType.STRING_ARRAY,
@@ -518,10 +530,11 @@ def test_array_get_type(monkeypatch) -> None:
     ],
 )
 def test_scalar_get_state(
-    monkeypatch, value_in_response, validity_in_response, expected_acvi_state
+    monkeypatch, engine, value_in_response, validity_in_response, expected_acvi_state
 ) -> None:
     do_get_state_test(
         monkeypatch,
+        engine,
         StringDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(string_value=value_in_response)
@@ -530,12 +543,12 @@ def test_scalar_get_state(
     )
 
 
-def test_scalar_get_state_with_hid(monkeypatch):
-    do_get_state_test_with_hid(monkeypatch, StringDatapin)
+def test_scalar_get_state_with_hid(monkeypatch, engine):
+    do_get_state_test_with_hid(monkeypatch, engine, StringDatapin)
 
 
-def test_array_get_state_with_hid(monkeypatch):
-    do_get_state_test_with_hid(monkeypatch, StringArrayDatapin)
+def test_array_get_state_with_hid(monkeypatch, engine):
+    do_get_state_test_with_hid(monkeypatch, engine, StringArrayDatapin)
 
 
 @pytest.mark.parametrize(
@@ -567,10 +580,11 @@ def test_array_get_state_with_hid(monkeypatch):
     ],
 )
 def test_array_get_state(
-    monkeypatch, value_in_response, validity_in_response, expected_acvi_state
+    monkeypatch, engine, value_in_response, validity_in_response, expected_acvi_state
 ) -> None:
     do_get_state_test(
         monkeypatch,
+        engine,
         StringArrayDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(string_array_value=value_in_response)
@@ -588,8 +602,8 @@ def test_array_get_state(
         (StringArrayDatapin, False),
     ],
 )
-def test_is_input_component(monkeypatch, sut_type, flag_in_response) -> None:
-    do_test_is_input_component(monkeypatch, sut_type, flag_in_response)
+def test_is_input_component(monkeypatch, engine, sut_type, flag_in_response) -> None:
+    do_test_is_input_component(monkeypatch, engine, sut_type, flag_in_response)
 
 
 @pytest.mark.parametrize(
@@ -601,5 +615,5 @@ def test_is_input_component(monkeypatch, sut_type, flag_in_response) -> None:
         (StringArrayDatapin, False),
     ],
 )
-def test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
-    do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response)
+def test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response) -> None:
+    do_test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response)

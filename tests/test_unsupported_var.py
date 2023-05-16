@@ -18,33 +18,33 @@ class MockWorkflowClientForUnsupportedVarTest:
         pass
 
 
-def test_set_metadata(monkeypatch) -> None:
+def test_set_metadata(monkeypatch, engine) -> None:
     # Setup
     mock_client = MockWorkflowClientForUnsupportedVarTest()
     monkeypatch_client_creation(monkeypatch, UnsupportedTypeDatapin, mock_client)
-    sut = UnsupportedTypeDatapin(element_id=ElementId(id_string="VAR_UNDER_TEST_ID"), channel=None)
+    sut = UnsupportedTypeDatapin(element_id=ElementId(id_string="VAR_UNDER_TEST_ID"), engine=engine)
 
     # SUT/Verification
     with pytest.raises(DatapinWithUnsupportedTypeException):
         sut.set_metadata(atvi.BooleanMetadata())
 
 
-def test_set_value(monkeypatch) -> None:
+def test_set_value(monkeypatch, engine) -> None:
     # Setup
     mock_client = MockWorkflowClientForUnsupportedVarTest()
     monkeypatch_client_creation(monkeypatch, UnsupportedTypeDatapin, mock_client)
-    sut = UnsupportedTypeDatapin(element_id=ElementId(id_string="VAR_UNDER_TEST_ID"), channel=None)
+    sut = UnsupportedTypeDatapin(element_id=ElementId(id_string="VAR_UNDER_TEST_ID"), engine=engine)
 
     # SUT/Verification
     with pytest.raises(DatapinWithUnsupportedTypeException):
         sut.set_value(VariableState())
 
 
-def test_get_metadata(monkeypatch) -> None:
+def test_get_metadata(monkeypatch, engine) -> None:
     # Setup
     mock_client = MockWorkflowClientForUnsupportedVarTest()
     monkeypatch_client_creation(monkeypatch, UnsupportedTypeDatapin, mock_client)
-    sut = UnsupportedTypeDatapin(element_id=ElementId(id_string="VAR_UNDER_TEST_ID"), channel=None)
+    sut = UnsupportedTypeDatapin(element_id=ElementId(id_string="VAR_UNDER_TEST_ID"), engine=engine)
 
     # SUT/Verification
     with pytest.raises(DatapinWithUnsupportedTypeException):

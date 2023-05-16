@@ -45,8 +45,8 @@ class MockWorkflowClientForAssemblyTest:
         return ElementIdCollection()
 
 
-def test_get_variables_empty(monkeypatch):
-    base_tests.do_test_get_datapins_empty(monkeypatch, Group)
+def test_get_variables_empty(monkeypatch, engine):
+    base_tests.do_test_get_datapins_empty(monkeypatch, engine, Group)
 
 
 @pytest.mark.parametrize(
@@ -65,61 +65,61 @@ def test_get_variables_empty(monkeypatch):
         (VariableType.VARTYPE_UNKNOWN, UnsupportedTypeDatapin),
     ],
 )
-def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type):
+def test_get_variables_one_variable(monkeypatch, engine, var_type, expected_wrapper_type):
     base_tests.do_test_get_datapins_one_variable(
-        monkeypatch, Group, var_type, expected_wrapper_type
+        monkeypatch, engine, Group, var_type, expected_wrapper_type
     )
 
 
-def test_get_variables_multiple_variables(monkeypatch):
-    base_tests.do_test_get_datapins_multiple_variables(monkeypatch, Group)
+def test_get_variables_multiple_variables(monkeypatch, engine):
+    base_tests.do_test_get_datapins_multiple_variables(monkeypatch, engine, Group)
 
 
-def test_get_groups_empty(monkeypatch):
-    base_tests.do_test_get_groups_empty(monkeypatch, Group)
+def test_get_groups_empty(monkeypatch, engine):
+    base_tests.do_test_get_groups_empty(monkeypatch, engine, Group)
 
 
-def test_get_groups_one_group(monkeypatch):
-    base_tests.do_test_get_groups_one_group(monkeypatch, Group)
+def test_get_groups_one_group(monkeypatch, engine):
+    base_tests.do_test_get_groups_one_group(monkeypatch, engine, Group)
 
 
-def test_get_groups_multiple_groups(monkeypatch):
-    base_tests.do_test_get_groups_multiple_groups(monkeypatch, Group)
+def test_get_groups_multiple_groups(monkeypatch, engine):
+    base_tests.do_test_get_groups_multiple_groups(monkeypatch, engine, Group)
 
 
-def test_element_id(monkeypatch) -> None:
-    awe_tests.do_test_element_id(monkeypatch, Group, "SUT_TEST_ID")
+def test_element_id(monkeypatch, engine) -> None:
+    awe_tests.do_test_element_id(monkeypatch, engine, Group, "SUT_TEST_ID")
 
 
-def test_parent_element_id(monkeypatch) -> None:
-    awe_tests.do_test_parent_element_id(monkeypatch, Group)
+def test_parent_element_id(monkeypatch, engine) -> None:
+    awe_tests.do_test_parent_element_id(monkeypatch, engine, Group)
 
 
-def test_name(monkeypatch) -> None:
-    awe_tests.do_test_name(monkeypatch, Group)
+def test_name(monkeypatch, engine) -> None:
+    awe_tests.do_test_name(monkeypatch, engine, Group)
 
 
-def test_full_name(monkeypatch) -> None:
-    awe_tests.do_test_name(monkeypatch, Group)
+def test_full_name(monkeypatch, engine) -> None:
+    awe_tests.do_test_name(monkeypatch, engine, Group)
 
 
-def test_parent_element(monkeypatch) -> None:
-    awe_tests.do_test_parent_element(monkeypatch, Group, ElementType.ELEMTYPE_GROUP, Group)
+def test_parent_element(monkeypatch, engine) -> None:
+    awe_tests.do_test_parent_element(monkeypatch, engine, Group, ElementType.ELEMTYPE_GROUP, Group)
 
 
-def test_get_property_names(monkeypatch) -> None:
-    awe_tests.do_test_get_property_names(monkeypatch, Group)
+def test_get_property_names(monkeypatch, engine) -> None:
+    awe_tests.do_test_get_property_names(monkeypatch, engine, Group)
 
 
-def test_get_properties(monkeypatch) -> None:
-    awe_tests.do_test_get_properties(monkeypatch, Group)
+def test_get_properties(monkeypatch, engine) -> None:
+    awe_tests.do_test_get_properties(monkeypatch, engine, Group)
 
 
-def test_can_get_name(monkeypatch):
+def test_can_get_name(monkeypatch, engine):
     mock_client = MockWorkflowClientForAssemblyTest()
     mock_client.name_responses["TEST_ID_SHOULD_MATCH"] = "expected_name"
     monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-    sut = Group(ElementId(id_string="TEST_ID_SHOULD_MATCH"), None)
+    sut = Group(ElementId(id_string="TEST_ID_SHOULD_MATCH"), engine=engine)
 
     result = sut.name
 

@@ -1,7 +1,7 @@
 """Definition of Component."""
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from grpc import Channel, StatusCode
+from grpc import StatusCode
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
@@ -10,6 +10,10 @@ import ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable as abstrac
 import ansys.modelcenter.workflow.grpc_modelcenter.group as group
 
 from .abstract_datapin_container import AbstractGRPCDatapinContainer
+
+if TYPE_CHECKING:
+    from .engine import Engine
+
 from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ComponentInvokeMethodRequest, ElementId
 
@@ -40,7 +44,7 @@ class Component(
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -48,9 +52,10 @@ class Component(
         ----------
         element_id : ElementId
             The id of the component.
-        channel : Channel
+        engine : Engine
+            The Engine that created this component.
         """
-        super(Component, self).__init__(element_id=element_id, channel=channel)
+        super(Component, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):
@@ -58,7 +63,7 @@ class Component(
 
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
-        return group.Group(element_id, self._channel)
+        return group.Group(element_id, self._engine)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

@@ -1,12 +1,16 @@
 """Contains definition for IntegerDatapin and IntegerArray."""
+from typing import TYPE_CHECKING
+
 import ansys.tools.variableinterop as atvi
-from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
 from .base_datapin import BaseDatapin
+
+if TYPE_CHECKING:
+    from .engine import Engine
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
@@ -30,7 +34,7 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -38,10 +42,10 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
         ----------
         element_id: ElementId
             The id of the variable.
-        channel: Channel
-            The gRPC channel to use.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(IntegerDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(IntegerDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):
@@ -85,7 +89,7 @@ class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -93,17 +97,17 @@ class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
         ----------
         element_id: ElementId
             The id of the variable.
-        channel: Channel
-            The gRPC channel to use.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(IntegerArrayDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(IntegerArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):
         return isinstance(other, IntegerArrayDatapin) and self.element_id == other.element_id
 
     @overrides
-    def get_metadata(self) -> atvi.RealArrayMetadata:
+    def get_metadata(self) -> atvi.IntegerArrayMetadata:
         response = self._client.IntegerVariableGetMetadata(self._element_id)
         return convert_grpc_integer_array_metadata(response)
 
