@@ -299,7 +299,7 @@ Workflow object under test.
 
 
 @pytest.fixture
-def setup_function(monkeypatch) -> None:
+def setup_function(monkeypatch, engine) -> None:
     """
     Setup called before each test function in this module.
     """
@@ -319,20 +319,8 @@ def setup_function(monkeypatch) -> None:
     monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.UnsupportedWorkflowElement, mock_client)
 
-    def mock_start(self, run_only: bool = False):
-        return 12345
-
-    def mock_init(self):
-        pass
-
-    # mock Engine creation
-    monkeypatch.setattr(grpcmc.MCDProcess, "start", mock_start)
-    monkeypatch.setattr(grpcmc.MCDProcess, "__init__", mock_init)
-
     global workflow
-    workflow = grpcmc.Workflow(
-        workflow_id="123", file_path="C:\\asdf\\qwerty.pxcz", engine=grpcmc.Engine()
-    )
+    workflow = grpcmc.Workflow(workflow_id="123", file_path="C:\\asdf\\qwerty.pxcz", engine=engine)
 
 
 def test_get_root(setup_function) -> None:
@@ -369,12 +357,12 @@ def test_workflow_close(setup_function) -> None:
     assert mock_client.was_closed
 
 
-def test_workflow_auto_close(setup_function) -> None:
+def test_workflow_auto_close(setup_function, engine) -> None:
     # Setup
     with unittest.mock.patch.object(
         mock_client, "WorkflowClose", return_value=wkf_msgs.WorkflowCloseResponse()
     ) as mock_grpc_method:
-        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz", engine=grpcmc.Engine()) as sut:
+        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz", engine=engine) as sut:
             # SUT
             pass
 
@@ -734,9 +722,11 @@ def test_auto_link(setup_function) -> None:
     assert links[1].rhs == "2"
 
 
-def test_auto_link_with_objects(setup_function) -> None:
-    source_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_SOURCE_COMP"), None)
-    dest_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_DEST_COMP"), None)
+def test_auto_link_with_objects(setup_function, engine) -> None:
+    source_comp = grpcmc.Component(
+        elem_msgs.ElementId(id_string="WORKFLOW_SOURCE_COMP"), engine=engine
+    )
+    dest_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_DEST_COMP"), engine=engine)
 
     # Execute
     links: List[mcapi.IDatapinLink] = workflow.auto_link(source_comp, dest_comp)
@@ -757,9 +747,9 @@ def test_create_assembly(setup_function) -> None:
     assert result.element_id == "Model.newAssembly"
 
 
-def test_create_assembly_on_assembly(setup_function) -> None:
+def test_create_assembly_on_assembly(setup_function, engine) -> None:
     # Setup
-    parent = grpcmc.Assembly(element_id=elem_msgs.ElementId(id_string="Model"), channel=None)
+    parent = grpcmc.Assembly(element_id=elem_msgs.ElementId(id_string="Model"), engine=engine)
 
     # Execute
     result: grpcmc.Assembly = workflow.create_assembly("newAssembly", parent)
@@ -813,7 +803,7 @@ def test_create_component(setup_function) -> None:
         assert component.element_id == "zxcv"
 
 
-def test_create_component_parent_object(setup_function) -> None:
+def test_create_component_parent_object(setup_function, engine) -> None:
     # Execute
     response = wkf_msgs.WorkflowCreateComponentResponse(
         created=elem_msgs.ElementId(id_string="zxcv")
@@ -824,7 +814,7 @@ def test_create_component_parent_object(setup_function) -> None:
         component: grpcmc.Component = workflow.create_component(
             server_path="common:\\Functions\\Quadratic",
             name="二次",
-            parent=grpcmc.Assembly(elem_msgs.ElementId(id_string="45df304"), None),
+            parent=grpcmc.Assembly(elem_msgs.ElementId(id_string="45df304"), engine=engine),
             init_string=None,
             av_position=None,
             insert_before=None,
@@ -898,7 +888,7 @@ def test_create_component_after_comp_by_id(setup_function) -> None:
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-def test_create_component_after_comp_by_component(setup_function) -> None:
+def test_create_component_after_comp_by_component(setup_function, engine) -> None:
     # Setup
     response = wkf_msgs.WorkflowCreateComponentResponse()
     with unittest.mock.patch.object(
@@ -913,7 +903,7 @@ def test_create_component_after_comp_by_component(setup_function) -> None:
             init_string=None,
             av_position=None,
             insert_before=grpcmc.Component(
-                element_id=elem_msgs.ElementId(id_string="43q48a93cd300cab"), channel=None
+                element_id=elem_msgs.ElementId(id_string="43q48a93cd300cab"), engine=engine
             ),
         )
 
@@ -942,9 +932,9 @@ def test_create_link(setup_function) -> None:
 
 def test_create_link_with_objects(setup_function) -> None:
     lhs = elem_msgs.ElementId(id_string="INPUTS_VAR1")
-    test_var = grpcmc.RealDatapin(lhs, workflow._engine.channel)
+    test_var = grpcmc.RealDatapin(lhs, workflow._engine)
     rhs = elem_msgs.ElementId(id_string="WORKFLOW_COMP_OUTPUT4")
-    test_eqn_var = grpcmc.RealDatapin(rhs, workflow._engine.channel)
+    test_eqn_var = grpcmc.RealDatapin(rhs, workflow._engine)
 
     # Execute
     workflow.create_link(test_var, test_eqn_var)
@@ -1068,10 +1058,10 @@ def test_move_component_names(setup_function):
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-def test_move_component_objects(setup_function):
+def test_move_component_objects(setup_function, engine):
     mock_response = elem_msgs.ElementIndexInParentResponse()
-    mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), None)
-    mock_assembly = grpcmc.Assembly(elem_msgs.ElementId(id_string="ASSY_3948"), None)
+    mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), engine=engine)
+    mock_assembly = grpcmc.Assembly(elem_msgs.ElementId(id_string="ASSY_3948"), engine=engine)
     with unittest.mock.patch.object(
         mock_client, "WorkflowMoveComponent", return_value=mock_response
     ) as mock_grpc_method:

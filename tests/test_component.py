@@ -62,38 +62,38 @@ class MockWorkflowClientForComponentTests:
         return ComponentPaczUrlResponse()
 
 
-def test_element_id(monkeypatch) -> None:
-    awe_tests.do_test_element_id(monkeypatch, Component, "SUT_TEST_ID")
+def test_element_id(monkeypatch, engine) -> None:
+    awe_tests.do_test_element_id(monkeypatch, engine, Component, "SUT_TEST_ID")
 
 
-def test_parent_element_id(monkeypatch) -> None:
-    awe_tests.do_test_parent_element_id(monkeypatch, Component)
+def test_parent_element_id(monkeypatch, engine) -> None:
+    awe_tests.do_test_parent_element_id(monkeypatch, engine, Component)
 
 
-def test_name(monkeypatch) -> None:
-    awe_tests.do_test_name(monkeypatch, Component)
+def test_name(monkeypatch, engine) -> None:
+    awe_tests.do_test_name(monkeypatch, engine, Component)
 
 
-def test_full_name(monkeypatch) -> None:
-    awe_tests.do_test_name(monkeypatch, Component)
+def test_full_name(monkeypatch, engine) -> None:
+    awe_tests.do_test_name(monkeypatch, engine, Component)
 
 
-def test_parent_element(monkeypatch) -> None:
+def test_parent_element(monkeypatch, engine) -> None:
     awe_tests.do_test_parent_element(
-        monkeypatch, Component, ElementType.ELEMTYPE_COMPONENT, Component
+        monkeypatch, engine, Component, ElementType.ELEMTYPE_COMPONENT, Component
     )
 
 
-def test_get_property_names(monkeypatch) -> None:
-    awe_tests.do_test_get_property_names(monkeypatch, Component)
+def test_get_property_names(monkeypatch, engine) -> None:
+    awe_tests.do_test_get_property_names(monkeypatch, engine, Component)
 
 
-def test_get_properties(monkeypatch) -> None:
-    awe_tests.do_test_get_properties(monkeypatch, Component)
+def test_get_properties(monkeypatch, engine) -> None:
+    awe_tests.do_test_get_properties(monkeypatch, engine, Component)
 
 
-def test_get_variables_empty(monkeypatch):
-    varcontainer_tests.do_test_get_datapins_empty(monkeypatch, Component)
+def test_get_variables_empty(monkeypatch, engine):
+    varcontainer_tests.do_test_get_datapins_empty(monkeypatch, engine, Component)
 
 
 @pytest.mark.parametrize(
@@ -112,29 +112,29 @@ def test_get_variables_empty(monkeypatch):
         (VariableType.VARTYPE_UNKNOWN, UnsupportedTypeDatapin),
     ],
 )
-def test_get_variables_one_variable(monkeypatch, var_type, expected_wrapper_type):
+def test_get_variables_one_variable(monkeypatch, engine, var_type, expected_wrapper_type):
     varcontainer_tests.do_test_get_datapins_one_variable(
-        monkeypatch, Component, var_type, expected_wrapper_type
+        monkeypatch, engine, Component, var_type, expected_wrapper_type
     )
 
 
-def test_get_variables_multiple_variables(monkeypatch):
-    varcontainer_tests.do_test_get_datapins_multiple_variables(monkeypatch, Component)
+def test_get_variables_multiple_variables(monkeypatch, engine):
+    varcontainer_tests.do_test_get_datapins_multiple_variables(monkeypatch, engine, Component)
 
 
-def test_get_groups_empty(monkeypatch):
-    varcontainer_tests.do_test_get_groups_empty(monkeypatch, Component)
+def test_get_groups_empty(monkeypatch, engine):
+    varcontainer_tests.do_test_get_groups_empty(monkeypatch, engine, Component)
 
 
-def test_get_groups_one_group(monkeypatch):
-    varcontainer_tests.do_test_get_groups_one_group(monkeypatch, Component)
+def test_get_groups_one_group(monkeypatch, engine):
+    varcontainer_tests.do_test_get_groups_one_group(monkeypatch, engine, Component)
 
 
-def test_get_groups_multiple_groups(monkeypatch):
-    varcontainer_tests.do_test_get_groups_one_group(monkeypatch, Component)
+def test_get_groups_multiple_groups(monkeypatch, engine):
+    varcontainer_tests.do_test_get_groups_one_group(monkeypatch, engine, Component)
 
 
-def test_get_source(monkeypatch):
+def test_get_source(monkeypatch, engine):
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = ComponentSourceResponse(source="common:/Quadratic")
     sut_id = ElementId(id_string="SUT_COMPONENT_ID")
@@ -142,7 +142,7 @@ def test_get_source(monkeypatch):
         mock_client, "ComponentGetSource", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Component(sut_id, None)
+        sut = Component(sut_id, engine=engine)
 
         result = sut.get_source()
 
@@ -150,7 +150,7 @@ def test_get_source(monkeypatch):
         assert result == "common:/Quadratic", "The result should be what the gRPC client reported."
 
 
-def test_invoke_method(monkeypatch):
+def test_invoke_method(monkeypatch, engine):
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = ComponentInvokeMethodResponse()
     sut_id = ElementId(id_string="SUT_COMPONENT_ID")
@@ -158,7 +158,7 @@ def test_invoke_method(monkeypatch):
         mock_client, "ComponentInvokeMethod", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Component(sut_id, None)
+        sut = Component(sut_id, engine=engine)
 
         sut.invoke_method("CustomComponentMethod()")
 
@@ -168,7 +168,7 @@ def test_invoke_method(monkeypatch):
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-def test_invalidate(monkeypatch):
+def test_invalidate(monkeypatch, engine):
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = ComponentInvalidateResponse()
     sut_id = ElementId(id_string="SUT_COMPONENT_ID")
@@ -176,7 +176,7 @@ def test_invalidate(monkeypatch):
         mock_client, "ComponentInvalidate", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Component(sut_id, None)
+        sut = Component(sut_id, engine=engine)
 
         sut.invalidate()
 
@@ -184,7 +184,7 @@ def test_invalidate(monkeypatch):
 
 
 @pytest.mark.parametrize("value_in_response", [True, False])
-def test_is_connected(monkeypatch, value_in_response):
+def test_is_connected(monkeypatch, engine, value_in_response):
 
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = ComponentIsConnectedResponse(is_connected=value_in_response)
@@ -193,7 +193,7 @@ def test_is_connected(monkeypatch, value_in_response):
         mock_client, "ComponentIsConnected", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Component(sut_id, None)
+        sut = Component(sut_id, engine=engine)
 
         result = sut.is_connected
 
@@ -201,7 +201,7 @@ def test_is_connected(monkeypatch, value_in_response):
         assert result == value_in_response, "The result should be what the gRPC client reported."
 
 
-def test_reconnect(monkeypatch):
+def test_reconnect(monkeypatch, engine):
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = ComponentReconnectResponse()
     sut_id = ElementId(id_string="SUT_COMPONENT_ID")
@@ -209,14 +209,14 @@ def test_reconnect(monkeypatch):
         mock_client, "ComponentReconnect", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Component(sut_id, None)
+        sut = Component(sut_id, engine=engine)
 
         sut.reconnect()
 
         mock_grpc_method.assert_called_once_with(sut_id)
 
 
-def test_download_values(monkeypatch):
+def test_download_values(monkeypatch, engine):
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = ComponentDownloadValuesResponse()
     sut_id = ElementId(id_string="SUT_COMPONENT_ID")
@@ -224,14 +224,14 @@ def test_download_values(monkeypatch):
         mock_client, "ComponentDownloadValues", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Component(sut_id, None)
+        sut = Component(sut_id, engine=engine)
 
         sut.download_values()
 
         mock_grpc_method.assert_called_once_with(sut_id)
 
 
-def test_get_analysis_view_position(monkeypatch):
+def test_get_analysis_view_position(monkeypatch, engine):
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = AnalysisViewPosition(x_pos=47, y_pos=9001)
     sut_id = ElementId(id_string="SUT_COMPONENT_ID")
@@ -239,7 +239,7 @@ def test_get_analysis_view_position(monkeypatch):
         mock_client, "AssemblyGetAnalysisViewPosition", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Component(sut_id, None)
+        sut = Component(sut_id, engine=engine)
 
         result = sut.get_analysis_view_position()
 
@@ -254,7 +254,7 @@ def test_get_analysis_view_position(monkeypatch):
         ("common:/Quadratic", False, None),
     ],
 )
-def test_pacz_url(monkeypatch, url_in_response, url_set_in_response, expected_result):
+def test_pacz_url(monkeypatch, engine, url_in_response, url_set_in_response, expected_result):
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = ComponentPaczUrlResponse()
     if url_set_in_response:
@@ -264,7 +264,7 @@ def test_pacz_url(monkeypatch, url_in_response, url_set_in_response, expected_re
         mock_client, "ComponentGetPaczUrl", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = Component(sut_id, None)
+        sut = Component(sut_id, engine=engine)
 
         result = sut.pacz_url
 

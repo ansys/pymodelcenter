@@ -1,15 +1,18 @@
 """Provides an object-oriented way to interact with ModelCenter variables via gRPC."""
 from abc import ABC
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
-from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
 from .abstract_workflow_element import AbstractWorkflowElement
+
+if TYPE_CHECKING:
+    from .engine import Engine
+
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
 from .proto.workflow_messages_pb2 import ElementIdOrName
@@ -19,7 +22,7 @@ from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_int
 class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
     """Represents a datapin in the workflow."""
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -27,8 +30,10 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
         ----------
         element_id : ElementId
             The id of the element.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(BaseDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(BaseDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)

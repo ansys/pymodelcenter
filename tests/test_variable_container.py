@@ -46,21 +46,21 @@ class MockWorkflowClientForAbstractVariableContainerTest:
         return ElementIdCollection()
 
 
-def do_test_get_datapins_empty(monkeypatch, sut_type) -> None:
+def do_test_get_datapins_empty(monkeypatch, engine, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     no_variables = VariableInfoCollection()
     with unittest.mock.patch.object(
         mock_client, "RegistryGetVariables", return_value=no_variables
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(ElementId(id_string="NO_VARIABLES"), None)
+        sut = sut_type(ElementId(id_string="NO_VARIABLES"), engine=engine)
         result = sut.get_datapins()
         assert len(result) == 0
         mock_method.assert_called_once_with(ElementId(id_string="NO_VARIABLES"))
 
 
 def do_test_get_datapins_one_variable(
-    monkeypatch, sut_type, var_type, expected_wrapper_type
+    monkeypatch, engine, sut_type, var_type, expected_wrapper_type
 ) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     mock_client.name_responses["VAR_ID_STRING"] = "child_var"
@@ -72,7 +72,7 @@ def do_test_get_datapins_one_variable(
         mock_client, "RegistryGetVariables", return_value=variables
     ) as mock_get_variable_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(ElementId(id_string="SINGLE_CHILD"), None)
+        sut = sut_type(ElementId(id_string="SINGLE_CHILD"), engine=engine)
         result = sut.get_datapins()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
         assert len(result) == 1
@@ -80,7 +80,7 @@ def do_test_get_datapins_one_variable(
         assert result["child_var"].element_id == variable_id.id_string
 
 
-def do_test_get_datapins_multiple_variables(monkeypatch, sut_type) -> None:
+def do_test_get_datapins_multiple_variables(monkeypatch, engine, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     mock_client.name_responses["IDVAR_LARRY"] = "larry"
     mock_client.name_responses["IDVAR_MOE"] = "moe"
@@ -108,7 +108,7 @@ def do_test_get_datapins_multiple_variables(monkeypatch, sut_type) -> None:
         mock_client, "RegistryGetVariables", return_value=one_child_assembly
     ) as mock_get_variable_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(ElementId(id_string="STOOGES"), None)
+        sut = sut_type(ElementId(id_string="STOOGES"), engine=engine)
         result = sut.get_datapins()
         mock_get_variable_method.assert_called_once_with(ElementId(id_string="STOOGES"))
         assert len(result) == 3
@@ -120,20 +120,20 @@ def do_test_get_datapins_multiple_variables(monkeypatch, sut_type) -> None:
         assert result["curly"].element_id == "IDVAR_CURLY"
 
 
-def do_test_get_groups_empty(monkeypatch, sut_type) -> None:
+def do_test_get_groups_empty(monkeypatch, engine, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     no_variables = ElementIdCollection()
     with unittest.mock.patch.object(
         mock_client, "RegistryGetGroups", return_value=no_variables
     ) as mock_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(ElementId(id_string="NO_GROUPS"), None)
+        sut = sut_type(ElementId(id_string="NO_GROUPS"), engine=engine)
         result = sut.get_groups()
         assert len(result) == 0
         mock_method.assert_called_once_with(ElementId(id_string="NO_GROUPS"))
 
 
-def do_test_get_groups_one_group(monkeypatch, sut_type) -> None:
+def do_test_get_groups_one_group(monkeypatch, engine, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     group_id = "GRP_ID_STRING"
     mock_client.name_responses[group_id] = "child_group"
@@ -142,7 +142,7 @@ def do_test_get_groups_one_group(monkeypatch, sut_type) -> None:
         mock_client, "RegistryGetGroups", return_value=variables
     ) as mock_get_group_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(ElementId(id_string="SINGLE_CHILD"), None)
+        sut = sut_type(ElementId(id_string="SINGLE_CHILD"), engine=engine)
         result = sut.get_groups()
         mock_get_group_method.assert_called_once_with(ElementId(id_string="SINGLE_CHILD"))
         assert len(result) == 1
@@ -150,7 +150,7 @@ def do_test_get_groups_one_group(monkeypatch, sut_type) -> None:
         assert result["child_group"].element_id == group_id
 
 
-def do_test_get_groups_multiple_groups(monkeypatch, sut_type) -> None:
+def do_test_get_groups_multiple_groups(monkeypatch, engine, sut_type) -> None:
     mock_client = MockWorkflowClientForAbstractVariableContainerTest()
     mock_client.name_responses["IDGROUP_LARRY"] = "larry"
     mock_client.name_responses["IDGROUP_MOE"] = "moe"
@@ -166,7 +166,7 @@ def do_test_get_groups_multiple_groups(monkeypatch, sut_type) -> None:
         mock_client, "RegistryGetGroups", return_value=one_child_assembly
     ) as mock_get_group_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(ElementId(id_string="STOOGES"), None)
+        sut = sut_type(ElementId(id_string="STOOGES"), engine=engine)
         result = sut.get_groups()
         mock_get_group_method.assert_called_once_with(ElementId(id_string="STOOGES"))
         assert len(result) == 3

@@ -1,13 +1,16 @@
 """Contains definition for StringDatapin and StringArrayDatapin."""
+from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
-from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
 from .base_datapin import BaseDatapin
+
+if TYPE_CHECKING:
+    from .engine import Engine
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
@@ -31,7 +34,7 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -39,10 +42,10 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
         ----------
         element_id: ElementId
             The id of the variable.
-        channel: Channel
-            The gRPC channel to use.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(StringDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(StringDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):
@@ -50,7 +53,7 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_metadata(self) -> atvi.StringArrayMetadata:
+    def get_metadata(self) -> atvi.StringMetadata:
         response = self._client.StringVariableGetMetadata(self._element_id)
         return convert_grpc_string_metadata(response)
 
@@ -86,7 +89,7 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -94,10 +97,10 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
         ----------
         element_id: ElementId
             The id of the variable.
-        channel: Channel
-            The gRPC channel to use.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(StringArrayDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(StringArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):

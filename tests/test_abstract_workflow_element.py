@@ -42,18 +42,18 @@ class MockWorkflowClientForAbstractWorkflowElementTest:
         return VariableValue()
 
 
-def do_test_element_id(monkeypatch, sut_type, element_id: str):
+def do_test_element_id(monkeypatch, engine, sut_type, element_id: str):
     monkeypatch_client_creation(
         monkeypatch, AbstractWorkflowElement, MockWorkflowClientForAbstractWorkflowElementTest()
     )
-    sut = sut_type(ElementId(id_string=element_id), None)
+    sut = sut_type(ElementId(id_string=element_id), engine=engine)
 
     result = sut.element_id
 
     assert result == element_id
 
 
-def do_test_parent_element_id(monkeypatch, sut_type):
+def do_test_parent_element_id(monkeypatch, engine, sut_type):
     element_id_in_response = "PARENT_ELEMENT_OF_SUT"
     mock_client = MockWorkflowClientForAbstractWorkflowElementTest()
     mock_response = ElementInfo(id=ElementId(id_string=element_id_in_response))
@@ -62,7 +62,7 @@ def do_test_parent_element_id(monkeypatch, sut_type):
         mock_client, "ElementGetParentElement", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         result = sut.parent_element_id
 
@@ -70,7 +70,7 @@ def do_test_parent_element_id(monkeypatch, sut_type):
         mock_grpc_method.assert_called_once_with(sut_element_id)
 
 
-def do_test_name(monkeypatch, sut_type):
+def do_test_name(monkeypatch, engine, sut_type):
     name_in_response = "sut"
     mock_client = MockWorkflowClientForAbstractWorkflowElementTest()
     mock_response = ElementName(name=name_in_response)
@@ -79,7 +79,7 @@ def do_test_name(monkeypatch, sut_type):
         mock_client, "ElementGetName", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         result = sut.name
 
@@ -87,7 +87,7 @@ def do_test_name(monkeypatch, sut_type):
         mock_grpc_method.assert_called_once_with(sut_element_id)
 
 
-def do_test_full_name(monkeypatch, sut_type):
+def do_test_full_name(monkeypatch, engine, sut_type):
     name_in_response = "Model.Internals.Widgets.sut"
     mock_client = MockWorkflowClientForAbstractWorkflowElementTest()
     mock_response = ElementName(name=name_in_response)
@@ -96,7 +96,7 @@ def do_test_full_name(monkeypatch, sut_type):
         mock_client, "ElementGetFullName", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         result = sut.full_name
 
@@ -104,7 +104,9 @@ def do_test_full_name(monkeypatch, sut_type):
         mock_grpc_method.assert_called_once_with(sut_element_id)
 
 
-def do_test_parent_element(monkeypatch, sut_type, type_in_response, expected_parent_wrapper_type):
+def do_test_parent_element(
+    monkeypatch, engine, sut_type, type_in_response, expected_parent_wrapper_type
+):
     mock_client = MockWorkflowClientForAbstractWorkflowElementTest()
     id_in_response = "PARENT_OF_SUT_ELEMENT"
     sut_element_id = ElementId(id_string="SUT_ELEMENT_ID")
@@ -113,7 +115,7 @@ def do_test_parent_element(monkeypatch, sut_type, type_in_response, expected_par
         mock_client, "ElementGetParentElement", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         result = sut.get_parent_element()
 
@@ -122,7 +124,7 @@ def do_test_parent_element(monkeypatch, sut_type, type_in_response, expected_par
         mock_grpc_method.assert_called_once_with(sut_element_id)
 
 
-def do_test_get_property_names(monkeypatch, sut_type) -> None:
+def do_test_get_property_names(monkeypatch, engine, sut_type) -> None:
     names_in_response = {
         "Model.Internals.Widgets.sut.lowerBound",
         "Model.Internals.Widgets.sut.upperBound",
@@ -134,7 +136,7 @@ def do_test_get_property_names(monkeypatch, sut_type) -> None:
         mock_client, "PropertyOwnerGetProperties", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_get_prop_names, None)
+        sut = sut_type(sut_get_prop_names, engine=engine)
 
         result = sut.get_property_names()
 
@@ -142,7 +144,7 @@ def do_test_get_property_names(monkeypatch, sut_type) -> None:
         mock_grpc_method.assert_called_once_with(sut_get_prop_names)
 
 
-def do_test_get_properties(monkeypatch, sut_type) -> None:
+def do_test_get_properties(monkeypatch, engine, sut_type) -> None:
     names_in_response = {
         "Model.Internals.Widgets.sut.lowerBound",
         "Model.Internals.Widgets.sut.upperBound",
@@ -159,7 +161,7 @@ def do_test_get_properties(monkeypatch, sut_type) -> None:
             mock_client, "PropertyOwnerGetPropertyValue", return_value=value_response
         ):
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-            sut = sut_type(sut_get_prop_names, None)
+            sut = sut_type(sut_get_prop_names, engine=engine)
 
             result = sut.get_properties()
 
@@ -174,7 +176,11 @@ def do_test_get_properties(monkeypatch, sut_type) -> None:
             mock_grpc_method.assert_called_once_with(sut_get_prop_names)
 
 
-def test_parent_element(monkeypatch) -> None:
+def test_parent_element(monkeypatch, engine) -> None:
     do_test_parent_element(
-        monkeypatch, AbstractWorkflowElement, ElementType.ELEMTYPE_UNKNOWN, AbstractWorkflowElement
+        monkeypatch,
+        engine,
+        AbstractWorkflowElement,
+        ElementType.ELEMTYPE_UNKNOWN,
+        AbstractWorkflowElement,
     )
