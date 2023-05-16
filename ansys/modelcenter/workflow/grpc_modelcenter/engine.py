@@ -8,7 +8,7 @@ import ansys.platform.instancemanagement as pypim
 import grpc
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import IEngine, IFormat, IWorkflow, WorkflowType
+from ansys.modelcenter.workflow.api import IEngine, WorkflowType
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 
 from .format import Format
@@ -120,7 +120,7 @@ class Engine(IEngine):
         {grpc.StatusCode.RESOURCE_EXHAUSTED: WorkflowAlreadyLoadedError, **WRAP_INVALID_ARG}
     )
     @overrides
-    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
+    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         request = eng_msg.NewWorkflowRequest(
             path=name,
             workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
@@ -147,8 +147,8 @@ class Engine(IEngine):
         return Workflow(response.workflow_id, request.path, self)
 
     @overrides
-    def get_formatter(self, fmt: str) -> IFormat:
-        formatter: Format = Format(fmt, self._channel)
+    def get_formatter(self, fmt: str) -> Format:
+        formatter: Format = Format(fmt, self)
         return formatter
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
@@ -174,7 +174,7 @@ class Engine(IEngine):
             request.double_value = value
         else:
             request.str_value = value
-        response: eng_msg.SetPreferenceResponse = self._stub.EngineSetPreference(request)
+        self._stub.EngineSetPreference(request)
 
     @interpret_rpc_error()
     @overrides

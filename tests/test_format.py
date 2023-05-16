@@ -60,7 +60,7 @@ class MockEngineClientForFormatTest:
     def FormatDoubleToString(
         self, request: format_messages.FormatFromDoubleRequest
     ) -> format_messages.FormatToStringResponse:
-        result: str = self._real_to_str_responses[request.original]
+        result: str = self._real_to_str_responses[float64(request.original)]
         if request.format == "mockFormat":
             result = "ඞ" + result
         return format_messages.FormatToStringResponse(result=result)
@@ -84,7 +84,7 @@ class MockEngineClientForFormatTest:
     def FormatDoubleToEditString(
         self, request: format_messages.FormatFromDoubleRequest
     ) -> format_messages.FormatToStringResponse:
-        result: str = self._real_to_str_responses[request.original]
+        result: str = self._real_to_str_responses[float64(request.original)]
         if request.format == "mockFormat":
             result = "ඞ" + result
         return format_messages.FormatToStringResponse(result=result)
@@ -173,7 +173,7 @@ def test_string_to_real(setup_function, format_: str, string: str) -> None:
     """Verifies the string_to_real method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
-    mock_client.str_to_real_responses["5.5"] = 5.5
+    mock_client.str_to_real_responses["5.5"] = float64(5.5)
 
     # SUT
     result: float = sut.string_to_real(string)
@@ -215,10 +215,10 @@ def test_real_to_string(setup_function, format_: str, expected: str) -> None:
     """Verifies the real_to_string method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
-    mock_client.real_to_str_responses[5.5] = "5.5"
+    mock_client.real_to_str_responses[float64(5.5)] = "5.5"
 
     # SUT
-    result: str = sut.real_to_string(5.5)
+    result: str = sut.real_to_string(float64(5.5))
 
     # Verification
     assert isinstance(result, str)
@@ -277,10 +277,10 @@ def test_real_to_editable_string(setup_function, format_: str, expected: str) ->
     """Verifies the real_to_editable_string method."""
     # Setup
     sut: mcapi.Format = engine.get_formatter(format_)
-    mock_client.real_to_str_responses[5.5] = "5.5"
+    mock_client.real_to_str_responses[float64(5.5)] = "5.5"
 
     # SUT
-    result: str = sut.real_to_editable_string(5.5)
+    result: str = sut.real_to_editable_string(float64(5.5))
 
     # Verification
     assert isinstance(result, str)
