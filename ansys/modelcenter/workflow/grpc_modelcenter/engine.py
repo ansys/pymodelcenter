@@ -126,7 +126,7 @@ class Engine(IEngine):
             workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
         )
         response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
-        return Workflow(response.workflow_id, name, self._channel)
+        return Workflow(response.workflow_id, name, self)
 
     @interpret_rpc_error(
         {
@@ -144,7 +144,7 @@ class Engine(IEngine):
             connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
         )
         response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
-        return Workflow(response.workflow_id, request.path, self._channel)
+        return Workflow(response.workflow_id, request.path, self)
 
     @overrides
     def get_formatter(self, fmt: str) -> IFormat:
