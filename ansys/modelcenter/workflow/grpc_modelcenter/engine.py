@@ -3,7 +3,7 @@ from os import PathLike
 from string import Template
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
-from ansys.engineeringworkflow.api import IWorkflowInstance, WorkflowEngineInfo
+from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
 import grpc
 from overrides import overrides

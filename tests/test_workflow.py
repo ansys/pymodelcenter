@@ -710,9 +710,9 @@ def test_halt(setup_function) -> None:
 
 def test_auto_link(setup_function) -> None:
     # Execute
-    links: List[mcapi.IDatapinLink] = list(workflow.auto_link(
-        "Workflow.source_comp", "Workflow.dest_comp"
-    ))
+    links: List[mcapi.IDatapinLink] = list(
+        workflow.auto_link("Workflow.source_comp", "Workflow.dest_comp")
+    )
 
     # Verify
     assert len(links) == 2
@@ -946,8 +946,8 @@ def test_create_link_with_objects(setup_function) -> None:
 @pytest.mark.parametrize("reset", [True, False])
 def test_run_synchronous(setup_function, reset: bool) -> None:
     # Using a dict as an ordered set
-    validation_names = {"DESIRED_OUTPUT_VAR_1", "DESIRED_OUTPUT_VAR_2"}
-    collection_names = {"DESIRED_INTERMEDIATE_VAR_1", "DESIRED_OUTPUT_VAR_2"}
+    validation_names = {"DESIRED_OUTPUT_VAR_1": None, "DESIRED_OUTPUT_VAR_2": None}
+    collection_names = {"DESIRED_INTERMEDIATE_VAR_1": None, "DESIRED_OUTPUT_VAR_2": None}
     inputs: Mapping[str, atvi.VariableState] = {
         "INPUT_VAR_1": atvi.VariableState(is_valid=True, value=atvi.IntegerValue(47)),
         "INPUT_VAR_2": atvi.VariableState(is_valid=False, value=atvi.RealValue(-867.5309)),
@@ -968,12 +968,13 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
     )
     mock_client.workflow_run_response = wkf_msgs.WorkflowRunResponse()
 
+    # noinspection PyTypeChecker
     result = workflow.run(inputs, reset, validation_names, collection_names)
 
     expected_request = wkf_msgs.WorkflowRunRequest(
         target=wkf_msgs.WorkflowId(id="123"),
         reset=reset,
-        validation_names=["DESIRED_OUTPUT_VAR_2", "DESIRED_OUTPUT_VAR_1"],
+        validation_names=["DESIRED_OUTPUT_VAR_1", "DESIRED_OUTPUT_VAR_2"],
         collection_names=["DESIRED_INTERMEDIATE_VAR_1", "DESIRED_OUTPUT_VAR_2"],
         inputs={
             "INPUT_VAR_1": var_msgs.VariableState(
