@@ -194,18 +194,22 @@ class MockWorkflowClientForWorkflowTest:
             response.value.bool_value = False
         elif request.target_name.element_full_name.name == "model.booleans":
             response.value.bool_array_value.values.extend([True, False, True])
+            response.value.bool_array_value.dims.dims.extend([3])
         elif request.target_name.element_full_name.name == "model.integer":
             response.value.int_value = 42
         elif request.target_name.element_full_name.name == "model.integers":
             response.value.int_array_value.values.extend([86, 42, 1])
+            response.value.int_array_value.dims.dims.extend([3])
         elif request.target_name.element_full_name.name == "model.double":
             response.value.double_value = 3.14
         elif request.target_name.element_full_name.name == "model.doubles":
             response.value.double_array_value.values.extend([1.414, 0.717, 3.14])
+            response.value.double_array_value.dims.dims.extend([3])
         elif request.target_name.element_full_name.name == "model.string":
             response.value.string_value = "sVal"
         elif request.target_name.element_full_name.name == "model.strings":
             response.value.string_array_value.values.extend(["one", "two", "three"])
+            response.value.string_array_value.dims.dims.extend([3])
         elif request.target_name.element_full_name.name == "model.file":
             pass
         elif request.target_name.element_full_name.name == "model.files":
@@ -517,11 +521,14 @@ def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue)
 
 def test_get_value_unknown(setup_function) -> None:
     # SUT
-    with pytest.raises(TypeError) as err:
+    with pytest.raises(ValueError) as err:
         result: var_msgs.VariableState = workflow.get_value("model.unknown")
 
     # Verify
-    assert err.value.args[0] == "Unsupported type was returned: <class 'NoneType'>"
+    assert (
+        err.value.args[0]
+        == "The provided gRPC value could not be converted to a common variable interop value."
+    )
 
 
 # @pytest.mark.parametrize("schedular", ["forward", "backward", "mixed", "script"])

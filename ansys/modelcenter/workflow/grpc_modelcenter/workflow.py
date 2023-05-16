@@ -1,23 +1,10 @@
 """Implementation of Workflow."""
 import os
-from typing import (
-    TYPE_CHECKING,
-    AbstractSet,
-    Any,
-    Collection,
-    List,
-    Mapping,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
 
 import ansys.engineeringworkflow.api as engapi
 import ansys.tools.variableinterop as atvi
 import grpc
-import numpy as np
-from numpy.typing import ArrayLike
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
@@ -215,35 +202,7 @@ class Workflow(wfapi.IWorkflow):
             )
         )
         response: var_val_msg.VariableState = self._stub.VariableGetState(request)
-
-        def convert(val: ArrayLike, dims: ArrayLike, val_type: Type) -> atvi.IVariableValue:
-            return val_type(shape_=dims, values=np.array(val).flatten())
-
-        attr: Optional[str] = response.value.WhichOneof("value")
-        value: Any = None
-        if attr is not None:
-            value = getattr(response.value, attr)
-        atvi_value: atvi.IVariableValue
-        if isinstance(value, bool):
-            atvi_value = atvi.BooleanValue(value)
-        elif isinstance(value, float):
-            atvi_value = atvi.RealValue(value)
-        elif isinstance(value, int):
-            atvi_value = atvi.IntegerValue(value)
-        elif isinstance(value, str):
-            atvi_value = atvi.StringValue(value)
-        elif isinstance(value, var_val_msg.DoubleArrayValue):
-            atvi_value = convert(value.values, value.dims.dims, atvi.RealArrayValue)
-        elif isinstance(value, var_val_msg.IntegerArrayValue):
-            atvi_value = convert(value.values, value.dims.dims, atvi.IntegerArrayValue)
-        elif isinstance(value, var_val_msg.BooleanArrayValue):
-            atvi_value = convert(value.values, value.dims.dims, atvi.BooleanArrayValue)
-        elif isinstance(value, var_val_msg.StringArrayValue):
-            atvi_value = convert(value.values, value.dims.dims, atvi.StringArrayValue)
-        else:
-            # unsupported type (should be impossible)
-            raise TypeError(f"Unsupported type was returned: {type(value)}")
-        return atvi.VariableState(atvi_value, response.is_valid)
+        return atvi.VariableState(convert_grpc_value_to_atvi(response.value), response.is_valid)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
