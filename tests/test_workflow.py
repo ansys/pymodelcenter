@@ -155,6 +155,12 @@ class MockWorkflowClientForWorkflowTest:
         elif request.element_full_name.name == "model.strings":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_STRING_ARRAY
+        elif request.element_full_name.name == "model.file":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_FILE
+        elif request.element_full_name.name == "model.files":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_FILE_ARRAY
         elif request.element_full_name.name == "model.unknown":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_UNKNOWN
@@ -647,7 +653,6 @@ def test_get_string_meta_data(setup_function, is_array: bool) -> None:
 
 
 @pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
-@pytest.mark.skip("Re-enable when file support added to WorkflowGetElementByNameResponse")
 def test_get_file_meta_data(setup_function, is_array: bool) -> None:
     # Setup
     var = "model.files" if is_array else "model.file"

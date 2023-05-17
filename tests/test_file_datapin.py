@@ -1,4 +1,5 @@
-from typing import Type, Union
+from os import PathLike
+from typing import Optional, Type, Union
 import unittest
 
 import ansys.tools.variableinterop as atvi
@@ -7,18 +8,16 @@ import pytest
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin import (
-    BooleanArrayDatapin,
-    BooleanDatapin,
-)
+from ansys.modelcenter.workflow.grpc_modelcenter.file_datapin import FileArrayDatapin, FileDatapin
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     ArrayDimensions,
-    BooleanArrayValue,
-    BooleanVariableMetadata,
-    SetBooleanArrayValueRequest,
-    SetBooleanValueRequest,
-    SetBooleanVariableMetadataRequest,
+    FileArrayValue,
+    FileValue,
+    FileVariableMetadata,
+    SetFileArrayValueRequest,
+    SetFileValueRequest,
+    SetFileVariableMetadataRequest,
     SetMetadataResponse,
     SetVariableValueResponse,
     VariableState,
@@ -39,54 +38,71 @@ from .test_datapin import (
 )
 
 
-class MockWorkflowClientForBooleanVarTest:
+class MockWorkflowClientForFileVarTest:
     def __init__(self):
         pass
 
-    def BooleanVariableSetMetadata(
-        self, request: SetBooleanVariableMetadataRequest
+    def FileVariableSetMetadata(
+        self, request: SetFileVariableMetadataRequest
     ) -> SetMetadataResponse:
         return SetMetadataResponse()
 
-    def BooleanVariableGetMetadata(self, request: ElementId) -> BooleanVariableMetadata:
-        return BooleanVariableMetadata()
+    def FileVariableGetMetadata(self, request: ElementId) -> FileVariableMetadata:
+        return FileVariableMetadata()
 
-    def BooleanVariableSetValue(self, request: SetBooleanValueRequest) -> SetVariableValueResponse:
+    def FileVariableSetValue(self, request: SetFileValueRequest) -> SetVariableValueResponse:
         return SetVariableValueResponse()
 
-    def BooleanArraySetValue(self, request: SetBooleanValueRequest) -> SetVariableValueResponse:
+    def FileArraySetValue(self, request: SetFileValueRequest) -> SetVariableValueResponse:
         return SetVariableValueResponse()
+
+
+class MockFileValue(atvi.FileValue):
+    def __init__(self, path: Optional[str] = None) -> None:
+        super(MockFileValue, self).__init__(
+            original_path=path, value_id=None, encoding=None, mime_type=None
+        )
+
+    @property
+    def actual_content_file_name(self) -> Optional[PathLike]:
+        return self._original_path
+
+    def _has_content(self) -> bool:
+        return self._original_path is not None
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, MockFileValue) and other._original_path == self._original_path
 
 
 @pytest.mark.parametrize(
     "description_string,sut_type,expected_metadata_type",
     [
-        ("", BooleanDatapin, atvi.BooleanMetadata),
-        ("This is a mock datapin description.", BooleanDatapin, atvi.BooleanMetadata),
-        ("", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
-        ("This is a mock datapin description.", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
+        ("", FileDatapin, atvi.FileMetadata),
+        ("This is a mock datapin description.", FileDatapin, atvi.FileMetadata),
+        ("", FileArrayDatapin, atvi.FileArrayMetadata),
+        ("This is a mock datapin description.", FileArrayDatapin, atvi.FileArrayMetadata),
     ],
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
     engine,
     description_string: str,
-    sut_type: Union[Type[BooleanDatapin], Type[BooleanArrayDatapin]],
-    expected_metadata_type: Union[Type[atvi.BooleanMetadata], Type[atvi.BooleanArrayMetadata]],
-):
+    sut_type: Union[Type[FileDatapin], Type[FileArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.FileMetadata], Type[atvi.FileArrayMetadata]],
+) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
-    mock_response = BooleanVariableMetadata()
+    mock_client = MockWorkflowClientForFileVarTest()
+    mock_response = FileVariableMetadata()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response.base_metadata.description = description_string
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableGetMetadata", return_value=mock_response
+        mock_client, "FileVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, engine=engine)
 
         # Execute
-        result: atvi.BooleanMetadata = sut.get_metadata()
+        result: atvi.FileMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -100,26 +116,26 @@ def test_retrieved_metadata_should_include_description(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanDatapin, atvi.BooleanMetadata), (BooleanArrayDatapin, atvi.BooleanArrayMetadata)],
+    [(FileDatapin, atvi.FileMetadata), (FileArrayDatapin, atvi.FileArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
     engine,
-    sut_type: Union[Type[BooleanDatapin], Type[BooleanArrayDatapin]],
-    expected_metadata_type: Union[Type[atvi.BooleanMetadata], Type[atvi.BooleanArrayMetadata]],
-):
+    sut_type: Union[Type[FileDatapin], Type[FileArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.FileMetadata], Type[atvi.FileArrayMetadata]],
+) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
-    mock_response = BooleanVariableMetadata()
+    mock_client = MockWorkflowClientForFileVarTest()
+    mock_response = FileVariableMetadata()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableGetMetadata", return_value=mock_response
+        mock_client, "FileVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, engine)
 
         # Execute
-        result: atvi.BooleanMetadata = sut.get_metadata()
+        result: atvi.FileMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -133,17 +149,17 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanDatapin, atvi.BooleanMetadata), (BooleanArrayDatapin, atvi.BooleanArrayMetadata)],
+    [(FileDatapin, atvi.FileMetadata), (FileArrayDatapin, atvi.FileArrayMetadata)],
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
     engine,
-    sut_type: Union[Type[BooleanDatapin], Type[BooleanArrayDatapin]],
-    expected_metadata_type: Union[Type[atvi.BooleanMetadata], Type[atvi.BooleanArrayMetadata]],
-):
+    sut_type: Union[Type[FileDatapin], Type[FileArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.FileMetadata], Type[atvi.FileArrayMetadata]],
+) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
-    mock_response = BooleanVariableMetadata()
+    mock_client = MockWorkflowClientForFileVarTest()
+    mock_response = FileVariableMetadata()
     mock_response.base_metadata.custom_metadata["test_integer_value"].MergeFrom(
         VariableValue(int_value=47)
     )
@@ -152,13 +168,13 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
     )
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableGetMetadata", return_value=mock_response
+        mock_client, "FileVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, engine)
 
         # Execute
-        result: atvi.BooleanMetadata = sut.get_metadata()
+        result: atvi.FileMetadata = sut.get_metadata()
 
         # Verify
         mock_grpc_method.assert_called_once_with(sut_element_id)
@@ -176,21 +192,21 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 
 @pytest.mark.parametrize(
     "sut_type,expected_metadata_type",
-    [(BooleanDatapin, atvi.BooleanMetadata), (BooleanArrayDatapin, atvi.BooleanArrayMetadata)],
+    [(FileDatapin, atvi.FileMetadata), (FileArrayDatapin, atvi.FileArrayMetadata)],
 )
 def test_retrieved_metadata_includes_unsupported_type(
     monkeypatch,
     engine,
-    sut_type: Union[Type[BooleanDatapin], Type[BooleanArrayDatapin]],
-    expected_metadata_type: Union[Type[atvi.BooleanMetadata], Type[atvi.BooleanArrayMetadata]],
-):
+    sut_type: Union[Type[FileDatapin], Type[FileArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.FileMetadata], Type[atvi.FileArrayMetadata]],
+) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
-    mock_response = BooleanVariableMetadata()
+    mock_client = MockWorkflowClientForFileVarTest()
+    mock_response = FileVariableMetadata()
     mock_response.base_metadata.custom_metadata["test_unsupported"].MergeFrom(VariableValue())
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableGetMetadata", return_value=mock_response
+        mock_client, "FileVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, engine)
@@ -206,23 +222,23 @@ def test_retrieved_metadata_includes_unsupported_type(
 @pytest.mark.parametrize(
     "sut_type",
     [
-        BooleanDatapin,
-        BooleanArrayDatapin,
+        FileDatapin,
+        FileArrayDatapin,
     ],
 )
 def test_set_metadata_invalid_custom_metadata(
-    monkeypatch, engine, sut_type: Union[Type[BooleanDatapin], Type[BooleanArrayDatapin]]
-):
+    monkeypatch, engine, sut_type: Union[Type[FileDatapin], Type[FileArrayDatapin]]
+) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
+    mock_client = MockWorkflowClientForFileVarTest()
     mock_response = SetMetadataResponse()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableSetMetadata", return_value=mock_response
+        mock_client, "FileVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, engine)
-        new_metadata = atvi.FileMetadata()
+        new_metadata = atvi.BooleanMetadata()
 
         # Execute
         with pytest.raises(TypeError):
@@ -235,25 +251,25 @@ def test_set_metadata_invalid_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", BooleanDatapin, atvi.BooleanMetadata),
-        ("This is a mock datapin description.", BooleanDatapin, atvi.BooleanMetadata),
-        ("", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
-        ("This is a mock datapin description.", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
+        ("", FileDatapin, atvi.FileMetadata),
+        ("This is a mock datapin description.", FileDatapin, atvi.FileMetadata),
+        ("", FileArrayDatapin, atvi.FileArrayMetadata),
+        ("This is a mock datapin description.", FileArrayDatapin, atvi.FileArrayMetadata),
     ],
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
     engine,
     description: str,
-    sut_type: Union[Type[BooleanDatapin], Type[BooleanArrayDatapin]],
-    metadata_type: Union[Type[atvi.BooleanMetadata], Type[atvi.BooleanArrayMetadata]],
-):
+    sut_type: Union[Type[FileDatapin], Type[FileArrayDatapin]],
+    metadata_type: Union[Type[atvi.FileMetadata], Type[atvi.FileArrayMetadata]],
+) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
+    mock_client = MockWorkflowClientForFileVarTest()
     mock_response = SetMetadataResponse()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableSetMetadata", return_value=mock_response
+        mock_client, "FileVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, engine)
@@ -264,7 +280,7 @@ def test_set_metadata_empty_custom_metadata(
         sut.set_metadata(new_metadata)
 
         # Verify
-        expected_request = SetBooleanVariableMetadataRequest(target=sut_element_id)
+        expected_request = SetFileVariableMetadataRequest(target=sut_element_id)
         expected_request.new_metadata.base_metadata.description = description
         mock_grpc_method.assert_called_once_with(expected_request)
 
@@ -272,25 +288,25 @@ def test_set_metadata_empty_custom_metadata(
 @pytest.mark.parametrize(
     "description,sut_type,metadata_type",
     [
-        ("", BooleanDatapin, atvi.BooleanMetadata),
-        ("This is a mock datapin description.", BooleanDatapin, atvi.BooleanMetadata),
-        ("", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
-        ("This is a mock datapin description.", BooleanArrayDatapin, atvi.BooleanArrayMetadata),
+        ("", FileDatapin, atvi.FileMetadata),
+        ("This is a mock datapin description.", FileDatapin, atvi.FileMetadata),
+        ("", FileArrayDatapin, atvi.FileArrayMetadata),
+        ("This is a mock datapin description.", FileArrayDatapin, atvi.FileArrayMetadata),
     ],
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
     engine,
     description: str,
-    sut_type: Union[Type[BooleanDatapin], Type[BooleanArrayDatapin]],
-    metadata_type: Union[Type[atvi.BooleanMetadata], Type[atvi.BooleanArrayMetadata]],
-):
+    sut_type: Union[Type[FileDatapin], Type[FileArrayDatapin]],
+    metadata_type: Union[Type[atvi.FileMetadata], Type[atvi.FileArrayMetadata]],
+) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
+    mock_client = MockWorkflowClientForFileVarTest()
     mock_response = SetMetadataResponse()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableSetMetadata", return_value=mock_response
+        mock_client, "FileVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(sut_element_id, engine)
@@ -303,7 +319,7 @@ def test_set_metadata_populated_custom_metadata(
         sut.set_metadata(new_metadata)
 
         # Verify
-        expected_request = SetBooleanVariableMetadataRequest(target=sut_element_id)
+        expected_request = SetFileVariableMetadataRequest(target=sut_element_id)
         expected_request.new_metadata.base_metadata.description = description
         expected_request.new_metadata.base_metadata.custom_metadata["int_value"].MergeFrom(
             VariableValue(int_value=47)
@@ -316,25 +332,26 @@ def test_set_metadata_populated_custom_metadata(
 
 @pytest.mark.parametrize(
     "set_value,expected_value_in_request",
-    [(atvi.BooleanValue(True), True), (atvi.BooleanValue(False), False)],
+    [(MockFileValue(), MockFileValue()), (MockFileValue("a.path"), MockFileValue("a.path"))],
 )
-def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_request):
+@pytest.mark.skip("Set not yet implemented")
+def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
+    mock_client = MockWorkflowClientForFileVarTest()
     mock_response = SetVariableValueResponse()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableSetValue", retun_value=mock_response
+        mock_client, "FileVariableSetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanDatapin(sut_element_id, engine)
+        sut = FileDatapin(sut_element_id, engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute
         sut.set_value(new_value)
 
         # Verify
-        expected_request = SetBooleanValueRequest(
+        expected_request = SetFileValueRequest(
             target=sut_element_id, new_value=expected_value_in_request
         )
         mock_grpc_method.assert_called_once_with(expected_request)
@@ -343,25 +360,26 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
 @pytest.mark.parametrize(
     "set_value",
     [
+        atvi.BooleanValue(True),
         atvi.IntegerValue(0),
         atvi.RealValue(0.0),
         atvi.StringValue("False"),
         atvi.IntegerArrayValue(),
         atvi.RealArrayValue(),
-        atvi.BooleanArrayValue(),
+        atvi.FileArrayValue(),
         atvi.StringArrayValue(),
     ],
 )
-def test_scalar_set_disallowed(monkeypatch, engine, set_value):
+def test_scalar_set_disallowed(monkeypatch, engine, set_value) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
+    mock_client = MockWorkflowClientForFileVarTest()
     mock_response = SetVariableValueResponse()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanVariableSetValue", return_value=mock_response
+        mock_client, "FileVariableSetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanDatapin(sut_element_id, engine)
+        sut = FileDatapin(sut_element_id, engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -376,32 +394,39 @@ def test_scalar_set_disallowed(monkeypatch, engine, set_value):
     "set_value,expected_value_in_request",
     [
         (
-            atvi.BooleanArrayValue(shape_=(0,)),
-            BooleanArrayValue(dims=ArrayDimensions(dims=[0]), values=[]),
+            atvi.FileArrayValue(shape_=(0,)),
+            FileArrayValue(dims=ArrayDimensions(dims=[0]), values=[]),
         ),
         (
-            atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]),
-            BooleanArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]),
+            atvi.FileArrayValue(
+                shape_=(2, 2),
+                values=[[FileValue(), FileValue()], [FileValue(), FileValue()]],
+            ),
+            FileArrayValue(
+                dims=ArrayDimensions(dims=[2, 2]),
+                values=[FileValue(), FileValue(), FileValue(), FileValue()],
+            ),
         ),
     ],
 )
-def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_request):
+@pytest.mark.skip("Set not yet implemented")
+def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
+    mock_client = MockWorkflowClientForFileVarTest()
     mock_response = SetVariableValueResponse()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanArraySetValue", retun_value=mock_response
+        mock_client, "FileArraySetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanArrayDatapin(sut_element_id, engine)
+        sut = FileArrayDatapin(sut_element_id, engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute
         sut.set_value(new_value)
 
         # Verify
-        expected_request = SetBooleanArrayValueRequest(
+        expected_request = SetFileArrayValueRequest(
             target=sut_element_id, new_value=expected_value_in_request
         )
         mock_grpc_method.assert_called_once_with(expected_request)
@@ -410,25 +435,26 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
 @pytest.mark.parametrize(
     "set_value",
     [
+        atvi.BooleanValue(True),
         atvi.IntegerValue(0),
         atvi.RealValue(0.0),
-        atvi.BooleanValue(False),
+        MockFileValue(),
         atvi.StringValue("False"),
         atvi.IntegerArrayValue(),
         atvi.RealArrayValue(),
         atvi.StringArrayValue(),
     ],
 )
-def test_array_set_disallowed(monkeypatch, engine, set_value):
+def test_array_set_disallowed(monkeypatch, engine, set_value) -> None:
     # Set up
-    mock_client = MockWorkflowClientForBooleanVarTest()
+    mock_client = MockWorkflowClientForFileVarTest()
     mock_response = SetVariableValueResponse()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "BooleanArraySetValue", return_value=mock_response
+        mock_client, "FileArraySetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = BooleanArrayDatapin(sut_element_id, engine)
+        sut = FileArrayDatapin(sut_element_id, engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -439,107 +465,137 @@ def test_array_set_disallowed(monkeypatch, engine, set_value):
         mock_grpc_method.assert_not_called()
 
 
-def test_scalar_get_type(monkeypatch, engine):
+def test_scalar_get_type(monkeypatch, engine) -> None:
     do_get_type_test(
-        monkeypatch, engine, BooleanDatapin, VariableType.VARTYPE_BOOLEAN, atvi.VariableType.BOOLEAN
+        monkeypatch, engine, FileDatapin, VariableType.VARTYPE_FILE, atvi.VariableType.FILE
     )
 
 
-def test_array_get_type(monkeypatch, engine):
+def test_array_get_type(monkeypatch, engine) -> None:
     do_get_type_test(
         monkeypatch,
         engine,
-        BooleanArrayDatapin,
-        VariableType.VARTYPE_BOOLEAN_ARRAY,
-        atvi.VariableType.BOOLEAN_ARRAY,
+        FileArrayDatapin,
+        VariableType.VARTYPE_FILE_ARRAY,
+        atvi.VariableType.FILE_ARRAY,
     )
 
 
 @pytest.mark.parametrize(
     "value_in_response,validity_in_response,expected_atvi_state",
     [
-        (True, True, atvi.VariableState(atvi.BooleanValue(True), True)),
-        (True, False, atvi.VariableState(atvi.BooleanValue(True), False)),
-        (False, True, atvi.VariableState(atvi.BooleanValue(False), True)),
-        (False, False, atvi.VariableState(atvi.BooleanValue(False), False)),
+        (FileValue(), True, atvi.VariableState(MockFileValue(""), True)),
+        (FileValue(), False, atvi.VariableState(MockFileValue(""), False)),
+        (FileValue(), True, atvi.VariableState(MockFileValue(""), True)),
+        (FileValue(), False, atvi.VariableState(MockFileValue(""), False)),
     ],
 )
 def test_scalar_get_state(
     monkeypatch, engine, value_in_response, validity_in_response, expected_atvi_state
-):
+) -> None:
+    def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
+        return MockFileValue(str(to_read))
+
+    monkeypatch.setattr(atvi.NonManagingFileScope, "read_from_file", mock_read)
+
     do_get_state_test(
         monkeypatch,
         engine,
-        BooleanDatapin,
+        FileDatapin,
         VariableState(
-            is_valid=validity_in_response, value=VariableValue(bool_value=value_in_response)
+            is_valid=validity_in_response, value=VariableValue(file_value=value_in_response)
         ),
         expected_atvi_state,
     )
 
 
-def test_scalar_get_state_with_hid(monkeypatch, engine):
-    do_get_state_test_with_hid(monkeypatch, engine, BooleanDatapin)
+def test_scalar_get_state_with_hid(monkeypatch, engine) -> None:
+    do_get_state_test_with_hid(monkeypatch, engine, FileDatapin)
 
 
 @pytest.mark.parametrize(
     "value_in_response,validity_in_response,expected_atvi_state",
     [
         (
-            BooleanArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]),
+            FileArrayValue(
+                dims=ArrayDimensions(dims=[2, 2]),
+                values=[FileValue(), FileValue(), FileValue(), FileValue()],
+            ),
             True,
             atvi.VariableState(
-                atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), True
+                atvi.FileArrayValue(
+                    shape_=(2, 2),
+                    values=[
+                        [MockFileValue(""), MockFileValue("")],
+                        [MockFileValue(""), MockFileValue("")],
+                    ],
+                ),
+                True,
             ),
         ),
         (
-            BooleanArrayValue(dims=ArrayDimensions(dims=[2, 2]), values=[False, True, True, False]),
+            FileArrayValue(
+                dims=ArrayDimensions(dims=[2, 2]),
+                values=[FileValue(), FileValue(), FileValue(), FileValue()],
+            ),
             False,
             atvi.VariableState(
-                atvi.BooleanArrayValue(shape_=(2, 2), values=[[False, True], [True, False]]), False
+                atvi.FileArrayValue(
+                    shape_=(2, 2),
+                    values=[
+                        [MockFileValue(""), MockFileValue("")],
+                        [MockFileValue(""), MockFileValue("")],
+                    ],
+                ),
+                False,
             ),
         ),
     ],
 )
 def test_array_get_state(
     monkeypatch, engine, value_in_response, validity_in_response, expected_atvi_state
-):
+) -> None:
+    def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
+        return MockFileValue(str(to_read))
+
+    monkeypatch.setattr(atvi.NonManagingFileScope, "read_from_file", mock_read)
+
     do_get_state_test(
         monkeypatch,
         engine,
-        BooleanArrayDatapin,
+        FileArrayDatapin,
         VariableState(
-            is_valid=validity_in_response, value=VariableValue(bool_array_value=value_in_response)
+            is_valid=validity_in_response, value=VariableValue(file_array_value=value_in_response)
         ),
         expected_atvi_state,
     )
 
 
-def test_array_get_state_with_hid(monkeypatch, engine):
-    do_get_state_test_with_hid(monkeypatch, engine, BooleanArrayDatapin)
+def test_array_get_state_with_hid(monkeypatch, engine) -> None:
+    do_get_state_test_with_hid(monkeypatch, engine, FileArrayDatapin)
 
 
 @pytest.mark.parametrize(
     "sut_type, flag_in_response",
     [
-        (BooleanDatapin, True),
-        (BooleanDatapin, False),
-        (BooleanArrayDatapin, True),
-        (BooleanArrayDatapin, False),
+        (FileDatapin, True),
+        (FileDatapin, False),
+        (FileArrayDatapin, True),
+        (FileArrayDatapin, False),
     ],
 )
-def test_is_input_component(monkeypatch, engine, sut_type, flag_in_response):
+def test_is_input_component(monkeypatch, engine, sut_type, flag_in_response) -> None:
     do_test_is_input_component(monkeypatch, engine, sut_type, flag_in_response)
 
 
 @pytest.mark.parametrize(
     "sut_type, flag_in_response",
     [
-        (BooleanDatapin, True),
-        (BooleanDatapin, False),
-        (BooleanArrayDatapin, True),
-        (BooleanArrayDatapin, False),
+        (FileDatapin, True),
+        (FileDatapin, False),
+        (FileArrayDatapin, True),
+        (FileArrayDatapin, False),
     ],
 )
-def test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response):
+def test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response) -> None:
     do_test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response)

@@ -10,7 +10,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
     ArrayDimensions,
-    FileValue,
     SetMetadataResponse,
     SetStringArrayValueRequest,
     SetStringValueRequest,
@@ -188,9 +187,7 @@ def test_retrieved_metadata_includes_unsupported_type(
     # Set up
     mock_client = MockWorkflowClientForStringVarTest()
     mock_response = StringVariableMetadata()
-    mock_response.base_metadata.custom_metadata["test_unsupported"].MergeFrom(
-        VariableValue(file_value=FileValue())
-    )
+    mock_response.base_metadata.custom_metadata["test_unsupported"].MergeFrom(VariableValue())
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
         mock_client, "StringVariableGetMetadata", return_value=mock_response
