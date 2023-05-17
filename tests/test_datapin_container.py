@@ -20,7 +20,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
-class MockWorkflowClientForAbstractVariableContainerTest:
+class MockWorkflowClientForAbstractDatapinContainerTest:
     def __init__(self) -> None:
         self._name_responses: Dict[str, str] = {}
         self._full_name_responses: Dict[str, str] = {}
@@ -47,7 +47,7 @@ class MockWorkflowClientForAbstractVariableContainerTest:
 
 
 def do_test_get_datapins_empty(monkeypatch, engine, sut_type) -> None:
-    mock_client = MockWorkflowClientForAbstractVariableContainerTest()
+    mock_client = MockWorkflowClientForAbstractDatapinContainerTest()
     no_variables = VariableInfoCollection()
     with unittest.mock.patch.object(
         mock_client, "RegistryGetVariables", return_value=no_variables
@@ -62,7 +62,7 @@ def do_test_get_datapins_empty(monkeypatch, engine, sut_type) -> None:
 def do_test_get_datapins_one_variable(
     monkeypatch, engine, sut_type, var_type, expected_wrapper_type
 ) -> None:
-    mock_client = MockWorkflowClientForAbstractVariableContainerTest()
+    mock_client = MockWorkflowClientForAbstractDatapinContainerTest()
     mock_client.name_responses["VAR_ID_STRING"] = "child_var"
     variable_id = ElementId(id_string="VAR_ID_STRING")
     variables = VariableInfoCollection(
@@ -81,7 +81,7 @@ def do_test_get_datapins_one_variable(
 
 
 def do_test_get_datapins_multiple_variables(monkeypatch, engine, sut_type) -> None:
-    mock_client = MockWorkflowClientForAbstractVariableContainerTest()
+    mock_client = MockWorkflowClientForAbstractDatapinContainerTest()
     mock_client.name_responses["IDVAR_LARRY"] = "larry"
     mock_client.name_responses["IDVAR_MOE"] = "moe"
     mock_client.name_responses["IDVAR_CURLY"] = "curly"
@@ -121,7 +121,7 @@ def do_test_get_datapins_multiple_variables(monkeypatch, engine, sut_type) -> No
 
 
 def do_test_get_groups_empty(monkeypatch, engine, sut_type) -> None:
-    mock_client = MockWorkflowClientForAbstractVariableContainerTest()
+    mock_client = MockWorkflowClientForAbstractDatapinContainerTest()
     no_variables = ElementIdCollection()
     with unittest.mock.patch.object(
         mock_client, "RegistryGetGroups", return_value=no_variables
@@ -134,7 +134,7 @@ def do_test_get_groups_empty(monkeypatch, engine, sut_type) -> None:
 
 
 def do_test_get_groups_one_group(monkeypatch, engine, sut_type) -> None:
-    mock_client = MockWorkflowClientForAbstractVariableContainerTest()
+    mock_client = MockWorkflowClientForAbstractDatapinContainerTest()
     group_id = "GRP_ID_STRING"
     mock_client.name_responses[group_id] = "child_group"
     variables = ElementIdCollection(ids=[ElementId(id_string=group_id)])
@@ -151,7 +151,7 @@ def do_test_get_groups_one_group(monkeypatch, engine, sut_type) -> None:
 
 
 def do_test_get_groups_multiple_groups(monkeypatch, engine, sut_type) -> None:
-    mock_client = MockWorkflowClientForAbstractVariableContainerTest()
+    mock_client = MockWorkflowClientForAbstractDatapinContainerTest()
     mock_client.name_responses["IDGROUP_LARRY"] = "larry"
     mock_client.name_responses["IDGROUP_MOE"] = "moe"
     mock_client.name_responses["IDGROUP_CURLY"] = "curly"

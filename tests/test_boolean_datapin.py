@@ -31,7 +31,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
 )
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
-from .test_variable import (
+from .test_datapin import (
     do_get_state_test,
     do_get_state_test_with_hid,
     do_get_type_test,
