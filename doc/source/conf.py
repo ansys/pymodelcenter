@@ -50,6 +50,8 @@ extensions = [
 intersphinx_mapping = {
     "python": ("https://docs.python.org/dev", None),
     "numpy": ("https://numpy.org/devdocs", None),
+    "grpc": ("https://grpc.github.io/grpc/python/", None),
+    "pypim": ("https://pypim.docs.pyansys.com/", None),
 }
 
 # options affecting autodoc generation
