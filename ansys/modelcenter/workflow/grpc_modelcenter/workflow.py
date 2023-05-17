@@ -138,7 +138,7 @@ class Workflow(wfapi.IWorkflow):
         return {
             elem_id: atvi.VariableState(
                 is_valid=response_var_state.is_valid,
-                value=convert_grpc_value_to_atvi(response_var_state.value),
+                value=convert_grpc_value_to_atvi(response_var_state.value, self._engine.is_local),
             )
             for elem_id, response_var_state in response.results.items()
         }
@@ -202,7 +202,9 @@ class Workflow(wfapi.IWorkflow):
             )
         )
         response: var_val_msg.VariableState = self._stub.VariableGetState(request)
-        return atvi.VariableState(convert_grpc_value_to_atvi(response.value), response.is_valid)
+        return atvi.VariableState(
+            convert_grpc_value_to_atvi(response.value, self._engine.is_local), response.is_valid
+        )
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides

@@ -3,6 +3,7 @@ from typing import Optional, Type, Union
 import unittest
 
 import ansys.tools.variableinterop as atvi
+from grpc_server_test_utils.mock_file_value import MockFileValue
 import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
@@ -55,23 +56,6 @@ class MockWorkflowClientForFileVarTest:
 
     def FileArraySetValue(self, request: SetFileValueRequest) -> SetVariableValueResponse:
         return SetVariableValueResponse()
-
-
-class MockFileValue(atvi.FileValue):
-    def __init__(self, path: Optional[str] = None) -> None:
-        super(MockFileValue, self).__init__(
-            original_path=path, value_id=None, encoding=None, mime_type=None
-        )
-
-    @property
-    def actual_content_file_name(self) -> Optional[PathLike]:
-        return self._original_path
-
-    def _has_content(self) -> bool:
-        return self._original_path is not None
-
-    def __eq__(self, other) -> bool:
-        return isinstance(other, MockFileValue) and other._original_path == self._original_path
 
 
 @pytest.mark.parametrize(

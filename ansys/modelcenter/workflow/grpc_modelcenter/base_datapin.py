@@ -64,7 +64,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
         response = self._client.VariableGetState(ElementIdOrName(target_id=self._element_id))
         interop_value: atvi.IVariableValue
         try:
-            interop_value = convert_grpc_value_to_atvi(response.value)
+            interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
         except ValueError as convert_failure:
             raise aew_api.EngineInternalError(
                 "Unexpected failure converting gRPC value response"
