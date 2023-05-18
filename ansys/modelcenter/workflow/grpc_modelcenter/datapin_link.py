@@ -2,6 +2,7 @@
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
@@ -48,6 +49,21 @@ class DatapinLink(wfapi.IDatapinLink):
         response: workflow_msg.WorkflowBreakLinkResponse = self._stub.WorkflowBreakLink(request)
         if not response.existed:
             raise ValueError("Target id does not exist.")
+
+    @interpret_rpc_error()
+    def _do_suspend_or_resume(self, suspend: bool) -> None:
+        request = workflow_msg.WorkflowSuspendOrResumeLinkRequest(
+            target_link_lhs=elem_msg.ElementId(id_string=self._lhs_id), suspend=suspend
+        )
+        self._stub.WorkflowSuspendOrResumeLink(request)
+
+    @overrides
+    def suspend(self) -> None:
+        self._do_suspend_or_resume(True)
+
+    @overrides
+    def resume(self) -> None:
+        self._do_suspend_or_resume(False)
 
     @property  # type: ignore
     @overrides
