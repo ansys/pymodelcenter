@@ -155,6 +155,12 @@ class MockWorkflowClientForWorkflowTest:
         elif request.element_full_name.name == "model.strings":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_STRING_ARRAY
+        elif request.element_full_name.name == "model.file":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_FILE
+        elif request.element_full_name.name == "model.files":
+            response.type = elem_msgs.ELEMTYPE_VARIABLE
+            response.var_type = var_msgs.VARTYPE_FILE_ARRAY
         elif request.element_full_name.name == "model.unknown":
             response.type = elem_msgs.ELEMTYPE_VARIABLE
             response.var_type = var_msgs.VARTYPE_UNKNOWN
@@ -194,18 +200,22 @@ class MockWorkflowClientForWorkflowTest:
             response.value.bool_value = False
         elif request.target_name.element_full_name.name == "model.booleans":
             response.value.bool_array_value.values.extend([True, False, True])
+            response.value.bool_array_value.dims.dims.extend([3])
         elif request.target_name.element_full_name.name == "model.integer":
             response.value.int_value = 42
         elif request.target_name.element_full_name.name == "model.integers":
             response.value.int_array_value.values.extend([86, 42, 1])
+            response.value.int_array_value.dims.dims.extend([3])
         elif request.target_name.element_full_name.name == "model.double":
             response.value.double_value = 3.14
         elif request.target_name.element_full_name.name == "model.doubles":
             response.value.double_array_value.values.extend([1.414, 0.717, 3.14])
+            response.value.double_array_value.dims.dims.extend([3])
         elif request.target_name.element_full_name.name == "model.string":
             response.value.string_value = "sVal"
         elif request.target_name.element_full_name.name == "model.strings":
             response.value.string_array_value.values.extend(["one", "two", "three"])
+            response.value.string_array_value.dims.dims.extend([3])
         elif request.target_name.element_full_name.name == "model.file":
             pass
         elif request.target_name.element_full_name.name == "model.files":
@@ -299,7 +309,7 @@ Workflow object under test.
 
 
 @pytest.fixture
-def setup_function(monkeypatch):
+def setup_function(monkeypatch, engine) -> None:
     """
     Setup called before each test function in this module.
     """
@@ -320,7 +330,7 @@ def setup_function(monkeypatch):
     monkeypatch_client_creation(monkeypatch, grpcmc.UnsupportedWorkflowElement, mock_client)
 
     global workflow
-    workflow = grpcmc.Workflow(workflow_id="123", file_path="C:\\asdf\\qwerty.pxcz", channel=None)
+    workflow = grpcmc.Workflow(workflow_id="123", file_path="C:\\asdf\\qwerty.pxcz", engine=engine)
 
 
 def test_get_root(setup_function) -> None:
@@ -357,12 +367,12 @@ def test_workflow_close(setup_function) -> None:
     assert mock_client.was_closed
 
 
-def test_workflow_auto_close(setup_function) -> None:
+def test_workflow_auto_close(setup_function, engine) -> None:
     # Setup
     with unittest.mock.patch.object(
         mock_client, "WorkflowClose", return_value=wkf_msgs.WorkflowCloseResponse()
     ) as mock_grpc_method:
-        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz", None) as sut:
+        with grpcmc.Workflow("123", "C:\\asdf\\qwerty.pxcz", engine=engine) as sut:
             # SUT
             pass
 
@@ -517,11 +527,14 @@ def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue)
 
 def test_get_value_unknown(setup_function) -> None:
     # SUT
-    with pytest.raises(TypeError) as err:
+    with pytest.raises(ValueError) as err:
         result: var_msgs.VariableState = workflow.get_value("model.unknown")
 
     # Verify
-    assert err.value.args[0] == "Unsupported type was returned: <class 'NoneType'>"
+    assert (
+        err.value.args[0]
+        == "The provided gRPC value could not be converted to a common variable interop value."
+    )
 
 
 # @pytest.mark.parametrize("schedular", ["forward", "backward", "mixed", "script"])
@@ -640,7 +653,6 @@ def test_get_string_meta_data(setup_function, is_array: bool) -> None:
 
 
 @pytest.mark.parametrize("is_array", [pytest.param(True), pytest.param(False)])
-@pytest.mark.skip("Re-enable when file support added to WorkflowGetElementByNameResponse")
 def test_get_file_meta_data(setup_function, is_array: bool) -> None:
     # Setup
     var = "model.files" if is_array else "model.file"
@@ -710,8 +722,8 @@ def test_halt(setup_function) -> None:
 
 def test_auto_link(setup_function) -> None:
     # Execute
-    links: List[mcapi.IDatapinLink] = workflow.auto_link(
-        "Workflow.source_comp", "Workflow.dest_comp"
+    links: List[mcapi.IDatapinLink] = list(
+        workflow.auto_link("Workflow.source_comp", "Workflow.dest_comp")
     )
 
     # Verify
@@ -722,12 +734,14 @@ def test_auto_link(setup_function) -> None:
     assert links[1].rhs == "2"
 
 
-def test_auto_link_with_objects(setup_function) -> None:
-    source_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_SOURCE_COMP"), None)
-    dest_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_DEST_COMP"), None)
+def test_auto_link_with_objects(setup_function, engine) -> None:
+    source_comp = grpcmc.Component(
+        elem_msgs.ElementId(id_string="WORKFLOW_SOURCE_COMP"), engine=engine
+    )
+    dest_comp = grpcmc.Component(elem_msgs.ElementId(id_string="WORKFLOW_DEST_COMP"), engine=engine)
 
     # Execute
-    links: List[mcapi.IDatapinLink] = workflow.auto_link(source_comp, dest_comp)
+    links: List[mcapi.IDatapinLink] = list(workflow.auto_link(source_comp, dest_comp))
 
     # Verify
     assert len(links) == 2
@@ -745,9 +759,9 @@ def test_create_assembly(setup_function) -> None:
     assert result.element_id == "Model.newAssembly"
 
 
-def test_create_assembly_on_assembly(setup_function) -> None:
+def test_create_assembly_on_assembly(setup_function, engine) -> None:
     # Setup
-    parent = grpcmc.Assembly(element_id=elem_msgs.ElementId(id_string="Model"), channel=None)
+    parent = grpcmc.Assembly(element_id=elem_msgs.ElementId(id_string="Model"), engine=engine)
 
     # Execute
     result: grpcmc.Assembly = workflow.create_assembly("newAssembly", parent)
@@ -801,7 +815,7 @@ def test_create_component(setup_function) -> None:
         assert component.element_id == "zxcv"
 
 
-def test_create_component_parent_object(setup_function) -> None:
+def test_create_component_parent_object(setup_function, engine) -> None:
     # Execute
     response = wkf_msgs.WorkflowCreateComponentResponse(
         created=elem_msgs.ElementId(id_string="zxcv")
@@ -812,7 +826,7 @@ def test_create_component_parent_object(setup_function) -> None:
         component: grpcmc.Component = workflow.create_component(
             server_path="common:\\Functions\\Quadratic",
             name="二次",
-            parent=grpcmc.Assembly(elem_msgs.ElementId(id_string="45df304"), None),
+            parent=grpcmc.Assembly(elem_msgs.ElementId(id_string="45df304"), engine=engine),
             init_string=None,
             av_position=None,
             insert_before=None,
@@ -886,7 +900,7 @@ def test_create_component_after_comp_by_id(setup_function) -> None:
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-def test_create_component_after_comp_by_component(setup_function) -> None:
+def test_create_component_after_comp_by_component(setup_function, engine) -> None:
     # Setup
     response = wkf_msgs.WorkflowCreateComponentResponse()
     with unittest.mock.patch.object(
@@ -901,7 +915,7 @@ def test_create_component_after_comp_by_component(setup_function) -> None:
             init_string=None,
             av_position=None,
             insert_before=grpcmc.Component(
-                element_id=elem_msgs.ElementId(id_string="43q48a93cd300cab"), channel=None
+                element_id=elem_msgs.ElementId(id_string="43q48a93cd300cab"), engine=engine
             ),
         )
 
@@ -930,9 +944,9 @@ def test_create_link(setup_function) -> None:
 
 def test_create_link_with_objects(setup_function) -> None:
     lhs = elem_msgs.ElementId(id_string="INPUTS_VAR1")
-    test_var = grpcmc.RealDatapin(lhs, workflow._channel)
+    test_var = grpcmc.RealDatapin(lhs, workflow._engine)
     rhs = elem_msgs.ElementId(id_string="WORKFLOW_COMP_OUTPUT4")
-    test_eqn_var = grpcmc.RealDatapin(rhs, workflow._channel)
+    test_eqn_var = grpcmc.RealDatapin(rhs, workflow._engine)
 
     # Execute
     workflow.create_link(test_var, test_eqn_var)
@@ -966,6 +980,7 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
     )
     mock_client.workflow_run_response = wkf_msgs.WorkflowRunResponse()
 
+    # noinspection PyTypeChecker
     result = workflow.run(inputs, reset, validation_names, collection_names)
 
     expected_request = wkf_msgs.WorkflowRunRequest(
@@ -1056,10 +1071,10 @@ def test_move_component_names(setup_function):
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-def test_move_component_objects(setup_function):
+def test_move_component_objects(setup_function, engine):
     mock_response = elem_msgs.ElementIndexInParentResponse()
-    mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), None)
-    mock_assembly = grpcmc.Assembly(elem_msgs.ElementId(id_string="ASSY_3948"), None)
+    mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), engine=engine)
+    mock_assembly = grpcmc.Assembly(elem_msgs.ElementId(id_string="ASSY_3948"), engine=engine)
     with unittest.mock.patch.object(
         mock_client, "WorkflowMoveComponent", return_value=mock_response
     ) as mock_grpc_method:

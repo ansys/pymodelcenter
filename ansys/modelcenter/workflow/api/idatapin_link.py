@@ -15,6 +15,25 @@ class IDatapinLink(ABC):
         link. This object becomes invalid and cannot be used after calling this method.
         """
 
+    @abstractmethod
+    def suspend(self) -> None:
+        """
+        Suspend the link.
+
+        Suspending the link causes the engine to behave as if it is not present.
+        This method is idempotent; it is safe to call suspend multiple times even if the link
+        is already suspended.
+        """
+
+    @abstractmethod
+    def resume(self) -> None:
+        """
+        Resume the link if it is suspended.
+
+        This method is idempotent; it is safe to call resume multiple times even if the link is
+        already suspended.
+        """
+
     @property
     @abstractmethod
     def lhs(self) -> str:

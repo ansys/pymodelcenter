@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Type, Union
 import unittest
 
 import ansys.tools.variableinterop as atvi
@@ -25,7 +25,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
 from ansys.modelcenter.workflow.grpc_modelcenter.real_datapin import RealArrayDatapin, RealDatapin
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
-from .test_variable import (
+from .test_datapin import (
     do_get_state_test,
     do_get_state_test_with_hid,
     do_get_type_test,
@@ -64,9 +64,10 @@ class MockWorkflowClientForDoubleVarTest:
 )
 def test_retrieved_metadata_should_include_description(
     monkeypatch,
+    engine,
     description_string: str,
-    sut_type: Union[RealDatapin, RealArrayDatapin],
-    expected_metadata_type: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
+    sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.RealMetadata], Type[atvi.RealArrayMetadata]],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -77,7 +78,7 @@ def test_retrieved_metadata_should_include_description(
         mock_client, "DoubleVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         result: atvi.RealMetadata = sut.get_metadata()
 
@@ -96,8 +97,9 @@ def test_retrieved_metadata_should_include_description(
 )
 def test_retrieved_metadata_should_include_custom_metadata_empty(
     monkeypatch,
-    sut_type: Union[RealDatapin, RealArrayDatapin],
-    expected_metadata_type: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
+    engine,
+    sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.RealMetadata], Type[atvi.RealArrayMetadata]],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -107,7 +109,7 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
         mock_client, "DoubleVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         # Execute
         result: atvi.RealMetadata = sut.get_metadata()
@@ -128,8 +130,9 @@ def test_retrieved_metadata_should_include_custom_metadata_empty(
 )
 def test_retrieved_metadata_should_include_custom_metadata_populated(
     monkeypatch,
-    sut_type: Union[RealDatapin, RealArrayDatapin],
-    expected_metadata_type: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
+    engine,
+    sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.RealMetadata], Type[atvi.RealArrayMetadata]],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -145,7 +148,7 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
         mock_client, "DoubleVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         # Execute
         result: atvi.RealArrayMetadata = sut.get_metadata()
@@ -180,8 +183,9 @@ def test_retrieved_metadata_should_include_custom_metadata_populated(
 )
 def test_retrieved_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Union[RealDatapin, RealArrayDatapin],
-    expected_metadata_type: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
+    engine,
+    sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]],
+    expected_metadata_type: Union[Type[atvi.RealMetadata], Type[atvi.RealArrayMetadata]],
     upper_bound: float,
     set_upper_bound: bool,
     expected_upper_bound: Optional[float],
@@ -201,7 +205,7 @@ def test_retrieved_metadata_should_convert_bounds(
         mock_client, "DoubleVariableGetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
 
         # Execute
         result: atvi.RealMetadata = sut.get_metadata()
@@ -227,7 +231,7 @@ def test_retrieved_metadata_should_convert_bounds(
     ],
 )
 def test_set_metadata_invalid_custom_metadata(
-    monkeypatch, sut_type: Union[RealDatapin, RealArrayDatapin]
+    monkeypatch, engine, sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]]
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -237,7 +241,7 @@ def test_set_metadata_invalid_custom_metadata(
         mock_client, "DoubleVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = atvi.FileMetadata()
 
         # Execute
@@ -259,9 +263,10 @@ def test_set_metadata_invalid_custom_metadata(
 )
 def test_set_metadata_empty_custom_metadata(
     monkeypatch,
+    engine,
     description: str,
-    sut_type: Union[RealDatapin, RealArrayDatapin],
-    metadata_type: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
+    sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]],
+    metadata_type: Union[Type[atvi.RealMetadata], Type[atvi.RealArrayMetadata]],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -271,7 +276,7 @@ def test_set_metadata_empty_custom_metadata(
         mock_client, "DoubleVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = metadata_type()
         new_metadata.description = description
 
@@ -298,9 +303,10 @@ def test_set_metadata_empty_custom_metadata(
 )
 def test_set_metadata_populated_custom_metadata(
     monkeypatch,
+    engine,
     description: str,
-    sut_type: Union[RealDatapin, RealArrayDatapin],
-    metadata_type: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
+    sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]],
+    metadata_type: Union[Type[atvi.RealMetadata], Type[atvi.RealArrayMetadata]],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -310,7 +316,7 @@ def test_set_metadata_populated_custom_metadata(
         mock_client, "DoubleVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = metadata_type()
         new_metadata.description = description
         new_metadata.custom_metadata["int_value"] = atvi.IntegerValue(47)
@@ -350,8 +356,9 @@ def test_set_metadata_populated_custom_metadata(
 )
 def test_set_metadata_should_convert_bounds(
     monkeypatch,
-    sut_type: Union[RealDatapin, RealArrayDatapin],
-    metadata_type: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
+    engine,
+    sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]],
+    metadata_type: Union[Type[atvi.RealMetadata], Type[atvi.RealArrayMetadata]],
     original_lower_bound: Optional[float],
     expected_lower_bound: float,
     expected_lower_bound_set: bool,
@@ -367,7 +374,7 @@ def test_set_metadata_should_convert_bounds(
         mock_client, "DoubleVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = metadata_type()
         new_metadata.lower_bound = original_lower_bound
         new_metadata.upper_bound = original_upper_bound
@@ -397,8 +404,9 @@ def test_set_metadata_should_convert_bounds(
 )
 def test_set_metadata_populated_enums(
     monkeypatch,
-    sut_type: Union[RealDatapin, RealArrayDatapin],
-    metadata_type: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
+    engine,
+    sut_type: Union[Type[RealDatapin], Type[RealArrayDatapin]],
+    metadata_type: Union[Type[atvi.RealMetadata], Type[atvi.RealArrayMetadata]],
 ):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
@@ -408,7 +416,7 @@ def test_set_metadata_populated_enums(
         mock_client, "DoubleVariableSetMetadata", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(sut_element_id, None)
+        sut = sut_type(sut_element_id, engine=engine)
         new_metadata = metadata_type()
         new_metadata.enumerated_values = [atvi.RealValue(1.1), atvi.RealValue(2.2)]
         new_metadata.enumerated_aliases = ["a", "b"]
@@ -438,7 +446,7 @@ def test_set_metadata_populated_enums(
         (atvi.BooleanValue(False), 0.0),
     ],
 )
-def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
+def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_request):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
     mock_response = SetVariableValueResponse()
@@ -447,7 +455,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_client, "DoubleVariableSetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = RealDatapin(sut_element_id, None)
+        sut = RealDatapin(sut_element_id, engine=engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute
@@ -471,7 +479,7 @@ def test_scalar_set_allowed(monkeypatch, set_value, expected_value_in_request):
         atvi.StringArrayValue(),
     ],
 )
-def test_scalar_set_disallowed(monkeypatch, set_value):
+def test_scalar_set_disallowed(monkeypatch, engine, set_value):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
     mock_response = SetVariableValueResponse()
@@ -480,7 +488,7 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
         mock_client, "DoubleVariableSetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = RealDatapin(sut_element_id, None)
+        sut = RealDatapin(sut_element_id, engine=engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -517,7 +525,7 @@ def test_scalar_set_disallowed(monkeypatch, set_value):
         ),
     ],
 )
-def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
+def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_request):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
     mock_response = SetVariableValueResponse()
@@ -526,7 +534,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         mock_client, "DoubleArraySetValue", retun_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = RealArrayDatapin(sut_element_id, None)
+        sut = RealArrayDatapin(sut_element_id, engine=engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute
@@ -550,7 +558,7 @@ def test_array_set_allowed(monkeypatch, set_value, expected_value_in_request):
         atvi.StringArrayValue(),
     ],
 )
-def test_array_set_disallowed(monkeypatch, set_value):
+def test_array_set_disallowed(monkeypatch, engine, set_value):
     # Set up
     mock_client = MockWorkflowClientForDoubleVarTest()
     mock_response = SetVariableValueResponse()
@@ -559,7 +567,7 @@ def test_array_set_disallowed(monkeypatch, set_value):
         mock_client, "DoubleArraySetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = RealArrayDatapin(sut_element_id, None)
+        sut = RealArrayDatapin(sut_element_id, engine=engine)
         new_value = atvi.VariableState(set_value, True)
 
         # Execute / verify:
@@ -570,13 +578,16 @@ def test_array_set_disallowed(monkeypatch, set_value):
         mock_grpc_method.assert_not_called()
 
 
-def test_scalar_get_type(monkeypatch):
-    do_get_type_test(monkeypatch, RealDatapin, VariableType.VARTYPE_REAL, atvi.VariableType.REAL)
+def test_scalar_get_type(monkeypatch, engine):
+    do_get_type_test(
+        monkeypatch, engine, RealDatapin, VariableType.VARTYPE_REAL, atvi.VariableType.REAL
+    )
 
 
-def test_array_get_type(monkeypatch):
+def test_array_get_type(monkeypatch, engine):
     do_get_type_test(
         monkeypatch,
+        engine,
         RealArrayDatapin,
         VariableType.VARTYPE_REAL_ARRAY,
         atvi.VariableType.REAL_ARRAY,
@@ -591,10 +602,11 @@ def test_array_get_type(monkeypatch):
     ],
 )
 def test_scalar_get_state(
-    monkeypatch, value_in_response, validity_in_response, expected_atvi_state
+    monkeypatch, engine, value_in_response, validity_in_response, expected_atvi_state
 ):
     do_get_state_test(
         monkeypatch,
+        engine,
         RealDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(double_value=value_in_response)
@@ -603,12 +615,12 @@ def test_scalar_get_state(
     )
 
 
-def test_scalar_get_state_with_hid(monkeypatch):
-    do_get_state_test_with_hid(monkeypatch, RealDatapin)
+def test_scalar_get_state_with_hid(monkeypatch, engine):
+    do_get_state_test_with_hid(monkeypatch, engine, RealDatapin)
 
 
-def test_array_get_state_with_hid(monkeypatch):
-    do_get_state_test_with_hid(monkeypatch, RealArrayDatapin)
+def test_array_get_state_with_hid(monkeypatch, engine):
+    do_get_state_test_with_hid(monkeypatch, engine, RealArrayDatapin)
 
 
 @pytest.mark.parametrize(
@@ -632,9 +644,12 @@ def test_array_get_state_with_hid(monkeypatch):
         ),
     ],
 )
-def test_array_get_state(monkeypatch, value_in_response, validity_in_response, expected_atvi_state):
+def test_array_get_state(
+    monkeypatch, engine, value_in_response, validity_in_response, expected_atvi_state
+):
     do_get_state_test(
         monkeypatch,
+        engine,
         RealArrayDatapin,
         VariableState(
             is_valid=validity_in_response, value=VariableValue(double_array_value=value_in_response)
@@ -652,8 +667,8 @@ def test_array_get_state(monkeypatch, value_in_response, validity_in_response, e
         (RealArrayDatapin, False),
     ],
 )
-def test_is_input_component(monkeypatch, sut_type, flag_in_response):
-    do_test_is_input_component(monkeypatch, sut_type, flag_in_response)
+def test_is_input_component(monkeypatch, engine, sut_type, flag_in_response):
+    do_test_is_input_component(monkeypatch, engine, sut_type, flag_in_response)
 
 
 @pytest.mark.parametrize(
@@ -665,5 +680,5 @@ def test_is_input_component(monkeypatch, sut_type, flag_in_response):
         (RealArrayDatapin, False),
     ],
 )
-def test_is_input_workflow(monkeypatch, sut_type, flag_in_response):
-    do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response)
+def test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response):
+    do_test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response)

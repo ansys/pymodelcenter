@@ -6,6 +6,7 @@ from .proto.variable_value_messages_pb2 import (
     BaseVariableMetadata,
     BooleanVariableMetadata,
     DoubleVariableMetadata,
+    FileVariableMetadata,
     IntegerVariableMetadata,
     NumericVariableMetadata,
     StringVariableMetadata,
@@ -228,3 +229,26 @@ def convert_grpc_string_array_metadata(source: StringVariableMetadata) -> atvi.S
     target = atvi.StringArrayMetadata()
     _extract_string_metadata(source, target)
     return target
+
+
+def convert_grpc_file_metadata(source: FileVariableMetadata) -> atvi.FileMetadata:
+    """Given a gRPC file variable metadata message, produce an equivalent ATVI metadata."""
+    target = atvi.FileMetadata()
+    _extract_base_metadata(source.base_metadata, target)
+    return target
+
+
+def convert_grpc_file_array_metadata(source: FileVariableMetadata) -> atvi.FileArrayMetadata:
+    """Given a gRPC file array variable metadata message, produce an equivalent ATVI metadata."""
+    target = atvi.FileArrayMetadata()
+    _extract_base_metadata(source.base_metadata, target)
+    return target
+
+
+def fill_file_metadata_message(source: atvi.FileMetadata, target: FileVariableMetadata) -> None:
+    """
+    Fill out a gRPC message representing ATVI file metadata.
+
+    The subordinate metadata types are also filled out.
+    """
+    _fill_base_metadata(source, target.base_metadata)

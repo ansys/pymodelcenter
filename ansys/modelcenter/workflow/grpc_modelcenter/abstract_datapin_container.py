@@ -1,15 +1,18 @@
 """Defines an abstract base class for elements that return child variables and groups."""
 
 from abc import ABC, abstractmethod
-from typing import Mapping
+from typing import TYPE_CHECKING, Mapping
 
-import grpc
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
 from .abstract_workflow_element import AbstractWorkflowElement
 from .create_datapin import create_datapin
+
+if TYPE_CHECKING:
+    from .engine import Engine
+    from .group import Group
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import VariableInfo
@@ -31,16 +34,16 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
         element_id: the element ID of the child group.
         """
 
-    def __init__(self, element_id: ElementId, channel: grpc.Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
         Parameters
         ----------
         element_id: the element ID of the group this object represents in ModelCenter.
-        channel: the gRPC channel on which to communicate.
+        engine: the Engine that created this datapin.
         """
-        super(AbstractGRPCDatapinContainer, self).__init__(element_id=element_id, channel=channel)
+        super(AbstractGRPCDatapinContainer, self).__init__(element_id=element_id, engine=engine)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -50,7 +53,7 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
         result = self._client.RegistryGetGroups(self._element_id)
         one_element_id: ElementId
         groups = [self._create_group(one_element_id) for one_element_id in result.ids]
-        one_group: mc_api.IGroup
+        one_group: "Group"
         return {one_group.name: one_group for one_group in groups}
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
@@ -63,7 +66,7 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
             create_datapin(
                 grpc_type_enum_to_interop_type(one_var_info.value_type),
                 one_var_info.id,
-                self._channel,
+                self._engine,
             )
             for one_var_info in result.variables
         ]

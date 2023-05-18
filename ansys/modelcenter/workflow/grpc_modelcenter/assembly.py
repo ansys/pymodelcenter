@@ -1,10 +1,9 @@
 """Implementation of Assembly."""
 
-from typing import Mapping, Optional, Tuple
+from typing import TYPE_CHECKING, Mapping, Optional, Tuple
 
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
-from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
@@ -14,6 +13,10 @@ from .abstract_datapin_container import AbstractGRPCDatapinContainer
 from .abstract_renamable import AbstractRenamableElement
 from .create_datapin import create_datapin
 from .element_wrapper import create_element
+
+if TYPE_CHECKING:
+    from .engine import Engine
+
 from .group import Group
 from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
@@ -52,7 +55,7 @@ class Assembly(
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -60,8 +63,10 @@ class Assembly(
         ----------
         element_id : ElementId
             The id of the .
+        engine: Engine
+            The engine that created this assembly.
         """
-        super(Assembly, self).__init__(element_id=element_id, channel=channel)
+        super(Assembly, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):
@@ -87,7 +92,7 @@ class Assembly(
         result = self._client.AssemblyGetAssembliesAndComponents(self._element_id)
         one_child_element_info: ElementInfo
         child_elements = [
-            create_element(one_child_element_info, self._channel)
+            create_element(one_child_element_info, self._engine)
             for one_child_element_info in result.elements
         ]
         one_child_element: aew_api.IElement
@@ -95,7 +100,7 @@ class Assembly(
 
     @overrides
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
-        return Group(element_id, self._channel)
+        return Group(element_id, self._engine)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION, **WRAP_INVALID_ARG})
     @overrides
@@ -109,7 +114,7 @@ class Assembly(
             )
         )
         return create_datapin(
-            mc_type_string_to_interop_type(type_in_request), result.id, self._channel
+            mc_type_string_to_interop_type(type_in_request), result.id, self._engine
         )
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
@@ -144,4 +149,4 @@ class Assembly(
             request.av_pos.x_pos = x_pos
             request.av_pos.y_pos = y_pos
         response = self._client.AssemblyAddAssembly(request)
-        return Assembly(response.id, self._channel)
+        return Assembly(response.id, self._engine)

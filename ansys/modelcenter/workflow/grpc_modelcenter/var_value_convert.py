@@ -105,12 +105,23 @@ def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
     )
 
 
-def convert_grpc_value_to_atvi(original: VariableValue) -> atvi.IVariableValue:
+def convert_grpc_value_to_atvi(
+    original: VariableValue, engine_is_local: bool = True
+) -> atvi.IVariableValue:
     """
     Produce an IVariableValue from the Python variable interop library from a grpc message.
 
-    @param original: the original gRPC message
-    @return the converted value
+    Parameters
+    ----------
+    original: VariableValue
+        The original gRPC message.
+    engine_is_local: bool
+        True if the Engine that created the file is running on the local machine, False if it is
+        remote.
+
+    Returns
+    -------
+    The converted value.
     """
     if original.HasField("int_value"):
         return atvi.IntegerValue(original.int_value)
@@ -141,18 +152,32 @@ def convert_grpc_value_to_atvi(original: VariableValue) -> atvi.IVariableValue:
             np.reshape(original.string_array_value.values, original.string_array_value.dims.dims),
         )
     elif original.HasField("file_value"):
-        raise ValueTypeNotSupportedError(
-            "The provided gRPC value has a file type, "
-            "but this is not yet supported by the pyModelCenter API."
+        if not engine_is_local:
+            raise ValueTypeNotSupportedError(
+                "Requesting file values from a remote Engine is currently not supported."
+            )
+        scope = atvi.NonManagingFileScope()
+        value: atvi.FileValue = scope.read_from_file(
+            to_read=original.file_value.content_path, mime_type=None, encoding=None
         )
+        return value
     elif original.HasField("file_array_value"):
-        raise ValueTypeNotSupportedError(
-            "The provided gRPC value has a file type, "
-            "but this is not yet supported by the pyModelCenter API."
+        if not engine_is_local:
+            raise ValueTypeNotSupportedError(
+                "Requesting file values from a remote Engine is currently not supported."
+            )
+        scope = atvi.NonManagingFileScope()
+        values = [
+            scope.read_from_file(to_read=value.content_path, mime_type=None, encoding=None)
+            for value in original.file_array_value.values
+        ]
+        return atvi.FileArrayValue(
+            original.file_array_value.dims.dims,
+            np.reshape(values, original.file_array_value.dims.dims),
         )
     else:
-        raise ValueError(
-            "The provided gRPC value could not be converted to a common variable " "interop value."
+        raise ValueTypeNotSupportedError(
+            "The provided gRPC value could not be converted to a common variable interop value."
         )
 
 

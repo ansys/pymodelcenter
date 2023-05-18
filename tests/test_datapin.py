@@ -34,7 +34,7 @@ class MockWorkflowClientForVariableTest:
         return VariableIsInputResponse()
 
 
-def do_get_type_test(monkeypatch, sut_type, type_in_response, expected_acvi_type) -> None:
+def do_get_type_test(monkeypatch, engine, sut_type, type_in_response, expected_acvi_type) -> None:
     """Perform a test of interop_type on a particular base variable."""
 
     mock_client = MockWorkflowClientForVariableTest()
@@ -44,7 +44,7 @@ def do_get_type_test(monkeypatch, sut_type, type_in_response, expected_acvi_type
         mock_client, "VariableGetType", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(element_id=sut_element_id, channel=None)
+        sut = sut_type(element_id=sut_element_id, engine=engine)
 
         # Execute
         result: atvi.VariableType = sut.value_type
@@ -54,7 +54,7 @@ def do_get_type_test(monkeypatch, sut_type, type_in_response, expected_acvi_type
         assert result == expected_acvi_type, "The type returned by interop_type should be correct."
 
 
-def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state) -> None:
+def do_get_state_test(monkeypatch, engine, sut_type, mock_response, expected_acvi_state) -> None:
     """Perform a test of get_state on a particular base variable."""
 
     mock_client = MockWorkflowClientForVariableTest()
@@ -63,7 +63,7 @@ def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state)
         mock_client, "VariableGetState", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(element_id=sut_element_id, channel=None)
+        sut = sut_type(element_id=sut_element_id, engine=engine)
 
         result: atvi.VariableState = sut.get_value()
 
@@ -72,7 +72,7 @@ def do_get_state_test(monkeypatch, sut_type, mock_response, expected_acvi_state)
         assert result.is_valid == expected_acvi_state.is_valid
 
 
-def do_get_state_test_with_hid(monkeypatch, sut_type) -> None:
+def do_get_state_test_with_hid(monkeypatch, engine, sut_type) -> None:
     """Perform a test of get_state on a particular base variable."""
 
     mock_client = MockWorkflowClientForVariableTest()
@@ -81,7 +81,7 @@ def do_get_state_test_with_hid(monkeypatch, sut_type) -> None:
         mock_client, "VariableGetState", return_value=VariableState()
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(element_id=sut_element_id, channel=None)
+        sut = sut_type(element_id=sut_element_id, engine=engine)
 
         with pytest.raises(ValueError, match="does not yet support HIDs."):
             sut.get_value("some_hid")
@@ -89,7 +89,7 @@ def do_get_state_test_with_hid(monkeypatch, sut_type) -> None:
         mock_grpc_method.assert_not_called()
 
 
-def do_test_is_input_component(monkeypatch, sut_type, flag_in_response) -> None:
+def do_test_is_input_component(monkeypatch, engine, sut_type, flag_in_response) -> None:
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response = VariableIsInputResponse(
@@ -99,7 +99,7 @@ def do_test_is_input_component(monkeypatch, sut_type, flag_in_response) -> None:
         mock_client, "VariableGetIsInput", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(element_id=sut_element_id, channel=None)
+        sut = sut_type(element_id=sut_element_id, engine=engine)
 
         result: bool = sut.is_input_to_component
 
@@ -107,7 +107,7 @@ def do_test_is_input_component(monkeypatch, sut_type, flag_in_response) -> None:
         assert result == flag_in_response
 
 
-def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
+def do_test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response) -> None:
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response = VariableIsInputResponse(
@@ -117,7 +117,7 @@ def do_test_is_input_workflow(monkeypatch, sut_type, flag_in_response) -> None:
         mock_client, "VariableGetIsInput", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = sut_type(element_id=sut_element_id, channel=None)
+        sut = sut_type(element_id=sut_element_id, engine=engine)
 
         result: bool = sut.is_input_to_workflow
 
@@ -138,7 +138,7 @@ class MockVariable(BaseDatapin):
         pass
 
 
-def test_get_state_conversion_failure(monkeypatch) -> None:
+def test_get_state_conversion_failure(monkeypatch, engine) -> None:
     """Perform a test of get_state on a particular base variable."""
 
     # Setup
@@ -148,7 +148,7 @@ def test_get_state_conversion_failure(monkeypatch) -> None:
         mock_client, "VariableGetState", return_value=VariableState(value=None, is_valid=True)
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = MockVariable(element_id=sut_element_id, channel=None)
+        sut = MockVariable(element_id=sut_element_id, engine=engine)
 
         with pytest.raises(Exception) as err:
             # SUT
