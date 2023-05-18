@@ -24,6 +24,11 @@ class MockWorkflowClientForLinkTest(ModelCenterWorkflowServiceStub):
     ) -> workflow_msg.WorkflowLinkSuspension:
         return workflow_msg.WorkflowLinkSuspension()
 
+    def WorkflowGetLinkSuspensionState(
+        self, request: workflow_msg.WorkflowSuspendOrResumeLinkRequest
+    ) -> workflow_msg.WorkflowLinkSuspension:
+        return workflow_msg.WorkflowLinkSuspension()
+
 
 def test_break_existing_link(monkeypatch) -> None:
     # Setup
@@ -102,5 +107,26 @@ def test_resume_link(monkeypatch) -> None:
 
         expected_request = workflow_msg.WorkflowSuspendOrResumeLinkRequest(
             target_link_lhs=ElementId(id_string=mock_lhs), suspend=False
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(["is_suspended"], [(True,), (False,)])
+def test_get_link_suspension_state(monkeypatch, is_suspended: bool) -> None:
+    # Setup
+    mock_client = MockWorkflowClientForLinkTest()
+    mock_response = workflow_msg.WorkflowLinkSuspension(is_suspended=is_suspended)
+    mock_lhs = "TEST_LHS"
+    mock_rhs = "TEST_RHS"
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowGetLinkSuspensionState", return_value=mock_response
+    ) as mock_grpc_method:
+        sut = DatapinLink(mock_client, mock_lhs, mock_rhs)
+
+        result = sut.is_suspended()
+
+        assert result == is_suspended
+        expected_request = workflow_msg.WorkflowBreakLinkRequest(
+            target_var=ElementId(id_string=mock_lhs)
         )
         mock_grpc_method.assert_called_once_with(expected_request)
