@@ -57,11 +57,8 @@ pytest-cov = {version="^3.0", optional=true}
 pre-commit = {version="^2.17.0", optional=true}
 mypy = {version="^0.940", optional=true}
 
-# TODO: The below commits are unmerged on their respective repos.
-#       Before merging this branch, ensure that the below commits are merged,
-#       and use the merged hashes here.
-ansys-engineeringworkflow-api = {git = "https://github.com/ansys/ansys-engineeringworkflow-api.git", rev = "2d350e938d1f4046aa4993902e578cb283fdc140"}
-pyansys-tools-variableinterop = {git = "https://github.com/ansys/pyansys-tools-variableinterop.git", rev = "a5288a625f908c5db0ed978d1321572bd15ed3cb"}
+ansys-engineeringworkflow-api = {git = "https://github.com/ansys/ansys-engineeringworkflow-api.git", rev = "b6694b6188acb14f05f3c2a3994564db544b6c7d"}
+pyansys-tools-variableinterop = {git = "https://github.com/ansys/pyansys-tools-variableinterop.git", rev = "6e9a179e23e38377e671736eb71b86a5d7f656ec"}
 
 [tool.poetry.extras]
 dev = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton", "codespell",

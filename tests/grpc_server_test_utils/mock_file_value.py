@@ -4,10 +4,14 @@ from typing import Optional
 import ansys.tools.variableinterop as atvi
 
 
-class MockFileValue(atvi.FileValue):
+class MockFileValue(atvi.LocalFileValue):
     def __init__(self, path: Optional[str] = None) -> None:
         super(MockFileValue, self).__init__(
-            original_path=path, value_id=None, encoding=None, mime_type=None
+            original_path=path,
+            value_id=None,
+            encoding=None,
+            mime_type=None,
+            actual_content_file_name=path,
         )
 
     @property
