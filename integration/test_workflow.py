@@ -47,7 +47,7 @@ def test_creating_a_new_assembly(workflow) -> None:
 
     # Act
     created: grpcmc.Assembly = workflow.create_assembly(
-        name="assembly_シークエンス", parent=root, assembly_type="Sequence"
+        name="assembly_シークエンス", parent=root, assembly_type=mcapi.AssemblyType.SEQUENCE
     )
     retrieved: mcapi.IAssembly = workflow.get_assembly("ワークフロー.assembly_シークエンス")
 
