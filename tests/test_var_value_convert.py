@@ -3,11 +3,12 @@ import sys
 from typing import Optional
 
 import ansys.tools.variableinterop as atvi
-from .grpc_server_test_utils.mock_file_value import MockFileValue
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as grpc_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert as test_module
+
+from .grpc_server_test_utils.mock_file_value import MockFileValue
 
 
 @pytest.mark.parametrize("internal_value", [0, -1, 1, -47, 47, 2147483647, -2147483648])

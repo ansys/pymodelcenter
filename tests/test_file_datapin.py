@@ -3,7 +3,6 @@ from typing import Optional, Type, Union
 import unittest
 
 import ansys.tools.variableinterop as atvi
-from .grpc_server_test_utils.mock_file_value import MockFileValue
 import pytest
 
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
@@ -30,6 +29,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
 )
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .grpc_server_test_utils.mock_file_value import MockFileValue
 from .test_datapin import (
     do_get_state_test,
     do_get_state_test_with_hid,
