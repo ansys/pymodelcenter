@@ -6,6 +6,8 @@ from .icomponent import IComponent
 from .idatapin import IDatapin
 from .idatapin_link import IDatapinLink
 from .iengine import IEngine, WorkflowType
+from .ifilearraydatapin import IFileArrayDatapin
+from .ifiledatapin import IFileDatapin
 from .iformat import IFormat
 from .igroup import IGroup, IGroupOwner
 from .iintegerarraydatapin import IIntegerArrayDatapin

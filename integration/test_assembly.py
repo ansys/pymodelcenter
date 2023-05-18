@@ -6,14 +6,14 @@ import ansys.modelcenter.workflow.api as mc_api
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
-def test_correctly_gets_child_elements_data_model_empty(workflow):
+def test_correctly_gets_child_elements_data_model_empty(workflow) -> None:
     assembly: mc_api.IAssembly = workflow.get_assembly("Model.empty_assembly")
     child_elements = assembly.get_elements()
     assert len(child_elements) == 0
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
-def test_correctly_gets_child_elements_data_model_haschildren(workflow):
+def test_correctly_gets_child_elements_data_model_haschildren(workflow) -> None:
     # Setup
     assembly: mc_api.IAssembly = workflow.get_assembly("Model.has_children")
 
@@ -33,7 +33,7 @@ def test_correctly_gets_child_elements_data_model_haschildren(workflow):
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
-def test_correctly_gets_parent_element_data_model(workflow):
+def test_correctly_gets_parent_element_data_model(workflow) -> None:
     # Setup
     assembly: mc_api.IAssembly = workflow.get_assembly("Model.has_children.child_assembly_one")
 
@@ -46,7 +46,7 @@ def test_correctly_gets_parent_element_data_model(workflow):
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
-def test_parent_of_root_is_None_data_model(workflow):
+def test_parent_of_root_is_None_data_model(workflow) -> None:
     # Setup
     assembly: mc_api.IAssembly = workflow.get_assembly(None)
 
@@ -58,7 +58,7 @@ def test_parent_of_root_is_None_data_model(workflow):
 
 
 @pytest.mark.workflow_name("process_sequence_tests.pxcz")
-def test_correctly_gets_child_elements_proc_empty(workflow):
+def test_correctly_gets_child_elements_proc_empty(workflow) -> None:
     # Setup
     assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch.empty_seq")
 
@@ -70,7 +70,7 @@ def test_correctly_gets_child_elements_proc_empty(workflow):
 
 
 @pytest.mark.workflow_name("process_sequence_tests.pxcz")
-def test_correctly_gets_child_elements_proc_haschildren(workflow):
+def test_correctly_gets_child_elements_proc_haschildren(workflow) -> None:
     # Setup
     assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch.has_items")
 
@@ -95,7 +95,7 @@ def test_correctly_gets_child_elements_proc_haschildren(workflow):
 
 
 @pytest.mark.workflow_name("process_sequence_tests.pxcz")
-def test_correctly_gets_child_elements_proc_after_move(workflow):
+def test_correctly_gets_child_elements_proc_after_move(workflow) -> None:
     # Setup
     assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch.has_items")
 
@@ -122,7 +122,7 @@ def test_correctly_gets_child_elements_proc_after_move(workflow):
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
-def test_adding_data_assembly_to_empty_data_assembly(workflow):
+def test_adding_data_assembly_to_empty_data_assembly(workflow) -> None:
     # Setup
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.empty_assembly")
 
@@ -135,7 +135,7 @@ def test_adding_data_assembly_to_empty_data_assembly(workflow):
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
-def test_adding_data_assembly_to_empty_data_assembly_with_position(workflow):
+def test_adding_data_assembly_to_empty_data_assembly_with_position(workflow) -> None:
     # Setup
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.empty_assembly")
 
@@ -149,7 +149,7 @@ def test_adding_data_assembly_to_empty_data_assembly_with_position(workflow):
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
-def test_adding_data_assembly_to_empty_data_assembly_invalid_name(workflow):
+def test_adding_data_assembly_to_empty_data_assembly_invalid_name(workflow) -> None:
     # Setup
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.empty_assembly")
 
@@ -162,7 +162,7 @@ def test_adding_data_assembly_to_empty_data_assembly_invalid_name(workflow):
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")
-def test_adding_data_assembly_to_populated_data_assembly_name_collision(workflow):
+def test_adding_data_assembly_to_populated_data_assembly_name_collision(workflow) -> None:
     # Setup
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.has_children")
     assert (
@@ -178,7 +178,7 @@ def test_adding_data_assembly_to_populated_data_assembly_name_collision(workflow
 
 
 @pytest.mark.workflow_name("process_sequence_tests.pxcz")
-def test_adding_datapin_to_data_assembly_valid(workflow):
+def test_adding_datapin_to_data_assembly_valid(workflow) -> None:
     # Setup
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch")
 
@@ -191,7 +191,7 @@ def test_adding_datapin_to_data_assembly_valid(workflow):
 
 
 @pytest.mark.workflow_name("process_sequence_tests.pxcz")
-def test_adding_datapin_to_data_assembly_invalid_name(workflow):
+def test_adding_datapin_to_data_assembly_invalid_name(workflow) -> None:
     # Setup
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch")
 
@@ -204,7 +204,7 @@ def test_adding_datapin_to_data_assembly_invalid_name(workflow):
 
 
 @pytest.mark.workflow_name("process_sequence_tests.pxcz")
-def test_adding_datapin_to_data_assembly_name_collision(workflow):
+def test_adding_datapin_to_data_assembly_name_collision(workflow) -> None:
     # Setup
     target_assembly: mc_api.IAssembly = workflow.get_assembly("Model.main_branch")
     datapin = target_assembly.add_datapin("データ", atvi.VariableType.INTEGER)
@@ -223,7 +223,7 @@ def test_adding_datapin_to_data_assembly_name_collision(workflow):
 
 
 @pytest.mark.workflow_name("process_sequence_tests.pxcz")
-def test_rename_affects_child_elements(workflow):
+def test_rename_affects_child_elements(workflow) -> None:
     # Setup
     model: mc_api.IAssembly = workflow.get_assembly()
     main_branch: mc_api.IAssembly = workflow.get_assembly("Model.main_branch")
@@ -241,7 +241,7 @@ def test_rename_affects_child_elements(workflow):
 
 
 @pytest.mark.workflow_name("process_sequence_tests.pxcz")
-def test_rename_name_collision(workflow):
+def test_rename_name_collision(workflow) -> None:
     # Setup
     has_items: mc_api.IAssembly = workflow.get_assembly("Model.main_branch.has_items")
     no_children: mc_api.IAssembly = workflow.get_assembly("Model.main_branch.empty_seq")

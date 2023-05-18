@@ -1,10 +1,13 @@
 """Implementation of Format."""
-from grpc import Channel
+from typing import TYPE_CHECKING
+
 from numpy import float64, int64
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import IFormat
 
+if TYPE_CHECKING:
+    from .engine import Engine
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .proto.format_messages_pb2 import (
     FormatFromDoubleRequest,
@@ -26,13 +29,21 @@ class Format(IFormat):
         get a valid instance of this object.
     """
 
-    def __init__(self, fmt: str, channel: Channel):
-        """Initialize."""
+    def __init__(self, fmt: str, engine: "Engine"):
+        """
+        Initialize a new instance.
+
+        Parameters
+        ----------
+        fmt: str
+            The format string this formatter will use.
+        engine: Engine
+            The Engine creating this formatter.
+        """
         self._format: str = fmt
         if self._format == "":
             self._format = "General"
-        self._channel = channel
-        self._stub = self._create_client(self._channel)
+        self._stub = self._create_client(engine.channel)
 
     @staticmethod
     def _create_client(grpc_channel) -> ModelCenterFormatServiceStub:
@@ -69,7 +80,7 @@ class Format(IFormat):
         request.format = self._format
         request.original = string
         response: FormatToDoubleResponse = self._stub.FormatStringToDouble(request)
-        return response.result
+        return float64(response.result)
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides

@@ -1,7 +1,7 @@
 """Defines an abstract base class for gRPC-backed workflow elements."""
 
 from abc import ABC
-from typing import AbstractSet, Mapping, Optional
+from typing import TYPE_CHECKING, AbstractSet, Mapping, Optional
 
 import ansys.engineeringworkflow.api as aew_api
 from ansys.engineeringworkflow.api import Property
@@ -10,6 +10,9 @@ import grpc
 from overrides import overrides
 
 import ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper as elem_wrapper
+
+if TYPE_CHECKING:
+    from .engine import Engine
 
 from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
@@ -25,17 +28,19 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
     def _create_client(self, channel: grpc.Channel) -> ModelCenterWorkflowServiceStub:
         return ModelCenterWorkflowServiceStub(channel)  # pragma: no cover
 
-    def __init__(self, element_id: ElementId, channel: grpc.Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
         Parameters
         ----------
-        element_id: the element ID of the group this object represents in ModelCenter.
-        channel: the gRPC channel on which to communicate.
+        element_id: ElementId
+            The element ID of the group this object represents in ModelCenter.
+        engine: Engine
+            The Engine that created this element.
         """
-        self._channel: grpc.Channel = channel
-        self._client: ModelCenterWorkflowServiceStub = self._create_client(channel)
+        self._engine = engine
+        self._client: ModelCenterWorkflowServiceStub = self._create_client(engine.channel)
         self._element_id: ElementId = element_id
 
     @property
@@ -70,7 +75,7 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
         grpc_value: VariableValue = self._client.PropertyOwnerGetPropertyValue(
             MetadataGetValueRequest(id=self._element_id, property_name=property_name)
         )
-        atvi_value = convert_grpc_value_to_atvi(grpc_value)
+        atvi_value = convert_grpc_value_to_atvi(grpc_value, self._engine.is_local)
         return aew_api.Property(
             parent_element_id=self._element_id.id_string,
             property_name=property_name,
@@ -106,19 +111,21 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
         if not result.id.id_string:
             return None
         else:
-            return elem_wrapper.create_element(result, self._channel)
+            return elem_wrapper.create_element(result, self._engine)
 
 
 class UnsupportedWorkflowElement(AbstractWorkflowElement):
     """Represents a workflow element that is known to exists but whose type is not supported."""
 
-    def __init__(self, element_id: ElementId, channel: grpc.Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
         Parameters
         ----------
-        element_id: the element ID of the element this object represents in ModelCenter.
-        channel: the gRPC channel on which to communicate.
+        element_id: ElementId
+            The element ID of the element this object represents in ModelCenter.
+        engine: Engine
+            The Engine that created this element.
         """
-        super(UnsupportedWorkflowElement, self).__init__(element_id=element_id, channel=channel)
+        super(UnsupportedWorkflowElement, self).__init__(element_id=element_id, engine=engine)

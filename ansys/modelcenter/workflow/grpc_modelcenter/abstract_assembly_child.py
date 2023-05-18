@@ -1,13 +1,15 @@
 """Defines an abstract base class for children of assemblies (including assemblies themselves)."""
 from abc import ABC
-from typing import Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
 
 import ansys.engineeringworkflow.api as aew_api
-from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_wfe
+
+if TYPE_CHECKING:
+    from .engine import Engine
 
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
@@ -16,9 +18,9 @@ from .proto.element_messages_pb2 import ElementId
 class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemblyChild, ABC):
     """An abstract base class for children of assemblies."""
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """Initialize a new instance."""
-        super(AbstractAssemblyChild, self).__init__(element_id=element_id, channel=channel)
+        super(AbstractAssemblyChild, self).__init__(element_id=element_id, engine=engine)
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)

@@ -1,4 +1,4 @@
-from typing import Collection, Mapping, Optional, Union
+from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
 from unittest.mock import create_autospec
 
@@ -135,7 +135,7 @@ def setup_function(monkeypatch):
     """
 
     def mock_start(self, run_only: bool = False):
-        pass
+        return 12345
 
     def mock_init(self):
         pass
@@ -364,27 +364,47 @@ def test_creation_via_pypim(monkeypatch) -> None:
         mock_instance.build_grpc_channel, return_value=pim_channel
     )
     mock_instance.delete = create_autospec(mock_instance.delete)
-    mock_client = pypim.Client(channel=grpc.insecure_channel("localhost:12345"))
-    mock_client.create_instance = create_autospec(
-        mock_client.create_instance, return_value=mock_instance
+    mock_pypim_client = pypim.Client(channel=grpc.insecure_channel("localhost:12345"))
+    mock_pypim_client.create_instance = create_autospec(
+        mock_pypim_client.create_instance, return_value=mock_instance
     )
-    mock_connect = create_autospec(pypim.connect, return_value=mock_client)
+    mock_connect = create_autospec(pypim.connect, return_value=mock_pypim_client)
     mock_is_configured = create_autospec(pypim.is_configured, return_value=True)
     monkeypatch.setattr(pypim, "connect", mock_connect)
     monkeypatch.setattr(pypim, "is_configured", mock_is_configured)
 
     # Act
     engine = grpcmc.Engine()
-    result_channel = engine._channel
+    result_channel = engine.channel
     engine.close()
 
     # Assert
     assert mock_is_configured.called
     assert mock_connect.called
-    mock_client.create_instance.assert_called_with(
+    mock_pypim_client.create_instance.assert_called_with(
         product_name="modelcenter-desktop", product_version=None
     )
     assert mock_instance.wait_for_ready.called
     assert mock_instance.build_grpc_channel.called
     assert result_channel == pim_channel
     assert mock_instance.delete.called
+    assert engine.is_local is False
+
+
+def test_is_local(setup_function) -> None:
+    # SUT
+    engine = grpcapi.Engine()
+
+    # Verification
+    assert engine.is_local is True
+
+
+def test_get_channel(setup_function) -> None:
+    # Setup
+    engine = grpcapi.Engine()
+
+    # SUT
+    channel = engine.channel
+
+    # Assert
+    assert cast(Any, channel)._channel.target() == b"localhost:12345"

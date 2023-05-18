@@ -1,10 +1,13 @@
 """Classes for representing variables that exist in ModelCenter with unsupported value types."""
+from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
-import grpc
 from overrides import overrides
 
 from .base_datapin import BaseDatapin
+
+if TYPE_CHECKING:
+    from .engine import Engine
 from .proto.element_messages_pb2 import ElementId
 
 
@@ -28,9 +31,9 @@ class UnsupportedTypeDatapin(BaseDatapin):
     set or get the value or metadata will raise a DatapinWithUnsupportedTypeException.
     """
 
-    def __init__(self, element_id: ElementId, channel: grpc.Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """Construct a new instance."""
-        super(BaseDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(BaseDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
