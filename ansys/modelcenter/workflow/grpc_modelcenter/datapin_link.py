@@ -6,7 +6,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
-from .grpc_error_interpretation import interpret_rpc_error
+from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 
 
 class DatapinLink(wfapi.IDatapinLink):
@@ -64,6 +64,16 @@ class DatapinLink(wfapi.IDatapinLink):
     @overrides
     def resume(self) -> None:
         self._do_suspend_or_resume(False)
+
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def is_suspended(self) -> bool:
+        response: workflow_msg.WorkflowLinkSuspension = self._stub.WorkflowGetLinkSuspensionState(
+            workflow_msg.WorkflowBreakLinkRequest(
+                target_var=elem_msg.ElementId(id_string=self._lhs_id)
+            )
+        )
+        return response.is_suspended
 
     @property  # type: ignore
     @overrides

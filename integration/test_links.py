@@ -40,6 +40,27 @@ def test_can_break_a_link(workflow) -> None:
 
 
 @pytest.mark.workflow_name("linked_quadratics.pxcz")
+def test_can_get_link_suspension_state(workflow) -> None:
+    links = {link.lhs: link for link in workflow.get_links()}
+    downstream_var: mcapi.IDatapin = workflow.get_variable("Model.Quadratic1.x")
+
+    # Setup: Get the link we intend to suspend. Verify it looks like we think.
+    assert downstream_var.element_id in links
+    link = links[downstream_var.element_id]
+
+    # The link should not be suspended at first.
+    result = link.is_suspended()
+    assert result is False
+
+    # Suspend the link.
+    link.suspend()
+
+    # The link should now report being suspended.
+    result = link.is_suspended()
+    assert result is True
+
+
+@pytest.mark.workflow_name("linked_quadratics.pxcz")
 def test_can_suspend_and_resume_a_link(workflow) -> None:
     # Setup: Get all the links in the model as well as the link we think is involved.
     links = {link.lhs: link for link in workflow.get_links()}
