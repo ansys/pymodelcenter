@@ -57,8 +57,8 @@ pytest-cov = {version="^3.0", optional=true}
 pre-commit = {version="^2.17.0", optional=true}
 mypy = {version="^0.940", optional=true}
 
-ansys-engineeringworkflow-api = {git = "https://github.com/pyansys/ansys-engineeringworkflow-api.git", rev = "8e40cb7585d877ca8d5d1e30e8d068c0503c3c59"}
-pyansys-tools-variableinterop = {git = "https://github.com/pyansys/pyansys-tools-variableinterop.git", rev = "0988df6c6aa4df885082cc4dd88acdcecdc97b68"}
+ansys-engineeringworkflow-api = {git = "https://github.com/ansys/ansys-engineeringworkflow-api.git", rev = "b6694b6188acb14f05f3c2a3994564db544b6c7d"}
+pyansys-tools-variableinterop = {git = "https://github.com/ansys/pyansys-tools-variableinterop.git", rev = "6e9a179e23e38377e671736eb71b86a5d7f656ec"}
 
 [tool.poetry.extras]
 dev = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton", "codespell",

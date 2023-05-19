@@ -27,8 +27,8 @@ jobs:
       - name: "Set up git Credentials"
         run: |
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/pyansys-tools-variableinterop.insteadOf https://github.com/pyansys/pyansys-tools-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
 
       - uses: actions/checkout@v3
         with:
@@ -58,8 +58,8 @@ jobs:
 #      - name: "Set up git Credentials"
 #        run: |
 #          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
-#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/pyansys-tools-variableinterop.insteadOf https://github.com/pyansys/pyansys-tools-variableinterop
-#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
+#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
 #
 #      - name: "Install Git and clone project"
 #        uses: actions/checkout@v3
@@ -91,8 +91,8 @@ jobs:
       - name: "Set up git credentials"
         run: |
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/pyansys-tools-variableinterop.insteadOf https://github.com/pyansys/pyansys-tools-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
 
       - uses: actions/checkout@v3
         with:
@@ -143,8 +143,8 @@ jobs:
       - name: "Set up git credentials"
         run: |
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/pyansys-tools-variableinterop.insteadOf https://github.com/pyansys/pyansys-tools-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/pyansys/ansys-engineeringworkflow-api.insteadOf https://github.com/pyansys/ansys-engineeringworkflow-api
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
 
       - uses: actions/checkout@v3
         with:

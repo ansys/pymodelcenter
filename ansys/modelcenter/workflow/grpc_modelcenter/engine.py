@@ -3,12 +3,12 @@ from os import PathLike
 from string import Template
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
-from ansys.engineeringworkflow.api import IWorkflowInstance, WorkflowEngineInfo
+from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
 import grpc
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import IEngine, IFormat, IWorkflow, WorkflowType
+from ansys.modelcenter.workflow.api import IEngine, WorkflowType
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 
 from .format import Format
@@ -60,7 +60,7 @@ class Engine(IEngine):
         """Clean up when leaving a 'with' block."""
         self.close()
 
-    def _launch_modelcenter(self, force_local: bool) -> None:
+    def _launch_modelcenter(self, force_local: bool = False) -> None:
         """Launch ModelCenter, using pypim if it is configured."""
         if pypim.is_configured() and not force_local:
             if self._is_run_only:
@@ -98,6 +98,16 @@ class Engine(IEngine):
         return GRPCModelCenterServiceStub(grpc_channel)
 
     @property
+    def is_local(self) -> bool:
+        """Get if MCD was started locally, or remotely."""
+        return self._process is not None
+
+    @property
+    def channel(self) -> Optional[grpc.Channel]:
+        """Get the grpc channel Used to communicate with MCD."""
+        return self._channel
+
+    @property
     def process_id(self) -> int:
         """Get the id of the connected process; useful for debugging."""
         if self._process is not None:
@@ -110,13 +120,13 @@ class Engine(IEngine):
         {grpc.StatusCode.RESOURCE_EXHAUSTED: WorkflowAlreadyLoadedError, **WRAP_INVALID_ARG}
     )
     @overrides
-    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
+    def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         request = eng_msg.NewWorkflowRequest(
             path=name,
             workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
         )
         response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
-        return Workflow(response.workflow_id, name, self._channel)
+        return Workflow(response.workflow_id, name, self)
 
     @interpret_rpc_error(
         {
@@ -128,17 +138,17 @@ class Engine(IEngine):
     @overrides
     def load_workflow(
         self, file_name: Union[PathLike, str], ignore_connection_errors: Optional[bool] = None
-    ) -> IWorkflowInstance:
+    ) -> Workflow:
         request = eng_msg.LoadWorkflowRequest(
             path=str(file_name),
             connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
         )
         response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
-        return Workflow(response.workflow_id, request.path, self._channel)
+        return Workflow(response.workflow_id, request.path, self)
 
     @overrides
-    def get_formatter(self, fmt: str) -> IFormat:
-        formatter: Format = Format(fmt, self._channel)
+    def get_formatter(self, fmt: str) -> Format:
+        formatter: Format = Format(fmt, self)
         return formatter
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
@@ -164,7 +174,7 @@ class Engine(IEngine):
             request.double_value = value
         else:
             request.str_value = value
-        response: eng_msg.SetPreferenceResponse = self._stub.EngineSetPreference(request)
+        self._stub.EngineSetPreference(request)
 
     @interpret_rpc_error()
     @overrides

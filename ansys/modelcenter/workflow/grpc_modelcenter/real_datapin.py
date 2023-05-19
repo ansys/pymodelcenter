@@ -1,12 +1,16 @@
 """Contains definition for RealDatapin and RealArrayDatapin."""
+from typing import TYPE_CHECKING
+
 import ansys.tools.variableinterop as atvi
-from grpc import Channel
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
 from .base_datapin import BaseDatapin
+
+if TYPE_CHECKING:
+    from .engine import Engine
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
@@ -30,7 +34,7 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -38,10 +42,10 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
         ----------
         element_id: ElementId
             The id of the datapin.
-        channel: Channel
-            The gRPC channel to use.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(RealDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(RealDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):
@@ -85,7 +89,7 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
         an instantiated Engine, and use it to get a valid instance of this object.
     """
 
-    def __init__(self, element_id: ElementId, channel: Channel):
+    def __init__(self, element_id: ElementId, engine: "Engine"):
         """
         Initialize a new instance.
 
@@ -93,10 +97,10 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
         ----------
         element_id: ElementId
             The id of the datapin.
-        channel: Channel
-            The gRPC channel to use.
+        engine: Engine
+            The Engine that created this datapin.
         """
-        super(RealArrayDatapin, self).__init__(element_id=element_id, channel=channel)
+        super(RealArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides
     def __eq__(self, other):

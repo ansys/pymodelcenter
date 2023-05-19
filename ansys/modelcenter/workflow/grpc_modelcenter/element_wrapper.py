@@ -1,12 +1,15 @@
 """Defines a function that creates a wrapper from a gRPC element info."""
-import ansys.engineeringworkflow.api as aew_api
-import grpc
+from typing import TYPE_CHECKING
 
+import ansys.engineeringworkflow.api as aew_api
+
+if TYPE_CHECKING:
+    from .engine import Engine
 from .proto.element_messages_pb2 import ElementType
 from .proto.workflow_messages_pb2 import ElementInfo
 
 
-def create_element(info: ElementInfo, channel: grpc.Channel) -> aew_api.IElement:
+def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
     """Create an appropriately-typed wrapper given a gRPC element info."""
     import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_elem
     import ansys.modelcenter.workflow.grpc_modelcenter.assembly as assembly_impl
@@ -16,15 +19,15 @@ def create_element(info: ElementInfo, channel: grpc.Channel) -> aew_api.IElement
     import ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert as var_value_convert
 
     if info.type == ElementType.ELEMTYPE_ASSEMBLY or info.type == ElementType.ELEMTYPE_IFCOMPONENT:
-        return assembly_impl.Assembly(info.id, channel)
+        return assembly_impl.Assembly(info.id, engine)
     elif info.type == ElementType.ELEMTYPE_COMPONENT:
-        return component_impl.Component(info.id, channel)
+        return component_impl.Component(info.id, engine)
     elif info.type == ElementType.ELEMTYPE_GROUP:
-        return group_impl.Group(info.id, channel)
+        return group_impl.Group(info.id, engine)
     elif info.type == ElementType.ELEMTYPE_VARIABLE:
         return create_variable.create_datapin(
-            var_value_convert.grpc_type_enum_to_interop_type(info.var_type), info.id, channel
+            var_value_convert.grpc_type_enum_to_interop_type(info.var_type), info.id, engine
         )
     else:
         # (including ELEMTYPE_UNKNOWN)
-        return abstract_elem.UnsupportedWorkflowElement(info.id, channel)
+        return abstract_elem.UnsupportedWorkflowElement(info.id, engine)

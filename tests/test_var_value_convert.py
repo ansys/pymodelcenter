@@ -1,10 +1,14 @@
+from os import PathLike
 import sys
+from typing import Optional
 
 import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as grpc_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert as test_module
+
+from .grpc_server_test_utils.mock_file_value import MockFileValue
 
 
 @pytest.mark.parametrize("internal_value", [0, -1, 1, -47, 47, 2147483647, -2147483648])
@@ -135,6 +139,37 @@ def test_boolean_value_grpc_to_atvi(internal_value: bool):
     # Verify
     assert isinstance(converted, atvi.BooleanValue)
     assert internal_value == converted
+
+
+@pytest.mark.parametrize("internal_value", [True, False])
+@pytest.mark.skip("Set not yet implemented")
+def test_file_value_atvi_to_grpc(internal_value: MockFileValue):
+    pass
+
+
+@pytest.mark.parametrize(
+    "internal_value,expected_value",
+    [
+        (grpc_msg.FileValue(), MockFileValue("")),
+        (grpc_msg.FileValue(content_path="a.path"), MockFileValue("a.path")),
+    ],
+)
+def test_file_value_grpc_to_atvi(
+    monkeypatch, internal_value: grpc_msg.FileValue, expected_value: MockFileValue
+):
+    # Setup
+    def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
+        return MockFileValue(str(to_read))
+
+    monkeypatch.setattr(atvi.NonManagingFileScope, "read_from_file", mock_read)
+    original = grpc_msg.VariableValue(file_value=internal_value)
+
+    # Execute
+    converted = test_module.convert_grpc_value_to_atvi(original)
+
+    # Verify
+    assert isinstance(converted, atvi.FileValue)
+    assert expected_value == converted
 
 
 def test_integer_array_value_grpc_to_atvi_empty():
@@ -529,3 +564,86 @@ def test_bool_array_value_atvi_to_grpc_multi_dimensional():
         False,
     ]
     assert converted.bool_array_value.dims.dims == [3, 3]
+
+
+def test_file_array_value_grpc_to_atvi_empty():
+    # Setup
+    original = grpc_msg.VariableValue(
+        file_array_value=grpc_msg.FileArrayValue(values=[], dims=grpc_msg.ArrayDimensions(dims=[0]))
+    )
+
+    # Execute
+    converted = test_module.convert_grpc_value_to_atvi(original)
+
+    # Verify
+    assert isinstance(converted, atvi.FileArrayValue)
+    assert converted == []
+
+
+def test_file_array_value_grpc_to_atvi_one_dimensional(monkeypatch):
+    # Setup
+    def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
+        return MockFileValue(str(to_read))
+
+    monkeypatch.setattr(atvi.NonManagingFileScope, "read_from_file", mock_read)
+    original = grpc_msg.VariableValue(
+        file_array_value=grpc_msg.FileArrayValue(
+            values=[
+                grpc_msg.FileValue(content_path="a.path"),
+                grpc_msg.FileValue(content_path="b.path"),
+                grpc_msg.FileValue(content_path="c.path"),
+            ],
+            dims=grpc_msg.ArrayDimensions(dims=[3]),
+        )
+    )
+
+    # Execute
+    converted = test_module.convert_grpc_value_to_atvi(original)
+
+    # Verify
+    assert isinstance(converted, atvi.FileArrayValue)
+    assert converted == [MockFileValue("a.path"), MockFileValue("b.path"), MockFileValue("c.path")]
+
+
+def test_file_array_value_grpc_to_atvi_multi_dimensional(monkeypatch):
+    # Setup
+    def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
+        return MockFileValue(str(to_read))
+
+    monkeypatch.setattr(atvi.NonManagingFileScope, "read_from_file", mock_read)
+    original = grpc_msg.VariableValue(
+        file_array_value=grpc_msg.FileArrayValue(
+            values=[
+                grpc_msg.FileValue(content_path="a.path"),
+                grpc_msg.FileValue(content_path="b.path"),
+                grpc_msg.FileValue(content_path="c.path"),
+                grpc_msg.FileValue(content_path="d.path"),
+            ],
+            dims=grpc_msg.ArrayDimensions(dims=[2, 2]),
+        )
+    )
+
+    # Execute
+    converted = test_module.convert_grpc_value_to_atvi(original)
+
+    # Verify
+    assert isinstance(converted, atvi.FileArrayValue)
+    assert converted == [
+        [MockFileValue("a.path"), MockFileValue("b.path")],
+        [MockFileValue("c.path"), MockFileValue("d.path")],
+    ]
+
+
+@pytest.mark.skip("Set not yet implemented")
+def test_file_array_value_atvi_to_grpc_empty():
+    pass
+
+
+@pytest.mark.skip("Set not yet implemented")
+def test_file_array_value_atvi_to_grpc_one_dimensional():
+    pass
+
+
+@pytest.mark.skip("Set not yet implemented")
+def test_file_array_value_atvi_to_grpc_multi_dimensional():
+    pass
