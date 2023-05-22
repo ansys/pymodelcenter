@@ -1,6 +1,6 @@
 """Provides an object-oriented way to interact with ModelCenter variables via gRPC."""
 from abc import ABC
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Collection, Optional
 
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
@@ -8,6 +8,7 @@ from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
+from . import create_datapin
 from .abstract_workflow_element import AbstractWorkflowElement
 
 if TYPE_CHECKING:
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
+from .proto.variable_value_messages_pb2 import GetVariableDependenciesRequest
 from .proto.workflow_messages_pb2 import ElementIdOrName
 from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
 
@@ -70,3 +72,48 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
                 "Unexpected failure converting gRPC value response"
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
+
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def get_dependents(
+        self, only_fetch_direct_dependents: bool, follow_suspended_links: bool
+    ) -> Collection[mc_api.IDatapin]:
+        request = GetVariableDependenciesRequest(
+            id=self._element_id,
+            onlyFetchDirectDependencies=only_fetch_direct_dependents,
+            followSuspended=follow_suspended_links,
+        )
+
+        response = self._client.VariableGetDependents(request)
+        variables = [
+            create_datapin.create_datapin(
+                grpc_type_enum_to_interop_type(one_var_info.value_type),
+                one_var_info.id,
+                self._engine,
+            )
+            for one_var_info in response.variables
+        ]
+        return variables
+
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def get_precedents(
+        self, only_fetch_direct_precedents: bool, follow_suspended_links: bool
+    ) -> Collection[mc_api.IDatapin]:
+        request = GetVariableDependenciesRequest(
+            id=self._element_id,
+            onlyFetchDirectDependencies=only_fetch_direct_precedents,
+            followSuspended=follow_suspended_links,
+        )
+
+        response = self._client.VariableGetPrecedents(request)
+        variables = [
+            create_datapin.create_datapin(
+                grpc_type_enum_to_interop_type(one_var_info.value_type),
+                one_var_info.id,
+                self._engine,
+            )
+            for one_var_info in response.variables
+        ]
+
+        return variables
