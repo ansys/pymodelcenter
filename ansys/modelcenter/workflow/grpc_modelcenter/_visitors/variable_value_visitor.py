@@ -54,7 +54,15 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
     @overrides
     def visit_file(self, value: atvi.FileValue) -> bool:
-        raise NotImplementedError()  # pragma: no cover
+        with value.get_reference_to_actual_content_file() as local_pin:
+            value_in_request = var_val_msg.FileValue()
+            if local_pin.content_path is not None:
+                value_in_request.content_path = str(local_pin.content_path)
+            request = var_val_msg.SetFileValueRequest(
+                target=self._var_id, new_value=value_in_request
+            )
+            response = self._stub.FileVariableSetValue(request)
+            return response.was_changed
 
     @overrides
     def visit_integer_array(self, value: atvi.IntegerArrayValue) -> bool:

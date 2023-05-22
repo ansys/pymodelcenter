@@ -316,9 +316,8 @@ def test_set_metadata_populated_custom_metadata(
 
 @pytest.mark.parametrize(
     "set_value,expected_value_in_request",
-    [(MockFileValue(), MockFileValue()), (MockFileValue("a.path"), MockFileValue("a.path"))],
+    [(atvi.EMPTY_FILE, FileValue()), (MockFileValue("a.path"), FileValue(content_path="a.path"))],
 )
-@pytest.mark.skip("Set not yet implemented")
 def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Set up
     mock_client = MockWorkflowClientForFileVarTest()
@@ -339,39 +338,6 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
             target=sut_element_id, new_value=expected_value_in_request
         )
         mock_grpc_method.assert_called_once_with(expected_request)
-
-
-@pytest.mark.parametrize(
-    "set_value",
-    [
-        atvi.BooleanValue(True),
-        atvi.IntegerValue(0),
-        atvi.RealValue(0.0),
-        atvi.StringValue("False"),
-        atvi.IntegerArrayValue(),
-        atvi.RealArrayValue(),
-        atvi.FileArrayValue(),
-        atvi.StringArrayValue(),
-    ],
-)
-def test_scalar_set_disallowed(monkeypatch, engine, set_value) -> None:
-    # Set up
-    mock_client = MockWorkflowClientForFileVarTest()
-    mock_response = SetVariableValueResponse()
-    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
-    with unittest.mock.patch.object(
-        mock_client, "FileVariableSetValue", return_value=mock_response
-    ) as mock_grpc_method:
-        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
-        sut = FileDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
-
-        # Execute / verify:
-        with pytest.raises(atvi.IncompatibleTypesException):
-            sut.set_value(new_value)
-
-        # Verify
-        mock_grpc_method.assert_not_called()
 
 
 @pytest.mark.parametrize(

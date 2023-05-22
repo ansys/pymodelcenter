@@ -13,6 +13,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .grpc_server_test_utils.mock_file_value import MockFileValue
 
 
 class MockWorkflowClientForWorkflowTest:
@@ -282,6 +283,9 @@ class MockWorkflowClientForWorkflowTest:
     def StringVariableSetValue(self, request):
         pass
 
+    def FileVariableSetValue(self, request):
+        pass
+
     def BooleanArraySetValue(self, request):
         pass
 
@@ -327,6 +331,7 @@ def setup_function(monkeypatch, engine) -> None:
     monkeypatch_client_creation(monkeypatch, grpcmc.IntegerArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.FileDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.UnsupportedWorkflowElement, mock_client)
 
     global workflow
@@ -436,6 +441,14 @@ set_value_tests = [
         atvi.StringValue("strVal"),
         "strVal",
         id="str",
+    ),
+    pytest.param(
+        "FileVariableSetValue",
+        "model.file",
+        "MODEL_FILE",
+        MockFileValue("a.path"),
+        var_msgs.FileValue(content_path="a.path"),
+        id="file",
     ),
     pytest.param(
         "BooleanArraySetValue",
