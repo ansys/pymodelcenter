@@ -55,9 +55,7 @@ class _DatapinCreationVisitor(atvi.IVariableTypePseudoVisitor[mc_api.IDatapin]):
         return string_pin_impl.StringArrayDatapin(element_id=self._element_id, engine=self._engine)
 
     def visit_file_array(self) -> mc_api.IDatapin:
-        return unsupported_pin_impl.UnsupportedTypeDatapin(
-            element_id=self._element_id, engine=self._engine
-        )
+        return file_pin_impl.FileArrayDatapin(element_id=self._element_id, engine=self._engine)
 
 
 def create_datapin(

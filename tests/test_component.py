@@ -108,7 +108,7 @@ def test_get_variables_empty(monkeypatch, engine):
         (VariableType.VARTYPE_REAL_ARRAY, mc_api.IRealArrayDatapin),
         (VariableType.VARTYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayDatapin),
         (VariableType.VARTYPE_STRING_ARRAY, mc_api.IStringArrayDatapin),
-        (VariableType.VARTYPE_FILE_ARRAY, UnsupportedTypeDatapin),
+        (VariableType.VARTYPE_FILE_ARRAY, mc_api.IFileArrayDatapin),
         (VariableType.VARTYPE_UNKNOWN, UnsupportedTypeDatapin),
     ],
 )
