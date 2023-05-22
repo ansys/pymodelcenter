@@ -34,6 +34,17 @@ class IDatapinLink(ABC):
         already suspended.
         """
 
+    @abstractmethod
+    def is_suspended(self) -> bool:
+        """
+        Check whether the link is suspended.
+
+        Returns
+        =======
+        bool:
+            True if the link is suspended, and False otherwise.
+        """
+
     @property
     @abstractmethod
     def lhs(self) -> str:
