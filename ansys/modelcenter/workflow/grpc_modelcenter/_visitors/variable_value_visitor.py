@@ -1,3 +1,4 @@
+from contextlib import ExitStack
 from typing import Callable, Type
 
 import ansys.tools.variableinterop as atvi
@@ -102,7 +103,26 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
     @overrides
     def visit_file_array(self, value: atvi.FileArrayValue) -> bool:
-        raise NotImplementedError  # pragma: no cover
+        with ExitStack() as local_content_copy_stack:
+            request = var_val_msg.SetFileArrayValueRequest(
+                target=self._var_id,
+                new_value=var_val_msg.FileArrayValue(
+                    dims=var_val_msg.ArrayDimensions(dims=value.get_lengths())
+                ),
+            )
+            one_file_value: atvi.FileValue
+            for one_file_value in value.flatten():
+                one_local_content: atvi.LocalFileContentContext = (
+                    local_content_copy_stack.enter_context(
+                        one_file_value.get_reference_to_actual_content_file()
+                    )
+                )
+                one_grpc_file_value = var_val_msg.FileValue()
+                if one_local_content.content_path is not None:
+                    one_grpc_file_value.content_path = str(one_local_content.content_path)
+                request.new_value.values.add(content_path=one_local_content.content_path)
+            response = self._stub.FileArraySetValue(request)
+            return response.was_changed
 
     def _scalar_request(
         self, value: atvi.IVariableValue, request_type: Type, value_type: Type, grpc_call: Callable

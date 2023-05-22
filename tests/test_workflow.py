@@ -298,6 +298,9 @@ class MockWorkflowClientForWorkflowTest:
     def StringArraySetValue(self, request):
         pass
 
+    def FileArraySetValue(self, request):
+        pass
+
     def WorkflowMoveComponent(
         self, request: wkf_msgs.MoveComponentRequest
     ) -> elem_msgs.ElementIndexInParentResponse:
@@ -332,6 +335,7 @@ def setup_function(monkeypatch, engine) -> None:
     monkeypatch_client_creation(monkeypatch, grpcmc.StringDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.FileDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.FileArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.UnsupportedWorkflowElement, mock_client)
 
     global workflow
@@ -481,6 +485,27 @@ set_value_tests = [
         atvi.StringArrayValue(values=["one", "two"]),
         var_msgs.StringArrayValue(values=["one", "two"], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="str[]",
+    ),
+    pytest.param(
+        "FileArraySetValue",
+        "model.files",
+        "MODEL_FILES",
+        atvi.FileArrayValue(
+            values=[
+                [MockFileValue("0/0/path"), atvi.EMPTY_FILE],
+                [MockFileValue("1/0/path"), MockFileValue("1/1/path")],
+            ]
+        ),
+        var_msgs.FileArrayValue(
+            values=[
+                var_msgs.FileValue(content_path="0/0/path"),
+                var_msgs.FileValue(),
+                var_msgs.FileValue(content_path="1/0/path"),
+                var_msgs.FileValue(content_path="1/1/path"),
+            ],
+            dims=var_msgs.ArrayDimensions(dims=[2, 2]),
+        ),
+        id="file[]",
     ),
 ]
 

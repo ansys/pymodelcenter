@@ -350,16 +350,23 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
         (
             atvi.FileArrayValue(
                 shape_=(2, 2),
-                values=[[FileValue(), FileValue()], [FileValue(), FileValue()]],
+                values=[
+                    [MockFileValue("path.0.0"), atvi.EMPTY_FILE],
+                    [MockFileValue("path.1.0"), MockFileValue("path.1.1")],
+                ],
             ),
             FileArrayValue(
                 dims=ArrayDimensions(dims=[2, 2]),
-                values=[FileValue(), FileValue(), FileValue(), FileValue()],
+                values=[
+                    FileValue(content_path="path.0.0"),
+                    FileValue(),
+                    FileValue(content_path="path.1.0"),
+                    FileValue(content_path="path.1.1"),
+                ],
             ),
         ),
     ],
 )
-@pytest.mark.skip("Set not yet implemented")
 def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Set up
     mock_client = MockWorkflowClientForFileVarTest()
