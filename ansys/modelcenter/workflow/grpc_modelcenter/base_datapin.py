@@ -8,8 +8,8 @@ from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
 
+from . import create_datapin
 from .abstract_workflow_element import AbstractWorkflowElement
-from .create_datapin import create_datapin
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -86,7 +86,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
 
         response = self._client.VariableGetDependents(request)
         variables = [
-            create_datapin(
+            create_datapin.create_datapin(
                 grpc_type_enum_to_interop_type(one_var_info.value_type),
                 one_var_info.id,
                 self._engine,
@@ -108,7 +108,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
 
         response = self._client.VariableGetPrecedents(request)
         variables = [
-            create_datapin(
+            create_datapin.create_datapin(
                 grpc_type_enum_to_interop_type(one_var_info.value_type),
                 one_var_info.id,
                 self._engine,
