@@ -993,6 +993,27 @@ def test_create_link_with_objects(setup_function) -> None:
     assert mock_client.was_link_created is True
 
 
+@pytest.mark.parametrize(
+    "offending_state",
+    [
+        atvi.VariableState(atvi.EMPTY_FILE, True),
+        atvi.VariableState(atvi.FileArrayValue(0, []), True),
+    ],
+)
+def test_run_synchronous_remote_input_contains_file_value_raises_good_error(
+    setup_function, offending_state
+) -> None:
+    # Using a dict as an ordered set
+    with unittest.mock.patch(
+        "ansys.modelcenter.workflow.grpc_modelcenter.Engine.is_local",
+        new_callable=unittest.mock.PropertyMock,
+    ) as mock_is_local:
+        mock_is_local.return_value = False
+
+        with pytest.raises(grpcmc.ValueTypeNotSupportedError, match="remote"):
+            workflow.run(inputs={"file_var": offending_state})
+
+
 @pytest.mark.parametrize("reset", [True, False])
 def test_run_synchronous(setup_function, reset: bool) -> None:
     # Using a dict as an ordered set

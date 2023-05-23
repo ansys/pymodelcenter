@@ -1,12 +1,12 @@
 """Implementation of Workflow."""
+from contextlib import ExitStack
 import os
-from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union, Dict
+from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
 
 import ansys.engineeringworkflow.api as engapi
 import ansys.tools.variableinterop as atvi
 import grpc
 from overrides import overrides
-from contextlib import ExitStack
 
 import ansys.modelcenter.workflow.api as wfapi
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
@@ -98,7 +98,7 @@ class Workflow(wfapi.IWorkflow):
         reset: bool,
         validation_names: AbstractSet[str],
         collection_names: AbstractSet[str],
-        local_file_content_pins: ExitStack
+        local_file_content_pins: ExitStack,
     ) -> workflow_msg.WorkflowRunRequest:
         request = workflow_msg.WorkflowRunRequest(
             target=workflow_msg.WorkflowId(id=self._id),
@@ -111,7 +111,11 @@ class Workflow(wfapi.IWorkflow):
         var_state: atvi.VariableState
         for var_id, var_state in inputs.items():
             request.inputs[var_id].is_valid = var_state.is_valid
-            request.inputs[var_id].value.MergeFrom(convert_interop_value_to_grpc(var_state.value, local_file_content_pins))
+            request.inputs[var_id].value.MergeFrom(
+                convert_interop_value_to_grpc(
+                    var_state.value, local_file_content_pins, self._engine.is_local
+                )
+            )
 
         return request
 
@@ -141,7 +145,9 @@ class Workflow(wfapi.IWorkflow):
             return {
                 elem_id: atvi.VariableState(
                     is_valid=response_var_state.is_valid,
-                    value=convert_grpc_value_to_atvi(response_var_state.value, self._engine.is_local),
+                    value=convert_grpc_value_to_atvi(
+                        response_var_state.value, self._engine.is_local
+                    ),
                 )
                 for elem_id, response_var_state in response.results.items()
             }

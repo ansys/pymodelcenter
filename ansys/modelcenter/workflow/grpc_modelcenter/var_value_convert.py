@@ -1,19 +1,20 @@
 """Methods to convert between gRPC messages and Ansys Common Variable Interop's IVariableValue."""
 
+from contextlib import ExitStack
+from typing import Optional
+
 import ansys.tools.variableinterop as atvi
 import numpy as np
 from overrides import overrides
-from contextlib import ExitStack
-from typing import Optional
 
 from .proto.variable_value_messages_pb2 import (
     ArrayDimensions,
     BooleanArrayValue,
     DoubleArrayValue,
+    FileArrayValue,
+    FileValue,
     IntegerArrayValue,
     StringArrayValue,
-    FileValue,
-    FileArrayValue,
     VariableType,
     VariableValue,
 )
@@ -188,8 +189,23 @@ def convert_grpc_value_to_atvi(
 class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
     """Produces a gRPC VariableValue message for a given IVariableValue."""
 
-    def __init__(self, local_file_context_stack: Optional[ExitStack]):
+    def __init__(self, local_file_context_stack: Optional[ExitStack], engine_is_local: bool):
+        """
+        Initialize a new instance.
+
+        Parameters
+        ==========
+        local_file_context_stack : Optional[ExitStack]
+            An exit stack into which local file content contexts will be opened.
+            It is the caller's responsibility to close / exit this object.
+            If None is passed, any attempt to convert a file value
+            raises a ValueTypeNotSupportedError.
+        engine_is_local : bool
+            A flag indicating whether the ModelCenter engine is local.
+            This may impact how or whether file value conversion is supported.
+        """
         self._local_file_context_stack = local_file_context_stack
+        self._engine_is_local = engine_is_local
 
     @overrides
     def visit_integer(self, value: atvi.IntegerValue) -> VariableValue:
@@ -218,11 +234,19 @@ class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
     @overrides
     def visit_file(self, value: atvi.FileValue) -> VariableValue:
         if self._local_file_context_stack is None:
-            raise ValueTypeNotSupportedError("File values are currently not supported for this operation.")
-        local_file_context: atvi.LocalFileContentContext = self._local_file_context_stack.enter_context(value.get_reference_to_actual_content_file())
-        return VariableValue(
-            file_value=FileValue(content_path=local_file_context.content_path)
+            raise ValueTypeNotSupportedError(
+                "File values are currently not supported for this operation."
+            )
+        if not self._engine_is_local:
+            raise ValueTypeNotSupportedError(
+                "Sending file values to remote engines is currently not supported."
+            )
+        local_file_context: atvi.LocalFileContentContext = (
+            self._local_file_context_stack.enter_context(
+                value.get_reference_to_actual_content_file()
+            )
         )
+        return VariableValue(file_value=FileValue(content_path=local_file_context.content_path))
 
     @overrides
     def visit_real_array(self, value: atvi.RealArrayValue) -> VariableValue:
@@ -250,18 +274,30 @@ class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
 
     @overrides
     def visit_file_array(self, value: atvi.FileArrayValue) -> VariableValue:
-        converted = FileArrayValue(
-            dims=ArrayDimensions(dims=value.shape)
-        )
+        converted = FileArrayValue(dims=ArrayDimensions(dims=value.shape))
         if self._local_file_context_stack is None:
-            raise ValueTypeNotSupportedError("File array values are not currently supported for this operation.")
+            raise ValueTypeNotSupportedError(
+                "File array values are not currently supported for this operation."
+            )
+        if not self._engine_is_local:
+            raise ValueTypeNotSupportedError(
+                "Sending file values to remote engines is currently not supported."
+            )
         each_file_value: atvi.FileValue
         for each_file_value in value.flatten():
-            each_local_file_context: atvi.LocalFileContentContext = self._local_file_context_stack.enter_context(each_file_value.get_reference_to_actual_content_file())
+            each_local_file_context: atvi.LocalFileContentContext = (
+                self._local_file_context_stack.enter_context(
+                    each_file_value.get_reference_to_actual_content_file()
+                )
+            )
             converted.values.add(content_path=each_local_file_context.content_path)
         return VariableValue(file_array_value=converted)
 
 
-def convert_interop_value_to_grpc(original: atvi.IVariableValue, local_file_context_stack: Optional[ExitStack] = None) -> VariableValue:
+def convert_interop_value_to_grpc(
+    original: atvi.IVariableValue,
+    local_file_context_stack: Optional[ExitStack] = None,
+    engine_is_local=False,
+) -> VariableValue:
     """Produce an equivalent gRPC VariableValue message from an IVariableValue."""
-    return original.accept(ToGRPCVisitor(local_file_context_stack))
+    return original.accept(ToGRPCVisitor(local_file_context_stack, engine_is_local))
