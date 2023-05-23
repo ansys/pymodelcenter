@@ -1005,9 +1005,7 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
         "INPUT_VAR_4": atvi.VariableState(
             is_valid=True, value=atvi.StringValue("this is a test string")
         ),
-        "INPUT_VAR_5": atvi.VariableState(
-            is_valid=True, value=MockFileValue("some/path")
-        )
+        "INPUT_VAR_5": atvi.VariableState(is_valid=True, value=MockFileValue("some/path")),
     }
 
     mock_response = wkf_msgs.WorkflowRunResponse()
@@ -1043,8 +1041,11 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
                 is_valid=True, value=var_msgs.VariableValue(string_value="this is a test string")
             ),
             "INPUT_VAR_5": var_msgs.VariableState(
-                is_valid=True, value=var_msgs.VariableValue(file_value=var_msgs.FileValue(content_path="some/path"))
-            )
+                is_valid=True,
+                value=var_msgs.VariableValue(
+                    file_value=var_msgs.FileValue(content_path="some/path")
+                ),
+            ),
         },
     )
     assert mock_client.workflow_run_requests == [expected_request]

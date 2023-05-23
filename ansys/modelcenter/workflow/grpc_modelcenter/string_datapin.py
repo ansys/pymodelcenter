@@ -77,7 +77,7 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
     @atvi.implicit_coerce
     def _do_set_value(self, value: atvi.StringValue) -> None:
-        value.accept(VariableValueVisitor(self._element_id, self._client))
+        value.accept(VariableValueVisitor(self._element_id, self._client, self._engine.is_local))
 
 
 class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
@@ -132,4 +132,4 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
 
     @atvi.implicit_coerce
     def _do_set_value(self, value: atvi.StringArrayValue) -> None:
-        value.accept(VariableValueVisitor(self._element_id, self._client))
+        value.accept(VariableValueVisitor(self._element_id, self._client, self._engine.is_local))

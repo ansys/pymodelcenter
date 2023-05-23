@@ -27,6 +27,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
 from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
     CustomMetadataValueNotSupportedError,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueTypeNotSupportedError
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue
@@ -340,6 +341,25 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
+def test_scalar_set_remote_produces_good_error(monkeypatch, engine) -> None:
+    mock_client = MockWorkflowClientForFileVarTest()
+    mock_response = SetVariableValueResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch(
+        "ansys.modelcenter.workflow.grpc_modelcenter.Engine.is_local",
+        new_callable=unittest.mock.PropertyMock,
+    ) as mock_is_local:
+        mock_is_local.return_value = False
+        with unittest.mock.patch.object(
+            mock_client, "FileVariableSetValue", return_value=mock_response
+        ) as mock_grpc_method:
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+            sut = FileDatapin(sut_element_id, engine)
+            with pytest.raises(ValueTypeNotSupportedError, match="remote"):
+                sut.set_value(atvi.VariableState(atvi.EMPTY_FILE, True))
+            mock_grpc_method.assert_not_called()
+
+
 @pytest.mark.parametrize(
     "set_value,expected_value_in_request",
     [
@@ -387,6 +407,25 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
             target=sut_element_id, new_value=expected_value_in_request
         )
         mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_array_set_remote_produces_good_error(monkeypatch, engine) -> None:
+    mock_client = MockWorkflowClientForFileVarTest()
+    mock_response = SetVariableValueResponse()
+    sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch(
+        "ansys.modelcenter.workflow.grpc_modelcenter.Engine.is_local",
+        new_callable=unittest.mock.PropertyMock,
+    ) as mock_is_local:
+        mock_is_local.return_value = False
+        with unittest.mock.patch.object(
+            mock_client, "FileArraySetValue", return_value=mock_response
+        ) as mock_grpc_method:
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+            sut = FileArrayDatapin(sut_element_id, engine)
+            with pytest.raises(ValueTypeNotSupportedError, match="remote"):
+                sut.set_value(atvi.VariableState(atvi.FileArrayValue(0, []), True))
+            mock_grpc_method.assert_not_called()
 
 
 @pytest.mark.parametrize(
