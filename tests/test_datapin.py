@@ -185,7 +185,7 @@ def test_get_dependents(
     # Setup
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
-    one_child_assembly = VariableInfoCollection(
+    return_variables = VariableInfoCollection(
         variables=[
             VariableInfo(
                 id=ElementId(id_string="IDVAR_LARRY"),
@@ -205,7 +205,7 @@ def test_get_dependents(
         ]
     )
     with unittest.mock.patch.object(
-        mock_client, "VariableGetDependents", return_value=one_child_assembly
+        mock_client, "VariableGetDependents", return_value=return_variables
     ) as mock_get_variable_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = MockVariable(element_id=sut_element_id, engine=engine)
@@ -244,7 +244,7 @@ def test_get_precedents(
     # Setup
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
-    one_child_assembly = VariableInfoCollection(
+    return_variables = VariableInfoCollection(
         variables=[
             VariableInfo(
                 id=ElementId(id_string="IDVAR_LARRY"),
@@ -264,7 +264,7 @@ def test_get_precedents(
         ]
     )
     with unittest.mock.patch.object(
-        mock_client, "VariableGetPrecedents", return_value=one_child_assembly
+        mock_client, "VariableGetPrecedents", return_value=return_variables
     ) as mock_get_variable_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = MockVariable(element_id=sut_element_id, engine=engine)
