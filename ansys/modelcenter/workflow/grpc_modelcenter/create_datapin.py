@@ -5,6 +5,7 @@ import ansys.tools.variableinterop as atvi
 
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin as bool_pin_impl
+import ansys.modelcenter.workflow.grpc_modelcenter.file_datapin as file_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin as int_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.real_datapin as double_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.string_datapin as string_pin_impl
@@ -12,6 +13,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin as u
 
 if TYPE_CHECKING:
     from .engine import Engine
+
 from .proto.element_messages_pb2 import ElementId
 
 
@@ -38,9 +40,7 @@ class _DatapinCreationVisitor(atvi.IVariableTypePseudoVisitor[mc_api.IDatapin]):
         return string_pin_impl.StringDatapin(element_id=self._element_id, engine=self._engine)
 
     def visit_file(self) -> mc_api.IDatapin:
-        return unsupported_pin_impl.UnsupportedTypeDatapin(
-            element_id=self._element_id, engine=self._engine
-        )
+        return file_pin_impl.FileDatapin(element_id=self._element_id, engine=self._engine)
 
     def visit_int_array(self) -> mc_api.IDatapin:
         return int_pin_impl.IntegerArrayDatapin(element_id=self._element_id, engine=self._engine)
@@ -55,9 +55,7 @@ class _DatapinCreationVisitor(atvi.IVariableTypePseudoVisitor[mc_api.IDatapin]):
         return string_pin_impl.StringArrayDatapin(element_id=self._element_id, engine=self._engine)
 
     def visit_file_array(self) -> mc_api.IDatapin:
-        return unsupported_pin_impl.UnsupportedTypeDatapin(
-            element_id=self._element_id, engine=self._engine
-        )
+        return file_pin_impl.FileArrayDatapin(element_id=self._element_id, engine=self._engine)
 
 
 def create_datapin(

@@ -15,6 +15,7 @@ from .component import (
 )
 from .datapin_link import DatapinLink
 from .engine import Engine, WorkflowAlreadyLoadedError
+from .file_datapin import FileArrayDatapin, FileDatapin
 from .format import Format
 from .group import Group
 from .grpc_error_interpretation import (
