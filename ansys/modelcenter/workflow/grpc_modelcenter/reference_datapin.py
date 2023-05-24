@@ -5,6 +5,7 @@ import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
 from .base_datapin import BaseDatapin
 
@@ -75,6 +76,33 @@ class ReferenceDatapin(BaseDatapin, mc_api.IReferenceDatapin):
         # set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
         # value.value.accept(set_visitor)
         pass
+
+    @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def equation(self) -> str:
+        request = var_msgs.GetReferenceEquationRequest(target=self._element_id)
+        response: var_msgs.GetReferenceEquationResponse = (
+            self._client.ReferenceVariableGetReferenceEquation(request)
+        )
+        return response.equation
+
+    @equation.setter
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def equation(self, equation: str) -> None:
+        request = var_msgs.SetReferenceEquationRequest(target=self._element_id, equation=equation)
+        self._client.ReferenceVariableSetReferenceEquation(request)
+
+    @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def is_direct(self) -> bool:
+        request = var_msgs.GetReferenceIsDirectRequest(target=self._element_id)
+        response: var_msgs.GetReferenceIsDirectResponse = self._client.ReferenceVariableGetIsDirect(
+            request
+        )
+        return response.is_direct
 
 
 class ReferenceArrayDatapin(BaseDatapin, mc_api.IReferenceArrayDatapin):
