@@ -46,6 +46,35 @@ def test_can_get_basic_variable_information(workflow, name, var_type, is_array) 
     assert variable.is_input_to_component
 
 
+@pytest.mark.parametrize(
+    "name,var_type",
+    [
+        ("fileASCIIIn", grpcmc.FileDatapin),
+        ("fileArrayASCIIIn", grpcmc.FileArrayDatapin),
+        ("fileBinaryIn", grpcmc.FileDatapin),
+        ("fileArrayBinaryIn", grpcmc.FileArrayDatapin),
+    ],
+)
+@pytest.mark.workflow_name("file_tests.pxcz")
+def test_can_get_file_type_information(workflow, name, var_type) -> None:
+    # Arrange
+    parent: grpcmc.Assembly = workflow.get_root()
+    full_name: str = parent.full_name + "." + name
+
+    # Act
+    variable: mcapi.IDatapin = workflow.get_variable(full_name)
+
+    # Assert
+    assert isinstance(variable, var_type)
+    assert variable.name == name
+    assert variable.full_name == full_name
+    assert variable.element_id is not None
+    assert variable.parent_element_id == parent.element_id
+    assert variable.get_parent_element() == parent
+    assert variable.is_input_to_workflow
+    assert variable.is_input_to_component
+
+
 def test_can_manipulate_variable_properties(workflow) -> None:
     # Arrange
     variable: mcapi.IDatapin = workflow.get_variable("ワークフロー.all_types_コンポーネント.realIn")
@@ -414,3 +443,77 @@ def test_precedents_with_recursive_precedents_and_do_not_follow_suspended_links(
 
     # Verify
     case.assertCountEqual(first=result, second=expected)
+=======
+def do_file_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
+    meta_type = atvi.FileArrayMetadata if is_array else atvi.FileMetadata
+    cast = typing.cast(Any, variable)
+    metadata = meta_type()
+    metadata.description = "fileファイル"
+    metadata.custom_metadata["blargඞ"] = atvi.RealValue(0.00000007)
+    cast.set_metadata(metadata)
+
+
+def do_file_assert(variable: mcapi.IDatapin) -> None:
+    cast = typing.cast(Any, variable)
+    metadata = cast.get_metadata()
+    assert metadata.description == "fileファイル"
+    assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
+
+
+@pytest.mark.parametrize(
+    "var_name,val_type,value,var_setup,var_assert,is_array",
+    [
+        (
+            "Model.fileASCIIIn",
+            atvi.VariableType.FILE,
+            ewapi.VariableState(value=atvi.EMPTY_FILE, is_valid=True),
+            do_file_setup,
+            do_file_assert,
+            False,
+        ),
+        (
+            "Model.fileBinaryIn",
+            atvi.VariableType.FILE,
+            ewapi.VariableState(value=atvi.EMPTY_FILE, is_valid=True),
+            do_file_setup,
+            do_file_assert,
+            False,
+        ),
+        (
+            "Model.fileArrayASCIIIn",
+            atvi.VariableType.FILE_ARRAY,
+            ewapi.VariableState(
+                value=atvi.FileArrayValue(values=[atvi.EMPTY_FILE, atvi.EMPTY_FILE]), is_valid=True
+            ),
+            do_file_setup,
+            do_file_assert,
+            True,
+        ),
+        (
+            "Model.fileArrayBinaryIn",
+            atvi.VariableType.FILE_ARRAY,
+            ewapi.VariableState(
+                value=atvi.FileArrayValue(values=[atvi.EMPTY_FILE, atvi.EMPTY_FILE]), is_valid=True
+            ),
+            do_file_setup,
+            do_file_assert,
+            True,
+        ),
+    ],
+)
+@pytest.mark.workflow_name("file_tests.pxcz")
+def test_can_manipulate_type_specific_file_information(
+    workflow, var_name, val_type, value, var_setup, var_assert, is_array
+) -> None:
+    # Arrange
+    variable: mcapi.IDatapin = workflow.get_variable(var_name)
+    var_setup(variable, is_array)
+
+    # Act
+    # variable.set_value(value)  # TODO: File set not yet implemented
+    value_result: ewapi.VariableState = variable.get_value()
+
+    # Assert
+    # assert value_result == value
+    assert variable.value_type == val_type
+    var_assert(variable)
