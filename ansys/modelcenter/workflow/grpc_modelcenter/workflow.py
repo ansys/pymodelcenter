@@ -151,6 +151,13 @@ class Workflow(wfapi.IWorkflow):
                 )
                 for elem_id, response_var_state in response.results.items()
             }
+        # This line should only be reachable if one of the context managers in
+        # local_file_content_pins suppress an exception, which they should not
+        # be doing.
+        raise engapi.EngineInternalError(
+            "Reached an unexpected state. A local file content context may be suppressing an "
+            "exception? Report this error to the pyModelCenter maintainers."
+        )
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
