@@ -7,10 +7,12 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
+from . import var_value_convert
 from .base_datapin import BaseDatapin
 
 if TYPE_CHECKING:
     from .engine import Engine
+
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
@@ -69,13 +71,20 @@ class ReferenceDatapin(BaseDatapin, mc_api.IReferenceDatapin):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: atvi.VariableState) -> None:
-        # if not isinstance(value.value, atvi.BooleanValue):
-        #     raise atvi.IncompatibleTypesException(
-        #         value.value.variable_type, atvi.VariableType.BOOLEAN
-        #     )
-        # set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
-        # value.value.accept(set_visitor)
-        pass
+        if (
+            not isinstance(value.value, atvi.BooleanValue)
+            and not isinstance(value.value, atvi.RealValue)
+            and not isinstance(value.value, atvi.IntegerValue)
+            and not isinstance(value.value, atvi.StringValue)
+            and not isinstance(value.value, atvi.FileValue)
+        ):
+            raise atvi.IncompatibleTypesException(
+                value.value.variable_type, atvi.VariableType.UNKNOWN
+            )
+        new_value = var_value_convert.convert_interop_value_to_grpc(value.value)
+        request = var_msgs.SetReferenceValueRequest(target=self._element_id, new_value=new_value)
+        response = self._client.ReferenceVariableSetValue(request)
+        return response.was_changed
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
