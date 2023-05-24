@@ -1,6 +1,7 @@
 from contextlib import ExitStack
 from typing import Callable, Type
 
+import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 import numpy as np
 from overrides import overrides
@@ -136,6 +137,13 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
                     request.new_value.values.add(content_path=one_local_content.content_path)
                 response = self._stub.FileArraySetValue(request)
                 return response.was_changed
+            # This line should only be reachable if one of the context managers in
+            # local_content_copy_stack suppress an exception, which they should not
+            # be doing.
+            raise aew_api.EngineInternalError(
+                "Reached an unexpected state. A local file content context may be suppressing an "
+                "exception? Report this error to the pyModelCenter maintainers."
+            )
         else:
             raise ValueTypeNotSupportedError(
                 "Setting file array values is not currently " "supported for remote engines."
