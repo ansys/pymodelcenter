@@ -1,7 +1,6 @@
 import unittest.mock
 
 import ansys.tools.variableinterop as atvi
-from grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
@@ -10,6 +9,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
 )
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
+
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
 class MockWorkflowClientForRefVarTest:
