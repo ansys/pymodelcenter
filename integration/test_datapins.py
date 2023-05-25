@@ -1,5 +1,6 @@
 import typing
 from typing import Any, Mapping
+import unittest
 
 import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi
@@ -29,6 +30,35 @@ def test_can_get_basic_variable_information(workflow, name, var_type, is_array) 
     )
     if is_array:
         parent = next(iter(parent.get_groups().values()))
+    full_name: str = parent.full_name + "." + name
+
+    # Act
+    variable: mcapi.IDatapin = workflow.get_variable(full_name)
+
+    # Assert
+    assert isinstance(variable, var_type)
+    assert variable.name == name
+    assert variable.full_name == full_name
+    assert variable.element_id is not None
+    assert variable.parent_element_id == parent.element_id
+    assert variable.get_parent_element() == parent
+    assert variable.is_input_to_workflow
+    assert variable.is_input_to_component
+
+
+@pytest.mark.parametrize(
+    "name,var_type",
+    [
+        ("fileASCIIIn", grpcmc.FileDatapin),
+        ("fileArrayASCIIIn", grpcmc.FileArrayDatapin),
+        ("fileBinaryIn", grpcmc.FileDatapin),
+        ("fileArrayBinaryIn", grpcmc.FileArrayDatapin),
+    ],
+)
+@pytest.mark.workflow_name("file_tests.pxcz")
+def test_can_get_file_type_information(workflow, name, var_type) -> None:
+    # Arrange
+    parent: grpcmc.Assembly = workflow.get_root()
     full_name: str = parent.full_name + "." + name
 
     # Act
@@ -239,5 +269,252 @@ def test_can_manipulate_type_specific_variable_information(
 
     # Assert
     assert value_result == value
+    assert variable.value_type == val_type
+    var_assert(variable)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_dependents_with_direct_dependents_and_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_dependents on
+    a1: mcapi.IDatapin = workflow.get_variable("Model.Identity1.a")
+
+    # Setup: Variables we expect to be linked to
+    # The link between Model.Identity1.a and Model.Identity2.a should be suspended
+    expected = [
+        workflow.get_variable("Model.Identity2.a"),
+        workflow.get_variable("Model.Identity1.b"),
+    ]
+
+    # Execute
+    result = a1.get_dependents(only_fetch_direct_dependents=True, follow_suspended_links=True)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_dependents_with_direct_dependents_and_do_not_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_dependents on
+    a1: mcapi.IDatapin = workflow.get_variable("Model.Identity1.a")
+
+    # Setup: Variables we expect to be linked to.
+    # The only variable we expect is Identity1.b since the link between
+    #   Identity1.a -> Identity2.a is suspended.
+    expected = [workflow.get_variable("Model.Identity1.b")]
+
+    # Execute
+    result = a1.get_dependents(only_fetch_direct_dependents=True, follow_suspended_links=False)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_dependents_with_recursive_dependents_and_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_dependents on
+    a: mcapi.IDatapin = workflow.get_variable("Model.Identity.a")
+
+    # Setup: Variables we expect to be linked to
+    # The link between Model.Identity1.a and Model.Identity2.a should be suspended
+    expected = [
+        workflow.get_variable("Model.Identity1.a"),
+        workflow.get_variable("Model.Identity2.a"),
+        workflow.get_variable("Model.Identity3.a"),
+        workflow.get_variable("Model.Identity.b"),
+        workflow.get_variable("Model.Identity1.b"),
+        workflow.get_variable("Model.Identity2.b"),
+        workflow.get_variable("Model.Identity3.b"),
+    ]
+
+    # Execute
+    result = a.get_dependents(only_fetch_direct_dependents=False, follow_suspended_links=True)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_dependents_with_recursive_dependents_and_do_not_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_dependents on
+    a: mcapi.IDatapin = workflow.get_variable("Model.Identity.a")
+
+    # Setup: Variables we expect to be linked to.
+    # We only expect the 3 variables since the link between
+    #   Identity1.a -> Identity2.a is suspended.
+    expected = [
+        workflow.get_variable("Model.Identity1.a"),
+        workflow.get_variable("Model.Identity.b"),
+        workflow.get_variable("Model.Identity1.b"),
+    ]
+
+    # Execute
+    result = a.get_dependents(only_fetch_direct_dependents=False, follow_suspended_links=False)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_precedents_with_direct_precedents_and_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_precedents on
+    a2: mcapi.IDatapin = workflow.get_variable("Model.Identity2.a")
+
+    # Setup: Variables we expect to be linked to
+    # The link between Model.Identity1.a and Model.Identity2.a should be suspended
+    expected = [workflow.get_variable("Model.Identity1.a")]
+
+    # Execute
+    result = a2.get_precedents(only_fetch_direct_precedents=True, follow_suspended_links=True)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_precedents_with_direct_precedents_and_do_not_follow_suspended_links(workflow) -> None:
+    # Setup: The variable we'll get_precedents on
+    a2: mcapi.IDatapin = workflow.get_variable("Model.Identity2.a")
+
+    # Execute
+    result = a2.get_precedents(only_fetch_direct_precedents=True, follow_suspended_links=False)
+
+    # Verify: We expect no precedents to Model.Identity2.a since the link
+    # from Model.Identity1.a and Model.Identity2.a should be suspended
+    assert len(result) == 0
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_precedents_with_recursive_precedents_and_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_precedents on
+    b3: mcapi.IDatapin = workflow.get_variable("Model.Identity3.b")
+
+    # Setup: Variables we expect to be linked to
+    # The link between Model.Identity1.a and Model.Identity2.a should be suspended
+    expected = [
+        workflow.get_variable("Model.Identity3.a"),
+        workflow.get_variable("Model.Identity2.a"),
+        workflow.get_variable("Model.Identity1.a"),
+        workflow.get_variable("Model.Identity.a"),
+    ]
+
+    # Execute
+    result = b3.get_precedents(only_fetch_direct_precedents=False, follow_suspended_links=True)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_precedents_with_recursive_precedents_and_do_not_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_precedents on
+    b3: mcapi.IDatapin = workflow.get_variable("Model.Identity3.b")
+
+    # Setup: Variables we expect to be linked to.
+    # We only expect the 2 precedents since the link between
+    #   Identity1.a -> Identity2.a is suspended.
+    expected = [
+        workflow.get_variable("Model.Identity3.a"),
+        workflow.get_variable("Model.Identity2.a"),
+    ]
+
+    # Execute
+    result = b3.get_precedents(only_fetch_direct_precedents=False, follow_suspended_links=False)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+def do_file_setup(variable: mcapi.IDatapin, is_array: bool) -> None:
+    meta_type = atvi.FileArrayMetadata if is_array else atvi.FileMetadata
+    cast = typing.cast(Any, variable)
+    metadata = meta_type()
+    metadata.description = "fileファイル"
+    metadata.custom_metadata["blargඞ"] = atvi.RealValue(0.00000007)
+    cast.set_metadata(metadata)
+
+
+def do_file_assert(variable: mcapi.IDatapin) -> None:
+    cast = typing.cast(Any, variable)
+    metadata = cast.get_metadata()
+    assert metadata.description == "fileファイル"
+    assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
+
+
+@pytest.mark.parametrize(
+    "var_name,val_type,value,var_setup,var_assert,is_array",
+    [
+        (
+            "Model.fileASCIIIn",
+            atvi.VariableType.FILE,
+            ewapi.VariableState(value=atvi.EMPTY_FILE, is_valid=True),
+            do_file_setup,
+            do_file_assert,
+            False,
+        ),
+        (
+            "Model.fileBinaryIn",
+            atvi.VariableType.FILE,
+            ewapi.VariableState(value=atvi.EMPTY_FILE, is_valid=True),
+            do_file_setup,
+            do_file_assert,
+            False,
+        ),
+        (
+            "Model.fileArrayASCIIIn",
+            atvi.VariableType.FILE_ARRAY,
+            ewapi.VariableState(
+                value=atvi.FileArrayValue(values=[atvi.EMPTY_FILE, atvi.EMPTY_FILE]), is_valid=True
+            ),
+            do_file_setup,
+            do_file_assert,
+            True,
+        ),
+        (
+            "Model.fileArrayBinaryIn",
+            atvi.VariableType.FILE_ARRAY,
+            ewapi.VariableState(
+                value=atvi.FileArrayValue(values=[atvi.EMPTY_FILE, atvi.EMPTY_FILE]), is_valid=True
+            ),
+            do_file_setup,
+            do_file_assert,
+            True,
+        ),
+    ],
+)
+@pytest.mark.workflow_name("file_tests.pxcz")
+def test_can_manipulate_type_specific_file_information(
+    workflow, var_name, val_type, value, var_setup, var_assert, is_array
+) -> None:
+    # Arrange
+    variable: mcapi.IDatapin = workflow.get_variable(var_name)
+    var_setup(variable, is_array)
+
+    # Act
+    # variable.set_value(value)  # TODO: File set not yet implemented
+    value_result: ewapi.VariableState = variable.get_value()
+
+    # Assert
+    # assert value_result == value
     assert variable.value_type == val_type
     var_assert(variable)

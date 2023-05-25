@@ -193,7 +193,7 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - name: "Deploy the latest documentation"
-        uses: pyansys/actions/doc-deploy-dev@v4
+        uses: ansys/actions/doc-deploy-dev@v4
         with:
           cname: "modelcenter.docs.pyansys.com"
           token: ${{ secrets.GITHUB_TOKEN }}
