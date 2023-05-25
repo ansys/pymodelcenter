@@ -1,4 +1,5 @@
 """Implementation of Workflow."""
+from contextlib import ExitStack
 import os
 from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
 
@@ -97,6 +98,7 @@ class Workflow(wfapi.IWorkflow):
         reset: bool,
         validation_names: AbstractSet[str],
         collection_names: AbstractSet[str],
+        local_file_content_pins: ExitStack,
     ) -> workflow_msg.WorkflowRunRequest:
         request = workflow_msg.WorkflowRunRequest(
             target=workflow_msg.WorkflowId(id=self._id),
@@ -109,7 +111,11 @@ class Workflow(wfapi.IWorkflow):
         var_state: atvi.VariableState
         for var_id, var_state in inputs.items():
             request.inputs[var_id].is_valid = var_state.is_valid
-            request.inputs[var_id].value.MergeFrom(convert_interop_value_to_grpc(var_state.value))
+            request.inputs[var_id].value.MergeFrom(
+                convert_interop_value_to_grpc(
+                    var_state.value, local_file_content_pins, self._engine.is_local
+                )
+            )
 
         return request
 
@@ -129,19 +135,29 @@ class Workflow(wfapi.IWorkflow):
         validation_names: AbstractSet[str] = set(),
         collect_names: AbstractSet[str] = set(),
     ) -> Mapping[str, atvi.VariableState]:
-        request: workflow_msg.WorkflowRunRequest = self._create_run_request(
-            inputs, reset, validation_names, collect_names
-        )
-        response = self._stub.WorkflowRun(request)
-        elem_id: str
-        response_var_state: var_val_msg.VariableState
-        return {
-            elem_id: atvi.VariableState(
-                is_valid=response_var_state.is_valid,
-                value=convert_grpc_value_to_atvi(response_var_state.value, self._engine.is_local),
+        with ExitStack() as local_file_content_pins:
+            request: workflow_msg.WorkflowRunRequest = self._create_run_request(
+                inputs, reset, validation_names, collect_names, local_file_content_pins
             )
-            for elem_id, response_var_state in response.results.items()
-        }
+            response = self._stub.WorkflowRun(request)
+            elem_id: str
+            response_var_state: var_val_msg.VariableState
+            return {
+                elem_id: atvi.VariableState(
+                    is_valid=response_var_state.is_valid,
+                    value=convert_grpc_value_to_atvi(
+                        response_var_state.value, self._engine.is_local
+                    ),
+                )
+                for elem_id, response_var_state in response.results.items()
+            }
+        # This line should only be reachable if one of the context managers in
+        # local_file_content_pins suppress an exception, which they should not
+        # be doing.
+        raise engapi.EngineInternalError(
+            "Reached an unexpected state. A local file content context may be suppressing an "
+            "exception? Report this error to the pyModelCenter maintainers."
+        )
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
