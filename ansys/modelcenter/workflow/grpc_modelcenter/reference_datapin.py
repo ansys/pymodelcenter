@@ -165,10 +165,11 @@ class ReferenceArrayDatapin(BaseDatapin, mc_api.IReferenceArrayDatapin):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, value: atvi.VariableState) -> None:
-        # if not isinstance(value.value, atvi.BooleanArrayValue):
-        #     raise atvi.IncompatibleTypesException(
-        #         value.value.variable_type, atvi.VariableType.BOOLEAN_ARRAY
-        #     )
-        # set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
-        # value.value.accept(set_visitor)
-        pass
+        if not isinstance(value.value, atvi.RealArrayValue):
+            raise atvi.IncompatibleTypesException(
+                value.value.variable_type, atvi.VariableType.REAL_ARRAY
+            )
+        new_value = var_value_convert.convert_interop_value_to_grpc(value.value).double_array_value
+        request = var_msgs.SetDoubleArrayValueRequest(target=self._element_id, new_value=new_value)
+        response = self._client.ReferenceArraySetReferencedValues(request)
+        return response.was_changed
