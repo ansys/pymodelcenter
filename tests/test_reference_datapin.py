@@ -1,3 +1,5 @@
+from os import PathLike
+from typing import Optional
 import unittest.mock
 
 import ansys.tools.variableinterop as atvi
@@ -29,6 +31,9 @@ class MockWorkflowClientForRefVarTest:
         pass
 
     def ReferenceVariableSetValue(self, request):
+        pass
+
+    def ReferenceVariableGetValue(self, request):
         pass
 
     def ReferenceArraySetReferencedValues(self, request):
@@ -160,6 +165,155 @@ def test_scalar_set_disallowed(monkeypatch, engine, set_value):
             sut.set_value(new_value)
 
         # Assert
+        mock_grpc_method.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "variable_value,is_valid,expected_result",
+    [
+        (
+            var_msgs.VariableValue(double_value=-867.5309),
+            True,
+            atvi.VariableState(atvi.RealValue(-867.5309), True),
+        ),
+        (
+            var_msgs.VariableValue(
+                double_array_value=var_msgs.DoubleArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[1.0, 1.1, 2.0, 2.1]
+                )
+            ),
+            False,
+            atvi.VariableState(
+                atvi.RealArrayValue(shape_=(2, 2), values=[[1.0, 1.1], [2.0, 2.1]]), False
+            ),
+        ),
+        (
+            var_msgs.VariableValue(bool_value=True),
+            False,
+            atvi.VariableState(atvi.BooleanValue(True), False),
+        ),
+        (
+            var_msgs.VariableValue(
+                bool_array_value=var_msgs.BooleanArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]
+                )
+            ),
+            True,
+            atvi.VariableState(
+                atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), True
+            ),
+        ),
+        (
+            var_msgs.VariableValue(int_value=47),
+            True,
+            atvi.VariableState(atvi.IntegerValue(47), True),
+        ),
+        (
+            var_msgs.VariableValue(
+                int_array_value=var_msgs.IntegerArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[-8675309, 47, -1, 0]
+                )
+            ),
+            False,
+            atvi.VariableState(
+                atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]), False
+            ),
+        ),
+        (
+            var_msgs.VariableValue(string_value="(╯°□°）╯︵ ┻━┻"),
+            True,
+            atvi.VariableState(atvi.StringValue("(╯°□°）╯︵ ┻━┻"), True),
+        ),
+        (
+            var_msgs.VariableValue(
+                string_array_value=var_msgs.StringArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]),
+                    values=["primary", "secondary", "first", "second"],
+                )
+            ),
+            False,
+            atvi.VariableState(
+                atvi.StringArrayValue(
+                    shape_=(2, 2), values=[["primary", "secondary"], ["first", "second"]]
+                ),
+                False,
+            ),
+        ),
+        (
+            var_msgs.VariableValue(file_value=var_msgs.FileValue()),
+            True,
+            atvi.VariableState(MockFileValue(""), True),
+        ),
+        (
+            var_msgs.VariableValue(
+                file_array_value=var_msgs.FileArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]),
+                    values=[
+                        var_msgs.FileValue(),
+                        var_msgs.FileValue(),
+                        var_msgs.FileValue(),
+                        var_msgs.FileValue(),
+                    ],
+                )
+            ),
+            False,
+            atvi.VariableState(
+                atvi.FileArrayValue(
+                    shape_=(2, 2),
+                    values=[
+                        [MockFileValue(""), MockFileValue("")],
+                        [MockFileValue(""), MockFileValue("")],
+                    ],
+                ),
+                False,
+            ),
+        ),
+    ],
+)
+def test_get_value(monkeypatch, engine, variable_value, is_valid, expected_result) -> None:
+    # Arrange
+    def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
+        return MockFileValue(str(to_read))
+
+    monkeypatch.setattr(atvi.NonManagingFileScope, "read_from_file", mock_read)
+
+    mock_response = var_msgs.VariableState(value=variable_value, is_valid=is_valid)
+
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetValue", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act
+        result: atvi.VariableState = sut.get_value()
+
+        # Assert
+        expected_request = var_msgs.GetReferenceValueRequest(target=sut_element_id)
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+        assert result.value == expected_result.value
+        assert result.is_valid == expected_result.is_valid
+
+
+def test_get_value_with_hid(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetValue", return_value=var_msgs.VariableState()
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act/Assert
+        with pytest.raises(ValueError, match="does not yet support HIDs."):
+            sut.get_value("some_hid")
+
         mock_grpc_method.assert_not_called()
 
 
@@ -365,3 +519,158 @@ def test_array_index_set_reference_equation(monkeypatch, engine) -> None:
             target=sut_element_id, index=test_index, equation="ඞ"
         )
         mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(
+    "variable_value,is_valid,expected_result",
+    [
+        (
+            var_msgs.VariableValue(double_value=-867.5309),
+            True,
+            atvi.VariableState(atvi.RealValue(-867.5309), True),
+        ),
+        (
+            var_msgs.VariableValue(
+                double_array_value=var_msgs.DoubleArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[1.0, 1.1, 2.0, 2.1]
+                )
+            ),
+            False,
+            atvi.VariableState(
+                atvi.RealArrayValue(shape_=(2, 2), values=[[1.0, 1.1], [2.0, 2.1]]), False
+            ),
+        ),
+        (
+            var_msgs.VariableValue(bool_value=True),
+            False,
+            atvi.VariableState(atvi.BooleanValue(True), False),
+        ),
+        (
+            var_msgs.VariableValue(
+                bool_array_value=var_msgs.BooleanArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]
+                )
+            ),
+            True,
+            atvi.VariableState(
+                atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), True
+            ),
+        ),
+        (
+            var_msgs.VariableValue(int_value=47),
+            True,
+            atvi.VariableState(atvi.IntegerValue(47), True),
+        ),
+        (
+            var_msgs.VariableValue(
+                int_array_value=var_msgs.IntegerArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[-8675309, 47, -1, 0]
+                )
+            ),
+            False,
+            atvi.VariableState(
+                atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]), False
+            ),
+        ),
+        (
+            var_msgs.VariableValue(string_value="(╯°□°）╯︵ ┻━┻"),
+            True,
+            atvi.VariableState(atvi.StringValue("(╯°□°）╯︵ ┻━┻"), True),
+        ),
+        (
+            var_msgs.VariableValue(
+                string_array_value=var_msgs.StringArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]),
+                    values=["primary", "secondary", "first", "second"],
+                )
+            ),
+            False,
+            atvi.VariableState(
+                atvi.StringArrayValue(
+                    shape_=(2, 2), values=[["primary", "secondary"], ["first", "second"]]
+                ),
+                False,
+            ),
+        ),
+        (
+            var_msgs.VariableValue(file_value=var_msgs.FileValue()),
+            True,
+            atvi.VariableState(MockFileValue(""), True),
+        ),
+        (
+            var_msgs.VariableValue(
+                file_array_value=var_msgs.FileArrayValue(
+                    dims=var_msgs.ArrayDimensions(dims=[2, 2]),
+                    values=[
+                        var_msgs.FileValue(),
+                        var_msgs.FileValue(),
+                        var_msgs.FileValue(),
+                        var_msgs.FileValue(),
+                    ],
+                )
+            ),
+            False,
+            atvi.VariableState(
+                atvi.FileArrayValue(
+                    shape_=(2, 2),
+                    values=[
+                        [MockFileValue(""), MockFileValue("")],
+                        [MockFileValue(""), MockFileValue("")],
+                    ],
+                ),
+                False,
+            ),
+        ),
+    ],
+)
+def test_array_index_get_value(
+    monkeypatch, engine, variable_value, is_valid, expected_result
+) -> None:
+    # Arrange
+    test_index = 4
+
+    def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
+        return MockFileValue(str(to_read))
+
+    monkeypatch.setattr(atvi.NonManagingFileScope, "read_from_file", mock_read)
+
+    mock_response = var_msgs.VariableState(value=variable_value, is_valid=is_valid)
+
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetValue", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act
+        result: atvi.VariableState = sut[test_index].get_value()
+
+        # Assert
+        expected_request = var_msgs.GetReferenceValueRequest(
+            target=sut_element_id, index=test_index
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+        assert result.value == expected_result.value
+        assert result.is_valid == expected_result.is_valid
+
+
+def test_array_index_get_value_with_hid(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetValue", return_value=var_msgs.VariableState()
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act/Assert
+        with pytest.raises(ValueError, match="does not yet support HIDs."):
+            sut[0].get_value("some_hid")
+
+        mock_grpc_method.assert_not_called()
