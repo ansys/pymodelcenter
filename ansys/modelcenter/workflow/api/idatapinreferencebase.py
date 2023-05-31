@@ -1,10 +1,11 @@
 """Contains definitions for a base class for reference datapins."""
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import ansys.tools.variableinterop as atvi
 
 
-class IReferenceDatapinBase(ABC):
+class IDatapinReferenceBase(ABC):
     """
     Defines methods common to an individual reference to another datapin.
 
@@ -53,7 +54,7 @@ class IReferenceDatapinBase(ABC):
         ...
 
     @abstractmethod
-    def get_value(self) -> atvi.VariableState:
+    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
         """Get the value of the reference equation."""
 
     @abstractmethod

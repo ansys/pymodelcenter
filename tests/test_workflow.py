@@ -13,6 +13,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .grpc_server_test_utils.mock_file_value import MockFileValue
 
 
 class MockWorkflowClientForWorkflowTest:
@@ -282,6 +283,9 @@ class MockWorkflowClientForWorkflowTest:
     def StringVariableSetValue(self, request):
         pass
 
+    def FileVariableSetValue(self, request):
+        pass
+
     def BooleanArraySetValue(self, request):
         pass
 
@@ -292,6 +296,9 @@ class MockWorkflowClientForWorkflowTest:
         pass
 
     def StringArraySetValue(self, request):
+        pass
+
+    def FileArraySetValue(self, request):
         pass
 
     def WorkflowMoveComponent(
@@ -327,6 +334,8 @@ def setup_function(monkeypatch, engine) -> None:
     monkeypatch_client_creation(monkeypatch, grpcmc.IntegerArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.StringArrayDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.FileDatapin, mock_client)
+    monkeypatch_client_creation(monkeypatch, grpcmc.FileArrayDatapin, mock_client)
     monkeypatch_client_creation(monkeypatch, grpcmc.UnsupportedWorkflowElement, mock_client)
 
     global workflow
@@ -438,6 +447,14 @@ set_value_tests = [
         id="str",
     ),
     pytest.param(
+        "FileVariableSetValue",
+        "model.file",
+        "MODEL_FILE",
+        MockFileValue("a.path"),
+        var_msgs.FileValue(content_path="a.path"),
+        id="file",
+    ),
+    pytest.param(
         "BooleanArraySetValue",
         "model.booleans",
         "MODEL_BOOLEANS",
@@ -468,6 +485,27 @@ set_value_tests = [
         atvi.StringArrayValue(values=["one", "two"]),
         var_msgs.StringArrayValue(values=["one", "two"], dims=var_msgs.ArrayDimensions(dims=[2])),
         id="str[]",
+    ),
+    pytest.param(
+        "FileArraySetValue",
+        "model.files",
+        "MODEL_FILES",
+        atvi.FileArrayValue(
+            values=[
+                [MockFileValue("0/0/path"), atvi.EMPTY_FILE],
+                [MockFileValue("1/0/path"), MockFileValue("1/1/path")],
+            ]
+        ),
+        var_msgs.FileArrayValue(
+            values=[
+                var_msgs.FileValue(content_path="0/0/path"),
+                var_msgs.FileValue(),
+                var_msgs.FileValue(content_path="1/0/path"),
+                var_msgs.FileValue(content_path="1/1/path"),
+            ],
+            dims=var_msgs.ArrayDimensions(dims=[2, 2]),
+        ),
+        id="file[]",
     ),
 ]
 
@@ -955,6 +993,27 @@ def test_create_link_with_objects(setup_function) -> None:
     assert mock_client.was_link_created is True
 
 
+@pytest.mark.parametrize(
+    "offending_state",
+    [
+        atvi.VariableState(atvi.EMPTY_FILE, True),
+        atvi.VariableState(atvi.FileArrayValue(0, []), True),
+    ],
+)
+def test_run_synchronous_remote_input_contains_file_value_raises_good_error(
+    setup_function, offending_state
+) -> None:
+    # Using a dict as an ordered set
+    with unittest.mock.patch(
+        "ansys.modelcenter.workflow.grpc_modelcenter.Engine.is_local",
+        new_callable=unittest.mock.PropertyMock,
+    ) as mock_is_local:
+        mock_is_local.return_value = False
+
+        with pytest.raises(grpcmc.ValueTypeNotSupportedError, match="remote"):
+            workflow.run(inputs={"file_var": offending_state})
+
+
 @pytest.mark.parametrize("reset", [True, False])
 def test_run_synchronous(setup_function, reset: bool) -> None:
     # Using a dict as an ordered set
@@ -967,6 +1026,7 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
         "INPUT_VAR_4": atvi.VariableState(
             is_valid=True, value=atvi.StringValue("this is a test string")
         ),
+        "INPUT_VAR_5": atvi.VariableState(is_valid=True, value=MockFileValue("some/path")),
     }
 
     mock_response = wkf_msgs.WorkflowRunResponse()
@@ -1000,6 +1060,12 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
             ),
             "INPUT_VAR_4": var_msgs.VariableState(
                 is_valid=True, value=var_msgs.VariableValue(string_value="this is a test string")
+            ),
+            "INPUT_VAR_5": var_msgs.VariableState(
+                is_valid=True,
+                value=var_msgs.VariableValue(
+                    file_value=var_msgs.FileValue(content_path="some/path")
+                ),
             ),
         },
     )

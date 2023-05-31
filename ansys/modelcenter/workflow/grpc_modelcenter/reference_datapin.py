@@ -1,7 +1,8 @@
 """Contains definition for ReferenceDatapin and ReferenceArrayDatapin."""
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Sequence, Union, overload
+from typing import TYPE_CHECKING, Optional, Sequence, Union, overload
 
+import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
@@ -9,11 +10,11 @@ import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
 from . import var_value_convert
-from ..api import IReferenceDatapinBase
+from ..api import IDatapinReferenceBase
 from .base_datapin import BaseDatapin
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .reference_datapin_metadata import ReferenceDatapinMetadata
-from .var_metadata_convert import convert_grpc_reference_metadata, fill_reference_metadata_message
+from .var_metadata_convert import convert_grpc_reference_metadata, convert_grpc_value_to_atvi, fill_reference_metadata_message
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -26,7 +27,7 @@ from .grpc_error_interpretation import (
 from .proto.element_messages_pb2 import ElementId
 
 
-class ReferenceArrayDatapinElement(mc_api.IReferenceDatapinBase):
+class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
     """
     Represents a single element in a ReferenceArrayDatapin.
 
@@ -41,6 +42,7 @@ class ReferenceArrayDatapinElement(mc_api.IReferenceDatapinBase):
         parent_client: ModelCenterWorkflowServiceStub,
         parent_element_id: ElementId,
         index: int,
+        parent_engine: "Engine",
     ):
         """
         Initialize a new instance.
@@ -53,10 +55,13 @@ class ReferenceArrayDatapinElement(mc_api.IReferenceDatapinBase):
             The id of the parent array.
         index: int
             This reference variable's index in the parent array.
+        parent_engine: Engine
+            The Engine that created the parent array datapin.
         """
         self._client = parent_client
         self._parent_element_id = parent_element_id
         self._index = index
+        self._engine = parent_engine
 
     @property
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
@@ -93,9 +98,21 @@ class ReferenceArrayDatapinElement(mc_api.IReferenceDatapinBase):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def get_value(self) -> atvi.VariableState:
-        # TODO: Task 837045: Python: Implement getting single reference array index value
-        pass
+    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
+        if hid is not None:
+            raise ValueError("This engine implementation does not yet support HIDs.")
+        request = var_msgs.GetReferenceValueRequest(
+            target=self._parent_element_id, index=self._index
+        )
+        response = self._client.ReferenceVariableGetValue(request)
+        interop_value: atvi.IVariableValue
+        try:
+            interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
+        except ValueError as convert_failure:
+            raise aew_api.EngineInternalError(
+                "Unexpected failure converting gRPC value response"
+            ) from convert_failure
+        return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
@@ -212,6 +229,22 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
         )
         return response.is_direct
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
+        if hid is not None:
+            raise ValueError("This engine implementation does not yet support HIDs.")
+        request = var_msgs.GetReferenceValueRequest(target=self._element_id)
+        response = self._client.ReferenceVariableGetValue(request)
+        interop_value: atvi.IVariableValue
+        try:
+            interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
+        except ValueError as convert_failure:
+            raise aew_api.EngineInternalError(
+                "Unexpected failure converting gRPC value response"
+            ) from convert_failure
+        return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
+
 
 class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin):
     """
@@ -242,7 +275,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @overload
     @abstractmethod
-    def __getitem__(self, index: int) -> IReferenceDatapinBase:
+    def __getitem__(self, index: int) -> IDatapinReferenceBase:
         """
         Gets a ReferenceArrayDatapinElement at the index provided.
 
@@ -259,7 +292,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @overload
     @abstractmethod
-    def __getitem__(self, index: slice) -> Sequence[IReferenceDatapinBase]:
+    def __getitem__(self, index: slice) -> Sequence[IDatapinReferenceBase]:
         """
         Gets a subsection of the ReferenceArrayDatapin.
 
@@ -277,7 +310,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     def __getitem__(
         self, index: Union[int, slice]
-    ) -> Union[IReferenceDatapinBase, Sequence[IReferenceDatapinBase]]:
+    ) -> Union[IDatapinReferenceBase, Sequence[IDatapinReferenceBase]]:
         """
         Implementation of __getitem__ for ReferenceArrayDatapins.
 
@@ -295,7 +328,10 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
             raise NotImplementedError()
         elif isinstance(index, int):
             return ReferenceArrayDatapinElement(
-                parent_client=self._client, parent_element_id=self._element_id, index=index
+                parent_client=self._client,
+                parent_element_id=self._element_id,
+                index=index,
+                parent_engine=self._engine,
             )
         else:
             raise TypeError(
