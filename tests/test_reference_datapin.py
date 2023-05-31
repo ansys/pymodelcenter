@@ -34,6 +34,9 @@ class MockWorkflowClientForRefVarTest:
     def ReferenceArraySetReferencedValues(self, request):
         pass
 
+    def ReferenceVariableGetReferencedVariables(self, request):
+        pass
+
 
 def test_get_reference_equation(monkeypatch, engine) -> None:
     # Arrange
@@ -283,3 +286,76 @@ def test_array_get_state(
         ),
         expected_atvi_state,
     )
+
+
+@pytest.mark.parametrize("is_direct", [True, False])
+def test_array_index_get_is_direct(monkeypatch, engine, is_direct) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    mock_is_direct_response = var_msgs.GetReferenceIsDirectResponse(is_direct=is_direct)
+    test_index = 4
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetIsDirect", return_value=mock_is_direct_response
+    ) as mock_is_direct_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+        sut = grpcmc.ReferenceArrayDatapin(sut_element_id, engine)
+
+        # Act
+        response: bool = sut[test_index].is_direct
+
+        # Assert
+        assert response == is_direct
+
+        is_direct_expected_request = var_msgs.GetReferenceIsDirectRequest(
+            target=sut_element_id, index=test_index
+        )
+        mock_is_direct_grpc_method.assert_called_once_with(is_direct_expected_request)
+
+
+def test_array_index_get_reference_equation(monkeypatch, engine) -> None:
+    # Arrange
+    test_index = 4
+
+    mock_client = MockWorkflowClientForRefVarTest()
+    mock_response = var_msgs.GetReferenceEquationResponse()
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetReferenceEquation", retun_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+        sut = grpcmc.ReferenceArrayDatapin(sut_element_id, engine)
+
+        # Act
+        equation: str = sut[test_index].equation
+
+        # Assert
+        expected_request = var_msgs.GetReferenceEquationRequest(
+            target=sut_element_id, index=test_index
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_array_index_set_reference_equation(monkeypatch, engine) -> None:
+    # Arrange
+    test_index = 4
+
+    mock_client = MockWorkflowClientForRefVarTest()
+    mock_response = var_msgs.SetReferenceEquationResponse()
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableSetReferenceEquation", retun_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+        sut = grpcmc.ReferenceArrayDatapin(sut_element_id, engine)
+
+        # Act
+        sut[4].equation = "ඞ"
+
+        # Assert
+        expected_request = var_msgs.SetReferenceEquationRequest(
+            target=sut_element_id, index=test_index, equation="ඞ"
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)

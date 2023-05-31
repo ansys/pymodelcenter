@@ -16,6 +16,7 @@ from .irealarraydatapin import IRealArrayDatapin
 from .irealdatapin import IRealDatapin
 from .ireferencearraydatapin import IReferenceArrayDatapin
 from .ireferencedatapin import IReferenceDatapin
+from .ireferencedatapinbase import IReferenceDatapinBase
 from .irenamable_elements import IRenamableElement
 from .istringarraydatapin import IStringArrayDatapin
 from .istringdatapin import IStringDatapin
