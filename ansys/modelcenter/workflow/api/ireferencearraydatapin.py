@@ -3,10 +3,10 @@ from abc import ABC
 from typing import Sequence
 
 from .idatapin import IDatapin
-from .ireferencedatapinbase import IReferenceDatapinBase
+from .idatapinreferencebase import IDatapinReferenceBase
 
 
-class IReferenceArrayDatapin(IDatapin, Sequence[IReferenceDatapinBase], ABC):
+class IReferenceArrayDatapin(IDatapin, Sequence[IDatapinReferenceBase], ABC):
     """
     Represents a reference array datapin in the workflow.
 

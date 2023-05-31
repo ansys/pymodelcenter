@@ -40,10 +40,12 @@ class MockWorkflowClientForRefVarTest:
 
 def test_get_reference_equation(monkeypatch, engine) -> None:
     # Arrange
+    test_equation = "ඞ"
+
     mock_client = MockWorkflowClientForRefVarTest()
-    mock_response = var_msgs.GetReferenceEquationResponse()
+    mock_response = var_msgs.GetReferenceEquationResponse(equation=test_equation)
     with unittest.mock.patch.object(
-        mock_client, "ReferenceVariableGetReferenceEquation", retun_value=mock_response
+        mock_client, "ReferenceVariableGetReferenceEquation", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
@@ -55,6 +57,7 @@ def test_get_reference_equation(monkeypatch, engine) -> None:
         # Assert
         expected_request = var_msgs.GetReferenceEquationRequest(target=sut_element_id)
         mock_grpc_method.assert_called_once_with(expected_request)
+        assert equation == test_equation
 
 
 def test_set_reference_equation(monkeypatch, engine) -> None:
@@ -62,7 +65,7 @@ def test_set_reference_equation(monkeypatch, engine) -> None:
     mock_client = MockWorkflowClientForRefVarTest()
     mock_response = var_msgs.SetReferenceEquationResponse()
     with unittest.mock.patch.object(
-        mock_client, "ReferenceVariableSetReferenceEquation", retun_value=mock_response
+        mock_client, "ReferenceVariableSetReferenceEquation", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
@@ -76,23 +79,25 @@ def test_set_reference_equation(monkeypatch, engine) -> None:
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-def test_get_is_direct(monkeypatch, engine) -> None:
+@pytest.mark.parametrize("is_direct", [True, False])
+def test_get_is_direct(monkeypatch, engine, is_direct) -> None:
     # Arrange
     mock_client = MockWorkflowClientForRefVarTest()
-    mock_response = var_msgs.GetReferenceIsDirectResponse()
+    mock_response = var_msgs.GetReferenceIsDirectResponse(is_direct=is_direct)
     with unittest.mock.patch.object(
-        mock_client, "ReferenceVariableGetIsDirect", retun_value=mock_response
+        mock_client, "ReferenceVariableGetIsDirect", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
         sut = grpcmc.ReferenceDatapin(sut_element_id, engine)
 
         # Act
-        is_direct: bool = sut.is_direct
+        result_is_direct: bool = sut.is_direct
 
         # Assert
         expected_request = var_msgs.GetReferenceIsDirectRequest(target=sut_element_id)
         mock_grpc_method.assert_called_once_with(expected_request)
+        assert is_direct == result_is_direct
 
 
 @pytest.mark.parametrize(
@@ -112,7 +117,7 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
     mock_client = MockWorkflowClientForRefVarTest()
     mock_response = var_msgs.SetVariableValueResponse()
     with unittest.mock.patch.object(
-        mock_client, "ReferenceVariableSetValue", retun_value=mock_response
+        mock_client, "ReferenceVariableSetValue", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
@@ -186,7 +191,7 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
     mock_response = var_msgs.SetVariableValueResponse()
     sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
     with unittest.mock.patch.object(
-        mock_client, "ReferenceArraySetReferencedValues", retun_value=mock_response
+        mock_client, "ReferenceArraySetReferencedValues", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = grpcmc.ReferenceArrayDatapin(sut_element_id, engine=engine)
@@ -306,23 +311,23 @@ def test_array_index_get_is_direct(monkeypatch, engine, is_direct) -> None:
         response: bool = sut[test_index].is_direct
 
         # Assert
-        assert response == is_direct
-
         is_direct_expected_request = var_msgs.GetReferenceIsDirectRequest(
             target=sut_element_id, index=test_index
         )
         mock_is_direct_grpc_method.assert_called_once_with(is_direct_expected_request)
+        assert response == is_direct
 
 
 def test_array_index_get_reference_equation(monkeypatch, engine) -> None:
     # Arrange
     test_index = 4
+    test_equation = "ඞ"
 
     mock_client = MockWorkflowClientForRefVarTest()
-    mock_response = var_msgs.GetReferenceEquationResponse()
+    mock_response = var_msgs.GetReferenceEquationResponse(equation=test_equation)
 
     with unittest.mock.patch.object(
-        mock_client, "ReferenceVariableGetReferenceEquation", retun_value=mock_response
+        mock_client, "ReferenceVariableGetReferenceEquation", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
@@ -336,6 +341,7 @@ def test_array_index_get_reference_equation(monkeypatch, engine) -> None:
             target=sut_element_id, index=test_index
         )
         mock_grpc_method.assert_called_once_with(expected_request)
+        assert equation == test_equation
 
 
 def test_array_index_set_reference_equation(monkeypatch, engine) -> None:
@@ -345,7 +351,7 @@ def test_array_index_set_reference_equation(monkeypatch, engine) -> None:
     mock_client = MockWorkflowClientForRefVarTest()
     mock_response = var_msgs.SetReferenceEquationResponse()
     with unittest.mock.patch.object(
-        mock_client, "ReferenceVariableSetReferenceEquation", retun_value=mock_response
+        mock_client, "ReferenceVariableSetReferenceEquation", return_value=mock_response
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")

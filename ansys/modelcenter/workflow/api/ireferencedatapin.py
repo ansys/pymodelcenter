@@ -2,10 +2,10 @@
 from abc import ABC
 
 from .idatapin import IDatapin
-from .ireferencedatapinbase import IReferenceDatapinBase
+from .idatapinreferencebase import IDatapinReferenceBase
 
 
-class IReferenceDatapin(IDatapin, IReferenceDatapinBase, ABC):
+class IReferenceDatapin(IDatapin, IDatapinReferenceBase, ABC):
     """
     Represents a reference datapin in the workflow.
 

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 import ansys.tools.variableinterop as atvi
 
 
-class IReferenceDatapinBase(ABC):
+class IDatapinReferenceBase(ABC):
     """
     Defines methods common to an individual reference to another datapin.
 

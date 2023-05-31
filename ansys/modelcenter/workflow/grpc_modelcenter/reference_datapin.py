@@ -9,7 +9,7 @@ import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
 from . import var_value_convert
-from ..api import IReferenceDatapinBase
+from ..api import IDatapinReferenceBase
 from .base_datapin import BaseDatapin
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 
@@ -24,7 +24,7 @@ from .grpc_error_interpretation import (
 from .proto.element_messages_pb2 import ElementId
 
 
-class ReferenceArrayDatapinElement(mc_api.IReferenceDatapinBase):
+class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
     """
     Represents a single element in a ReferenceArrayDatapin.
 
@@ -238,7 +238,7 @@ class ReferenceArrayDatapin(BaseDatapin, mc_api.IReferenceArrayDatapin):
 
     @overload
     @abstractmethod
-    def __getitem__(self, index: int) -> IReferenceDatapinBase:
+    def __getitem__(self, index: int) -> IDatapinReferenceBase:
         """
         Gets a ReferenceArrayDatapinElement at the index provided.
 
@@ -255,7 +255,7 @@ class ReferenceArrayDatapin(BaseDatapin, mc_api.IReferenceArrayDatapin):
 
     @overload
     @abstractmethod
-    def __getitem__(self, index: slice) -> Sequence[IReferenceDatapinBase]:
+    def __getitem__(self, index: slice) -> Sequence[IDatapinReferenceBase]:
         """
         Gets a subsection of the ReferenceArrayDatapin.
 
@@ -273,7 +273,7 @@ class ReferenceArrayDatapin(BaseDatapin, mc_api.IReferenceArrayDatapin):
 
     def __getitem__(
         self, index: Union[int, slice]
-    ) -> Union[IReferenceDatapinBase, Sequence[IReferenceDatapinBase]]:
+    ) -> Union[IDatapinReferenceBase, Sequence[IDatapinReferenceBase]]:
         """
         Implementation of __getitem__ for ReferenceArrayDatapins.
 
