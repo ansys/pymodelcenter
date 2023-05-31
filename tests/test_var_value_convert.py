@@ -1,3 +1,4 @@
+from contextlib import ExitStack
 from os import PathLike
 import sys
 from typing import Optional
@@ -5,6 +6,7 @@ from typing import Optional
 import ansys.tools.variableinterop as atvi
 import pytest
 
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as grpc_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert as test_module
 
@@ -141,10 +143,35 @@ def test_boolean_value_grpc_to_atvi(internal_value: bool):
     assert internal_value == converted
 
 
-@pytest.mark.parametrize("internal_value", [True, False])
-@pytest.mark.skip("Set not yet implemented")
-def test_file_value_atvi_to_grpc(internal_value: MockFileValue):
-    pass
+@pytest.mark.parametrize(
+    "internal_value,expected_result_populated_field",
+    [
+        (MockFileValue("some/file/path"), grpc_msg.FileValue(content_path="some/file/path")),
+        (atvi.EMPTY_FILE, grpc_msg.FileValue()),
+    ],
+)
+def test_file_value_atvi_to_grpc(internal_value: atvi.FileValue, expected_result_populated_field):
+    # Setup
+    with ExitStack() as local_file_pins:
+
+        converted = test_module.convert_interop_value_to_grpc(
+            internal_value, local_file_pins, engine_is_local=True
+        )
+        assert converted.HasField("file_value")
+        assert converted.file_value == expected_result_populated_field
+
+
+def test_file_value_atvi_to_grpc_no_exit_stack_produces_good_error():
+    with pytest.raises(grpcmc.ValueTypeNotSupportedError):
+        test_module.convert_interop_value_to_grpc(MockFileValue("some/file/path"))
+
+
+def test_file_value_engine_not_local_raises_good_error():
+    original = atvi.EMPTY_FILE
+
+    with ExitStack() as local_file_pins:
+        with pytest.raises(grpcmc.ValueTypeNotSupportedError, match="remote"):
+            test_module.convert_interop_value_to_grpc(original, local_file_pins, False)
 
 
 @pytest.mark.parametrize(
@@ -634,16 +661,75 @@ def test_file_array_value_grpc_to_atvi_multi_dimensional(monkeypatch):
     ]
 
 
-@pytest.mark.skip("Set not yet implemented")
+def test_file_array_value_atvi_to_grpc_no_exit_stack_raises_good_error():
+    original = atvi.FileArrayValue(0, [])
+
+    with pytest.raises(grpcmc.ValueTypeNotSupportedError):
+        test_module.convert_interop_value_to_grpc(original, engine_is_local=True)
+
+
+def test_file_array_value_engine_not_local_raises_good_error():
+    original = atvi.FileArrayValue(0, [])
+
+    with ExitStack() as local_file_pins:
+        with pytest.raises(grpcmc.ValueTypeNotSupportedError, match="remote"):
+            test_module.convert_interop_value_to_grpc(original, local_file_pins, False)
+
+
 def test_file_array_value_atvi_to_grpc_empty():
-    pass
+    original = atvi.FileArrayValue(0, [])
+
+    with ExitStack() as local_file_pins:
+        converted = test_module.convert_interop_value_to_grpc(original, local_file_pins, True)
+
+        assert converted.HasField("file_array_value")
+        expected_value = grpc_msg.FileArrayValue(dims=grpc_msg.ArrayDimensions(dims=[0]))
+        assert converted.file_array_value == expected_value
 
 
-@pytest.mark.skip("Set not yet implemented")
 def test_file_array_value_atvi_to_grpc_one_dimensional():
-    pass
+    original = atvi.FileArrayValue(
+        3,
+        [MockFileValue("some/file/value"), atvi.EMPTY_FILE, MockFileValue("some/third/file/value")],
+    )
+
+    with ExitStack() as local_file_pins:
+        converted = test_module.convert_interop_value_to_grpc(original, local_file_pins, True)
+
+        assert converted.HasField("file_array_value")
+        expected_value = grpc_msg.FileArrayValue(
+            dims=grpc_msg.ArrayDimensions(dims=[3]),
+            values=[
+                grpc_msg.FileValue(content_path="some/file/value"),
+                grpc_msg.FileValue(),
+                grpc_msg.FileValue(content_path="some/third/file/value"),
+            ],
+        )
+        assert converted.file_array_value == expected_value
 
 
-@pytest.mark.skip("Set not yet implemented")
 def test_file_array_value_atvi_to_grpc_multi_dimensional():
-    pass
+    original = atvi.FileArrayValue(
+        (2, 3),
+        [
+            [MockFileValue("0/0/value"), atvi.EMPTY_FILE, MockFileValue("0/2/value")],
+            [MockFileValue("1/0/value"), MockFileValue("1/1/value"), atvi.EMPTY_FILE],
+        ],
+    )
+
+    with ExitStack() as local_file_pins:
+        converted = test_module.convert_interop_value_to_grpc(original, local_file_pins, True)
+
+        assert converted.HasField("file_array_value")
+        expected_value = grpc_msg.FileArrayValue(
+            dims=grpc_msg.ArrayDimensions(dims=[2, 3]),
+            values=[
+                grpc_msg.FileValue(content_path="0/0/value"),
+                grpc_msg.FileValue(),
+                grpc_msg.FileValue(content_path="0/2/value"),
+                grpc_msg.FileValue(content_path="1/0/value"),
+                grpc_msg.FileValue(content_path="1/1/value"),
+                grpc_msg.FileValue(),
+            ],
+        )
+        assert converted.file_array_value == expected_value

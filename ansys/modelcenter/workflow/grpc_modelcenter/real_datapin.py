@@ -77,7 +77,7 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
 
     @atvi.implicit_coerce
     def _do_set_value(self, value: atvi.RealValue) -> None:
-        value.accept(VariableValueVisitor(self._element_id, self._client))
+        value.accept(VariableValueVisitor(self._element_id, self._client, self._engine.is_local))
 
 
 class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
@@ -132,4 +132,4 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
 
     @atvi.implicit_coerce
     def _do_set_value(self, value: atvi.RealArrayValue) -> None:
-        value.accept(VariableValueVisitor(self._element_id, self._client))
+        value.accept(VariableValueVisitor(self._element_id, self._client, self._engine.is_local))
