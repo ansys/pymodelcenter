@@ -12,7 +12,7 @@ class ReferenceDatapinMetadata(atvi.CommonVariableMetadata):
     """Metadata for a reference datapin."""
 
     @overrides
-    def accept(self, visitor: atvi.IVariableMetadataVisitor[T]) -> T:
+    def accept(self, visitor: atvi.IVariableMetadataVisitor[T]) -> T:  # type: ignore
         raise NotImplementedError(
             "This is a nonstandard metadata type and cannot accept standard " "metadata visitors."
         )
