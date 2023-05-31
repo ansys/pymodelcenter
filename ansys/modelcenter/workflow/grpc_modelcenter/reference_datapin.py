@@ -1,4 +1,6 @@
 """Contains definition for ReferenceDatapin and ReferenceArrayDatapin."""
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Sequence, Union, overload
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Optional, Sequence, Union, overload
 
@@ -13,6 +15,8 @@ from . import var_value_convert
 from ..api import IDatapinReferenceBase
 from .base_datapin import BaseDatapin
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .reference_datapin_metadata import ReferenceDatapinMetadata
+from .var_metadata_convert import convert_grpc_reference_metadata, fill_reference_metadata_message
 from .var_value_convert import convert_grpc_value_to_atvi
 
 if TYPE_CHECKING:
@@ -134,7 +138,30 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
         return response.was_changed
 
 
-class ReferenceDatapin(BaseDatapin, mc_api.IReferenceDatapin):
+class ReferenceDatapinBase(BaseDatapin, ABC):
+    """Implementation common between scalar and array reference datapins."""
+
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def get_metadata(self) -> ReferenceDatapinMetadata:
+        response = self._client.ReferenceVariableGetMetadata(self._element_id)
+        return convert_grpc_reference_metadata(response)
+
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
+        if not isinstance(new_metadata, ReferenceDatapinMetadata):
+            raise TypeError(
+                f"The provided metadata object is not the correct type."
+                f"Expected {ReferenceDatapinMetadata} "
+                f"but received {new_metadata.__class__}"
+            )
+        request = var_msgs.SetReferenceVariableMetadataRequest(target=self._element_id)
+        fill_reference_metadata_message(new_metadata, request.new_metadata)
+        self._client.ReferenceVariableSetMetadata(request)
+
+
+class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
     """
     Represents a reference datapin.
 
@@ -159,27 +186,6 @@ class ReferenceDatapin(BaseDatapin, mc_api.IReferenceDatapin):
     @overrides
     def __eq__(self, other):
         return isinstance(other, ReferenceDatapin) and self.element_id == other.element_id
-
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def get_metadata(self) -> atvi.CommonVariableMetadata:  # TODO: reference metadata
-        # response = self._client.BooleanVariableGetMetadata(self._element_id)
-        # return convert_grpc_boolean_metadata(response)
-        pass
-
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
-        # if not isinstance(new_metadata, atvi.BooleanMetadata):
-        #     raise TypeError(
-        #         f"The provided metadata object is not the correct type."
-        #         f"Expected {atvi.BooleanMetadata} "
-        #         f"but received {new_metadata.__class__}"
-        #     )
-        # request = SetBooleanVariableMetadataRequest(target=self._element_id)
-        # fill_boolean_metadata_message(new_metadata, request.new_metadata)
-        # self._client.BooleanVariableSetMetadata(request)
-        pass
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
@@ -243,7 +249,7 @@ class ReferenceDatapin(BaseDatapin, mc_api.IReferenceDatapin):
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 
 
-class ReferenceArrayDatapin(BaseDatapin, mc_api.IReferenceArrayDatapin):
+class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin):
     """
     Represents a reference array datapin.
 
@@ -347,27 +353,6 @@ class ReferenceArrayDatapin(BaseDatapin, mc_api.IReferenceArrayDatapin):
         """
         # TODO: Implement length grpc/C++ call.
         raise NotImplementedError()
-
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def get_metadata(self) -> atvi.CommonVariableMetadata:  # TODO: reference metadata
-        # response = self._client.BooleanVariableGetMetadata(self._element_id)
-        # return convert_grpc_boolean_array_metadata(response)
-        pass
-
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
-        # if not isinstance(new_metadata, atvi.BooleanArrayMetadata):
-        #     raise TypeError(
-        #         f"The provided metadata object is not the correct type."
-        #         f"Expected {atvi.BooleanArrayMetadata} "
-        #         f"but received {new_metadata.__class__}"
-        #     )
-        # request = SetBooleanVariableMetadataRequest(target=self._element_id)
-        # fill_boolean_metadata_message(new_metadata, request.new_metadata)
-        # self._client.BooleanVariableSetMetadata(request)
-        pass
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
