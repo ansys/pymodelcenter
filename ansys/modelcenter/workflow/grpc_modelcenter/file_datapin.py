@@ -76,7 +76,9 @@ class FileDatapin(BaseDatapin, mc_api.IFileDatapin):
     def set_value(self, value: atvi.VariableState) -> None:
         if not isinstance(value.value, atvi.FileValue):
             raise atvi.IncompatibleTypesException(value.value.variable_type, atvi.VariableType.FILE)
-        set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
+        set_visitor: VariableValueVisitor = VariableValueVisitor(
+            self._element_id, self._client, self._engine.is_local
+        )
         value.value.accept(set_visitor)
 
 
@@ -133,5 +135,7 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
             raise atvi.IncompatibleTypesException(
                 value.value.variable_type, atvi.VariableType.FILE_ARRAY
             )
-        set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
+        set_visitor: VariableValueVisitor = VariableValueVisitor(
+            self._element_id, self._client, self._engine.is_local
+        )
         value.value.accept(set_visitor)
