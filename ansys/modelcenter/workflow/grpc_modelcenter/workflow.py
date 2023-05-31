@@ -30,11 +30,7 @@ from .grpc_error_interpretation import (
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
-from .var_value_convert import (
-    convert_grpc_value_to_atvi,
-    convert_interop_value_to_grpc,
-    grpc_type_enum_to_interop_type,
-)
+from .var_value_convert import convert_grpc_value_to_atvi, convert_interop_value_to_grpc
 
 
 class WorkflowRunFailedError(Exception):
@@ -277,7 +273,7 @@ class Workflow(wfapi.IWorkflow):
         var_type: var_val_msg.VariableType = response.var_type
 
         return create_datapin(
-            var_value_type=grpc_type_enum_to_interop_type(var_type),
+            var_value_type=var_type,
             element_id=response.id,
             engine=self._engine,
         )

@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import VariableInfo
-from .var_value_convert import grpc_type_enum_to_interop_type
 
 
 class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, ABC):
@@ -63,11 +62,7 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
         result = self._client.RegistryGetVariables(self._element_id)
         one_var_info: VariableInfo
         variables = [
-            create_datapin(
-                grpc_type_enum_to_interop_type(one_var_info.value_type),
-                one_var_info.id,
-                self._engine,
-            )
+            create_datapin(one_var_info.value_type, one_var_info.id, self._engine)
             for one_var_info in result.variables
         ]
         one_variable: mc_api.IDatapin
