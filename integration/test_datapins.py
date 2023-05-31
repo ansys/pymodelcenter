@@ -1,3 +1,5 @@
+import contextlib
+import tempfile
 import typing
 from typing import Any, Mapping
 import unittest
@@ -518,3 +520,69 @@ def test_can_manipulate_type_specific_file_information(
     # assert value_result == value
     assert variable.value_type == val_type
     var_assert(variable)
+
+
+@pytest.mark.workflow_name("file_tests.pxcz")
+def test_can_set_scalar_file_value_content(workflow):
+    input_variable: mcapi.IDatapin = workflow.get_variable("Model.fileReader.scalarFileIn")
+    with tempfile.TemporaryFile() as temp_file:
+        temp_file.write(
+            b"This is some temporary file content.\r\n" b"This is some more temporary file content."
+        )
+        temp_file.flush()
+        with atvi.NonManagingFileScope() as file_scope:
+            new_value = file_scope.read_from_file(temp_file.name, mime_type=None, encoding=None)
+            input_variable.set_value(atvi.VariableState(new_value, True))
+
+            workflow.run()
+
+            string_value = workflow.get_value("Model.fileReader.scalarFileContents").safe_value
+            assert (
+                string_value == "This is some temporary file content.\r\n"
+                "This is some more temporary file content."
+            )
+
+
+@pytest.mark.workflow_name("file_tests.pxcz")
+def test_can_set_array_file_value_content(workflow):
+    input_variable: mcapi.IDatapin = workflow.get_variable("Model.fileReader.fileArrayIn")
+    with contextlib.ExitStack() as exit_stack:
+        temp_files = [
+            [exit_stack.enter_context(tempfile.TemporaryFile()), None],
+            [
+                exit_stack.enter_context(tempfile.TemporaryFile()),
+                exit_stack.enter_context(tempfile.TemporaryFile()),
+            ],
+        ]
+        temp_files[0][0].write(b"greatest file content in the world in next index")
+        temp_files[0][0].flush()
+        temp_files[1][0].write(b"this is not the greatest file content in the world")
+        temp_files[1][0].flush()
+        temp_files[1][1].write(b"this is just a tribute")
+        temp_files[1][1].flush()
+        with atvi.NonManagingFileScope() as file_scope:
+            new_value = atvi.FileArrayValue(
+                [2, 2],
+                values=[
+                    [file_scope.read_from_file(temp_files[0][0].name, None, None), atvi.EMPTY_FILE],
+                    [
+                        file_scope.read_from_file(temp_files[1][0].name, None, None),
+                        file_scope.read_from_file(temp_files[1][1].name, None, None),
+                    ],
+                ],
+            )
+            input_variable.set_value(atvi.VariableState(new_value, True))
+
+            workflow.run()
+
+            string_array_value = workflow.get_value("Model.fileReader.fileArrayContents").safe_value
+            assert string_array_value == atvi.StringArrayValue(
+                [2, 2],
+                [
+                    ["greatest file content in the world in next index", ""],
+                    [
+                        "this is not the greatest file content in the world",
+                        "this is just a tribute",
+                    ],
+                ],
+            )
