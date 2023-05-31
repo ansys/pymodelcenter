@@ -1,5 +1,6 @@
 """Integration tests around Workflow functionality."""
 import os
+import tempfile
 from typing import Collection, List, Mapping, Set
 import unittest
 
@@ -265,3 +266,24 @@ def test_running_and_getting_results(workflow) -> None:
         ),
     }
     assert expected_results == result
+
+
+@pytest.mark.workflow_name("file_tests.pxcz")
+def test_run_setting_file_vars(workflow) -> None:
+    with tempfile.TemporaryFile() as temp_file:
+        temp_file.write(
+            b"This is some temporary file content.\r\n" b"This is some more temporary file content."
+        )
+        temp_file.flush()
+        with atvi.NonManagingFileScope() as file_scope:
+            new_value = file_scope.read_from_file(temp_file.name, mime_type=None, encoding=None)
+
+            results = workflow.run(
+                inputs={"Model.fileReader.scalarFileIn": atvi.VariableState(new_value, True)},
+                collect_names=set(["Model.fileReader.scalarFileContents"]),
+            )
+            assert (
+                results["Model.fileReader.scalarFileContents"].safe_value
+                == "This is some temporary file content.\r\n"
+                "This is some more temporary file content."
+            )

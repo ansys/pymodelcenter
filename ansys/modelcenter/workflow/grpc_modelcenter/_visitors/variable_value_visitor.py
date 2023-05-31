@@ -1,5 +1,7 @@
+from contextlib import ExitStack
 from typing import Callable, Type
 
+import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 import numpy as np
 from overrides import overrides
@@ -9,12 +11,18 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow
     ModelCenterWorkflowServiceStub,
 )
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
+from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueTypeNotSupportedError
 
 
 class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
     """Visitor for setting variable values via ModelCenter gRPC API."""
 
-    def __init__(self, var_id: element_msg.ElementId, stub: ModelCenterWorkflowServiceStub):
+    def __init__(
+        self,
+        var_id: element_msg.ElementId,
+        stub: ModelCenterWorkflowServiceStub,
+        engine_is_local: bool,
+    ):
         """
         Create a new VariableValueVisitor.
 
@@ -27,6 +35,7 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         """
         self._var_id = var_id
         self._stub = stub
+        self._engine_is_local = engine_is_local
 
     @overrides
     def visit_integer(self, value: atvi.IntegerValue) -> bool:
@@ -54,7 +63,20 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
     @overrides
     def visit_file(self, value: atvi.FileValue) -> bool:
-        raise NotImplementedError()  # pragma: no cover
+        if self._engine_is_local:
+            with value.get_reference_to_actual_content_file() as local_pin:
+                value_in_request = var_val_msg.FileValue()
+                if local_pin.content_path is not None:
+                    value_in_request.content_path = str(local_pin.content_path)
+                request = var_val_msg.SetFileValueRequest(
+                    target=self._var_id, new_value=value_in_request
+                )
+                response = self._stub.FileVariableSetValue(request)
+                return response.was_changed
+        else:
+            raise ValueTypeNotSupportedError(
+                "Setting file values is not currently supported for " "remote engines."
+            )
 
     @overrides
     def visit_integer_array(self, value: atvi.IntegerArrayValue) -> bool:
@@ -94,7 +116,38 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
     @overrides
     def visit_file_array(self, value: atvi.FileArrayValue) -> bool:
-        raise NotImplementedError  # pragma: no cover
+        if self._engine_is_local:
+            with ExitStack() as local_content_copy_stack:
+                request = var_val_msg.SetFileArrayValueRequest(
+                    target=self._var_id,
+                    new_value=var_val_msg.FileArrayValue(
+                        dims=var_val_msg.ArrayDimensions(dims=value.get_lengths())
+                    ),
+                )
+                one_file_value: atvi.FileValue
+                for one_file_value in value.flatten():
+                    one_local_content: atvi.LocalFileContentContext = (
+                        local_content_copy_stack.enter_context(
+                            one_file_value.get_reference_to_actual_content_file()
+                        )
+                    )
+                    one_grpc_file_value = var_val_msg.FileValue()
+                    if one_local_content.content_path is not None:
+                        one_grpc_file_value.content_path = str(one_local_content.content_path)
+                    request.new_value.values.add(content_path=one_local_content.content_path)
+                response = self._stub.FileArraySetValue(request)
+                return response.was_changed
+            # This line should only be reachable if one of the context managers in
+            # local_content_copy_stack suppress an exception, which they should not
+            # be doing.
+            raise aew_api.EngineInternalError(
+                "Reached an unexpected state. A local file content context may be suppressing an "
+                "exception? Report this error to the pyModelCenter maintainers."
+            )
+        else:
+            raise ValueTypeNotSupportedError(
+                "Setting file array values is not currently " "supported for remote engines."
+            )
 
     def _scalar_request(
         self, value: atvi.IVariableValue, request_type: Type, value_type: Type, grpc_call: Callable
