@@ -14,7 +14,11 @@ from ..api import IDatapinReferenceBase
 from .base_datapin import BaseDatapin
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .reference_datapin_metadata import ReferenceDatapinMetadata
-from .var_metadata_convert import convert_grpc_reference_metadata, convert_grpc_value_to_atvi, fill_reference_metadata_message
+from .var_metadata_convert import (
+    convert_grpc_reference_metadata,
+    convert_grpc_value_to_atvi,
+    fill_reference_metadata_message,
+)
 
 if TYPE_CHECKING:
     from .engine import Engine
