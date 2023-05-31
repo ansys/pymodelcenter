@@ -299,6 +299,24 @@ def test_get_value(monkeypatch, engine, variable_value, is_valid, expected_resul
         assert result.is_valid == expected_result.is_valid
 
 
+def test_get_value_with_hid(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetValue", return_value=var_msgs.VariableState()
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act/Assert
+        with pytest.raises(ValueError, match="does not yet support HIDs."):
+            sut.get_value("some_hid")
+
+        mock_grpc_method.assert_not_called()
+
+
 @pytest.mark.parametrize(
     "set_value,expected_value_in_request",
     [
@@ -638,3 +656,21 @@ def test_array_index_get_value(
 
         assert result.value == expected_result.value
         assert result.is_valid == expected_result.is_valid
+
+
+def test_array_index_get_value_with_hid(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetValue", return_value=var_msgs.VariableState()
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act/Assert
+        with pytest.raises(ValueError, match="does not yet support HIDs."):
+            sut[0].get_value("some_hid")
+
+        mock_grpc_method.assert_not_called()
