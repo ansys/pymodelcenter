@@ -38,7 +38,7 @@ from .proto.workflow_messages_pb2 import (
     ElementInfo,
     NamedElementInWorkflow,
 )
-from .var_value_convert import interop_type_to_mc_type_string
+from .var_value_convert import interop_type_to_grpc_type_enum, interop_type_to_mc_type_string
 
 
 class Assembly(
@@ -113,7 +113,7 @@ class Assembly(
                 variable_type=type_in_request,
             )
         )
-        return create_datapin(type_in_request, result.id, self._engine)
+        return create_datapin(interop_type_to_grpc_type_enum(mc_type), result.id, self._engine)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
