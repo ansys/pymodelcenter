@@ -1,5 +1,5 @@
 from os import PathLike
-from typing import Optional
+from typing import Optional, Type, Union
 import unittest.mock
 
 import ansys.tools.variableinterop as atvi
@@ -41,6 +41,16 @@ class MockWorkflowClientForRefVarTest:
 
     def ReferenceVariableGetReferencedVariables(self, request):
         pass
+
+    def ReferenceVariableGetMetadata(
+        self, request: elem_msgs.ElementId
+    ) -> var_msgs.ReferenceVariableMetadata:
+        return var_msgs.ReferenceVariableMetadata()
+
+    def ReferenceVariableSetMetadata(
+        self, request: var_msgs.SetReferenceVariableMetadataRequest
+    ) -> var_msgs.SetMetadataResponse:
+        return var_msgs.SetMetadataResponse()
 
 
 def test_get_reference_equation(monkeypatch, engine) -> None:
@@ -517,6 +527,199 @@ def test_array_index_set_reference_equation(monkeypatch, engine) -> None:
         # Assert
         expected_request = var_msgs.SetReferenceEquationRequest(
             target=sut_element_id, index=test_index, equation="ඞ"
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(
+    "description_string,sut_type",
+    [
+        ("", grpcmc.ReferenceDatapin),
+        ("This is a mock datapin description.", grpcmc.ReferenceDatapin),
+        ("", grpcmc.ReferenceArrayDatapin),
+        ("This is a mock datapin description.", grpcmc.ReferenceArrayDatapin),
+    ],
+)
+def test_retrieved_metadata_should_include_description(
+    monkeypatch,
+    engine,
+    description_string: str,
+    sut_type: Union[Type[grpcmc.ReferenceArrayDatapin], Type[grpcmc.ReferenceDatapin]],
+):
+    # Set up
+    mock_client = MockWorkflowClientForRefVarTest()
+    mock_response = var_msgs.ReferenceVariableMetadata()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    mock_response.base_metadata.description = description_string
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, engine=engine)
+
+        # Execute
+        result: grpcmc.ReferenceDatapinMetadata = sut.get_metadata()
+
+        # Verify
+        mock_grpc_method.assert_called_once_with(sut_element_id)
+        assert isinstance(
+            result, grpcmc.ReferenceDatapinMetadata
+        ), "The metadata should have the correct type."
+        assert (
+            result.description == description_string
+        ), "The description string should match what was supplied by the gRPC client."
+
+
+@pytest.mark.parametrize(
+    "sut_type",
+    [grpcmc.ReferenceDatapin, grpcmc.ReferenceArrayDatapin],
+)
+def test_retrieved_metadata_should_include_custom_metadata_empty(
+    monkeypatch,
+    engine,
+    sut_type: Union[Type[grpcmc.ReferenceDatapin], Type[grpcmc.ReferenceArrayDatapin]],
+):
+    # Set up
+    mock_client = MockWorkflowClientForRefVarTest()
+    mock_response = var_msgs.ReferenceVariableMetadata()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, engine)
+
+        # Execute
+        result: grpcmc.ReferenceDatapinMetadata = sut.get_metadata()
+
+        # Verify
+        mock_grpc_method.assert_called_once_with(sut_element_id)
+        assert isinstance(
+            result, grpcmc.ReferenceDatapinMetadata
+        ), "The metadata should have the correct type."
+        assert (
+            len(result.custom_metadata) == 0
+        ), "There should be no entries in the custom metadata map."
+
+
+@pytest.mark.parametrize(
+    "sut_type",
+    [grpcmc.ReferenceDatapin, grpcmc.ReferenceArrayDatapin],
+)
+def test_retrieved_metadata_should_include_custom_metadata_populated(
+    monkeypatch,
+    engine,
+    sut_type: Union[Type[grpcmc.ReferenceDatapin], Type[grpcmc.ReferenceArrayDatapin]],
+):
+    # Set up
+    mock_client = MockWorkflowClientForRefVarTest()
+    mock_response = var_msgs.ReferenceVariableMetadata()
+    mock_response.base_metadata.custom_metadata["test_integer_value"].MergeFrom(
+        var_msgs.VariableValue(int_value=47)
+    )
+    mock_response.base_metadata.custom_metadata["test_double_value"].MergeFrom(
+        var_msgs.VariableValue(double_value=-867.5309)
+    )
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, engine)
+
+        # Execute
+        result: grpcmc.ReferenceDatapinMetadata = sut.get_metadata()
+
+        # Verify
+        mock_grpc_method.assert_called_once_with(sut_element_id)
+        assert isinstance(
+            result, grpcmc.ReferenceDatapinMetadata
+        ), "The metadata should have the correct type."
+        expected_custom_metadata = {
+            "test_integer_value": atvi.IntegerValue(47),
+            "test_double_value": atvi.RealValue(-867.5309),
+        }
+        assert (
+            result.custom_metadata == expected_custom_metadata
+        ), "The custom metadata should have been transferred correctly."
+
+
+@pytest.mark.parametrize(
+    "description,sut_type",
+    [
+        ("", grpcmc.ReferenceDatapin),
+        ("This is a mock datapin description.", grpcmc.ReferenceDatapin),
+        ("", grpcmc.ReferenceArrayDatapin),
+        ("This is a mock datapin description.", grpcmc.ReferenceArrayDatapin),
+    ],
+)
+def test_set_metadata_empty_custom_metadata(
+    monkeypatch,
+    engine,
+    description: str,
+    sut_type: Union[Type[grpcmc.ReferenceDatapin], Type[grpcmc.ReferenceArrayDatapin]],
+):
+    # Set up
+    mock_client = MockWorkflowClientForRefVarTest()
+    mock_response = var_msgs.SetMetadataResponse()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, engine)
+        new_metadata = grpcmc.ReferenceDatapinMetadata()
+        new_metadata.description = description
+
+        # Execute
+        sut.set_metadata(new_metadata)
+
+        # Verify
+        expected_request = var_msgs.SetReferenceVariableMetadataRequest(target=sut_element_id)
+        expected_request.new_metadata.base_metadata.description = description
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(
+    "description,sut_type",
+    [
+        ("", grpcmc.ReferenceDatapin),
+        ("This is a mock datapin description.", grpcmc.ReferenceDatapin),
+        ("", grpcmc.ReferenceArrayDatapin),
+        ("This is a mock datapin description.", grpcmc.ReferenceArrayDatapin),
+    ],
+)
+def test_set_metadata_populated_custom_metadata(
+    monkeypatch,
+    engine,
+    description: str,
+    sut_type: Union[Type[grpcmc.ReferenceDatapin], Type[grpcmc.ReferenceArrayDatapin]],
+):
+    # Set up
+    mock_client = MockWorkflowClientForRefVarTest()
+    mock_response = var_msgs.SetMetadataResponse()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableSetMetadata", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = sut_type(sut_element_id, engine)
+        new_metadata = grpcmc.ReferenceDatapinMetadata()
+        new_metadata.description = description
+        new_metadata.custom_metadata["int_value"] = atvi.IntegerValue(47)
+        new_metadata.custom_metadata["real_value"] = atvi.RealValue(-867.5309)
+
+        # Execute
+        sut.set_metadata(new_metadata)
+
+        # Verify
+        expected_request = var_msgs.SetReferenceVariableMetadataRequest(target=sut_element_id)
+        expected_request.new_metadata.base_metadata.description = description
+        expected_request.new_metadata.base_metadata.custom_metadata["int_value"].MergeFrom(
+            var_msgs.VariableValue(int_value=47)
+        )
+        expected_request.new_metadata.base_metadata.custom_metadata["real_value"].MergeFrom(
+            var_msgs.VariableValue(double_value=-867.5309)
         )
         mock_grpc_method.assert_called_once_with(expected_request)
 
