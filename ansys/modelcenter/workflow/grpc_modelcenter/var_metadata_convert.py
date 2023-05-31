@@ -9,9 +9,11 @@ from .proto.variable_value_messages_pb2 import (
     FileVariableMetadata,
     IntegerVariableMetadata,
     NumericVariableMetadata,
+    ReferenceVariableMetadata,
     StringVariableMetadata,
     VariableValue,
 )
+from .reference_datapin_metadata import ReferenceDatapinMetadata
 from .var_value_convert import (
     ValueTypeNotSupportedError,
     convert_grpc_value_to_atvi,
@@ -50,6 +52,13 @@ def _extract_numeric_metadata(
     target.display_format = source.display_format
 
 
+def convert_grpc_reference_metadata(source: ReferenceVariableMetadata) -> ReferenceDatapinMetadata:
+    """Given a gRPC reference variable metadata message, produce an equivalent ATVI metadata."""
+    target = ReferenceDatapinMetadata()
+    _extract_base_metadata(source.base_metadata, target)
+    return target
+
+
 def convert_grpc_boolean_metadata(source: BooleanVariableMetadata) -> atvi.BooleanMetadata:
     """Given a gRPC boolean variable metadata message, produce an equivalent ATVI metadata."""
     target = atvi.BooleanMetadata()
@@ -72,6 +81,13 @@ def _fill_base_metadata(source: atvi.CommonVariableMetadata, target: BaseVariabl
     # Can't use a dict comprehension here because you can't assign the dict directly.
     for source_key, source_value in source.custom_metadata.items():
         target.custom_metadata[source_key].MergeFrom(convert_interop_value_to_grpc(source_value))
+
+
+def fill_reference_metadata_message(
+    source: ReferenceDatapinMetadata, target: ReferenceVariableMetadata
+) -> None:
+    """Fill out a gRPC message representing reference datapin metadata."""
+    _fill_base_metadata(source, target.base_metadata)
 
 
 def fill_boolean_metadata_message(
