@@ -5,6 +5,7 @@ from .ibooleandatapin import IBooleanDatapin
 from .icomponent import IComponent
 from .idatapin import IDatapin
 from .idatapin_link import IDatapinLink
+from .idatapinreferencebase import IDatapinReferenceBase
 from .iengine import IEngine, WorkflowType
 from .ifilearraydatapin import IFileArrayDatapin
 from .ifiledatapin import IFileDatapin
