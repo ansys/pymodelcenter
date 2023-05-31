@@ -14,6 +14,8 @@ from .iintegerarraydatapin import IIntegerArrayDatapin
 from .iintegerdatapin import IIntegerDatapin
 from .irealarraydatapin import IRealArrayDatapin
 from .irealdatapin import IRealDatapin
+from .ireferencearraydatapin import IReferenceArrayDatapin
+from .ireferencedatapin import IReferenceDatapin
 from .irenamable_elements import IRenamableElement
 from .istringarraydatapin import IStringArrayDatapin
 from .istringdatapin import IStringDatapin

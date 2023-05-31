@@ -26,6 +26,7 @@ from .grpc_error_interpretation import (
 from .integer_datapin import IntegerArrayDatapin, IntegerDatapin
 from .mcd_process import EngineLicensingFailedException, MCDProcess
 from .real_datapin import RealArrayDatapin, RealDatapin
+from .reference_datapin import ReferenceArrayDatapin, ReferenceDatapin
 from .string_datapin import StringArrayDatapin, StringDatapin
 from .unsupported_type_datapin import DatapinWithUnsupportedTypeException, UnsupportedTypeDatapin
 from .var_value_convert import ValueTypeNotSupportedError
