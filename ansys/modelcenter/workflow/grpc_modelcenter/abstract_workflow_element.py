@@ -97,7 +97,9 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
     @interpret_rpc_error({**WRAP_INVALID_ARG, **WRAP_TARGET_NOT_FOUND})
     @overrides
     def set_property(self, property_name: str, property_value: atvi.IVariableValue) -> None:
-        grpc_value = convert_interop_value_to_grpc(property_value)
+        grpc_value = convert_interop_value_to_grpc(
+            property_value, engine_is_local=self._engine.is_local
+        )
         self._client.PropertyOwnerSetPropertyValue(
             MetadataSetValueRequest(
                 id=self._element_id, property_name=property_name, value=grpc_value

@@ -1,5 +1,6 @@
 import typing
 from typing import Any, Mapping
+import unittest
 
 import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi
@@ -270,6 +271,178 @@ def test_can_manipulate_type_specific_variable_information(
     assert value_result == value
     assert variable.value_type == val_type
     var_assert(variable)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_dependents_with_direct_dependents_and_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_dependents on
+    a1: mcapi.IDatapin = workflow.get_variable("Model.Identity1.a")
+
+    # Setup: Variables we expect to be linked to
+    # The link between Model.Identity1.a and Model.Identity2.a should be suspended
+    expected = [
+        workflow.get_variable("Model.Identity2.a"),
+        workflow.get_variable("Model.Identity1.b"),
+    ]
+
+    # Execute
+    result = a1.get_dependents(only_fetch_direct_dependents=True, follow_suspended_links=True)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_dependents_with_direct_dependents_and_do_not_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_dependents on
+    a1: mcapi.IDatapin = workflow.get_variable("Model.Identity1.a")
+
+    # Setup: Variables we expect to be linked to.
+    # The only variable we expect is Identity1.b since the link between
+    #   Identity1.a -> Identity2.a is suspended.
+    expected = [workflow.get_variable("Model.Identity1.b")]
+
+    # Execute
+    result = a1.get_dependents(only_fetch_direct_dependents=True, follow_suspended_links=False)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_dependents_with_recursive_dependents_and_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_dependents on
+    a: mcapi.IDatapin = workflow.get_variable("Model.Identity.a")
+
+    # Setup: Variables we expect to be linked to
+    # The link between Model.Identity1.a and Model.Identity2.a should be suspended
+    expected = [
+        workflow.get_variable("Model.Identity1.a"),
+        workflow.get_variable("Model.Identity2.a"),
+        workflow.get_variable("Model.Identity3.a"),
+        workflow.get_variable("Model.Identity.b"),
+        workflow.get_variable("Model.Identity1.b"),
+        workflow.get_variable("Model.Identity2.b"),
+        workflow.get_variable("Model.Identity3.b"),
+    ]
+
+    # Execute
+    result = a.get_dependents(only_fetch_direct_dependents=False, follow_suspended_links=True)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_dependents_with_recursive_dependents_and_do_not_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_dependents on
+    a: mcapi.IDatapin = workflow.get_variable("Model.Identity.a")
+
+    # Setup: Variables we expect to be linked to.
+    # We only expect the 3 variables since the link between
+    #   Identity1.a -> Identity2.a is suspended.
+    expected = [
+        workflow.get_variable("Model.Identity1.a"),
+        workflow.get_variable("Model.Identity.b"),
+        workflow.get_variable("Model.Identity1.b"),
+    ]
+
+    # Execute
+    result = a.get_dependents(only_fetch_direct_dependents=False, follow_suspended_links=False)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_precedents_with_direct_precedents_and_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_precedents on
+    a2: mcapi.IDatapin = workflow.get_variable("Model.Identity2.a")
+
+    # Setup: Variables we expect to be linked to
+    # The link between Model.Identity1.a and Model.Identity2.a should be suspended
+    expected = [workflow.get_variable("Model.Identity1.a")]
+
+    # Execute
+    result = a2.get_precedents(only_fetch_direct_precedents=True, follow_suspended_links=True)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_precedents_with_direct_precedents_and_do_not_follow_suspended_links(workflow) -> None:
+    # Setup: The variable we'll get_precedents on
+    a2: mcapi.IDatapin = workflow.get_variable("Model.Identity2.a")
+
+    # Execute
+    result = a2.get_precedents(only_fetch_direct_precedents=True, follow_suspended_links=False)
+
+    # Verify: We expect no precedents to Model.Identity2.a since the link
+    # from Model.Identity1.a and Model.Identity2.a should be suspended
+    assert len(result) == 0
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_precedents_with_recursive_precedents_and_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_precedents on
+    b3: mcapi.IDatapin = workflow.get_variable("Model.Identity3.b")
+
+    # Setup: Variables we expect to be linked to
+    # The link between Model.Identity1.a and Model.Identity2.a should be suspended
+    expected = [
+        workflow.get_variable("Model.Identity3.a"),
+        workflow.get_variable("Model.Identity2.a"),
+        workflow.get_variable("Model.Identity1.a"),
+        workflow.get_variable("Model.Identity.a"),
+    ]
+
+    # Execute
+    result = b3.get_precedents(only_fetch_direct_precedents=False, follow_suspended_links=True)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
+
+
+@pytest.mark.workflow_name("multiple_linked_identity.pxcz")
+def test_precedents_with_recursive_precedents_and_do_not_follow_suspended_links(workflow) -> None:
+    # Setup
+    case = unittest.TestCase()
+
+    # Setup: The variable we'll get_precedents on
+    b3: mcapi.IDatapin = workflow.get_variable("Model.Identity3.b")
+
+    # Setup: Variables we expect to be linked to.
+    # We only expect the 2 precedents since the link between
+    #   Identity1.a -> Identity2.a is suspended.
+    expected = [
+        workflow.get_variable("Model.Identity3.a"),
+        workflow.get_variable("Model.Identity2.a"),
+    ]
+
+    # Execute
+    result = b3.get_precedents(only_fetch_direct_precedents=False, follow_suspended_links=False)
+
+    # Verify
+    case.assertCountEqual(first=result, second=expected)
 
 
 def do_file_setup(variable: mcapi.IDatapin, is_array: bool) -> None:

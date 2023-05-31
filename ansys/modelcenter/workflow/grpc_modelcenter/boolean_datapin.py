@@ -77,7 +77,9 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
             raise atvi.IncompatibleTypesException(
                 value.value.variable_type, atvi.VariableType.BOOLEAN
             )
-        set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
+        set_visitor: VariableValueVisitor = VariableValueVisitor(
+            self._element_id, self._client, self._engine.is_local
+        )
         value.value.accept(set_visitor)
 
 
@@ -120,7 +122,9 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
             raise atvi.IncompatibleTypesException(
                 value.value.variable_type, atvi.VariableType.BOOLEAN_ARRAY
             )
-        set_visitor: VariableValueVisitor = VariableValueVisitor(self._element_id, self._client)
+        set_visitor: VariableValueVisitor = VariableValueVisitor(
+            self._element_id, self._client, self._engine.is_local
+        )
         value.value.accept(set_visitor)
 
     @overrides
