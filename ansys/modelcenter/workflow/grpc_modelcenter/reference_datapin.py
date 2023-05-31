@@ -126,7 +126,6 @@ class ReferenceDatapinBase(BaseDatapin, ABC):
     def get_metadata(self) -> ReferenceDatapinMetadata:
         response = self._client.ReferenceVariableGetMetadata(self._element_id)
         return convert_grpc_reference_metadata(response)
-        pass
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
