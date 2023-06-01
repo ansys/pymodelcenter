@@ -42,6 +42,9 @@ class MockWorkflowClientForRefVarTest:
     def ReferenceVariableGetReferencedVariables(self, request):
         pass
 
+    def ReferenceArrayGetLength(self, request):
+        pass
+
     def ReferenceVariableGetMetadata(
         self, request: elem_msgs.ElementId
     ) -> var_msgs.ReferenceVariableMetadata:
@@ -877,3 +880,25 @@ def test_array_index_get_value_with_hid(monkeypatch, engine) -> None:
             sut[0].get_value("some_hid")
 
         mock_grpc_method.assert_not_called()
+
+
+def test_array_get_length(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    test_value = 5
+    mock_response = var_msgs.IntegerValue(value=test_value)
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceArrayGetLength", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act
+        length = len(sut)
+
+        # Assert
+        mock_grpc_method.assert_called_once_with(sut_element_id)
+        assert length == test_value
