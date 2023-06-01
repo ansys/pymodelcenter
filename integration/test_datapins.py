@@ -632,8 +632,7 @@ def do_ref_assert(variable: mcapi.IDatapin) -> None:
 
 
 @pytest.mark.parametrize(
-    "var_name",
-    ["Model.ReferenceScript.doubleInRef", "Model.ReferenceScript.doubleOutRef"]
+    "var_name", ["Model.ReferenceScript.doubleInRef", "Model.ReferenceScript.doubleOutRef"]
 )
 @pytest.mark.workflow_name("reference_tests.pxcz")
 def test_can_set_reference_value_and_metadata(workflow, var_name) -> None:
