@@ -654,7 +654,7 @@ def test_can_set_reference_array_value_and_metadata(workflow) -> None:
     variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.doubleArrayInRef")
     do_ref_setup(variable)
     new_value = atvi.VariableState(
-        value=atvi.RealArrayValue(values=[2.0, 3.0, 4.0, 5.0]), is_valid=True
+        value=atvi.RealArrayValue(values=[2.0, 3.0, 4.0, 5.0]), is_valid=False
     )
 
     # Act
