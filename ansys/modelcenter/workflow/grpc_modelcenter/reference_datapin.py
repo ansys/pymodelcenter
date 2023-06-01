@@ -345,6 +345,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
                 + " is not supported."
             )
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     def __len__(self) -> int:
         """
         Gets the length of this reference array.
@@ -353,8 +354,9 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         ------
         The length of the reference array.
         """
-        # TODO: Implement length grpc/C++ call.
-        raise NotImplementedError()
+        response: var_msgs.IntegerValue = self._client.ReferenceArrayGetLength(self._element_id)
+        assert response.value >= 0
+        return response.value
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
