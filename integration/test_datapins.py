@@ -620,7 +620,7 @@ def do_ref_setup(variable: mcapi.IDatapin) -> None:
     meta_type = grpcmc.ReferenceDatapinMetadata
     cast = typing.cast(Any, variable)
     metadata = meta_type()
-    metadata.description = "ref参照"
+    # reference variables do not support a description
     metadata.custom_metadata["blargඞ"] = atvi.RealValue(0.00000007)
     cast.set_metadata(metadata)
 
@@ -628,7 +628,6 @@ def do_ref_setup(variable: mcapi.IDatapin) -> None:
 def do_ref_assert(variable: mcapi.IDatapin) -> None:
     cast = typing.cast(Any, variable)
     metadata = cast.get_metadata()
-    assert metadata.description == "ref参照"
     assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
 
 
@@ -636,7 +635,7 @@ def do_ref_assert(variable: mcapi.IDatapin) -> None:
 def test_can_set_reference_value_and_metadata(workflow) -> None:
     # Arrange
     variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.doubleInRef")
-    do_ref_setup(variable, False)
+    do_ref_setup(variable)
     new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Act
@@ -653,7 +652,7 @@ def test_can_set_reference_value_and_metadata(workflow) -> None:
 def test_can_set_reference_array_value_and_metadata(workflow) -> None:
     # Arrange
     variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.doubleArrayInRef")
-    do_ref_setup(variable, True)
+    do_ref_setup(variable)
     new_value = atvi.VariableState(
         value=atvi.RealArrayValue(values=[2.0, 3.0, 4.0, 5.0]), is_valid=True
     )
