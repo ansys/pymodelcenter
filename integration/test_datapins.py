@@ -631,10 +631,14 @@ def do_ref_assert(variable: mcapi.IDatapin) -> None:
     assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
 
 
+@pytest.mark.parametrize(
+    "var_name",
+    ["Model.ReferenceScript.doubleInRef", "Model.ReferenceScript.doubleOutRef"]
+)
 @pytest.mark.workflow_name("reference_tests.pxcz")
-def test_can_set_reference_value_and_metadata(workflow) -> None:
+def test_can_set_reference_value_and_metadata(workflow, var_name) -> None:
     # Arrange
-    variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.doubleInRef")
+    variable: mcapi.IDatapin = workflow.get_variable(var_name)
     do_ref_setup(variable)
     new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
