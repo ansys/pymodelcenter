@@ -6,6 +6,7 @@ import unittest
 
 import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi
+import numpy
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
@@ -688,8 +689,26 @@ def test_can_set_reference_array_value_and_metadata(workflow, var_name) -> None:
     # Act
     variable.set_value(new_value)
     value_result: ewapi.VariableState = variable.get_value()
+    length = len(variable)
 
     # Assert
     assert value_result == new_value
     assert variable.value_type == atvi.VariableType.UNKNOWN
+    assert length == 4
     do_ref_assert(variable)
+
+
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_getting_non_double_reference_array_values_gets_nan(workflow) -> None:
+    # Arrange
+    variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.intArrayInRef")
+
+    # Act
+    value_result: ewapi.VariableState = variable.get_value()
+
+    # Assert
+    assert numpy.array_equal(
+        value_result.value,
+        atvi.RealArrayValue(values=[numpy.NAN, numpy.NAN, numpy.NAN, numpy.NAN]),
+        equal_nan=True,
+    )
