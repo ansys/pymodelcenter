@@ -888,7 +888,7 @@ def test_array_get_length(monkeypatch, engine) -> None:
     sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
 
     test_value = 5
-    mock_response = var_msgs.IntegerValue(value=5)
+    mock_response = var_msgs.IntegerValue(value=test_value)
 
     with unittest.mock.patch.object(
         mock_client, "ReferenceArrayGetLength", return_value=mock_response
