@@ -651,10 +651,35 @@ def test_can_set_reference_value_and_metadata(workflow, var_name) -> None:
     do_ref_assert(variable)
 
 
+@pytest.mark.parametrize(
+    "var_name",
+    ["Model.ReferenceScript.doubleArrayInRef", "Model.ReferenceScript.doubleArrayOutRef"],
+)
 @pytest.mark.workflow_name("reference_tests.pxcz")
-def test_can_set_reference_array_value_and_metadata(workflow) -> None:
+def test_can_set_reference_array_element_value_and_metadata(workflow, var_name) -> None:
     # Arrange
-    variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.doubleArrayInRef")
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(var_name)
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act
+    variable[0].set_value(new_value)
+    value_result: ewapi.VariableState = variable.get_value()
+
+    # Assert
+    assert value_result.value[0] == new_value.value
+    assert variable.value_type == atvi.VariableType.UNKNOWN
+    do_ref_assert(variable)
+
+
+@pytest.mark.parametrize(
+    "var_name",
+    ["Model.ReferenceScript.doubleArrayInRef", "Model.ReferenceScript.doubleArrayOutRef"],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_can_set_reference_array_value_and_metadata(workflow, var_name) -> None:
+    # Arrange
+    variable: mcapi.IDatapin = workflow.get_variable(var_name)
     do_ref_setup(variable)
     new_value = atvi.VariableState(
         value=atvi.RealArrayValue(values=[2.0, 3.0, 4.0, 5.0]), is_valid=False
