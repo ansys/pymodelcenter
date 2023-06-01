@@ -19,6 +19,7 @@ from .var_metadata_convert import (
     convert_grpc_value_to_atvi,
     fill_reference_metadata_message,
 )
+from .var_value_convert import convert_grpc_value_to_atvi
 
 if TYPE_CHECKING:
     from .engine import Engine

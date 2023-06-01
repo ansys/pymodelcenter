@@ -110,6 +110,19 @@ def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
     )
 
 
+def interop_type_to_grpc_type_enum(original: atvi.VariableType) -> VariableType:
+    """
+    Given a value of the ATVI type enum, return the appropriate GRPC type enumeration.
+
+    NOTE: This does not handle reference types, as they map to atvi.VariableType.UNKNOWN, and are
+    thus indistinguishable from actual unknown types.
+    """
+    for key, value in __GRPC_TO_INTEROP_TYPE_MAP.items():
+        if value == original:
+            return key
+    return VariableType.VARTYPE_UNKNOWN
+
+
 def convert_grpc_value_to_atvi(
     original: VariableValue, engine_is_local: bool = True
 ) -> atvi.IVariableValue:

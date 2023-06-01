@@ -16,7 +16,6 @@ def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
     import ansys.modelcenter.workflow.grpc_modelcenter.component as component_impl
     import ansys.modelcenter.workflow.grpc_modelcenter.create_datapin as create_variable
     import ansys.modelcenter.workflow.grpc_modelcenter.group as group_impl
-    import ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert as var_value_convert
 
     if info.type == ElementType.ELEMTYPE_ASSEMBLY or info.type == ElementType.ELEMTYPE_IFCOMPONENT:
         return assembly_impl.Assembly(info.id, engine)
@@ -25,9 +24,7 @@ def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
     elif info.type == ElementType.ELEMTYPE_GROUP:
         return group_impl.Group(info.id, engine)
     elif info.type == ElementType.ELEMTYPE_VARIABLE:
-        return create_variable.create_datapin(
-            var_value_convert.grpc_type_enum_to_interop_type(info.var_type), info.id, engine
-        )
+        return create_variable.create_datapin(info.var_type, info.id, engine)
     else:
         # (including ELEMTYPE_UNKNOWN)
         return abstract_elem.UnsupportedWorkflowElement(info.id, engine)

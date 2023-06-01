@@ -86,11 +86,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
 
         response = self._client.VariableGetDependents(request)
         variables = [
-            create_datapin.create_datapin(
-                grpc_type_enum_to_interop_type(one_var_info.value_type),
-                one_var_info.id,
-                self._engine,
-            )
+            create_datapin.create_datapin(one_var_info.value_type, one_var_info.id, self._engine)
             for one_var_info in response.variables
         ]
         return variables
@@ -108,11 +104,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
 
         response = self._client.VariableGetPrecedents(request)
         variables = [
-            create_datapin.create_datapin(
-                grpc_type_enum_to_interop_type(one_var_info.value_type),
-                one_var_info.id,
-                self._engine,
-            )
+            create_datapin.create_datapin(one_var_info.value_type, one_var_info.id, self._engine)
             for one_var_info in response.variables
         ]
 

@@ -7,9 +7,15 @@ import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin as bool_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.file_datapin as file_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin as int_pin_impl
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+    VariableType,
+)
 import ansys.modelcenter.workflow.grpc_modelcenter.real_datapin as double_pin_impl
+import ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin as ref_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.string_datapin as string_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin as unsupported_pin_impl
+
+from .var_value_convert import grpc_type_enum_to_interop_type
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -59,18 +65,24 @@ class _DatapinCreationVisitor(atvi.IVariableTypePseudoVisitor[mc_api.IDatapin]):
 
 
 def create_datapin(
-    var_value_type: atvi.VariableType, element_id: ElementId, engine: "Engine"
+    var_value_type: VariableType, element_id: ElementId, engine: "Engine"
 ) -> mc_api.IDatapin:
     """
-    Given a datapin type from ATVI and an element ID and Engine, create a datapin wrapper object.
+    Given a datapin type from gRPC and an element ID and Engine, create a datapin wrapper object.
 
     Parameters
     ----------
-    var_value_type : atvi.VariableType
+    var_value_type : VariableType
         The variable type that the variable should be.
     element_id : ElementId
         The element ID of the particular variable.
     engine : Engine
         The Engine that created this datapin.
     """
-    return atvi.vartype_accept(_DatapinCreationVisitor(element_id, engine), var_value_type)
+    if var_value_type == VariableType.VARTYPE_REFERENCE:
+        return ref_pin_impl.ReferenceDatapin(element_id=element_id, engine=engine)
+    elif var_value_type == VariableType.VARTYPE_REFERENCE_ARRAY:
+        return ref_pin_impl.ReferenceArrayDatapin(element_id=element_id, engine=engine)
+    else:
+        atvi_type: atvi.VariableType = grpc_type_enum_to_interop_type(var_value_type)
+        return atvi.vartype_accept(_DatapinCreationVisitor(element_id, engine), atvi_type)
