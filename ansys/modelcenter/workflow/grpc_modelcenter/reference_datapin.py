@@ -1,7 +1,5 @@
 """Contains definition for ReferenceDatapin and ReferenceArrayDatapin."""
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Sequence, Union, overload
-from abc import abstractmethod
 from typing import TYPE_CHECKING, Optional, Sequence, Union, overload
 
 import ansys.engineeringworkflow.api as aew_api
@@ -16,7 +14,11 @@ from ..api import IDatapinReferenceBase
 from .base_datapin import BaseDatapin
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .reference_datapin_metadata import ReferenceDatapinMetadata
-from .var_metadata_convert import convert_grpc_reference_metadata, fill_reference_metadata_message
+from .var_metadata_convert import (
+    convert_grpc_reference_metadata,
+    convert_grpc_value_to_atvi,
+    fill_reference_metadata_message,
+)
 from .var_value_convert import convert_grpc_value_to_atvi
 
 if TYPE_CHECKING:

@@ -1,6 +1,5 @@
 from os import PathLike
-from typing import Optional
-from typing import Type, Union
+from typing import Optional, Type, Union
 import unittest.mock
 
 import ansys.tools.variableinterop as atvi
