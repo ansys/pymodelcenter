@@ -77,6 +77,34 @@ def test_can_get_file_type_information(workflow, name, var_type) -> None:
     assert variable.is_input_to_component
 
 
+@pytest.mark.parametrize(
+    "name,var_type",
+    [
+        ("doubleInRef", grpcmc.ReferenceDatapin),
+        ("intInRef", grpcmc.ReferenceDatapin),
+        ("doubleArrayInRef", grpcmc.ReferenceArrayDatapin),
+    ],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_can_get_reference_type_information(workflow, name, var_type) -> None:
+    # Arrange
+    parent: grpcmc.Assembly = workflow.get_assembly("Model.ReferenceScript")
+    full_name: str = parent.full_name + "." + name
+
+    # Act
+    variable: mcapi.IDatapin = workflow.get_variable(full_name)
+
+    # Assert
+    assert isinstance(variable, var_type)
+    assert variable.name == name
+    assert variable.full_name == full_name
+    assert variable.element_id is not None
+    assert variable.parent_element_id == parent.element_id
+    assert variable.get_parent_element() == parent
+    assert variable.is_input_to_workflow is False
+    assert variable.is_input_to_component is False
+
+
 def test_can_manipulate_variable_properties(workflow) -> None:
     # Arrange
     variable: mcapi.IDatapin = workflow.get_variable("ワークフロー.all_types_コンポーネント.realIn")
@@ -586,3 +614,55 @@ def test_can_set_array_file_value_content(workflow):
                     ],
                 ],
             )
+
+
+def do_ref_setup(variable: mcapi.IDatapin) -> None:
+    meta_type = grpcmc.ReferenceDatapinMetadata
+    cast = typing.cast(Any, variable)
+    metadata = meta_type()
+    metadata.description = "ref参照"
+    metadata.custom_metadata["blargඞ"] = atvi.RealValue(0.00000007)
+    cast.set_metadata(metadata)
+
+
+def do_ref_assert(variable: mcapi.IDatapin) -> None:
+    cast = typing.cast(Any, variable)
+    metadata = cast.get_metadata()
+    assert metadata.description == "ref参照"
+    assert metadata.custom_metadata["blargඞ"] == atvi.RealValue(0.00000007)
+
+
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_can_set_reference_value_and_metadata(workflow) -> None:
+    # Arrange
+    variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.doubleInRef")
+    do_ref_setup(variable, False)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act
+    variable.set_value(new_value)
+    value_result: ewapi.VariableState = variable.get_value()
+
+    # Assert
+    assert value_result == new_value
+    assert variable.value_type == atvi.VariableType.UNKNOWN
+    do_ref_assert(variable)
+
+
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_can_set_reference_array_value_and_metadata(workflow) -> None:
+    # Arrange
+    variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.doubleArrayInRef")
+    do_ref_setup(variable, True)
+    new_value = atvi.VariableState(
+        value=atvi.RealArrayValue(values=[2.0, 3.0, 4.0, 5.0]), is_valid=True
+    )
+
+    # Act
+    variable.set_value(new_value)
+    value_result: ewapi.VariableState = variable.get_value()
+
+    # Assert
+    assert value_result == new_value
+    assert variable.value_type == atvi.VariableType.UNKNOWN
+    do_ref_assert(variable)
