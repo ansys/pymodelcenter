@@ -1,6 +1,6 @@
 """Definition of workflow."""
 from abc import ABC, abstractmethod
-from typing import Collection, Optional, Tuple, Union
+from typing import Collection, Mapping, Optional, Sequence, Tuple, Union
 
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
@@ -9,6 +9,7 @@ from ansys.modelcenter.workflow.api.iassembly import AssemblyType, IAssembly
 from ansys.modelcenter.workflow.api.icomponent import IComponent
 from ansys.modelcenter.workflow.api.idatapin import IDatapin
 from ansys.modelcenter.workflow.api.idatapin_link import IDatapinLink
+from ansys.modelcenter.workflow.api.itradestudy import ITradeStudy, TradeStudyRun
 
 
 class IWorkflow(aew_api.IWorkflowInstance, ABC):
@@ -270,4 +271,26 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         -------
         IComponent
             The created component.
+        """
+
+    @abstractmethod
+    def create_trade_study(
+        self,
+        inputs: Mapping[str, atvi.CommonVariableMetadata],
+        outputs: Mapping[str, atvi.CommonVariableMetadata],
+        runs: Optional[Sequence[TradeStudyRun]] = None,
+    ) -> ITradeStudy:
+        """
+        Create a trade study.
+
+        The engine will immediately attempt to schedule these runs.
+
+        Parameters
+        ----------
+        inputs: The inputs in the trade study.
+            Each run must supply values for each of these inputs.
+        outputs: The outputs in the trade study.
+            The values for each of these outputs will be captured when the run completes.
+        runs: The runs to include in the study.
+            If any runs are supplied, the runs are scheduled immediately.
         """
