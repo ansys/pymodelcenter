@@ -6,6 +6,8 @@ import ansys.engineeringworkflow.api as ewapi
 
 import ansys.modelcenter.workflow.api as mcapi
 
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+
 
 def test_can_create_a_new_workflow(engine) -> None:
     # Arrange
@@ -83,6 +85,19 @@ def test_can_get_engine_info(engine) -> None:
     # TODO: See if we can have these be the right values for local and nightly builds
     # assert info.is_release_build == False
     # assert info.install_location == "C:\\SVN\\SourceCode\\ModelCenter\\install"
+
+
+def test_can_start_multiple_engines() -> None:
+    # Arrange/Act
+    with (
+        grpcmc.Engine() as engine1,
+        grpcmc.Engine() as engine2,
+        grpcmc.Engine() as engine3
+    ):
+        # Assert
+        assert engine1.process_id != engine2.process_id
+        assert engine1.process_id != engine3.process_id
+        assert engine2.process_id != engine3.process_id
 
 
 expected_units = {
