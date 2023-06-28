@@ -6,6 +6,8 @@ import time
 from typing import Optional
 import winreg
 
+import numpy
+
 
 def _find_exe_location() -> str:  # pragma: no cover
     """Attempts to find ModelCenter.exe."""
@@ -37,9 +39,19 @@ class MCDProcess:
         self._debug: bool = True if self._exe_path.endswith("ModelCenterD.exe") else False
         self._timeout: float = 60 if self._debug else 30
 
-    def start(self, run_only: bool = False) -> int:
+    def start(
+        self,
+        run_only: bool = False,
+        heartbeat_interval: numpy.uint = 30000,
+        allowed_heartbeat_misses: numpy.uint = 3,
+    ) -> int:
         """Start the MCD process."""
-        args = [self._exe_path, "/Grpc", "/Automation"]
+        args = [
+            self._exe_path,
+            "/Grpc",
+            "/Automation",
+            f"/Heartbeat:{heartbeat_interval}:{allowed_heartbeat_misses}",
+        ]
         if run_only:
             args.append("/runonly")
         self._process = subprocess.Popen(args, stdout=subprocess.PIPE)

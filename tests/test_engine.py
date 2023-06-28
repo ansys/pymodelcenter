@@ -1,3 +1,4 @@
+import asyncio
 from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
 from unittest.mock import create_autospec
@@ -5,6 +6,7 @@ from unittest.mock import create_autospec
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
 import grpc
+import numpy
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
@@ -25,6 +27,7 @@ class MockEngineClientForEngineTest:
         self.password: str = ""
         self.pref_value: Optional[Union[bool, int, float, str]] = None
         self.raise_error_on_info: Optional[grpc.StatusCode] = None
+        self.raise_error_on_heartbeat: Optional[grpc.StatusCode] = None
         self.workflow_already_open = False
 
     def GetEngineInfo(
@@ -124,6 +127,11 @@ class MockEngineClientForEngineTest:
     def Shutdown(self, request: eng_msgs.ShutdownRequest) -> eng_msgs.ShutdownResponse:
         return eng_msgs.ShutdownResponse()
 
+    def Heartbeat(self, request: eng_msgs.HeartbeatRequest) -> eng_msgs.HeartbeatResponse:
+        if self.raise_error_on_heartbeat:
+            raise MockGrpcError(self.raise_error_on_heartbeat, "Simulated failure to communicate.")
+        return eng_msgs.HeartbeatResponse()
+
 
 mock_client: MockEngineClientForEngineTest
 
@@ -134,7 +142,13 @@ def setup_function(monkeypatch):
     Setup called before each test function in this module.
     """
 
-    def mock_start(self, run_only: bool = False):
+    def mock_start(
+        self,
+        run_only: bool = False,
+        force_local: bool = False,
+        heartbeat_interval: numpy.uint = 30000,
+        allowed_heartbeat_misses: numpy.uint = 3,
+    ):
         return 12345
 
     def mock_init(self):
@@ -408,3 +422,22 @@ def test_get_channel(setup_function) -> None:
 
     # Assert
     assert cast(Any, channel)._channel.target() == b"localhost:12345"
+
+
+@pytest.mark.asyncio
+async def test_heartbeat(setup_function) -> None:
+    """
+    Verify that heartbeats are continuously sent in the background.
+    """
+
+    # Arrange
+    with unittest.mock.patch.object(
+        mock_client, "Heartbeat", return_value=eng_msgs.HeartbeatResponse()
+    ) as mock_grpc_method:
+        with grpcapi.Engine(heartbeat_interval=numpy.uint(1000)) as sut:
+            # Act
+            await asyncio.sleep(1)
+
+        # Assert
+        assert 1 <= mock_grpc_method.call_count <= 2
+        mock_grpc_method.assert_called_with(eng_msgs.HeartbeatRequest())

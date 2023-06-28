@@ -1,4 +1,5 @@
 """Implementation of Engine."""
+import asyncio
 from os import PathLike
 from string import Template
 from typing import Collection, Dict, List, Mapping, Optional, Union
@@ -6,6 +7,7 @@ from typing import Collection, Dict, List, Mapping, Optional, Union
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
 import grpc
+import numpy
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import IEngine, WorkflowType
@@ -32,7 +34,13 @@ class WorkflowAlreadyLoadedError(Exception):
 class Engine(IEngine):
     """GRPC implementation of IEngine."""
 
-    def __init__(self, is_run_only: bool = False, force_local: bool = False):
+    def __init__(
+        self,
+        is_run_only: bool = False,
+        force_local: bool = False,
+        heartbeat_interval: numpy.uint = 30000,
+        allowed_heartbeat_misses: numpy.uint = 3,
+    ):
         """
         Initialize a new Engine instance.
 
@@ -43,8 +51,15 @@ class Engine(IEngine):
         force_local: bool
             True if ModelCenter should be started on the local machine even if pypim is configured,
             otherwise False.
+        heartbeat_interval: numpy.uint
+            The number of milliseconds within which a heartbeat call must be made before the server
+            considers a heartbeat signal to have been missed.
+        allowed_heartbeat_misses: numpy.uint
+            The number of heartbeat misses allowed before the server will terminate.
         """
         self._is_run_only: bool = is_run_only
+        self._heartbeat_interval: numpy.uint = heartbeat_interval
+        self._allowed_heartbeat_misses: numpy.uint = allowed_heartbeat_misses
         self._instance: Optional[pypim.Instance] = None
         self._process: Optional[MCDProcess] = None
         self._channel: Optional[grpc.Channel] = None
@@ -61,7 +76,15 @@ class Engine(IEngine):
         self.close()
 
     def _launch_modelcenter(self, force_local: bool = False) -> None:
-        """Launch ModelCenter, using pypim if it is configured."""
+        """
+        Launch ModelCenter, using pypim if it is configured.
+
+        Parameters
+        ----------
+        force_local: bool
+            True if ModelCenter should be started on the local machine even if pypim is configured,
+            otherwise False.
+        """
         if pypim.is_configured() and not force_local:
             if self._is_run_only:
                 raise Exception("pypim does not support running ModelCenter in run-only mode.")
@@ -74,8 +97,23 @@ class Engine(IEngine):
                 self._channel = self._instance.build_grpc_channel()
         else:
             self._process = MCDProcess()
-            port: int = self._process.start(self._is_run_only)
+            port: int = self._process.start(
+                self._is_run_only, self._heartbeat_interval, self._allowed_heartbeat_misses
+            )
             self._channel = grpc.insecure_channel("localhost:" + str(port))
+
+        # run a background task to send heartbeat messages to the server
+        loop = asyncio.get_event_loop()
+        loop.create_task(self._heartbeat_loop())
+
+    @interpret_rpc_error()
+    async def _heartbeat_loop(self) -> None:
+        """Runs a loop that sends heartbeat messages to the server at regular intervals."""
+        while self._stub is not None:
+            request = eng_msg.HeartbeatRequest()
+            self._stub.Heartbeat(request)
+            # sleep for a little less than the heartbeat interval
+            await asyncio.sleep(max(0, (self._heartbeat_interval * 0.95) / 1000))
 
     @interpret_rpc_error()
     def close(self):
