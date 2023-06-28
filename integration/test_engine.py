@@ -5,7 +5,6 @@ from typing import Collection, Mapping
 import ansys.engineeringworkflow.api as ewapi
 
 import ansys.modelcenter.workflow.api as mcapi
-
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 
@@ -89,11 +88,7 @@ def test_can_get_engine_info(engine) -> None:
 
 def test_can_start_multiple_engines() -> None:
     # Arrange/Act
-    with (
-        grpcmc.Engine() as engine1,
-        grpcmc.Engine() as engine2,
-        grpcmc.Engine() as engine3
-    ):
+    with grpcmc.Engine() as engine1, grpcmc.Engine() as engine2, grpcmc.Engine() as engine3:
         # Assert
         assert engine1.process_id != engine2.process_id
         assert engine1.process_id != engine3.process_id
