@@ -65,6 +65,8 @@ class IReferenceArrayProperty(IReferenceProperty, ABC):
 
 
 class IReferencePropertyManager(ABC):
+    """Defines utility methods for getting reference properties from reference datapins."""
+
     @abstractmethod
     def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
         """Get the reference properties on this reference datapin."""
