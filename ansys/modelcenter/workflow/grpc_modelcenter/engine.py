@@ -1,7 +1,9 @@
 """Implementation of Engine."""
-import asyncio
+from multiprocessing import Lock, Process
+from multiprocessing.synchronize import Lock as LockBase
 from os import PathLike
 from string import Template
+import time
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
@@ -18,6 +20,17 @@ from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .mcd_process import MCDProcess
 from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
+
+
+def _heartbeat_loop(lock: LockBase, address: str, interval: numpy.uint) -> None:
+    """Runs a loop that sends heartbeat messages to the server at regular intervals."""
+    channel = grpc.insecure_channel(address)
+    stub = Engine._create_client(channel)
+    while not lock.acquire(block=False):
+        request = eng_msg.HeartbeatRequest()
+        stub.Heartbeat(request)
+        # sleep for a little less than the heartbeat interval
+        time.sleep(max(0, (interval * 0.95) / 1000))
 
 
 class WorkflowAlreadyLoadedError(Exception):
@@ -60,6 +73,8 @@ class Engine(IEngine):
         self._is_run_only: bool = is_run_only
         self._heartbeat_interval: numpy.uint = heartbeat_interval
         self._allowed_heartbeat_misses: numpy.uint = allowed_heartbeat_misses
+        self._heartbeat_process: Optional[Process] = None
+        self._process_lock: Optional[LockBase] = None
         self._instance: Optional[pypim.Instance] = None
         self._process: Optional[MCDProcess] = None
         self._channel: Optional[grpc.Channel] = None
@@ -103,21 +118,25 @@ class Engine(IEngine):
             self._channel = grpc.insecure_channel("localhost:" + str(port))
 
         # run a background task to send heartbeat messages to the server
-        loop = asyncio.get_event_loop()
-        loop.create_task(self._heartbeat_loop())
-
-    @interpret_rpc_error()
-    async def _heartbeat_loop(self) -> None:
-        """Runs a loop that sends heartbeat messages to the server at regular intervals."""
-        while self._stub is not None:
-            request = eng_msg.HeartbeatRequest()
-            self._stub.Heartbeat(request)
-            # sleep for a little less than the heartbeat interval
-            await asyncio.sleep(max(0, (self._heartbeat_interval * 0.95) / 1000))
+        self._process_lock = Lock()
+        self._process_lock.acquire()
+        self._heartbeat_process = Process(
+            target=_heartbeat_loop,
+            args=(self._process_lock, self._channel._channel.target(), self._heartbeat_interval),
+        )
+        self._heartbeat_process.start()
 
     @interpret_rpc_error()
     def close(self):
         """Shut down the grpc server and clear out all objects."""
+        if self._process_lock is not None:
+            self._process_lock.release()
+            self._process_lock = None
+
+        if self._heartbeat_process is not None and self._heartbeat_process.is_alive():
+            self._heartbeat_process.join(self._heartbeat_interval * 1.1)
+            self._heartbeat_process = None
+
         if self._instance is not None:
             self._instance.delete()
         else:

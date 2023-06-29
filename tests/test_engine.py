@@ -1,4 +1,4 @@
-import asyncio
+import multiprocessing
 from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
 from unittest.mock import create_autospec
@@ -154,8 +154,12 @@ def setup_function(monkeypatch):
     def mock_init(self):
         pass
 
+    def mock_process_start(self):
+        pass
+
     monkeypatch.setattr(grpcapi.MCDProcess, "start", mock_start)
     monkeypatch.setattr(grpcapi.MCDProcess, "__init__", mock_init)
+    monkeypatch.setattr(multiprocessing.Process, "start", mock_process_start)
     global mock_client
     mock_client = MockEngineClientForEngineTest()
     monkeypatch_client_creation(monkeypatch, grpcapi.Engine, mock_client)
@@ -424,20 +428,36 @@ def test_get_channel(setup_function) -> None:
     assert cast(Any, channel)._channel.target() == b"localhost:12345"
 
 
-@pytest.mark.asyncio
-async def test_heartbeat(setup_function) -> None:
+def test_heartbeat_process_should_call_the_right_method(setup_function) -> None:
     """
-    Verify that heartbeats are continuously sent in the background.
+    Verify the right method is started in the heartbeat process.
     """
+    # Arrange/Act
+    sut = grpcapi.Engine()
 
+    # Assert
+    assert sut._heartbeat_process._target == grpcmc.engine._heartbeat_loop  # type: ignore
+
+
+def test_heartbeat_method_sends_grpc_calls_until_released(monkeypatch, setup_function) -> None:
     # Arrange
+    class MockLock:
+        acquire_count = 0
+
+        def acquire(self, block):
+            self.acquire_count += 1
+            return self.acquire_count > 5
+
+    mock_client_create = lambda channel, mock_client=mock_client: mock_client
+    monkeypatch.setattr(grpcmc.Engine, "_create_client", mock_client_create)
+
+    lock = MockLock()
     with unittest.mock.patch.object(
         mock_client, "Heartbeat", return_value=eng_msgs.HeartbeatResponse()
     ) as mock_grpc_method:
-        with grpcapi.Engine(heartbeat_interval=numpy.uint(1000)) as sut:
-            # Act
-            await asyncio.sleep(1)
+        # Act
+        grpcmc.engine._heartbeat_loop(lock, "0.0.0.0:5051", 1)  # type: ignore
 
-        # Assert
-        assert 1 <= mock_grpc_method.call_count <= 2
-        mock_grpc_method.assert_called_with(eng_msgs.HeartbeatRequest())
+    # Assert
+    assert mock_grpc_method.call_count == 5
+    mock_grpc_method.assert_called_with(eng_msgs.HeartbeatRequest())

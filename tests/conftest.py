@@ -1,14 +1,10 @@
+import multiprocessing
 from typing import Generator
 
 import numpy
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-
-
-@pytest.fixture
-def anyio_backend():
-    return "asyncio"
 
 
 @pytest.fixture(name="engine")
@@ -25,7 +21,11 @@ def engine(monkeypatch) -> Generator[grpcmc.Engine, None, None]:
     def mock_init(self):
         pass
 
+    def mock_process_start(self):
+        pass
+
     # mock Engine creation
     monkeypatch.setattr(grpcmc.MCDProcess, "start", mock_start)
     monkeypatch.setattr(grpcmc.MCDProcess, "__init__", mock_init)
+    monkeypatch.setattr(multiprocessing.Process, "start", mock_process_start)
     yield grpcmc.Engine(is_run_only=False)
