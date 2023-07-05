@@ -63,6 +63,10 @@ class IReferenceArrayProperty(IReferenceProperty, ABC):
     def set_value_at(self, index: int, new_value: atvi.IVariableValue):
         """Set the value of a particular index."""
 
+    @abstractmethod
+    def get_state_at(self, index: int):
+        """Get the value of a reference property at a particular index."""
+
 
 class IReferencePropertyManager(ABC):
     """Defines utility methods for getting reference properties from reference datapins."""
