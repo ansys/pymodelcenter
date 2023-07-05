@@ -4,14 +4,19 @@ from typing import TYPE_CHECKING, Mapping
 
 import grpc
 
+from .base_datapin import BaseDatapin
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .var_value_convert import convert_grpc_value_to_atvi
 
 if TYPE_CHECKING:
     from .engine import Engine
 
+import ansys.engineeringworkflow.api as aew_api
 from ansys.tools import variableinterop as atvi
 from overrides import overrides
+
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
 from ansys.modelcenter.workflow.api import (
     IReferenceArrayProperty,
@@ -56,7 +61,19 @@ class ReferenceProperty(
 
     @overrides
     def get_state(self) -> atvi.VariableState:
-        pass
+        target_prop = var_msgs.ReferencePropertyIdentifier(
+            reference_var=self._element_id, prop_name=self._name
+        )
+        request = var_msgs.IndexedReferencePropertyIdentifier(target_prop=target_prop)
+        response = self._client.ReferencePropertyGetValue(request)
+        interop_value: atvi.IVariableValue
+        try:
+            interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
+        except ValueError as convert_failure:
+            raise aew_api.EngineInternalError(
+                "Unexpected failure converting gRPC value response"
+            ) from convert_failure
+        return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 
     @overrides
     def set_value(self, new_value: atvi.VariableState):
