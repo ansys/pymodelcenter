@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Mapping
 
 import grpc
 
-from .base_datapin import BaseDatapin
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .var_value_convert import convert_grpc_value_to_atvi
@@ -16,19 +15,18 @@ import ansys.engineeringworkflow.api as aew_api
 from ansys.tools import variableinterop as atvi
 from overrides import overrides
 
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
-
 from ansys.modelcenter.workflow.api import (
     IReferenceArrayProperty,
     IReferenceProperty,
     IReferencePropertyManager,
 )
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import (
     ReferencePropertyGetIsInputResponse,
-    ReferencePropertySetIsInputRequest,
     ReferencePropertyIdentifier,
+    ReferencePropertySetIsInputRequest,
 )
 
 
