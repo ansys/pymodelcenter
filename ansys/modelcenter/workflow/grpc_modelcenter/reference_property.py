@@ -22,8 +22,8 @@ from ansys.modelcenter.workflow.api import (
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import (
     ReferencePropertyGetIsInputResponse,
-    ReferencePropertySetIsInputRequest,
     ReferencePropertyIdentifier,
+    ReferencePropertySetIsInputRequest,
 )
 
 
