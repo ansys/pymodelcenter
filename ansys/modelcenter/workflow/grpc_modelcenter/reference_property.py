@@ -3,7 +3,11 @@ from typing import TYPE_CHECKING, Mapping
 
 import grpc
 
-from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error, WRAP_OUT_OF_BOUNDS
+from .grpc_error_interpretation import (
+    WRAP_OUT_OF_BOUNDS,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .var_value_convert import convert_grpc_value_to_atvi
 
