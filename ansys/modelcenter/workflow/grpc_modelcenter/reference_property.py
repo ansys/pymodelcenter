@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Mapping
 
 import grpc
 
+from . import var_value_convert
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
@@ -75,9 +76,19 @@ class ReferenceProperty(IReferenceProperty):
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def set_value(self, new_value: atvi.VariableState):
-        pass
+    def set_value(self, new_value: atvi.VariableState) -> None:
+        grpc_value = var_value_convert.convert_interop_value_to_grpc(new_value.value)
+        target_prop = var_msgs.IndexedReferencePropertyIdentifier(
+            target_prop=var_msgs.ReferencePropertyIdentifier(
+                reference_var=self._element_id, prop_name=self._name
+            )
+        )
+        request = var_msgs.ReferencePropertySetValueRequest(
+            target_prop=target_prop, new_value=grpc_value
+        )
+        self._client.ReferencePropertySetValue(request)
 
     @overrides
     def get_value_type(self) -> atvi.VariableType:
@@ -119,12 +130,22 @@ class ReferenceArrayProperty(IReferenceArrayProperty, ReferenceProperty):
     """Represents a reference array property."""
 
     @overrides
-    def set_value_at(self, index: int, new_value: atvi.IVariableValue):
-        pass
+    def set_value_at(self, index: int, new_value: atvi.VariableState) -> None:
+        grpc_value = var_value_convert.convert_interop_value_to_grpc(new_value.value)
+        target_prop = var_msgs.IndexedReferencePropertyIdentifier(
+            target_prop=var_msgs.ReferencePropertyIdentifier(
+                reference_var=self._element_id, prop_name=self._name
+            ),
+            index=index,
+        )
+        request = var_msgs.ReferencePropertySetValueRequest(
+            target_prop=target_prop, new_value=grpc_value
+        )
+        self._client.ReferencePropertySetValue(request)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def get_state_at(self, index: int):
+    def get_state_at(self, index: int) -> atvi.VariableState:
         target_prop = var_msgs.ReferencePropertyIdentifier(
             reference_var=self._element_id, prop_name=self._name
         )
