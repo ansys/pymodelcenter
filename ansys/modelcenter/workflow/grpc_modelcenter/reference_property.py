@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Mapping
 
 import grpc
 
-from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
+from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error, WRAP_OUT_OF_BOUNDS
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .var_value_convert import convert_grpc_value_to_atvi
 
@@ -54,6 +54,7 @@ class ReferenceProperty(IReferenceProperty):
     def _create_client(channel: grpc.Channel) -> ModelCenterWorkflowServiceStub:
         return ModelCenterWorkflowServiceStub(channel)  # pragma: no cover
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_state(self) -> atvi.VariableState:
         target_prop = var_msgs.ReferencePropertyIdentifier(
@@ -117,6 +118,7 @@ class ReferenceArrayProperty(IReferenceArrayProperty, ReferenceProperty):
     def set_value_at(self, index: int, new_value: atvi.IVariableValue):
         pass
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def get_state_at(self, index: int):
         target_prop = var_msgs.ReferencePropertyIdentifier(
