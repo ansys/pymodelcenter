@@ -1,6 +1,6 @@
 """Contains definition for ReferenceDatapin and ReferenceArrayDatapin."""
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional, Sequence, Union, overload
+from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Union, overload
 
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
@@ -10,7 +10,7 @@ import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
 from . import var_value_convert
-from ..api import IDatapinReferenceBase
+from ..api import IDatapinReferenceBase, IReferenceProperty
 from .base_datapin import BaseDatapin
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .reference_datapin_metadata import ReferenceDatapinMetadata
@@ -250,6 +250,10 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 
+    @overrides
+    def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
+        raise NotImplementedError()
+
 
 class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin):
     """
@@ -369,3 +373,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         request = var_msgs.SetDoubleArrayValueRequest(target=self._element_id, new_value=new_value)
         response = self._client.ReferenceArraySetReferencedValues(request)
         return response.was_changed
+
+    @overrides
+    def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
+        raise NotImplementedError()
