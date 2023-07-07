@@ -6,7 +6,6 @@ import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-from ansys.modelcenter.workflow.grpc_modelcenter import ValueTypeNotSupportedError
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import ReferenceProperty
@@ -67,7 +66,7 @@ get_value_test_data = [
         var_msgs.VariableValue(double_value=-867.5309),
         True,
         atvi.VariableState(atvi.RealValue(-867.5309), True),
-        id="double"
+        id="double",
     ),
     pytest.param(
         var_msgs.VariableValue(
@@ -79,13 +78,13 @@ get_value_test_data = [
         atvi.VariableState(
             atvi.RealArrayValue(shape_=(2, 2), values=[[1.0, 1.1], [2.0, 2.1]]), False
         ),
-        id="double_array"
+        id="double_array",
     ),
     pytest.param(
         var_msgs.VariableValue(bool_value=True),
         False,
         atvi.VariableState(atvi.BooleanValue(True), False),
-        id="boolean"
+        id="boolean",
     ),
     pytest.param(
         var_msgs.VariableValue(
@@ -97,13 +96,13 @@ get_value_test_data = [
         atvi.VariableState(
             atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), True
         ),
-        id="boolean_array"
+        id="boolean_array",
     ),
     pytest.param(
         var_msgs.VariableValue(int_value=47),
         True,
         atvi.VariableState(atvi.IntegerValue(47), True),
-        id="int"
+        id="int",
     ),
     pytest.param(
         var_msgs.VariableValue(
@@ -115,13 +114,13 @@ get_value_test_data = [
         atvi.VariableState(
             atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]), False
         ),
-        id="int_array"
+        id="int_array",
     ),
     pytest.param(
         var_msgs.VariableValue(string_value="(╯°□°）╯︵ ┻━┻"),
         True,
         atvi.VariableState(atvi.StringValue("(╯°□°）╯︵ ┻━┻"), True),
-        id="string"
+        id="string",
     ),
     pytest.param(
         var_msgs.VariableValue(
@@ -137,13 +136,13 @@ get_value_test_data = [
             ),
             False,
         ),
-        id="string_array"
+        id="string_array",
     ),
     pytest.param(
         var_msgs.VariableValue(file_value=var_msgs.FileValue()),
         True,
         atvi.VariableState(MockFileValue(""), True),
-        id="file"
+        id="file",
     ),
     pytest.param(
         var_msgs.VariableValue(
@@ -168,7 +167,7 @@ get_value_test_data = [
             ),
             False,
         ),
-        id="file_array"
+        id="file_array",
     ),
 ]
 
@@ -267,25 +266,19 @@ def get_value_setup(monkeypatch, variable_value, is_valid):
 
 # Test data for set_value tests.
 set_value_test_data = [
-    pytest.param(
-        atvi.BooleanValue(True), var_msgs.VariableValue(bool_value=True), id="boolean"
-    ),
-    pytest.param(
-        atvi.RealValue(4.7), var_msgs.VariableValue(double_value=4.7), id="double"
-    ),
-    pytest.param(
-        atvi.IntegerValue(47), var_msgs.VariableValue(int_value=47), id="int"
-    ),
+    pytest.param(atvi.BooleanValue(True), var_msgs.VariableValue(bool_value=True), id="boolean"),
+    pytest.param(atvi.RealValue(4.7), var_msgs.VariableValue(double_value=4.7), id="double"),
+    pytest.param(atvi.IntegerValue(47), var_msgs.VariableValue(int_value=47), id="int"),
     pytest.param(
         atvi.StringValue("This is a test string value."),
         var_msgs.VariableValue(string_value="This is a test string value."),
-        id="string"
+        id="string",
     ),
     pytest.param(
         atvi.StringValue("(╯°□°）╯︵ ┻━┻"),
         var_msgs.VariableValue(string_value="(╯°□°）╯︵ ┻━┻"),
-        id="string_unicode"
-    )
+        id="string_unicode",
+    ),
 ]
 
 
@@ -374,19 +367,21 @@ def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request)
 # Test data for set_value not supported tests.
 set_value_not_supported_test_data = [
     pytest.param(
-        atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), id="boolean_array"
+        atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]),
+        id="boolean_array",
     ),
     pytest.param(
         atvi.RealArrayValue(shape_=(2, 2), values=[[1.0, 1.1], [2.0, 2.1]]), id="real_array"
     ),
     pytest.param(
-        atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]), id="int_array",
+        atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]),
+        id="int_array",
     ),
     pytest.param(
         atvi.StringArrayValue(
             shape_=(2, 2), values=[["primary", "secondary"], ["first", "second"]]
         ),
-        id="string_array"
+        id="string_array",
     ),
     pytest.param(
         atvi.FileArrayValue(
@@ -396,11 +391,9 @@ set_value_not_supported_test_data = [
                 [MockFileValue(""), MockFileValue("")],
             ],
         ),
-        id="file_array"
+        id="file_array",
     ),
-    pytest.param(
-        MockFileValue(""), id="file"
-    )
+    pytest.param(MockFileValue(""), id="file"),
 ]
 
 
