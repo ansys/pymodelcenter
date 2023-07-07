@@ -6,7 +6,6 @@ import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-from ansys.modelcenter.workflow.grpc_modelcenter import ValueTypeNotSupportedError
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import (
@@ -67,12 +66,13 @@ def test_set_is_input(monkeypatch, engine) -> None:
 
 # Test data for get_value tests
 get_value_test_data = [
-    (
+    pytest.param(
         var_msgs.VariableValue(double_value=-867.5309),
         True,
         atvi.VariableState(atvi.RealValue(-867.5309), True),
+        id="double",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(
             double_array_value=var_msgs.DoubleArrayValue(
                 dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[1.0, 1.1, 2.0, 2.1]
@@ -82,13 +82,15 @@ get_value_test_data = [
         atvi.VariableState(
             atvi.RealArrayValue(shape_=(2, 2), values=[[1.0, 1.1], [2.0, 2.1]]), False
         ),
+        id="double_array",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(bool_value=True),
         False,
         atvi.VariableState(atvi.BooleanValue(True), False),
+        id="boolean",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(
             bool_array_value=var_msgs.BooleanArrayValue(
                 dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]
@@ -98,13 +100,15 @@ get_value_test_data = [
         atvi.VariableState(
             atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]), True
         ),
+        id="boolean_array",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(int_value=47),
         True,
         atvi.VariableState(atvi.IntegerValue(47), True),
+        id="int",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(
             int_array_value=var_msgs.IntegerArrayValue(
                 dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[-8675309, 47, -1, 0]
@@ -114,13 +118,15 @@ get_value_test_data = [
         atvi.VariableState(
             atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]), False
         ),
+        id="int_array",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(string_value="(╯°□°）╯︵ ┻━┻"),
         True,
         atvi.VariableState(atvi.StringValue("(╯°□°）╯︵ ┻━┻"), True),
+        id="string",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(
             string_array_value=var_msgs.StringArrayValue(
                 dims=var_msgs.ArrayDimensions(dims=[2, 2]),
@@ -134,13 +140,15 @@ get_value_test_data = [
             ),
             False,
         ),
+        id="string_array",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(file_value=var_msgs.FileValue()),
         True,
         atvi.VariableState(MockFileValue(""), True),
+        id="file",
     ),
-    (
+    pytest.param(
         var_msgs.VariableValue(
             file_array_value=var_msgs.FileArrayValue(
                 dims=var_msgs.ArrayDimensions(dims=[2, 2]),
@@ -163,6 +171,7 @@ get_value_test_data = [
             ),
             False,
         ),
+        id="file_array",
     ),
 ]
 
@@ -239,48 +248,18 @@ def test_reference_array_property_get_state_at(
 
 # Test data for set_value tests.
 set_value_test_data = [
-    (atvi.BooleanValue(True), var_msgs.VariableValue(bool_value=True)),
-    (atvi.RealValue(4.7), var_msgs.VariableValue(double_value=4.7)),
-    (atvi.IntegerValue(47), var_msgs.VariableValue(int_value=47)),
-    (
+    pytest.param(atvi.BooleanValue(True), var_msgs.VariableValue(bool_value=True), id="boolean"),
+    pytest.param(atvi.RealValue(4.7), var_msgs.VariableValue(double_value=4.7), id="double"),
+    pytest.param(atvi.IntegerValue(47), var_msgs.VariableValue(int_value=47), id="int"),
+    pytest.param(
         atvi.StringValue("This is a test string value."),
         var_msgs.VariableValue(string_value="This is a test string value."),
+        id="string",
     ),
-    (atvi.StringValue("(╯°□°）╯︵ ┻━┻"), var_msgs.VariableValue(string_value="(╯°□°）╯︵ ┻━┻")),
-    (
-        atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]),
-        var_msgs.VariableValue(
-            bool_array_value=var_msgs.BooleanArrayValue(
-                dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[True, False, False, True]
-            )
-        ),
-    ),
-    (
-        atvi.RealArrayValue(shape_=(2, 2), values=[[1.0, 1.1], [2.0, 2.1]]),
-        var_msgs.VariableValue(
-            double_array_value=var_msgs.DoubleArrayValue(
-                dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[1.0, 1.1, 2.0, 2.1]
-            )
-        ),
-    ),
-    (
-        atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]),
-        var_msgs.VariableValue(
-            int_array_value=var_msgs.IntegerArrayValue(
-                dims=var_msgs.ArrayDimensions(dims=[2, 2]), values=[-8675309, 47, -1, 0]
-            )
-        ),
-    ),
-    (
-        atvi.StringArrayValue(
-            shape_=(2, 2), values=[["primary", "secondary"], ["first", "second"]]
-        ),
-        var_msgs.VariableValue(
-            string_array_value=var_msgs.StringArrayValue(
-                dims=var_msgs.ArrayDimensions(dims=[2, 2]),
-                values=["primary", "secondary", "first", "second"],
-            )
-        ),
+    pytest.param(
+        atvi.StringValue("(╯°□°）╯︵ ┻━┻"),
+        var_msgs.VariableValue(string_value="(╯°□°）╯︵ ┻━┻"),
+        id="string_unicode",
     ),
 ]
 
@@ -341,14 +320,34 @@ def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request)
 
 # Test data for set_value not supported tests.
 set_value_not_supported_test_data = [
-    atvi.FileArrayValue(
-        shape_=(2, 2),
-        values=[
-            [MockFileValue(""), MockFileValue("")],
-            [MockFileValue(""), MockFileValue("")],
-        ],
+    pytest.param(
+        atvi.BooleanArrayValue(shape_=(2, 2), values=[[True, False], [False, True]]),
+        id="boolean_array",
     ),
-    MockFileValue(""),
+    pytest.param(
+        atvi.RealArrayValue(shape_=(2, 2), values=[[1.0, 1.1], [2.0, 2.1]]), id="real_array"
+    ),
+    pytest.param(
+        atvi.IntegerArrayValue(shape_=(2, 2), values=[[-8675309, 47], [-1, 0]]),
+        id="int_array",
+    ),
+    pytest.param(
+        atvi.StringArrayValue(
+            shape_=(2, 2), values=[["primary", "secondary"], ["first", "second"]]
+        ),
+        id="string_array",
+    ),
+    pytest.param(
+        atvi.FileArrayValue(
+            shape_=(2, 2),
+            values=[
+                [MockFileValue(""), MockFileValue("")],
+                [MockFileValue(""), MockFileValue("")],
+            ],
+        ),
+        id="file_array",
+    ),
+    pytest.param(MockFileValue(""), id="file"),
 ]
 
 
@@ -366,7 +365,7 @@ def test_reference_property_set_value_not_supported(monkeypatch, engine, set_val
     new_value = atvi.VariableState(set_value, True)
 
     # Act/Assert
-    with pytest.raises(ValueTypeNotSupportedError):
+    with pytest.raises(TypeError, match="Cannot set the value of reference property to a type of"):
         sut.set_value(new_value=new_value)
 
     mock_client.ReferencePropertySetValue.assert_not_called()
@@ -387,7 +386,7 @@ def test_set_value_at_not_supported(monkeypatch, engine, set_value):
     test_index = 5
 
     # Act/Assert
-    with pytest.raises(ValueTypeNotSupportedError):
+    with pytest.raises(TypeError, match="Cannot set the value of reference property to a type of"):
         sut.set_value_at(new_value=new_value, index=test_index)
 
     mock_client.ReferencePropertySetValue.assert_not_called()
