@@ -398,3 +398,114 @@ def test_cannot_instantiate_reference_property_base(engine):
         ReferencePropertyBase(
             element_id=elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID"), name="Bob", engine=engine
         )
+
+
+# Test data for get_metadata tests
+get_metadata_test_data = [
+    pytest.param(
+        var_msgs.VariableMetadata(
+            int_metadata=var_msgs.IntegerVariableMetadata(
+                base_metadata=var_msgs.BaseVariableMetadata(description="int_var_metadata")
+            )
+        ),
+        atvi.IntegerMetadata,
+        "int_var_metadata",
+        id="int",
+    ),
+    pytest.param(
+        var_msgs.VariableMetadata(
+            double_metadata=var_msgs.DoubleVariableMetadata(
+                base_metadata=var_msgs.BaseVariableMetadata(description="double_var_metadata")
+            )
+        ),
+        atvi.RealMetadata,
+        "double_var_metadata",
+        id="double",
+    ),
+    pytest.param(
+        var_msgs.VariableMetadata(
+            bool_metadata=var_msgs.BooleanVariableMetadata(
+                base_metadata=var_msgs.BaseVariableMetadata(description="bool_var_metadata")
+            )
+        ),
+        atvi.BooleanMetadata,
+        "bool_var_metadata",
+        id="bool",
+    ),
+    pytest.param(
+        var_msgs.VariableMetadata(
+            string_metadata=var_msgs.StringVariableMetadata(
+                base_metadata=var_msgs.BaseVariableMetadata(description="string_var_metadata")
+            )
+        ),
+        atvi.StringMetadata,
+        "string_var_metadata",
+        id="string",
+    ),
+    pytest.param(
+        var_msgs.VariableMetadata(
+            file_metadata=var_msgs.FileVariableMetadata(
+                base_metadata=var_msgs.BaseVariableMetadata(description="file_var_metadata")
+            )
+        ),
+        atvi.FileMetadata,
+        "file_var_metadata",
+        id="file",
+    ),
+]
+
+
+@pytest.mark.parametrize("mock_response,expected_result_type,description", get_metadata_test_data)
+def test_reference_property_get_metadata(
+    monkeypatch, engine, mock_response, expected_result_type, description
+):
+    # Arrange: gRPC client
+    mock_client = MagicMock()
+    mock_client.ReferencePropertyGetMetadata.return_value = mock_response
+    monkeypatch_client_creation(monkeypatch, ReferenceProperty, mock_client)
+
+    # Arrange: SUT
+    sut_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    sut_name = "Bob"
+    sut = grpcmc.ReferenceProperty(element_id=sut_id, name=sut_name, engine=engine)
+
+    # Act
+    result: atvi.CommonVariableMetadata = sut.get_metadata()
+
+    # Assert: Correct grpc call
+    expected_request = var_msgs.ReferencePropertyIdentifier(
+        reference_var=sut_id, prop_name=sut_name
+    )
+    mock_client.ReferencePropertyGetMetadata.assert_called_once_with(expected_request)
+
+    # Assert: Result is properly converted
+    assert type(result) == expected_result_type
+    assert result.description == description
+
+
+@pytest.mark.parametrize("mock_response,expected_result_type,description", get_metadata_test_data)
+def test_reference_array_property_get_metadata(
+    monkeypatch, engine, mock_response, expected_result_type, description
+):
+    # Arrange: gRPC client
+    mock_client = MagicMock()
+    mock_client.ReferencePropertyGetMetadata.return_value = mock_response
+    monkeypatch_client_creation(monkeypatch, ReferenceArrayProperty, mock_client)
+
+    # Arrange: SUT
+    sut_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    sut_name = "Bob"
+    sut = grpcmc.ReferenceArrayProperty(element_id=sut_id, name=sut_name, engine=engine)
+
+    # Act
+    result: atvi.CommonVariableMetadata = sut.get_metadata()
+
+    # Assert: Correct grpc call
+    expected_request = var_msgs.ReferencePropertyIdentifier(
+        reference_var=sut_id, prop_name=sut_name
+    )
+    mock_client.ReferencePropertyGetMetadata.assert_called_once_with(expected_request)
+
+    # Assert: Result is properly converted
+    assert type(result) == expected_result_type
+    assert result.description == description

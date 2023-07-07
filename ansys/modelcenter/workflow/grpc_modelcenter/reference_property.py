@@ -12,6 +12,7 @@ from .grpc_error_interpretation import (
     interpret_rpc_error,
 )
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .var_metadata_convert import convert_grpc_metadata
 from .var_value_convert import convert_grpc_value_to_atvi
 
 if TYPE_CHECKING:
@@ -72,9 +73,15 @@ class ReferencePropertyBase(IReferencePropertyBase):
     def get_value_type(self) -> atvi.VariableType:
         pass
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> atvi.CommonVariableMetadata:
-        pass
+        request = var_msgs.ReferencePropertyIdentifier(
+            reference_var=self._element_id, prop_name=self._name
+        )
+        response: var_msgs.VariableMetadata = self._client.ReferencePropertyGetMetadata(request)
+        metadata_value = getattr(response, response.WhichOneof("value"))
+        return convert_grpc_metadata(metadata_value)
 
     @overrides
     def set_metadata(self, new_value: atvi.CommonVariableMetadata):
