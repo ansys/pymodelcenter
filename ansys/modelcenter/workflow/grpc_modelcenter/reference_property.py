@@ -13,7 +13,7 @@ from .grpc_error_interpretation import (
 )
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .var_metadata_convert import convert_grpc_metadata
-from .var_value_convert import convert_grpc_value_to_atvi
+from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -71,7 +71,13 @@ class ReferencePropertyBase(IReferencePropertyBase):
 
     @overrides
     def get_value_type(self) -> atvi.VariableType:
-        pass
+        request = var_msgs.ReferencePropertyIdentifier(
+            reference_var=self._element_id, prop_name=self._name
+        )
+        response: var_msgs.ReferencePropertyGetTypeResponse = self._client.ReferencePropertyGetType(
+            request
+        )
+        return grpc_type_enum_to_interop_type(response)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
