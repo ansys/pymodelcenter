@@ -38,7 +38,7 @@ class MCDProcess:
         self._process: Optional[subprocess.Popen] = None
         self._debug: bool = True if self._exe_path.endswith("ModelCenterD.exe") else False
         self._timeout: float = 60 if self._debug else 30
-          
+
     def start(
         self,
         run_only: bool = False,
