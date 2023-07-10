@@ -38,14 +38,29 @@ class MCDProcess:
         self._process: Optional[subprocess.Popen] = None
         self._debug: bool = True if self._exe_path.endswith("ModelCenterD.exe") else False
         self._timeout: float = 60 if self._debug else 30
-
+          
     def start(
         self,
         run_only: bool = False,
         heartbeat_interval: numpy.uint = 30000,
         allowed_heartbeat_misses: numpy.uint = 3,
     ) -> int:
-        """Start the MCD process."""
+        """
+        Start the MCD process.
+
+        Parameters
+        ----------
+        run_only: bool
+            Flag for if ModelCenter should be started as run only
+        heartbeat_interval: numpy.uint
+            Interval between heartbeat messages.
+        allowed_heartbead_misses: numpy.uint
+            Number of allowed missed heartbeats before the server terminates.
+
+        Return
+        ------
+        The port number the gRPC server was started on.
+        """
         args = [
             self._exe_path,
             "/Grpc",
