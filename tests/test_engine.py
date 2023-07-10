@@ -436,7 +436,7 @@ def test_heartbeat_process_should_call_the_right_method(setup_function) -> None:
     sut = grpcapi.Engine()
 
     # Assert
-    assert sut._heartbeat_process._target == grpcmc.engine._heartbeat_loop  # type: ignore
+    assert sut._heartbeat_thread._target == grpcmc.engine._heartbeat_loop  # type: ignore
 
 
 def test_heartbeat_method_sends_grpc_calls_until_released(monkeypatch, setup_function) -> None:
