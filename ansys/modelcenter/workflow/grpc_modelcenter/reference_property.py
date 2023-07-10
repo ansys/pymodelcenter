@@ -54,7 +54,7 @@ class ReferencePropertyBase(IReferencePropertyBase):
         Parameters
         ----------
         element_id: ElementId
-            The id of the element.
+            The id of the reference that owns this property.
         name: str
             The name of the property.
         engine: Engine
@@ -114,7 +114,7 @@ class ReferencePropertyBase(IReferencePropertyBase):
     @property
     @overrides
     def name(self) -> str:
-        return ""
+        return self._name
 
 
 class ReferenceProperty(ReferencePropertyBase, IReferenceProperty):
