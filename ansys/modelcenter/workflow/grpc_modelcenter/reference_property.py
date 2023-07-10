@@ -87,8 +87,7 @@ class ReferenceProperty(IReferenceProperty):
             and not isinstance(new_value.value, atvi.StringValue)
         ):
             raise TypeError(
-                f"Cannot set the value of reference property to a type of "
-                f"{new_value.value.variable_type}."
+                f"Cannot set the value of reference property to a type of {new_value.value.variable_type}."
             )
         grpc_value = var_value_convert.convert_interop_value_to_grpc(new_value.value)
         target_prop = var_msgs.IndexedReferencePropertyIdentifier(
@@ -144,14 +143,13 @@ class ReferenceArrayProperty(IReferenceArrayProperty, ReferenceProperty):
     def set_value_at(self, index: int, new_value: atvi.VariableState) -> None:
         # Only allow new values that are booleans, reals, integers, or strings.
         if (
-            not isinstance(new_value.value, atvi.BooleanValue)
-            and not isinstance(new_value.value, atvi.RealValue)
-            and not isinstance(new_value.value, atvi.IntegerValue)
-            and not isinstance(new_value.value, atvi.StringValue)
+                not isinstance(new_value.value, atvi.BooleanValue)
+                and not isinstance(new_value.value, atvi.RealValue)
+                and not isinstance(new_value.value, atvi.IntegerValue)
+                and not isinstance(new_value.value, atvi.StringValue)
         ):
             raise TypeError(
-                f"Cannot set the value of reference property to a type of "
-                f"{new_value.value.variable_type}."
+                f"Cannot set the value of reference property to a type of {new_value.value.variable_type}."
             )
         grpc_value = var_value_convert.convert_interop_value_to_grpc(new_value.value)
         target_prop = var_msgs.IndexedReferencePropertyIdentifier(
