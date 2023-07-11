@@ -5,7 +5,9 @@ import unittest.mock
 import ansys.tools.variableinterop as atvi
 import pytest
 
+from ansys.modelcenter.workflow.api import IReferenceProperty
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
@@ -54,6 +56,9 @@ class MockWorkflowClientForRefVarTest:
         self, request: var_msgs.SetReferenceVariableMetadataRequest
     ) -> var_msgs.SetMetadataResponse:
         return var_msgs.SetMetadataResponse()
+
+    def ReferenceVariableGetReferenceProperties(self):
+        pass
 
 
 def test_get_reference_equation(monkeypatch, engine) -> None:
@@ -902,3 +907,67 @@ def test_array_get_length(monkeypatch, engine) -> None:
         # Assert
         mock_grpc_method.assert_called_once_with(sut_element_id)
         assert length == test_value
+
+
+def test_get_reference_properties(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    response_values = ["multiple", "test", "values"]
+    mock_response = var_msgs.ReferencePropertyNames(names=response_values)
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetReferenceProperties", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act
+        result = sut.get_reference_properties()
+
+        # Assert
+        assert len(result) == len(response_values)
+
+        for name in response_values:
+            if name in result.keys():
+                ref_prop: IReferenceProperty = result[name]
+
+                assert type(ref_prop) == ReferenceProperty
+                assert ref_prop._element_id == sut_element_id.id_string
+                assert ref_prop.name == name
+                assert ref_prop._engine == engine
+            else:
+                assert False, f"{name} not found in reference property map."
+
+
+def test_get_reference_array_properties(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    response_values = ["multiple", "test", "values"]
+    mock_response = var_msgs.ReferencePropertyNames(names=response_values)
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetReferenceProperties", return_value=mock_response
+    ) as mock_grpc_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act
+        result = sut.get_reference_properties()
+
+        # Assert
+        assert len(result) == len(response_values)
+
+        for name in response_values:
+            if name in result.keys():
+                ref_prop: IReferenceProperty = result[name]
+
+                assert type(ref_prop) == ReferenceArrayProperty
+                assert ref_prop._element_id == sut_element_id.id_string
+                assert ref_prop.name == name
+                assert ref_prop._engine == engine
+            else:
+                assert False, f"{name} not found in reference property map."
