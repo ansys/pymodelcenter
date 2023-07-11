@@ -1,8 +1,7 @@
 """Implementation of Engine."""
 from os import PathLike
 from string import Template
-from threading import Lock, Thread
-import time
+from threading import Condition, Thread
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
@@ -21,16 +20,21 @@ from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
 
 
-def _heartbeat_loop(lock: Lock, address: str, interval: numpy.uint) -> None:
+def _heartbeat_loop(condition: Condition, address: str, engine, interval: numpy.uint) -> None:
     """Runs a loop that sends heartbeat messages to the server at regular intervals."""
+    # should use Condition to perform timing AND decide whether or not to bail,
+    # allows immediate leaving while still joining the thread
+    # should keep going if HeartbeatRequest fails for a reason besides UNAVAILABLE
     channel = grpc.insecure_channel(address)
-    stub = Engine._create_client(channel)
-    while not lock.acquire(blocking=False):
-        print("Heartbeating...")
+    stub = engine._create_client(channel)
+    should_continue_heartbeating: bool = not engine.is_closed
+    while should_continue_heartbeating:
         request = eng_msg.HeartbeatRequest()
         stub.Heartbeat(request)
         # sleep for a little less than the heartbeat interval
-        time.sleep(max(0, (interval * 0.95) / 1000))
+        with condition:
+            condition.wait(max(0, (interval * 0.95) / 1000))
+        should_continue_heartbeating = not engine.is_closed
 
 
 class WorkflowAlreadyLoadedError(Exception):
@@ -70,11 +74,12 @@ class Engine(IEngine):
         allowed_heartbeat_misses: numpy.uint
             The number of heartbeat misses allowed before the server will terminate.
         """
+        self._is_closed = False
         self._is_run_only: bool = is_run_only
         self._heartbeat_interval: numpy.uint = heartbeat_interval
         self._allowed_heartbeat_misses: numpy.uint = allowed_heartbeat_misses
         self._heartbeat_thread: Optional[Thread] = None
-        self._heartbeat_lock: Optional[Lock] = None
+        self._heartbeat_condition: Optional[Condition] = None
         self._instance: Optional[pypim.Instance] = None
         self._process: Optional[MCDProcess] = None
         self._channel: Optional[grpc.Channel] = None
@@ -118,20 +123,33 @@ class Engine(IEngine):
             self._channel = grpc.insecure_channel("localhost:" + str(port))
 
         # run a background task to send heartbeat messages to the server
-        self._heartbeat_lock = Lock()
-        self._heartbeat_lock.acquire()
+        self._heartbeat_condition = Condition()
         self._heartbeat_thread = Thread(
             target=_heartbeat_loop,
-            args=(self._heartbeat_lock, self._channel._channel.target(), self._heartbeat_interval),
+            args=(
+                self._heartbeat_condition,
+                self._channel._channel.target(),
+                self,
+                self._heartbeat_interval,
+            ),
+            daemon=True,
         )
         self._heartbeat_thread.start()
+
+    @property
+    def is_closed(self) -> bool:
+        """Get whether this instance has been closed."""
+        return self._is_closed
 
     @interpret_rpc_error()
     def close(self):
         """Shut down the grpc server and clear out all objects."""
-        if self._heartbeat_lock is not None:
-            self._heartbeat_lock.release()
-            self._heartbeat_lock = None
+        self._is_closed = True
+
+        if self._heartbeat_condition is not None:
+            with self._heartbeat_condition:
+                self._heartbeat_condition.notify_all()
+            self._heartbeat_condition = None
 
         if self._heartbeat_thread is not None and self._heartbeat_thread.is_alive():
             self._heartbeat_thread.join(self._heartbeat_interval * 1.1)

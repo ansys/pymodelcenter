@@ -1,4 +1,4 @@
-import multiprocessing
+import time
 from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
 from unittest.mock import create_autospec
@@ -29,6 +29,7 @@ class MockEngineClientForEngineTest:
         self.raise_error_on_info: Optional[grpc.StatusCode] = None
         self.raise_error_on_heartbeat: Optional[grpc.StatusCode] = None
         self.workflow_already_open = False
+        self.heartbeats = 0
 
     def GetEngineInfo(
         self, request: eng_msgs.GetServerInfoRequest
@@ -128,6 +129,7 @@ class MockEngineClientForEngineTest:
         return eng_msgs.ShutdownResponse()
 
     def Heartbeat(self, request: eng_msgs.HeartbeatRequest) -> eng_msgs.HeartbeatResponse:
+        self.heartbeats = self.heartbeats + 1
         if self.raise_error_on_heartbeat:
             raise MockGrpcError(self.raise_error_on_heartbeat, "Simulated failure to communicate.")
         return eng_msgs.HeartbeatResponse()
@@ -159,7 +161,6 @@ def setup_function(monkeypatch):
 
     monkeypatch.setattr(grpcapi.MCDProcess, "start", mock_start)
     monkeypatch.setattr(grpcapi.MCDProcess, "__init__", mock_init)
-    monkeypatch.setattr(multiprocessing.Process, "start", mock_process_start)
     global mock_client
     mock_client = MockEngineClientForEngineTest()
     monkeypatch_client_creation(monkeypatch, grpcapi.Engine, mock_client)
@@ -428,36 +429,15 @@ def test_get_channel(setup_function) -> None:
     assert cast(Any, channel)._channel.target() == b"localhost:12345"
 
 
-def test_heartbeat_process_should_call_the_right_method(setup_function) -> None:
-    """
-    Verify the right method is started in the heartbeat process.
-    """
-    # Arrange/Act
-    sut = grpcapi.Engine()
-
-    # Assert
-    assert sut._heartbeat_thread._target == grpcmc.engine._heartbeat_loop  # type: ignore
-
-
 def test_heartbeat_method_sends_grpc_calls_until_released(monkeypatch, setup_function) -> None:
     # Arrange
-    class MockLock:
-        acquire_count = 0
+    assert mock_client.heartbeats == 0
 
-        def acquire(self, blocking):
-            self.acquire_count += 1
-            return self.acquire_count > 5
-
-    mock_client_create = lambda channel, mock_client=mock_client: mock_client
-    monkeypatch.setattr(grpcmc.Engine, "_create_client", mock_client_create)
-
-    lock = MockLock()
-    with unittest.mock.patch.object(
-        mock_client, "Heartbeat", return_value=eng_msgs.HeartbeatResponse()
-    ) as mock_grpc_method:
-        # Act
-        grpcmc.engine._heartbeat_loop(lock, "0.0.0.0:5051", 1)  # type: ignore
-
-    # Assert
-    assert mock_grpc_method.call_count == 5
-    mock_grpc_method.assert_called_with(eng_msgs.HeartbeatRequest())
+    # Act
+    with grpcmc.Engine(heartbeat_interval=100) as sut:
+        # Assert
+        time.sleep(1)
+        assert mock_client.heartbeats >= 9 and mock_client.heartbeats <= 11
+    heartbeat_snapshot = mock_client.heartbeats
+    time.sleep(0.5)
+    assert mock_client.heartbeats == heartbeat_snapshot
