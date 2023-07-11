@@ -1,10 +1,25 @@
-import multiprocessing
 from typing import Generator
 
 import numpy
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 import (
+    HeartbeatRequest,
+    HeartbeatResponse,
+    ShutdownRequest,
+    ShutdownResponse,
+)
+
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+
+
+class MockHeartbeatAndShutdownClient:
+    def Shutdown(self, request: ShutdownRequest) -> ShutdownResponse:
+        return ShutdownResponse()
+
+    def Heartbeat(self, request: HeartbeatRequest) -> HeartbeatResponse:
+        return HeartbeatResponse()
 
 
 @pytest.fixture(name="engine")
@@ -27,5 +42,6 @@ def engine(monkeypatch) -> Generator[grpcmc.Engine, None, None]:
     # mock Engine creation
     monkeypatch.setattr(grpcmc.MCDProcess, "start", mock_start)
     monkeypatch.setattr(grpcmc.MCDProcess, "__init__", mock_init)
-    monkeypatch.setattr(multiprocessing.Process, "start", mock_process_start)
-    yield grpcmc.Engine(is_run_only=False)
+    monkeypatch_client_creation(monkeypatch, grpcmc.Engine, MockHeartbeatAndShutdownClient())
+    with grpcmc.Engine(is_run_only=False) as engine:
+        yield engine
