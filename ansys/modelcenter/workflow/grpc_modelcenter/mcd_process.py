@@ -38,7 +38,18 @@ class MCDProcess:
         self._timeout: float = 60 if self._debug else 30
 
     def start(self, run_only: bool = False) -> int:
-        """Start the MCD process."""
+        """
+        Start the MCD process.
+
+        Parameters
+        ----------
+        run_only: bool
+            Flag for if ModelCenter should be started as run only
+
+        Return
+        ------
+        The port number the gRPC server was started on.
+        """
         args = [self._exe_path, "/Grpc", "/Automation"]
         if run_only:
             args.append("/runonly")
