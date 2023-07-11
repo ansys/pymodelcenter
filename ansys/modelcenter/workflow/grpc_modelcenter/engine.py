@@ -25,8 +25,6 @@ def _heartbeat_loop(lock: Lock, address: str, interval: numpy.uint) -> None:
     """Runs a loop that sends heartbeat messages to the server at regular intervals."""
     channel = grpc.insecure_channel(address)
     stub = Engine._create_client(channel)
-    request = eng_msg.HeartbeatRequest()
-    stub.Heartbeat(request)
     while not lock.acquire(blocking=False):
         print("Heartbeating...")
         request = eng_msg.HeartbeatRequest()

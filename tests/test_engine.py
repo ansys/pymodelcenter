@@ -444,7 +444,7 @@ def test_heartbeat_method_sends_grpc_calls_until_released(monkeypatch, setup_fun
     class MockLock:
         acquire_count = 0
 
-        def acquire(self, block):
+        def acquire(self, blocking):
             self.acquire_count += 1
             return self.acquire_count > 5
 
