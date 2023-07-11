@@ -261,3 +261,26 @@ def test_can_get_reference_property_value_type(
 
     # Assert
     assert result == expected_type
+
+
+@pytest.mark.parametrize(
+    "target,is_input",
+    pytest.param("Model.RefPropsScript.scalarInput", True, id="input"),
+    pytest.param("Model.RefPropsScript.scalarOutput", False, id="output"),
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_can_get_if_a_reference_property_is_an_input(
+        workflow, target: str, is_input: bool
+) -> None:
+    # Arrange
+    variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
+    # prop: mcapi.IReferenceArrayProperty = variable.get_reference_properties()["realParam"]
+    prop = grpcmc.ReferenceArrayProperty(
+        ElementId(id_string=variable.element_id), "realParam", variable._engine
+    )
+
+    # Act
+    result: bool = prop.is_input
+
+    # Assert
+    assert result == is_input
