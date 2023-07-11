@@ -172,7 +172,7 @@ class ReferenceArrayProperty(IReferenceArrayProperty, ReferenceProperty):
             reference_var=self._element_id, prop_name=self._name
         )
         request = var_msgs.IndexedReferencePropertyIdentifier(target_prop=target_prop, index=index)
-        response = self._client.ReferencePropertyGetValue(request)
+        response: var_msgs.VariableState = self._client.ReferencePropertyGetValue(request)
         interop_value: atvi.IVariableValue
         try:
             interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
