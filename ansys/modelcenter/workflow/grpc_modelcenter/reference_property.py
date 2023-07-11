@@ -12,7 +12,8 @@ from .grpc_error_interpretation import (
     interpret_rpc_error,
 )
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
-from .var_value_convert import convert_grpc_value_to_atvi
+from .var_metadata_convert import convert_grpc_metadata
+from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -53,7 +54,7 @@ class ReferencePropertyBase(IReferencePropertyBase):
         Parameters
         ----------
         element_id: ElementId
-            The id of the element.
+            The id of the reference that owns this property.
         name: str
             The name of the property.
         engine: Engine
@@ -70,11 +71,23 @@ class ReferencePropertyBase(IReferencePropertyBase):
 
     @overrides
     def get_value_type(self) -> atvi.VariableType:
-        pass
+        request = var_msgs.ReferencePropertyIdentifier(
+            reference_var=self._element_id, prop_name=self._name
+        )
+        response: var_msgs.ReferencePropertyGetTypeResponse = self._client.ReferencePropertyGetType(
+            request
+        )
+        return grpc_type_enum_to_interop_type(response)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_metadata(self) -> atvi.CommonVariableMetadata:
-        pass
+        request = var_msgs.ReferencePropertyIdentifier(
+            reference_var=self._element_id, prop_name=self._name
+        )
+        response: var_msgs.VariableMetadata = self._client.ReferencePropertyGetMetadata(request)
+        metadata_value = getattr(response, response.WhichOneof("value"))
+        return convert_grpc_metadata(metadata_value)
 
     @overrides
     def set_metadata(self, new_value: atvi.CommonVariableMetadata):
@@ -101,7 +114,7 @@ class ReferencePropertyBase(IReferencePropertyBase):
     @property
     @overrides
     def name(self) -> str:
-        return ""
+        return self._name
 
 
 class ReferenceProperty(ReferencePropertyBase, IReferenceProperty):
