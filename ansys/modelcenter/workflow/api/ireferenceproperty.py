@@ -71,7 +71,6 @@ class IReferenceArrayProperty(IReferencePropertyBase, ABC):
     def get_state_at(self, index: int) -> atvi.VariableState:
         """Get the value of a reference property at a particular index."""
 
-
 class IReferencePropertyManager(ABC):
     """Defines utility methods for getting reference properties from reference datapins."""
 
