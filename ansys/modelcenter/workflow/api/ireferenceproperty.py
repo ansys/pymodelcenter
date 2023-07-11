@@ -6,23 +6,8 @@ from typing import Mapping
 import ansys.tools.variableinterop as atvi
 
 
-class IReferenceProperty(ABC):
-    """Defines methods for reference properties."""
-
-    @abstractmethod
-    def get_state(self) -> atvi.VariableState:
-        """
-        Get the state of the property.
-
-        The returned state may be invalid. The engine will not attempt
-        to run the workflow to validate this property.
-        """
-        pass
-
-    @abstractmethod
-    def set_value(self, new_value: atvi.VariableState) -> None:
-        """Set the value of the property."""
-        pass
+class IReferencePropertyBase(ABC):
+    """Defines common methods for IReferenceProperty and IReferenceArrayProperty."""
 
     @abstractmethod
     def get_value_type(self) -> atvi.VariableType:
@@ -56,7 +41,26 @@ class IReferenceProperty(ABC):
         """Get the name of this property."""
 
 
-class IReferenceArrayProperty(IReferenceProperty, ABC):
+class IReferenceProperty(IReferencePropertyBase, ABC):
+    """Defines methods for reference properties."""
+
+    @abstractmethod
+    def get_state(self) -> atvi.VariableState:
+        """
+        Get the state of the property.
+
+        The returned state may be invalid. The engine will not attempt
+        to run the workflow to validate this property.
+        """
+        pass
+
+    @abstractmethod
+    def set_value(self, new_value: atvi.VariableState) -> None:
+        """Set the value of the property."""
+        pass
+
+
+class IReferenceArrayProperty(IReferencePropertyBase, ABC):
     """Defines methods for reference array properties."""
 
     @abstractmethod

@@ -1,16 +1,19 @@
 """Contains implementations of reference property related classes."""
+from abc import abstractmethod
 from typing import TYPE_CHECKING, Mapping
 
 import grpc
 
 from . import var_value_convert
+from ..api.ireferenceproperty import IReferencePropertyBase
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
-from .var_value_convert import convert_grpc_value_to_atvi
+from .var_metadata_convert import convert_grpc_metadata
+from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -34,9 +37,16 @@ from .proto.variable_value_messages_pb2 import (
 )
 
 
-class ReferenceProperty(IReferenceProperty):
-    """Represents a reference property."""
+class ReferencePropertyBase(IReferencePropertyBase):
+    """
+    A base class for reference properties that defines common methods.
 
+    .. note::
+        This base class should not be used directly. Instead, use ReferenceProperty or
+        ReferenceArrayProperty as required.
+    """
+
+    @abstractmethod
     def __init__(self, element_id: ElementId, name: str, engine: "Engine") -> None:
         """
         Initialize a new instance.
@@ -44,7 +54,7 @@ class ReferenceProperty(IReferenceProperty):
         Parameters
         ----------
         element_id: ElementId
-            The id of the element.
+            The id of the reference that owns this property.
         name: str
             The name of the property.
         engine: Engine
@@ -58,6 +68,61 @@ class ReferenceProperty(IReferenceProperty):
     @staticmethod
     def _create_client(channel: grpc.Channel) -> ModelCenterWorkflowServiceStub:
         return ModelCenterWorkflowServiceStub(channel)  # pragma: no cover
+
+    @overrides
+    def get_value_type(self) -> atvi.VariableType:
+        request = var_msgs.ReferencePropertyIdentifier(
+            reference_var=self._element_id, prop_name=self._name
+        )
+        response: var_msgs.ReferencePropertyGetTypeResponse = self._client.ReferencePropertyGetType(
+            request
+        )
+        return grpc_type_enum_to_interop_type(response)
+
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def get_metadata(self) -> atvi.CommonVariableMetadata:
+        request = var_msgs.ReferencePropertyIdentifier(
+            reference_var=self._element_id, prop_name=self._name
+        )
+        response: var_msgs.VariableMetadata = self._client.ReferencePropertyGetMetadata(request)
+        metadata_value = getattr(response, response.WhichOneof("value"))
+        return convert_grpc_metadata(metadata_value)
+
+    @overrides
+    def set_metadata(self, new_value: atvi.CommonVariableMetadata):
+        pass
+
+    @property
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @overrides
+    def is_input(self) -> bool:
+        request = ReferencePropertyIdentifier(reference_var=self._element_id, prop_name=self._name)
+        response: ReferencePropertyGetIsInputResponse = self._client.ReferencePropertyGetIsInput(
+            request
+        )
+        return response.is_input
+
+    @is_input.setter
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    def is_input(self, is_input: bool):
+        """Setter for is_input property."""
+        target = ReferencePropertyIdentifier(reference_var=self._element_id, prop_name=self._name)
+        request = ReferencePropertySetIsInputRequest(target=target, new_value=is_input)
+        self._client.ReferencePropertySetIsInput(request)
+
+    @property
+    @overrides
+    def name(self) -> str:
+        return self._name
+
+
+class ReferenceProperty(ReferencePropertyBase, IReferenceProperty):
+    """Represents a reference property."""
+
+    @overrides
+    def __init__(self, element_id: ElementId, name: str, engine: "Engine") -> None:
+        super().__init__(element_id=element_id, name=name, engine=engine)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -90,44 +155,13 @@ class ReferenceProperty(IReferenceProperty):
         )
         self._client.ReferencePropertySetValue(request)
 
-    @overrides
-    def get_value_type(self) -> atvi.VariableType:
-        pass
 
-    @overrides
-    def get_metadata(self) -> atvi.CommonVariableMetadata:
-        pass
-
-    @overrides
-    def set_metadata(self, new_value: atvi.CommonVariableMetadata):
-        pass
-
-    @property
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def is_input(self) -> bool:
-        request = ReferencePropertyIdentifier(reference_var=self._element_id, prop_name=self._name)
-        response: ReferencePropertyGetIsInputResponse = self._client.ReferencePropertyGetIsInput(
-            request
-        )
-        return response.is_input
-
-    @is_input.setter
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    def is_input(self, is_input: bool):
-        """Setter for is_input property."""
-        target = ReferencePropertyIdentifier(reference_var=self._element_id, prop_name=self._name)
-        request = ReferencePropertySetIsInputRequest(target=target, new_value=is_input)
-        self._client.ReferencePropertySetIsInput(request)
-
-    @property
-    @overrides
-    def name(self) -> str:
-        return ""
-
-
-class ReferenceArrayProperty(IReferenceArrayProperty, ReferenceProperty):
+class ReferenceArrayProperty(ReferencePropertyBase, IReferenceArrayProperty):
     """Represents a reference array property."""
+
+    @overrides
+    def __init__(self, element_id: ElementId, name: str, engine: "Engine") -> None:
+        super().__init__(element_id=element_id, name=name, engine=engine)
 
     @overrides
     def set_value_at(self, index: int, new_value: atvi.VariableState) -> None:

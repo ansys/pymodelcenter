@@ -1,4 +1,5 @@
 """Defines functions for converting between ACVI metadata and gRPC messages."""
+from typing import Union
 
 import ansys.tools.variableinterop as atvi
 
@@ -268,3 +269,66 @@ def fill_file_metadata_message(source: atvi.FileMetadata, target: FileVariableMe
     The subordinate metadata types are also filled out.
     """
     _fill_base_metadata(source, target.base_metadata)
+
+
+def convert_grpc_metadata(
+    source: Union[
+        FileVariableMetadata,
+        StringVariableMetadata,
+        BooleanVariableMetadata,
+        DoubleVariableMetadata,
+        IntegerVariableMetadata,
+    ],
+    is_array: bool = False,
+) -> atvi.CommonVariableMetadata:
+    """
+    Generic method to convert any type of VariableMetadata.
+
+    Parameters
+    ----------
+    source:
+        The grpc representation of a variable metadata
+
+    is_array:
+        Flag for if the metadata should be for an array variable
+
+    Returns
+    -------
+    atvi.CommonVariableMetadata
+        The equivalent ATVI metadata object
+    """
+    source_type = type(source)
+    if source_type is FileVariableMetadata:
+        return (
+            convert_grpc_file_array_metadata(source)
+            if is_array
+            else convert_grpc_file_metadata(source)
+        )
+    elif source_type is StringVariableMetadata:
+        return (
+            convert_grpc_string_array_metadata(source)
+            if is_array
+            else convert_grpc_string_metadata(source)
+        )
+    elif source_type is BooleanVariableMetadata:
+        return (
+            convert_grpc_boolean_array_metadata(source)
+            if is_array
+            else convert_grpc_boolean_metadata(source)
+        )
+    elif source_type is DoubleVariableMetadata:
+        return (
+            convert_grpc_real_array_metadata(source)
+            if is_array
+            else convert_grpc_real_metadata(source)
+        )
+    elif source_type is IntegerVariableMetadata:
+        return (
+            convert_grpc_integer_array_metadata(source)
+            if is_array
+            else convert_grpc_integer_metadata(source)
+        )
+    else:
+        raise ValueTypeNotSupportedError(
+            f"Generic conversion of metadata with type {type(source)} is not supported."
+        )
