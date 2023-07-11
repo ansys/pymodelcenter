@@ -14,11 +14,7 @@ from ..api import IDatapinReferenceBase, IReferenceProperty
 from .base_datapin import BaseDatapin
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .reference_datapin_metadata import ReferenceDatapinMetadata
-from .var_metadata_convert import (
-    convert_grpc_reference_metadata,
-    convert_grpc_value_to_atvi,
-    fill_reference_metadata_message,
-)
+from .var_metadata_convert import convert_grpc_reference_metadata, fill_reference_metadata_message
 from .var_value_convert import convert_grpc_value_to_atvi
 
 if TYPE_CHECKING:
@@ -250,9 +246,19 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
-        raise NotImplementedError()
+        response: var_msgs.ReferencePropertyNames = (
+            self._client.ReferenceVariableGetReferenceProperties(self.element_id)
+        )
+
+        from . import ReferenceProperty
+
+        return {
+            name: ReferenceProperty(element_id=self.element_id, name=name, engine=self._engine)
+            for name in response.names
+        }
 
 
 class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin):
@@ -374,6 +380,16 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         response = self._client.ReferenceArraySetReferencedValues(request)
         return response.was_changed
 
+    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
-        raise NotImplementedError()
+        response: var_msgs.ReferencePropertyNames = (
+            self._client.ReferenceVariableGetReferenceProperties(self.element_id)
+        )
+
+        from . import ReferenceArrayProperty
+
+        return {
+            name: ReferenceArrayProperty(element_id=self.element_id, name=name, engine=self._engine)
+            for name in response.names
+        }
