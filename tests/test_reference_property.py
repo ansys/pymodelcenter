@@ -387,10 +387,8 @@ def test_set_value_at_not_supported(monkeypatch, engine, set_value):
     test_index = 5
 
     # Act/Assert
-    with pytest.raises(TypeError, match="Cannot set the value of reference property to a type of"):
-        sut.set_value_at(new_value=new_value, index=test_index)
     with pytest.raises(ValueTypeNotSupportedError):
-        sut.set_value(new_value=new_value)
+        sut.set_value_at(new_value=new_value, index=test_index)
 
     mock_client.ReferencePropertySetValue.assert_not_called()
 
