@@ -110,3 +110,154 @@ def test_can_set_reference_array_property_values(workflow, name, value) -> None:
     result: atvi.VariableState = prop.get_state_at(0)
     assert result.is_valid is True
     assert result.value == value
+
+
+@pytest.mark.parametrize(
+    "target,name,expected_type,expected_description",
+    [
+        pytest.param(
+            "Model.RefPropsScript.scalarInput",
+            "stringParam",
+            atvi.StringMetadata,
+            "文字列型",
+            id="scalar string",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.scalarInput",
+            "realParam",
+            atvi.RealMetadata,
+            "浮動小数点数値型",
+            id="scalar real",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.scalarInput",
+            "intParam",
+            atvi.IntegerMetadata,
+            "整数数値型",
+            id="scalar int",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.scalarInput",
+            "boolParam",
+            atvi.BooleanMetadata,
+            "ブール値",
+            id="scalar bool",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.arrayInput",
+            "stringParam",
+            atvi.StringMetadata,
+            "文字列型",
+            id="array string",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.arrayInput",
+            "realParam",
+            atvi.RealMetadata,
+            "浮動小数点数値型",
+            id="array real",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.arrayInput",
+            "intParam",
+            atvi.IntegerMetadata,
+            "整数数値型",
+            id="array int",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.arrayInput",
+            "boolParam",
+            atvi.BooleanMetadata,
+            "ブール値",
+            id="array bool",
+        ),
+    ],
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_can_get_reference_property_metadata(
+    workflow, target: str, name: str, expected_type, expected_description: str
+) -> None:
+    # Arrange
+    variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
+    # prop: mcapi.IReferenceArrayProperty = variable.get_reference_properties()[name]
+    prop = grpcmc.ReferenceArrayProperty(
+        ElementId(id_string=variable.element_id), name, variable._engine
+    )
+
+    # Act
+    result: atvi.CommonVariableMetadata = prop.get_metadata()
+
+    # Assert
+    assert isinstance(result, expected_type)
+    assert result.description == expected_description
+
+
+@pytest.mark.parametrize(
+    "target,name,expected_type",
+    [
+        pytest.param(
+            "Model.RefPropsScript.scalarInput",
+            "stringParam",
+            atvi.VariableType.STRING,
+            id="scalar string",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.scalarInput",
+            "realParam",
+            atvi.VariableType.REAL,
+            id="scalar real",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.scalarInput",
+            "intParam",
+            atvi.VariableType.INTEGER,
+            id="scalar int",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.scalarInput",
+            "boolParam",
+            atvi.VariableType.BOOLEAN,
+            id="scalar bool",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.arrayInput",
+            "stringParam",
+            atvi.VariableType.STRING,
+            id="array string",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.arrayInput",
+            "realParam",
+            atvi.VariableType.REAL,
+            id="array real",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.arrayInput",
+            "intParam",
+            atvi.VariableType.INTEGER,
+            id="array int",
+        ),
+        pytest.param(
+            "Model.RefPropsScript.arrayInput",
+            "boolParam",
+            atvi.VariableType.BOOLEAN,
+            id="array bool",
+        ),
+    ],
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_can_get_reference_property_value_type(
+    workflow, target: str, name: str, expected_type: atvi.VariableType
+) -> None:
+    # Arrange
+    variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
+    # prop: mcapi.IReferenceArrayProperty = variable.get_reference_properties()[name]
+    prop = grpcmc.ReferenceArrayProperty(
+        ElementId(id_string=variable.element_id), name, variable._engine
+    )
+
+    # Act
+    result: atvi.VariableType = prop.get_value_type()
+
+    # Assert
+    assert result == expected_type

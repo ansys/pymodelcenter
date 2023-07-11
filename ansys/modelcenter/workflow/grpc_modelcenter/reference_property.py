@@ -77,7 +77,7 @@ class ReferencePropertyBase(IReferencePropertyBase):
         response: var_msgs.ReferencePropertyGetTypeResponse = self._client.ReferencePropertyGetType(
             request
         )
-        return grpc_type_enum_to_interop_type(response)
+        return grpc_type_enum_to_interop_type(response.type)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
