@@ -4,9 +4,12 @@ from typing import Sequence
 
 from .idatapin import IDatapin
 from .idatapinreferencebase import IDatapinReferenceBase
+from .ireferenceproperty import IReferencePropertyManager
 
 
-class IReferenceArrayDatapin(IDatapin, Sequence[IDatapinReferenceBase], ABC):
+class IReferenceArrayDatapin(
+    IDatapin, Sequence[IDatapinReferenceBase], IReferencePropertyManager, ABC
+):
     """
     Represents a reference array datapin in the workflow.
 
