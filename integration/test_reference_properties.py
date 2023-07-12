@@ -1,9 +1,11 @@
+from typing import cast
+
 import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
+from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
+from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
 
 
 @pytest.mark.parametrize(
@@ -19,10 +21,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
 def test_can_get_reference_property_values(workflow, name, expected_value) -> None:
     # Arrange
     variable: mcapi.IReferenceDatapin = workflow.get_variable("Model.RefPropsScript.scalarInput")
-    # prop: mcapi.IReferenceProperty = variable.get_reference_properties()[name]
-    prop = grpcmc.ReferenceProperty(
-        ElementId(id_string=variable.element_id), name, variable._engine
-    )
+    prop: IReferenceProperty = cast(IReferenceProperty, variable.get_reference_properties()[name])
 
     # Act
     result: atvi.VariableState = prop.get_state()
@@ -44,10 +43,11 @@ def test_can_get_reference_property_values(workflow, name, expected_value) -> No
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_get_reference_array_property_values(workflow, name, expected_value) -> None:
     # Arrange
-    variable: mcapi.IReferenceDatapin = workflow.get_variable("Model.RefPropsScript.arrayInput")
-    # prop: mcapi.IReferenceArrayProperty = variable.get_reference_properties()[name]
-    prop = grpcmc.ReferenceArrayProperty(
-        ElementId(id_string=variable.element_id), name, variable._engine
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.RefPropsScript.arrayInput"
+    )
+    prop: IReferenceArrayProperty = cast(
+        IReferenceArrayProperty, variable.get_reference_properties()[name]
     )
 
     # Act
@@ -71,10 +71,7 @@ def test_can_get_reference_array_property_values(workflow, name, expected_value)
 def test_can_set_reference_property_values(workflow, name, value) -> None:
     # Arrange
     variable: mcapi.IReferenceDatapin = workflow.get_variable("Model.RefPropsScript.scalarInput")
-    # prop: mcapi.IReferenceProperty = variable.get_reference_properties()[name]
-    prop = grpcmc.ReferenceProperty(
-        ElementId(id_string=variable.element_id), name, variable._engine
-    )
+    prop: IReferenceProperty = cast(IReferenceProperty, variable.get_reference_properties()[name])
 
     # Act
     prop.set_value(atvi.VariableState(value=value, is_valid=True))
@@ -97,10 +94,11 @@ def test_can_set_reference_property_values(workflow, name, value) -> None:
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_set_reference_array_property_values(workflow, name, value) -> None:
     # Arrange
-    variable: mcapi.IReferenceDatapin = workflow.get_variable("Model.RefPropsScript.arrayInput")
-    # prop: mcapi.IReferenceArrayProperty = variable.get_reference_properties()[name]
-    prop = grpcmc.ReferenceArrayProperty(
-        ElementId(id_string=variable.element_id), name, variable._engine
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.RefPropsScript.arrayInput"
+    )
+    prop: IReferenceArrayProperty = cast(
+        IReferenceArrayProperty, variable.get_reference_properties()[name]
     )
 
     # Act
@@ -179,10 +177,7 @@ def test_can_get_reference_property_metadata(
 ) -> None:
     # Arrange
     variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
-    # prop: mcapi.IReferenceArrayProperty = variable.get_reference_properties()[name]
-    prop = grpcmc.ReferenceArrayProperty(
-        ElementId(id_string=variable.element_id), name, variable._engine
-    )
+    prop: IReferenceProperty = variable.get_reference_properties()[name]
 
     # Act
     result: atvi.CommonVariableMetadata = prop.get_metadata()
@@ -251,10 +246,7 @@ def test_can_get_reference_property_value_type(
 ) -> None:
     # Arrange
     variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
-    # prop: mcapi.IReferenceArrayProperty = variable.get_reference_properties()[name]
-    prop = grpcmc.ReferenceArrayProperty(
-        ElementId(id_string=variable.element_id), name, variable._engine
-    )
+    prop: IReferenceProperty = variable.get_reference_properties()[name]
 
     # Act
     result: atvi.VariableType = prop.get_value_type()
@@ -265,20 +257,51 @@ def test_can_get_reference_property_value_type(
 
 @pytest.mark.parametrize(
     "target,is_input",
-    pytest.param("Model.RefPropsScript.scalarInput", True, id="input"),
-    pytest.param("Model.RefPropsScript.scalarOutput", False, id="output"),
+    [
+        pytest.param("Model.RefPropsScript.scalarInput", True, id="scalar_input"),
+        pytest.param("Model.RefPropsScript.arrayInput", True, id="array_input"),
+        pytest.param("Model.RefPropsScript.scalarOutput", False, id="scalar_output"),
+        pytest.param("Model.RefPropsScript.arrayOutput", False, id="array_output"),
+    ],
 )
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_get_if_a_reference_property_is_an_input(workflow, target: str, is_input: bool) -> None:
     # Arrange
     variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
-    # prop: mcapi.IReferenceArrayProperty = variable.get_reference_properties()["realParam"]
-    prop = grpcmc.ReferenceArrayProperty(
-        ElementId(id_string=variable.element_id), "realParam", variable._engine
-    )
+    prop: IReferenceProperty = variable.get_reference_properties()["realParam"]
 
     # Act
     result: bool = prop.is_input
 
     # Assert
     assert result == is_input
+
+
+@pytest.mark.parametrize(
+    "target, ref_prop_type",
+    [
+        pytest.param("Model.RefPropsScript.scalarInput", ReferenceProperty, id="scalar"),
+        pytest.param("Model.RefPropsScript.arrayInput", ReferenceArrayProperty, id="array"),
+    ],
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_get_reference_properties(workflow, target: str, ref_prop_type: type):
+    # Arrange
+    variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
+    expected_names = ["stringParam", "realParam", "intParam", "boolParam"]
+
+    # Act
+    result = variable.get_reference_properties()
+
+    # Assert
+    assert len(result) == len(expected_names)
+
+    for name in expected_names:
+        if name in result.keys():
+            ref_prop: ReferenceProperty = cast(ReferenceProperty, result[name])
+
+            assert ref_prop.name == name
+            assert ref_prop._element_id == variable._element_id
+            assert ref_prop._engine == variable._engine
+        else:
+            assert False, f"{name} not found in reference property map."

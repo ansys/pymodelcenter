@@ -1,10 +1,12 @@
 """Contains definitions for array reference datapins."""
-from abc import ABC
-from typing import Sequence
+from abc import ABC, abstractmethod
+from typing import Mapping, Sequence
+
+from overrides import overrides
 
 from .idatapin import IDatapin
 from .idatapinreferencebase import IDatapinReferenceBase
-from .ireferenceproperty import IReferencePropertyManager
+from .ireferenceproperty import IReferenceArrayProperty, IReferencePropertyManager
 
 
 class IReferenceArrayDatapin(
@@ -24,3 +26,8 @@ class IReferenceArrayDatapin(
     consider using get_reference_value and set_refererence_value to query and manipulate the values
     of individual referenced datapins.
     """
+
+    @abstractmethod
+    @overrides
+    def get_reference_properties(self) -> Mapping[str, IReferenceArrayProperty]:
+        ...

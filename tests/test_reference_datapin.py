@@ -5,7 +5,7 @@ import unittest.mock
 import ansys.tools.variableinterop as atvi
 import pytest
 
-from ansys.modelcenter.workflow.api import IReferenceProperty
+from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
@@ -934,7 +934,7 @@ def test_get_reference_properties(monkeypatch, engine) -> None:
                 ref_prop: IReferenceProperty = result[name]
 
                 assert type(ref_prop) == ReferenceProperty
-                assert ref_prop._element_id == sut_element_id.id_string
+                assert ref_prop._element_id == sut_element_id
                 assert ref_prop.name == name
                 assert ref_prop._engine == engine
             else:
@@ -963,10 +963,10 @@ def test_get_reference_array_properties(monkeypatch, engine) -> None:
 
         for name in response_values:
             if name in result.keys():
-                ref_prop: IReferenceProperty = result[name]
+                ref_prop: IReferenceArrayProperty = result[name]
 
                 assert type(ref_prop) == ReferenceArrayProperty
-                assert ref_prop._element_id == sut_element_id.id_string
+                assert ref_prop._element_id == sut_element_id
                 assert ref_prop.name == name
                 assert ref_prop._engine == engine
             else:

@@ -10,7 +10,7 @@ import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
 from . import var_value_convert
-from ..api import IDatapinReferenceBase, IReferenceProperty
+from ..api import IDatapinReferenceBase, IReferenceArrayProperty, IReferenceProperty
 from .base_datapin import BaseDatapin
 from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .reference_datapin_metadata import ReferenceDatapinMetadata
@@ -250,13 +250,13 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
     @overrides
     def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
         response: var_msgs.ReferencePropertyNames = (
-            self._client.ReferenceVariableGetReferenceProperties(self.element_id)
+            self._client.ReferenceVariableGetReferenceProperties(self._element_id)
         )
 
         from . import ReferenceProperty
 
         return {
-            name: ReferenceProperty(element_id=self.element_id, name=name, engine=self._engine)
+            name: ReferenceProperty(element_id=self._element_id, name=name, engine=self._engine)
             for name in response.names
         }
 
@@ -382,14 +382,16 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
+    def get_reference_properties(self) -> Mapping[str, IReferenceArrayProperty]:
         response: var_msgs.ReferencePropertyNames = (
-            self._client.ReferenceVariableGetReferenceProperties(self.element_id)
+            self._client.ReferenceVariableGetReferenceProperties(self._element_id)
         )
 
         from . import ReferenceArrayProperty
 
         return {
-            name: ReferenceArrayProperty(element_id=self.element_id, name=name, engine=self._engine)
+            name: ReferenceArrayProperty(
+                element_id=self._element_id, name=name, engine=self._engine
+            )
             for name in response.names
         }

@@ -76,5 +76,5 @@ class IReferencePropertyManager(ABC):
     """Defines utility methods for getting reference properties from reference datapins."""
 
     @abstractmethod
-    def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
+    def get_reference_properties(self) -> Mapping[str, IReferencePropertyBase]:
         """Get the reference properties on this reference datapin."""
