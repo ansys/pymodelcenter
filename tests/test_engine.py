@@ -1,3 +1,4 @@
+import time
 from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
 from unittest.mock import create_autospec
@@ -5,6 +6,7 @@ from unittest.mock import create_autospec
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
 import grpc
+import numpy
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
@@ -25,7 +27,9 @@ class MockEngineClientForEngineTest:
         self.password: str = ""
         self.pref_value: Optional[Union[bool, int, float, str]] = None
         self.raise_error_on_info: Optional[grpc.StatusCode] = None
+        self.raise_error_on_heartbeat: Optional[grpc.StatusCode] = None
         self.workflow_already_open = False
+        self.heartbeats = 0
 
     def GetEngineInfo(
         self, request: eng_msgs.GetServerInfoRequest
@@ -124,6 +128,12 @@ class MockEngineClientForEngineTest:
     def Shutdown(self, request: eng_msgs.ShutdownRequest) -> eng_msgs.ShutdownResponse:
         return eng_msgs.ShutdownResponse()
 
+    def Heartbeat(self, request: eng_msgs.HeartbeatRequest) -> eng_msgs.HeartbeatResponse:
+        self.heartbeats = self.heartbeats + 1
+        if self.raise_error_on_heartbeat:
+            raise MockGrpcError(self.raise_error_on_heartbeat, "Simulated failure to communicate.")
+        return eng_msgs.HeartbeatResponse()
+
 
 mock_client: MockEngineClientForEngineTest
 
@@ -134,10 +144,19 @@ def setup_function(monkeypatch):
     Setup called before each test function in this module.
     """
 
-    def mock_start(self, run_only: bool = False):
+    def mock_start(
+        self,
+        run_only: bool = False,
+        force_local: bool = False,
+        heartbeat_interval: numpy.uint = 30000,
+        allowed_heartbeat_misses: numpy.uint = 3,
+    ):
         return 12345
 
     def mock_init(self):
+        pass
+
+    def mock_process_start(self):
         pass
 
     monkeypatch.setattr(grpcapi.MCDProcess, "start", mock_start)
@@ -408,3 +427,17 @@ def test_get_channel(setup_function) -> None:
 
     # Assert
     assert cast(Any, channel)._channel.target() == b"localhost:12345"
+
+
+def test_heartbeat_method_sends_grpc_calls_until_released(monkeypatch, setup_function) -> None:
+    # Arrange
+    assert mock_client.heartbeats == 0
+
+    # Act
+    with grpcmc.Engine(heartbeat_interval=100) as sut:
+        # Assert
+        time.sleep(1)
+        assert mock_client.heartbeats >= 9 and mock_client.heartbeats <= 11
+    heartbeat_snapshot = mock_client.heartbeats
+    time.sleep(0.5)
+    assert mock_client.heartbeats == heartbeat_snapshot

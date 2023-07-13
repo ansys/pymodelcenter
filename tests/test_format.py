@@ -1,10 +1,12 @@
 """Tests for Format."""
 from typing import Dict
 
+import numpy
 from numpy import float64, int64
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as mcapi
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as engine_messages  # noqa: 501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.format_messages_pb2 as format_messages  # noqa: 501
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
@@ -89,6 +91,11 @@ class MockEngineClientForFormatTest:
             result = "ඞ" + result
         return format_messages.FormatToStringResponse(result=result)
 
+    def Heartbeat(
+        self, request: engine_messages.HeartbeatRequest
+    ) -> engine_messages.HeartbeatResponse:
+        return engine_messages.HeartbeatResponse
+
 
 engine: mcapi.Engine
 mock_client: MockEngineClientForFormatTest
@@ -100,7 +107,13 @@ def setup_function(monkeypatch) -> None:
     Setup called before each test function in this module.
     """
 
-    def mock_start(self, run_only: bool = False):
+    def mock_start(
+        self,
+        run_only: bool = False,
+        force_local: bool = False,
+        heartbeat_interval: numpy.uint = 30000,
+        allowed_heartbeat_misses: numpy.uint = 3,
+    ):
         pass
 
     def mock_init(self):
@@ -113,6 +126,7 @@ def setup_function(monkeypatch) -> None:
     monkeypatch_client_creation(monkeypatch, mcapi.Format, mock_client)
 
     global engine
+    monkeypatch_client_creation(monkeypatch, mcapi.Engine, mock_client)
     engine = mcapi.Engine()
 
 

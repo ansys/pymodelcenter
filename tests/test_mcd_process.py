@@ -31,7 +31,8 @@ def test_start(monkeypatch) -> None:
         result: int = sut.start()
 
         mock_popen.assert_called_once_with(
-            ["C:\\ModelCenter.exe", "/Grpc", "/Automation"], stdout=subprocess.PIPE
+            ["C:\\ModelCenter.exe", "/Grpc", "/Automation", "/Heartbeat:30000:3"],
+            stdout=subprocess.PIPE,
         )
         assert result == 50051
 
@@ -64,7 +65,8 @@ def test_start_runonly(monkeypatch) -> None:
         result: int = sut.start(run_only=True)
 
         mock_popen.assert_called_once_with(
-            ["C:\\ModelCenter.exe", "/Grpc", "/Automation", "/runonly"], stdout=subprocess.PIPE
+            ["C:\\ModelCenter.exe", "/Grpc", "/Automation", "/Heartbeat:30000:3", "/runonly"],
+            stdout=subprocess.PIPE,
         )
         assert result == 50051
 
@@ -85,7 +87,8 @@ def test_start_timeout(monkeypatch) -> None:
             result: int = sut.start()
 
         mock_popen.assert_called_once_with(
-            ["C:\\ModelCenter.exe", "/Grpc", "/Automation"], stdout=subprocess.PIPE
+            ["C:\\ModelCenter.exe", "/Grpc", "/Automation", "/Heartbeat:30000:3"],
+            stdout=subprocess.PIPE,
         )
         assert err.value.args[0] == "Timed out waiting for ModelCenter to start."
 

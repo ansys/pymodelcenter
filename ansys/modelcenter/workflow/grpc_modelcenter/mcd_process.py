@@ -6,6 +6,8 @@ import time
 from typing import Optional
 import winreg
 
+import numpy
+
 
 def _find_exe_location() -> str:  # pragma: no cover
     """Attempts to find ModelCenter.exe."""
@@ -37,7 +39,12 @@ class MCDProcess:
         self._debug: bool = True if self._exe_path.endswith("ModelCenterD.exe") else False
         self._timeout: float = 60 if self._debug else 30
 
-    def start(self, run_only: bool = False) -> int:
+    def start(
+        self,
+        run_only: bool = False,
+        heartbeat_interval: numpy.uint = 30000,
+        allowed_heartbeat_misses: numpy.uint = 3,
+    ) -> int:
         """
         Start the MCD process.
 
@@ -45,12 +52,21 @@ class MCDProcess:
         ----------
         run_only: bool
             Flag for if ModelCenter should be started as run only
+        heartbeat_interval: numpy.uint
+            Interval between heartbeat messages.
+        allowed_heartbead_misses: numpy.uint
+            Number of allowed missed heartbeats before the server terminates.
 
         Return
         ------
         The port number the gRPC server was started on.
         """
-        args = [self._exe_path, "/Grpc", "/Automation"]
+        args = [
+            self._exe_path,
+            "/Grpc",
+            "/Automation",
+            f"/Heartbeat:{heartbeat_interval}:{allowed_heartbeat_misses}",
+        ]
         if run_only:
             args.append("/runonly")
         self._process = subprocess.Popen(args, stdout=subprocess.PIPE)
