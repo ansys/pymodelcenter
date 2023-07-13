@@ -1,9 +1,12 @@
 """Contains definitions for scalar reference datapins."""
-from abc import ABC
+from abc import ABC, abstractmethod
+from typing import Mapping
+
+from overrides import overrides
 
 from .idatapin import IDatapin
 from .idatapinreferencebase import IDatapinReferenceBase
-from .ireferenceproperty import IReferencePropertyManager
+from .ireferenceproperty import IReferenceProperty, IReferencePropertyManager
 
 
 class IReferenceDatapin(IDatapin, IDatapinReferenceBase, IReferencePropertyManager, ABC):
@@ -13,3 +16,8 @@ class IReferenceDatapin(IDatapin, IDatapinReferenceBase, IReferencePropertyManag
     Reference datapins allow components to have configurable connections to other datapins
     without creating a full link relationship.
     """
+
+    @abstractmethod
+    @overrides
+    def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
+        ...

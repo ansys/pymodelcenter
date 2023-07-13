@@ -1,6 +1,6 @@
 """Contains implementations of reference property related classes."""
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Mapping
+from typing import TYPE_CHECKING
 
 import grpc
 
@@ -22,11 +22,7 @@ import ansys.engineeringworkflow.api as aew_api
 from ansys.tools import variableinterop as atvi
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import (
-    IReferenceArrayProperty,
-    IReferenceProperty,
-    IReferencePropertyManager,
-)
+from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
 from .proto.element_messages_pb2 import ElementId
@@ -193,11 +189,3 @@ class ReferenceArrayProperty(ReferencePropertyBase, IReferenceArrayProperty):
                 "Unexpected failure converting gRPC value response"
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
-
-
-class ReferencePropertyManager(IReferencePropertyManager):
-    """Provides utility methods for getting reference properties from reference datapins."""
-
-    @overrides
-    def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
-        return {}
