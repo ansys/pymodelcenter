@@ -542,7 +542,9 @@ get_type_test_data = [
 def test_reference_property_get_type(monkeypatch, engine, mock_response, expected_result):
     # Arrange: gRPC client
     mock_client = MagicMock()
-    mock_client.ReferencePropertyGetType.return_value = mock_response
+    mock_client.ReferencePropertyGetType.return_value = var_msgs.ReferencePropertyGetTypeResponse(
+        type=mock_response
+    )
     monkeypatch_client_creation(monkeypatch, ReferenceProperty, mock_client)
 
     # Arrange: SUT
@@ -567,7 +569,9 @@ def test_reference_property_get_type(monkeypatch, engine, mock_response, expecte
 def test_reference_array_property_get_type(monkeypatch, engine, mock_response, expected_result):
     # Arrange: gRPC client
     mock_client = MagicMock()
-    mock_client.ReferencePropertyGetType.return_value = mock_response
+    mock_client.ReferencePropertyGetType.return_value = var_msgs.ReferencePropertyGetTypeResponse(
+        type=mock_response
+    )
     monkeypatch_client_creation(monkeypatch, ReferenceArrayProperty, mock_client)
 
     # Arrange: SUT

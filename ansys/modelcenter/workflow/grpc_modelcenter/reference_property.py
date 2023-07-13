@@ -77,7 +77,7 @@ class ReferencePropertyBase(IReferencePropertyBase):
         response: var_msgs.ReferencePropertyGetTypeResponse = self._client.ReferencePropertyGetType(
             request
         )
-        return grpc_type_enum_to_interop_type(response)
+        return grpc_type_enum_to_interop_type(response.type)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -184,7 +184,7 @@ class ReferenceArrayProperty(ReferencePropertyBase, IReferenceArrayProperty):
             reference_var=self._element_id, prop_name=self._name
         )
         request = var_msgs.IndexedReferencePropertyIdentifier(target_prop=target_prop, index=index)
-        response = self._client.ReferencePropertyGetValue(request)
+        response: var_msgs.VariableState = self._client.ReferencePropertyGetValue(request)
         interop_value: atvi.IVariableValue
         try:
             interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
