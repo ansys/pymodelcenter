@@ -552,7 +552,7 @@ def test_can_manipulate_type_specific_file_information(
 
 
 @pytest.mark.workflow_name("file_tests.pxcz")
-def test_can_set_scalar_file_value_content(workflow):
+def test_can_set_scalar_file_value_content(workflow) -> None:
     input_variable: mcapi.IDatapin = workflow.get_variable("Model.fileReader.scalarFileIn")
     with tempfile.TemporaryFile() as temp_file:
         temp_file.write(
@@ -573,10 +573,10 @@ def test_can_set_scalar_file_value_content(workflow):
 
 
 @pytest.mark.workflow_name("file_tests.pxcz")
-def test_can_set_array_file_value_content(workflow):
+def test_can_set_array_file_value_content(workflow) -> None:
     input_variable: mcapi.IDatapin = workflow.get_variable("Model.fileReader.fileArrayIn")
     with contextlib.ExitStack() as exit_stack:
-        temp_files = [
+        temp_files: list = [
             [exit_stack.enter_context(tempfile.TemporaryFile()), None],
             [
                 exit_stack.enter_context(tempfile.TemporaryFile()),

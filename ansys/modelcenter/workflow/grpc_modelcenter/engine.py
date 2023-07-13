@@ -1,11 +1,13 @@
 """Implementation of Engine."""
 from os import PathLike
 from string import Template
+from threading import Condition, Thread
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
 import grpc
+import numpy
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import IEngine, WorkflowType
@@ -16,6 +18,23 @@ from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .mcd_process import MCDProcess
 from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
+
+
+def _heartbeat_loop(condition: Condition, address: str, engine, interval: numpy.uint) -> None:
+    """Runs a loop that sends heartbeat messages to the server at regular intervals."""
+    # should use Condition to perform timing AND decide whether or not to bail,
+    # allows immediate leaving while still joining the thread
+    # should keep going if HeartbeatRequest fails for a reason besides UNAVAILABLE
+    channel = grpc.insecure_channel(address)
+    stub = engine._create_client(channel)
+    should_continue_heartbeating: bool = not engine.is_closed
+    while should_continue_heartbeating:
+        request = eng_msg.HeartbeatRequest()
+        stub.Heartbeat(request)
+        # sleep for a little less than the heartbeat interval
+        with condition:
+            condition.wait(max(0, (interval * 0.95) / 1000))
+        should_continue_heartbeating = not engine.is_closed
 
 
 class WorkflowAlreadyLoadedError(Exception):
@@ -32,7 +51,13 @@ class WorkflowAlreadyLoadedError(Exception):
 class Engine(IEngine):
     """GRPC implementation of IEngine."""
 
-    def __init__(self, is_run_only: bool = False, force_local: bool = False):
+    def __init__(
+        self,
+        is_run_only: bool = False,
+        force_local: bool = False,
+        heartbeat_interval: numpy.uint = 30000,
+        allowed_heartbeat_misses: numpy.uint = 3,
+    ):
         """
         Initialize a new Engine instance.
 
@@ -43,8 +68,18 @@ class Engine(IEngine):
         force_local: bool
             True if ModelCenter should be started on the local machine even if pypim is configured,
             otherwise False.
+        heartbeat_interval: numpy.uint
+            The number of milliseconds within which a heartbeat call must be made before the server
+            considers a heartbeat signal to have been missed.
+        allowed_heartbeat_misses: numpy.uint
+            The number of heartbeat misses allowed before the server will terminate.
         """
+        self._is_closed = False
         self._is_run_only: bool = is_run_only
+        self._heartbeat_interval: numpy.uint = heartbeat_interval
+        self._allowed_heartbeat_misses: numpy.uint = allowed_heartbeat_misses
+        self._heartbeat_thread: Optional[Thread] = None
+        self._heartbeat_condition: Optional[Condition] = None
         self._instance: Optional[pypim.Instance] = None
         self._process: Optional[MCDProcess] = None
         self._channel: Optional[grpc.Channel] = None
@@ -61,7 +96,15 @@ class Engine(IEngine):
         self.close()
 
     def _launch_modelcenter(self, force_local: bool = False) -> None:
-        """Launch ModelCenter, using pypim if it is configured."""
+        """
+        Launch ModelCenter, using pypim if it is configured.
+
+        Parameters
+        ----------
+        force_local: bool
+            True if ModelCenter should be started on the local machine even if pypim is configured,
+            otherwise False.
+        """
         if pypim.is_configured() and not force_local:
             if self._is_run_only:
                 raise Exception("pypim does not support running ModelCenter in run-only mode.")
@@ -74,12 +117,44 @@ class Engine(IEngine):
                 self._channel = self._instance.build_grpc_channel()
         else:
             self._process = MCDProcess()
-            port: int = self._process.start(self._is_run_only)
+            port: int = self._process.start(
+                self._is_run_only, self._heartbeat_interval, self._allowed_heartbeat_misses
+            )
             self._channel = grpc.insecure_channel("localhost:" + str(port))
+
+        # run a background task to send heartbeat messages to the server
+        self._heartbeat_condition = Condition()
+        self._heartbeat_thread = Thread(
+            target=_heartbeat_loop,
+            args=(
+                self._heartbeat_condition,
+                self._channel._channel.target(),
+                self,
+                self._heartbeat_interval,
+            ),
+            daemon=True,
+        )
+        self._heartbeat_thread.start()
+
+    @property
+    def is_closed(self) -> bool:
+        """Get whether this instance has been closed."""
+        return self._is_closed
 
     @interpret_rpc_error()
     def close(self):
         """Shut down the grpc server and clear out all objects."""
+        self._is_closed = True
+
+        if self._heartbeat_condition is not None:
+            with self._heartbeat_condition:
+                self._heartbeat_condition.notify_all()
+            self._heartbeat_condition = None
+
+        if self._heartbeat_thread is not None and self._heartbeat_thread.is_alive():
+            self._heartbeat_thread.join(self._heartbeat_interval * 1.1)
+            self._heartbeat_thread = None
+
         if self._instance is not None:
             self._instance.delete()
         else:

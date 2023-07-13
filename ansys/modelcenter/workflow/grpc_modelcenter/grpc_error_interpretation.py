@@ -1,7 +1,7 @@
 """Defines a decorator and standard exception types for interpreting errors from the gRPC client."""
 
 import functools
-from typing import Mapping, Type
+from typing import Any, Mapping, Type
 
 import ansys.engineeringworkflow.api as aew_api
 import grpc
@@ -94,9 +94,9 @@ def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exceptio
         a map of additional codes to wrap
     """
 
-    def interpret_rpc_error_parameterized(orig_func):
+    def interpret_rpc_error_parameterized(orig_func) -> Any:
         @functools.wraps(orig_func)
-        def wrapped_rpc_use_method(*args, **kwargs):
+        def wrapped_rpc_use_method(*args, **kwargs) -> Any:
             code_to_exception_type = {**__DEFAULT_STATUS_EXCEPTION_TYPE_MAP, **additional_codes}
             try:
                 return orig_func(*args, **kwargs)
