@@ -3,23 +3,32 @@ import unittest
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
-import tests.test_abstract_workflow_element as awe_tests
-import tests.test_datapin_container as varcontainer_tests
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import \
-    AbstractWorkflowElement
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.component import Component
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    AnalysisViewPosition, ComponentDownloadValuesResponse,
-    ComponentInvalidateResponse, ComponentInvokeMethodRequest,
-    ComponentInvokeMethodResponse, ComponentIsConnectedResponse,
-    ComponentPaczUrlResponse, ComponentReconnectResponse,
-    ComponentSourceResponse, ElementId, ElementType)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import \
-    VariableType
-from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import \
-    UnsupportedTypeDatapin
-from tests.grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
+    AnalysisViewPosition,
+    ComponentDownloadValuesResponse,
+    ComponentInvalidateResponse,
+    ComponentInvokeMethodRequest,
+    ComponentInvokeMethodResponse,
+    ComponentIsConnectedResponse,
+    ComponentPaczUrlResponse,
+    ComponentReconnectResponse,
+    ComponentSourceResponse,
+    ElementId,
+    ElementType,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+    VariableType,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
+    UnsupportedTypeDatapin,
+)
+from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+import tests.test_abstract_workflow_element as awe_tests
+import tests.test_datapin_container as varcontainer_tests
 
 
 class MockWorkflowClientForComponentTests:

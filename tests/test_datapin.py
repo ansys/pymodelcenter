@@ -4,20 +4,25 @@ import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import \
-    AbstractWorkflowElement
-from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import \
-    BaseDatapin
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ElementId, VariableIsInputResponse)
+    ElementId,
+    VariableIsInputResponse,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    GetVariableDependenciesRequest, VariableInfo, VariableInfoCollection,
-    VariableState, VariableType, VariableTypeResponse)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import \
-    ElementIdOrName
+    GetVariableDependenciesRequest,
+    VariableInfo,
+    VariableInfoCollection,
+    VariableState,
+    VariableType,
+    VariableTypeResponse,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementIdOrName
 
-from .grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
 class MockWorkflowClientForVariableTest:

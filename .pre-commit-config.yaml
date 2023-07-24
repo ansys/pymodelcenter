@@ -1,5 +1,10 @@
 repos:
 
+# - repo: https://github.com/pycqa/isort
+#   rev: 5.12.0
+#   hooks:
+#   - id: isort
+
 - repo: https://github.com/psf/black
   rev: 23.7.0
   hooks:
@@ -8,17 +13,17 @@ repos:
     args: 
       - --line-length=100
 
-# - repo: https://github.com/pycqa/isort
-#   rev: 5.12.0
-#   hooks:
-#   - id: isort
-#     exclude: ^src/ansys/templates/pypkg/
-#     args: [
-#     "--profile", "black",
-#     "--force-sort-within-sections",
-#     "--line-length", "100",
-#     "--section-default", "THIRDPARTY", "hooks", "tests"
-#     ]
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+  - id: isort
+    exclude: ^src/ansys/templates/pypkg/
+    args: [
+    "--profile", "black",
+    "--force-sort-within-sections",
+    "--line-length", "100",
+    "--section-default", "THIRDPARTY", "hooks", "tests"
+    ]
 
 - repo: https://github.com/adamchainz/blacken-docs
   rev: 1.15.0
@@ -27,11 +32,6 @@ repos:
     additional_dependencies: [black==23.7.0]
     args:
       - --line-length=100
-
-- repo: https://github.com/pycqa/isort
-  rev: 5.12.0
-  hooks:
-  - id: isort
 
 - repo: https://github.com/PyCQA/flake8
   rev: 6.0.0

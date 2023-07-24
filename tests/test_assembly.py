@@ -1,36 +1,58 @@
-import unittest.mock
 from typing import Dict, Optional
+import unittest.mock
 
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
+from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
+    MetadataGetValueRequest,
+    MetadataSetValueRequest,
+    MetadataSetValueResponse,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
+    ELEMTYPE_ASSEMBLY,
+    AddAssemblyRequest,
+    AddAssemblyResponse,
+    AddAssemblyVariableRequest,
+    AddAssemblyVariableResponse,
+    AnalysisViewPosition,
+    AssemblyIconResponse,
+    AssemblyIconSetRequest,
+    AssemblyIconSetResponse,
+    AssemblyType,
+    DeleteAssemblyVariableResponse,
+    ElementId,
+    ElementIdCollection,
+    ElementIndexInParentResponse,
+    ElementName,
+    ElementType,
+    RenameRequest,
+    RenameResponse,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+    VariableType,
+    VariableValue,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import (
+    DeleteAssemblyVariableRequest,
+    ElementIdOrName,
+    ElementInfo,
+    ElementInfoCollection,
+    NamedElementInWorkflow,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
+    UnsupportedTypeDatapin,
+)
+from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 import tests.test_abstract_workflow_element as awe_tests
 import tests.test_datapin_container as base_tests
-from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import \
-    AbstractWorkflowElement
-from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import \
-    BaseDatapin
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
-    MetadataGetValueRequest, MetadataSetValueRequest, MetadataSetValueResponse)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ELEMTYPE_ASSEMBLY, AddAssemblyRequest, AddAssemblyResponse,
-    AddAssemblyVariableRequest, AddAssemblyVariableResponse,
-    AnalysisViewPosition, AssemblyIconResponse, AssemblyIconSetRequest,
-    AssemblyIconSetResponse, AssemblyType, DeleteAssemblyVariableResponse,
-    ElementId, ElementIdCollection, ElementIndexInParentResponse, ElementName,
-    ElementType, RenameRequest, RenameResponse)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableType, VariableValue)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import (
-    DeleteAssemblyVariableRequest, ElementIdOrName, ElementInfo,
-    ElementInfoCollection, NamedElementInWorkflow)
-from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import \
-    UnsupportedTypeDatapin
-from tests.grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
 
 
 class MockWorkflowClientForAssemblyTest:

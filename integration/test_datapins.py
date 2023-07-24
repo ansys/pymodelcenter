@@ -1,8 +1,8 @@
 import contextlib
 import tempfile
 import typing
-import unittest
 from typing import Any, Mapping
+import unittest
 
 import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi

@@ -1,6 +1,6 @@
-import sys
 from contextlib import ExitStack
 from os import PathLike
+import sys
 from typing import Optional
 
 import ansys.tools.variableinterop as atvi

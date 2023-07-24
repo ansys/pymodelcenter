@@ -1,6 +1,6 @@
 """Integration tests around Group functionality"""
-import unittest
 from typing import List
+import unittest
 
 import ansys.tools.variableinterop as atvi
 import pytest

@@ -6,8 +6,7 @@ from overrides import overrides
 
 from .idatapin import IDatapin
 from .idatapinreferencebase import IDatapinReferenceBase
-from .ireferenceproperty import (IReferenceArrayProperty,
-                                 IReferencePropertyManager)
+from .ireferenceproperty import IReferenceArrayProperty, IReferencePropertyManager
 
 
 class IReferenceArrayDatapin(

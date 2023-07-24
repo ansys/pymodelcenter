@@ -1,9 +1,9 @@
 """Integration tests around Component functionality"""
 from typing import AbstractSet, Mapping
 
+from ansys.engineeringworkflow.api import Property
 import ansys.tools.variableinterop as atvi
 import pytest
-from ansys.engineeringworkflow.api import Property
 
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc

@@ -3,18 +3,23 @@ import unittest
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import \
-    AbstractWorkflowElement
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
-    MetadataGetValueRequest, MetadataPropertyNamesResponse)
+    MetadataGetValueRequest,
+    MetadataPropertyNamesResponse,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ElementId, ElementName, ElementType)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import \
-    VariableValue
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import \
-    ElementInfo
-from tests.grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
+    ElementId,
+    ElementName,
+    ElementType,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+    VariableValue,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementInfo
+from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
 class MockWorkflowClientForAbstractWorkflowElementTest:

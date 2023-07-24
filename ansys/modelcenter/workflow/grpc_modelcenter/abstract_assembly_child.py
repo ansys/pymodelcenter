@@ -11,8 +11,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as 
 if TYPE_CHECKING:
     from .engine import Engine
 
-from .grpc_error_interpretation import (WRAP_TARGET_NOT_FOUND,
-                                        interpret_rpc_error)
+from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 from .proto.element_messages_pb2 import ElementId
 
 

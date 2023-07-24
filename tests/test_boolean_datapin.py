@@ -1,28 +1,42 @@
-import unittest
 from typing import Type, Union
+import unittest
 
 import ansys.tools.variableinterop as atvi
 import pytest
 
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import \
-    AbstractWorkflowElement
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin import (
-    BooleanArrayDatapin, BooleanDatapin)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import \
-    ElementId
+    BooleanArrayDatapin,
+    BooleanDatapin,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    ArrayDimensions, BooleanArrayValue, BooleanVariableMetadata,
-    SetBooleanArrayValueRequest, SetBooleanValueRequest,
-    SetBooleanVariableMetadataRequest, SetMetadataResponse,
-    SetVariableValueResponse, VariableState, VariableType, VariableValue)
-from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import \
-    CustomMetadataValueNotSupportedError
+    ArrayDimensions,
+    BooleanArrayValue,
+    BooleanVariableMetadata,
+    SetBooleanArrayValueRequest,
+    SetBooleanValueRequest,
+    SetBooleanVariableMetadataRequest,
+    SetMetadataResponse,
+    SetVariableValueResponse,
+    VariableState,
+    VariableType,
+    VariableValue,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
+    CustomMetadataValueNotSupportedError,
+)
 
-from .grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
-from .test_datapin import (do_get_state_test, do_get_state_test_with_hid,
-                           do_get_type_test, do_test_is_input_component,
-                           do_test_is_input_workflow)
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .test_datapin import (
+    do_get_state_test,
+    do_get_state_test_with_hid,
+    do_get_type_test,
+    do_test_is_input_component,
+    do_test_is_input_workflow,
+)
 
 
 class MockWorkflowClientForBooleanVarTest:

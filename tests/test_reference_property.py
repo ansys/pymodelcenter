@@ -6,15 +6,16 @@ import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+from ansys.modelcenter.workflow.grpc_modelcenter import ValueTypeNotSupportedError
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
-from ansys.modelcenter.workflow.grpc_modelcenter import \
-    ValueTypeNotSupportedError
 from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import (
-    ReferenceArrayProperty, ReferenceProperty, ReferencePropertyBase)
+    ReferenceArrayProperty,
+    ReferenceProperty,
+    ReferencePropertyBase,
+)
 
-from .grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue
 
 

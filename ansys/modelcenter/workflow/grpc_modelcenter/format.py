@@ -10,14 +10,15 @@ if TYPE_CHECKING:
     from .engine import Engine
 
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
-from .proto.format_messages_pb2 import (FormatFromDoubleRequest,
-                                        FormatFromIntegerRequest,
-                                        FormatFromStringRequest,
-                                        FormatToDoubleResponse,
-                                        FormatToIntegerResponse,
-                                        FormatToStringResponse)
-from .proto.grpc_modelcenter_format_pb2_grpc import \
-    ModelCenterFormatServiceStub
+from .proto.format_messages_pb2 import (
+    FormatFromDoubleRequest,
+    FormatFromIntegerRequest,
+    FormatFromStringRequest,
+    FormatToDoubleResponse,
+    FormatToIntegerResponse,
+    FormatToStringResponse,
+)
+from .proto.grpc_modelcenter_format_pb2_grpc import ModelCenterFormatServiceStub
 
 
 class Format(IFormat):

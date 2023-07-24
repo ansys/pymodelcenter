@@ -1,17 +1,23 @@
-import unittest.mock
 from typing import Dict
+import unittest.mock
 
 import ansys.modelcenter.workflow.api as mc_api
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import \
-    AbstractWorkflowElement
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ElementId, ElementIdCollection, ElementName)
+    ElementId,
+    ElementIdCollection,
+    ElementName,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableInfo, VariableInfoCollection, VariableType)
+    VariableInfo,
+    VariableInfoCollection,
+    VariableType,
+)
 
-from .grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
 class MockWorkflowClientForAbstractDatapinContainerTest:

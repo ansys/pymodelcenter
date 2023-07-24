@@ -9,23 +9,22 @@ from overrides import overrides
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 
-from ..api import (IDatapinReferenceBase, IReferenceArrayProperty,
-                   IReferenceProperty)
 from . import var_value_convert
+from ..api import IDatapinReferenceBase, IReferenceArrayProperty, IReferenceProperty
 from .base_datapin import BaseDatapin
-from .proto.grpc_modelcenter_workflow_pb2_grpc import \
-    ModelCenterWorkflowServiceStub
+from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .reference_datapin_metadata import ReferenceDatapinMetadata
-from .var_metadata_convert import (convert_grpc_reference_metadata,
-                                   fill_reference_metadata_message)
+from .var_metadata_convert import convert_grpc_reference_metadata, fill_reference_metadata_message
 from .var_value_convert import convert_grpc_value_to_atvi
 
 if TYPE_CHECKING:
     from .engine import Engine
 
-from .grpc_error_interpretation import (WRAP_OUT_OF_BOUNDS,
-                                        WRAP_TARGET_NOT_FOUND,
-                                        interpret_rpc_error)
+from .grpc_error_interpretation import (
+    WRAP_OUT_OF_BOUNDS,
+    WRAP_TARGET_NOT_FOUND,
+    interpret_rpc_error,
+)
 from .proto.element_messages_pb2 import ElementId
 
 

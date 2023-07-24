@@ -1,15 +1,16 @@
 import ansys.tools.variableinterop as atvi
 import pytest
 
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import \
-    ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import \
-    VariableState
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+    VariableState,
+)
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
-    DatapinWithUnsupportedTypeException, UnsupportedTypeDatapin)
+    DatapinWithUnsupportedTypeException,
+    UnsupportedTypeDatapin,
+)
 
-from .grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
 class MockWorkflowClientForUnsupportedDatapinTest:

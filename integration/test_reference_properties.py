@@ -4,10 +4,8 @@ import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
-from ansys.modelcenter.workflow.api import (IReferenceArrayProperty,
-                                            IReferenceProperty)
-from ansys.modelcenter.workflow.grpc_modelcenter import (
-    ReferenceArrayProperty, ReferenceProperty)
+from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
+from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
 
 
 @pytest.mark.parametrize(

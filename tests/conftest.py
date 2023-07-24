@@ -5,10 +5,13 @@ import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 import (
-    HeartbeatRequest, HeartbeatResponse, ShutdownRequest, ShutdownResponse)
+    HeartbeatRequest,
+    HeartbeatResponse,
+    ShutdownRequest,
+    ShutdownResponse,
+)
 
-from .grpc_server_test_utils.client_creation_monkeypatch import \
-    monkeypatch_client_creation
+from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
 class MockHeartbeatAndShutdownClient:
