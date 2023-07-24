@@ -8,7 +8,7 @@ version = "0.1.dev0"
 
 description = "Python API for using ModelCenter Desktop"
 readme = "README.rst"
-homepage = "https://github.com/pyansys/pymodelcenter/"
+homepage = "https://github.com/ansys/pymodelcenter/"
 
 authors = ["Ansys, Inc."] # this is required
 maintainers = ["PyAnsys developers <pyansys.support@ansys.com>"] # You can change the name. The email group works.
@@ -66,3 +66,12 @@ dev = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton", "codespe
 docs = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton"]
 style = ["codespell", "flake8"]
 test = ["pytest", "pytest-cov"]
+
+# make rst_epilog a variable, so you can add other epilog parts to it
+rst_epilog = ""
+# Read link all targets from file
+with open("links.rst") as f:
+    rst_epilog += f.read()
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = "sphinx"

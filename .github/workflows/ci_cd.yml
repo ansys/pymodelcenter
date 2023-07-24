@@ -12,6 +12,9 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.10'
+  PACKAGE_NAME: 'ansys-modelcenter-workflow'
+  PACKAGE_NAMESPACE: 'ansys.modelcenter.workflow'
+  DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -79,7 +82,34 @@ jobs:
 #          fail_on_error: true
 #          vale_flags: "--config=${{ doc/.vale.ini }}"
 
-  main:
+  smoke-tests:
+    name: Build and Smoke tests
+    runs-on: ${{ matrix.os }}
+    needs: [code-style]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+        # Only perform wheelhouse builds for Windows and macOS when releasing
+        should-release: 
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+        exclude:
+          - should-release: false
+            os: macos-latest
+          - should-release: false
+            os: windows-latest
+    steps:
+      - name: Build wheelhouse and perform smoke test
+        uses: ansys/actions/build-wheelhouse@v4
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          library-namespace: ${{ env.PACKAGE_NAMESPACE }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
+
+  build-tests:
+    needs: [smoke-tests]
     name: "Build and Testing"
     runs-on: ${{ matrix.os }}
     strategy:
@@ -135,7 +165,7 @@ jobs:
           path: dist/
           retention-days: 7
 
-  docs:
+  doc-build:
     name: "Build Documentation"
     runs-on: windows-latest
 
@@ -189,19 +219,20 @@ jobs:
   doc-deploy-dev:
     name: "Deploy developers documentation"
     runs-on: ubuntu-latest
-    needs: docs
-    if: github.event_name == 'push'
+    # Deploy development only when merging to main
+    if: github.ref == 'refs/heads/main'
+    needs: [doc-build]
     steps:
       - name: "Deploy the latest documentation"
         uses: ansys/actions/doc-deploy-dev@v4
         with:
-          cname: "modelcenter.docs.pyansys.com"
+          cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
           doc-artifact-name: Documentation-html
 
-  Release:
+  release:
     if: contains(github.ref, 'refs/tags')
-    needs: [main, code-style, docs]
+    needs: [build-tests, doc-deploy-dev]
     runs-on: windows-latest
     steps:
       - name: "Set up Python"

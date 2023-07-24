@@ -41,17 +41,17 @@ At that time you can install ``ansys-modelcenter-workflow`` with:
    pip install ansys-modelcenter-workflow
 
 Alternatively, install the latest development version directly from
-the `pymodelcenter GitHub <https://github.com/pyansys/pymodelcenter>`_ via:
+the `pymodelcenter GitHub <https://github.com/ansys/pymodelcenter>`_ via:
 
 .. code::
 
-   pip install git+https://github.com/pyansys/pymodelcenter.git
+   pip install git+https://github.com/ansys/pymodelcenter.git
 
 For a local "development" version, install with:
 
 .. code::
 
-   git clone https://github.com/pyansys/pymodelcenter.git
+   git clone https://github.com/ansys/pymodelcenter.git
    cd pymodelcenter
    pip install poetry
    poetry install -E dev
