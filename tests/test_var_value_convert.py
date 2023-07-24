@@ -153,7 +153,6 @@ def test_boolean_value_grpc_to_atvi(internal_value: bool):
 def test_file_value_atvi_to_grpc(internal_value: atvi.FileValue, expected_result_populated_field):
     # Setup
     with ExitStack() as local_file_pins:
-
         converted = test_module.convert_interop_value_to_grpc(
             internal_value, local_file_pins, engine_is_local=True
         )

@@ -176,7 +176,6 @@ def test_invalidate(monkeypatch, engine):
 
 @pytest.mark.parametrize("value_in_response", [True, False])
 def test_is_connected(monkeypatch, engine, value_in_response):
-
     mock_client = MockWorkflowClientForComponentTests()
     mock_response = ComponentIsConnectedResponse(is_connected=value_in_response)
     sut_id = ElementId(id_string="SUT_COMPONENT_ID")

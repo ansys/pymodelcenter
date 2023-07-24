@@ -945,7 +945,6 @@ def test_create_component_after_comp_by_component(setup_function, engine) -> Non
     with unittest.mock.patch.object(
         mock_client, "WorkflowCreateComponent", return_value=response
     ) as mock_grpc_method:
-
         # Execute
         component: grpcmc.Component = workflow.create_component(
             server_path="common:\\Functions\\Quadratic",

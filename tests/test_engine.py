@@ -341,7 +341,6 @@ def test_get_engine_info(setup_function) -> None:
 
 
 def test_get_engine_info_simulated_crash(setup_function) -> None:
-
     # Setup
     engine = grpcapi.Engine()
     mock_client.raise_error_on_info = grpc.StatusCode.UNAVAILABLE
