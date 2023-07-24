@@ -13,7 +13,9 @@ from .create_datapin import create_datapin
 if TYPE_CHECKING:
     from .engine import Engine
     from .group import Group
-from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
+
+from .grpc_error_interpretation import (WRAP_TARGET_NOT_FOUND,
+                                        interpret_rpc_error)
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import VariableInfo
 

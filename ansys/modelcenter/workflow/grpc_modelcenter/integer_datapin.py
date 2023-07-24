@@ -11,18 +11,16 @@ from .base_datapin import BaseDatapin
 
 if TYPE_CHECKING:
     from .engine import Engine
-from .grpc_error_interpretation import (
-    WRAP_OUT_OF_BOUNDS,
-    WRAP_TARGET_NOT_FOUND,
-    interpret_rpc_error,
-)
+
+from .grpc_error_interpretation import (WRAP_OUT_OF_BOUNDS,
+                                        WRAP_TARGET_NOT_FOUND,
+                                        interpret_rpc_error)
 from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import SetIntegerVariableMetadataRequest
-from .var_metadata_convert import (
-    convert_grpc_integer_array_metadata,
-    convert_grpc_integer_metadata,
-    fill_integer_metadata_message,
-)
+from .proto.variable_value_messages_pb2 import \
+    SetIntegerVariableMetadataRequest
+from .var_metadata_convert import (convert_grpc_integer_array_metadata,
+                                   convert_grpc_integer_metadata,
+                                   fill_integer_metadata_message)
 
 
 class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):

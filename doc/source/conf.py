@@ -1,12 +1,12 @@
 """Sphinx documentation configuration file."""
-from datetime import datetime
 import os
 import sys
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
 
-from ansys_sphinx_theme import get_version_match, ansys_favicon
-from ansys_sphinx_theme import pyansys_logo_black
+from ansys_sphinx_theme import (ansys_favicon, get_version_match,
+                                pyansys_logo_black)
 
 from ansys.modelcenter.workflow import __version__
 

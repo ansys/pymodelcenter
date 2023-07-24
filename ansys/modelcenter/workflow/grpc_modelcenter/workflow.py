@@ -1,7 +1,8 @@
 """Implementation of Workflow."""
-from contextlib import ExitStack
 import os
-from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
+from contextlib import ExitStack
+from typing import (TYPE_CHECKING, AbstractSet, Collection, List, Mapping,
+                    Optional, Tuple, Union)
 
 import ansys.engineeringworkflow.api as engapi
 import ansys.tools.variableinterop as atvi
@@ -23,14 +24,12 @@ if TYPE_CHECKING:
     from .engine import Engine
 
 from .element_wrapper import create_element
-from .grpc_error_interpretation import (
-    WRAP_INVALID_ARG,
-    WRAP_NAME_COLLISION,
-    WRAP_OUT_OF_BOUNDS,
-    WRAP_TARGET_NOT_FOUND,
-    interpret_rpc_error,
-)
-from .var_value_convert import convert_grpc_value_to_atvi, convert_interop_value_to_grpc
+from .grpc_error_interpretation import (WRAP_INVALID_ARG, WRAP_NAME_COLLISION,
+                                        WRAP_OUT_OF_BOUNDS,
+                                        WRAP_TARGET_NOT_FOUND,
+                                        interpret_rpc_error)
+from .var_value_convert import (convert_grpc_value_to_atvi,
+                                convert_interop_value_to_grpc)
 
 
 class WorkflowRunFailedError(Exception):

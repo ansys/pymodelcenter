@@ -7,17 +7,13 @@ import ansys.tools.variableinterop as atvi
 import numpy as np
 from overrides import overrides
 
-from .proto.variable_value_messages_pb2 import (
-    ArrayDimensions,
-    BooleanArrayValue,
-    DoubleArrayValue,
-    FileArrayValue,
-    FileValue,
-    IntegerArrayValue,
-    StringArrayValue,
-    VariableType,
-    VariableValue,
-)
+from .proto.variable_value_messages_pb2 import (ArrayDimensions,
+                                                BooleanArrayValue,
+                                                DoubleArrayValue,
+                                                FileArrayValue, FileValue,
+                                                IntegerArrayValue,
+                                                StringArrayValue, VariableType,
+                                                VariableValue)
 
 
 class ValueTypeNotSupportedError(ValueError):

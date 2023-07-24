@@ -1,49 +1,73 @@
 repos:
 
 - repo: https://github.com/psf/black
-  rev: 22.3.0
+  rev: 23.7.0
   hooks:
   - id: black
     exclude: ^src/ansys/templates/pypkg/
-    args: [
-    "--line-length", "100"
-    ]
+    args: 
+      - --line-length=100
+
+# - repo: https://github.com/pycqa/isort
+#   rev: 5.12.0
+#   hooks:
+#   - id: isort
+#     exclude: ^src/ansys/templates/pypkg/
+#     args: [
+#     "--profile", "black",
+#     "--force-sort-within-sections",
+#     "--line-length", "100",
+#     "--section-default", "THIRDPARTY", "hooks", "tests"
+#     ]
+
+- repo: https://github.com/adamchainz/blacken-docs
+  rev: 1.15.0
+  hooks:
+  - id: blacken-docs
+    additional_dependencies: [black==23.7.0]
+    args:
+      - --line-length=100
 
 - repo: https://github.com/pycqa/isort
   rev: 5.12.0
   hooks:
   - id: isort
-    exclude: ^src/ansys/templates/pypkg/
-    args: [
-    "--profile", "black",
-    "--force-sort-within-sections",
-    "--line-length", "100",
-    "--section-default", "THIRDPARTY", "hooks", "tests"
-    ]
 
 - repo: https://github.com/PyCQA/flake8
-  rev: 4.0.1
+  rev: 6.0.0
   hooks:
   - id: flake8
-    exclude: ^src/ansys/templates/pypkg/
-    args: [
-      "tests", "integration"
-    ]
+    args:
+      - --max-line-length=100
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.1.0
+  rev: v2.2.5
   hooks:
   - id: codespell
+    args: ["--toml", "pyproject.toml"]
+    additional_dependencies: ["tomli"]
 
-- repo: https://github.com/pycqa/pydocstyle
-  rev: 6.3.0
-  hooks:
-  - id: pydocstyle
-    additional_dependencies: [toml]
-    exclude: ^src/ansys/templates/pypkg/|^tests|^integration
-    args: ["--ignore-decorator=overrides", "--add-ignore=D401"]
+# - repo: https://github.com/pycqa/pydocstyle
+#   rev: 6.3.0
+#   hooks:
+#   - id: pydocstyle
+#     additional_dependencies: [toml]
+#     exclude: ^src/ansys/templates/pypkg/|^tests|^integration
+#     args: ["--ignore-decorator=overrides", "--add-ignore=D401"]
 
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.1.1
+# - repo: https://github.com/pre-commit/mirrors-mypy
+#   rev: v1.1.1
+#   hooks:
+#   - id: mypy
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
   hooks:
-  - id: mypy
+  - id: check-merge-conflict
+  - id: debug-statements
+
+# this validates our github workflow files
+- repo: https://github.com/python-jsonschema/check-jsonschema
+  rev: 0.23.3
+  hooks:
+    - id: check-github-workflows 

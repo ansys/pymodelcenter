@@ -112,10 +112,8 @@ it, and retrieve the value of a variable:
             print("          File: " + workflow.workflow_file_name)
 
             workflow.create_component(
-                "common:\\Functions\\Quadratic",
-                "NewQuadratic",
-                root_id,
-                x_pos=50, y_pos=50)
+                "common:\\Functions\\Quadratic", "NewQuadratic", root_id, x_pos=50, y_pos=50
+            )
 
             print("Saving...")
             workflow.save_workflow()

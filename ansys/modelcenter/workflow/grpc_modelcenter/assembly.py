@@ -18,27 +18,19 @@ if TYPE_CHECKING:
     from .engine import Engine
 
 from .group import Group
-from .grpc_error_interpretation import (
-    WRAP_INVALID_ARG,
-    WRAP_NAME_COLLISION,
-    WRAP_TARGET_NOT_FOUND,
-    InvalidInstanceError,
-    interpret_rpc_error,
-)
-from .proto.element_messages_pb2 import (
-    AddAssemblyRequest,
-    AddAssemblyVariableRequest,
-    AddAssemblyVariableResponse,
-    ElementId,
-    ElementName,
-)
-from .proto.workflow_messages_pb2 import (
-    DeleteAssemblyVariableRequest,
-    ElementIdOrName,
-    ElementInfo,
-    NamedElementInWorkflow,
-)
-from .var_value_convert import interop_type_to_grpc_type_enum, interop_type_to_mc_type_string
+from .grpc_error_interpretation import (WRAP_INVALID_ARG, WRAP_NAME_COLLISION,
+                                        WRAP_TARGET_NOT_FOUND,
+                                        InvalidInstanceError,
+                                        interpret_rpc_error)
+from .proto.element_messages_pb2 import (AddAssemblyRequest,
+                                         AddAssemblyVariableRequest,
+                                         AddAssemblyVariableResponse,
+                                         ElementId, ElementName)
+from .proto.workflow_messages_pb2 import (DeleteAssemblyVariableRequest,
+                                          ElementIdOrName, ElementInfo,
+                                          NamedElementInWorkflow)
+from .var_value_convert import (interop_type_to_grpc_type_enum,
+                                interop_type_to_mc_type_string)
 
 
 class Assembly(

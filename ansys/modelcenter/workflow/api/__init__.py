@@ -17,11 +17,8 @@ from .irealarraydatapin import IRealArrayDatapin
 from .irealdatapin import IRealDatapin
 from .ireferencearraydatapin import IReferenceArrayDatapin
 from .ireferencedatapin import IReferenceDatapin
-from .ireferenceproperty import (
-    IReferenceArrayProperty,
-    IReferenceProperty,
-    IReferencePropertyManager,
-)
+from .ireferenceproperty import (IReferenceArrayProperty, IReferenceProperty,
+                                 IReferencePropertyManager)
 from .irenamable_elements import IRenamableElement
 from .istringarraydatapin import IStringArrayDatapin
 from .istringdatapin import IStringDatapin

@@ -3,23 +3,19 @@ from typing import Union
 
 import ansys.tools.variableinterop as atvi
 
-from .proto.variable_value_messages_pb2 import (
-    BaseVariableMetadata,
-    BooleanVariableMetadata,
-    DoubleVariableMetadata,
-    FileVariableMetadata,
-    IntegerVariableMetadata,
-    NumericVariableMetadata,
-    ReferenceVariableMetadata,
-    StringVariableMetadata,
-    VariableValue,
-)
+from .proto.variable_value_messages_pb2 import (BaseVariableMetadata,
+                                                BooleanVariableMetadata,
+                                                DoubleVariableMetadata,
+                                                FileVariableMetadata,
+                                                IntegerVariableMetadata,
+                                                NumericVariableMetadata,
+                                                ReferenceVariableMetadata,
+                                                StringVariableMetadata,
+                                                VariableValue)
 from .reference_datapin_metadata import ReferenceDatapinMetadata
-from .var_value_convert import (
-    ValueTypeNotSupportedError,
-    convert_grpc_value_to_atvi,
-    convert_interop_value_to_grpc,
-)
+from .var_value_convert import (ValueTypeNotSupportedError,
+                                convert_grpc_value_to_atvi,
+                                convert_interop_value_to_grpc)
 
 
 class CustomMetadataValueNotSupportedError(ValueTypeNotSupportedError):

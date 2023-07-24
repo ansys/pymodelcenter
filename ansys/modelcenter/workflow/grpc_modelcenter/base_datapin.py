@@ -14,11 +14,13 @@ from .abstract_workflow_element import AbstractWorkflowElement
 if TYPE_CHECKING:
     from .engine import Engine
 
-from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
+from .grpc_error_interpretation import (WRAP_TARGET_NOT_FOUND,
+                                        interpret_rpc_error)
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import GetVariableDependenciesRequest
 from .proto.workflow_messages_pb2 import ElementIdOrName
-from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
+from .var_value_convert import (convert_grpc_value_to_atvi,
+                                grpc_type_enum_to_interop_type)
 
 
 class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):

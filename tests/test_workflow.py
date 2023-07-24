@@ -1,6 +1,6 @@
 """Tests for Workflow."""
-from typing import Iterable, List, Mapping, Type
 import unittest
+from typing import Iterable, List, Mapping, Type
 
 import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi
@@ -12,7 +12,8 @@ import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs  # noqa: 501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 
-from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .grpc_server_test_utils.client_creation_monkeypatch import \
+    monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue
 
 

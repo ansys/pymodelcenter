@@ -4,16 +4,16 @@ from typing import TYPE_CHECKING
 
 import grpc
 
-from . import var_value_convert
 from ..api.ireferenceproperty import IReferencePropertyBase
-from .grpc_error_interpretation import (
-    WRAP_OUT_OF_BOUNDS,
-    WRAP_TARGET_NOT_FOUND,
-    interpret_rpc_error,
-)
-from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from . import var_value_convert
+from .grpc_error_interpretation import (WRAP_OUT_OF_BOUNDS,
+                                        WRAP_TARGET_NOT_FOUND,
+                                        interpret_rpc_error)
+from .proto.grpc_modelcenter_workflow_pb2_grpc import \
+    ModelCenterWorkflowServiceStub
 from .var_metadata_convert import convert_grpc_metadata
-from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
+from .var_value_convert import (convert_grpc_value_to_atvi,
+                                grpc_type_enum_to_interop_type)
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -22,15 +22,14 @@ import ansys.engineeringworkflow.api as aew_api
 from ansys.tools import variableinterop as atvi
 from overrides import overrides
 
-from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
+from ansys.modelcenter.workflow.api import (IReferenceArrayProperty,
+                                            IReferenceProperty)
 
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import (
-    ReferencePropertyGetIsInputResponse,
-    ReferencePropertyIdentifier,
-    ReferencePropertySetIsInputRequest,
-)
+    ReferencePropertyGetIsInputResponse, ReferencePropertyIdentifier,
+    ReferencePropertySetIsInputRequest)
 
 
 class ReferencePropertyBase(IReferencePropertyBase):

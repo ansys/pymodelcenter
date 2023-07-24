@@ -4,9 +4,9 @@ from abc import ABC
 from typing import TYPE_CHECKING, AbstractSet, Mapping, Optional
 
 import ansys.engineeringworkflow.api as aew_api
-from ansys.engineeringworkflow.api import Property
 import ansys.tools.variableinterop as atvi
 import grpc
+from ansys.engineeringworkflow.api import Property
 from overrides import overrides
 
 import ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper as elem_wrapper
@@ -14,12 +14,17 @@ import ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper as elem_wrapp
 if TYPE_CHECKING:
     from .engine import Engine
 
-from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, interpret_rpc_error
-from .proto.custom_metadata_messages_pb2 import MetadataGetValueRequest, MetadataSetValueRequest
+from .grpc_error_interpretation import (WRAP_INVALID_ARG,
+                                        WRAP_TARGET_NOT_FOUND,
+                                        interpret_rpc_error)
+from .proto.custom_metadata_messages_pb2 import (MetadataGetValueRequest,
+                                                 MetadataSetValueRequest)
 from .proto.element_messages_pb2 import ElementId
-from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
+from .proto.grpc_modelcenter_workflow_pb2_grpc import \
+    ModelCenterWorkflowServiceStub
 from .proto.variable_value_messages_pb2 import VariableValue
-from .var_value_convert import convert_grpc_value_to_atvi, convert_interop_value_to_grpc
+from .var_value_convert import (convert_grpc_value_to_atvi,
+                                convert_interop_value_to_grpc)
 
 
 class AbstractWorkflowElement(aew_api.IElement, ABC):

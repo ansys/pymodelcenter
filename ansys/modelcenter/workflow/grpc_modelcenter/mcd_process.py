@@ -1,10 +1,10 @@
 """Utilities for finding and starting a ModelCenter Desktop process."""
-from io import TextIOWrapper
-from pathlib import Path
 import subprocess
 import time
-from typing import Optional
 import winreg
+from io import TextIOWrapper
+from pathlib import Path
+from typing import Optional
 
 import numpy
 

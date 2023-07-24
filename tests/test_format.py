@@ -2,14 +2,15 @@
 from typing import Dict
 
 import numpy
-from numpy import float64, int64
 import pytest
+from numpy import float64, int64
 
 import ansys.modelcenter.workflow.grpc_modelcenter as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as engine_messages  # noqa: 501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.format_messages_pb2 as format_messages  # noqa: 501
 
-from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
+from .grpc_server_test_utils.client_creation_monkeypatch import \
+    monkeypatch_client_creation
 
 
 class MockEngineClientForFormatTest:

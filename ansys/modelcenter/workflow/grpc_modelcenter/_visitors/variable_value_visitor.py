@@ -7,11 +7,11 @@ import numpy as np
 from overrides import overrides
 
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
-    ModelCenterWorkflowServiceStub,
-)
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
-from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueTypeNotSupportedError
+from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import \
+    ModelCenterWorkflowServiceStub
+from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import \
+    ValueTypeNotSupportedError
 
 
 class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):

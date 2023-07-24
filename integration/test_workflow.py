@@ -1,8 +1,8 @@
 """Integration tests around Workflow functionality."""
 import os
 import tempfile
-from typing import Collection, List, Mapping, Set
 import unittest
+from typing import Collection, List, Mapping, Set
 
 import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi
