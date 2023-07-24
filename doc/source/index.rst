@@ -9,4 +9,7 @@
    :hidden:
    :maxdepth: 3
 
+   getting_started/index
+   user_guide/index
    api/index
+   examples/index
