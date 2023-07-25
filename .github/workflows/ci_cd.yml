@@ -53,34 +53,29 @@ jobs:
         shell: bash
         run: pre-commit run --all-files --show-diff-on-failure
 
-#  doc-style:
-#    name: "Running doc style checks"
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: "Set up git Credentials"
-#        run: |
-#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
-#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
-#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
-#
-#      - name: "Install Git and clone project"
-#        uses: actions/checkout@v3
-#        with:
-#          submodules: recursive
-#          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
-#
-#      - name: "Run Vale"
-#        uses: errata-ai/vale-action@reviewdog
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          files: doc
-#          reporter: github-pr-check
-#          level: error
-#          filter_mode: nofilter
-#          fail_on_error: true
-#          vale_flags: "--config=${{ doc/.vale.ini }}"
+  doc-style:
+    name: "Running doc style checks"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up git Credentials
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
+
+      - name: Install Git and clone project
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+      
+      - name: PyAnsys documentation style checks
+        uses: ansys/actions/doc-style@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          skip-install: true
+          checkout: false
 
   smoke-tests:
     name: Build and Smoke tests
@@ -168,7 +163,7 @@ jobs:
   doc-build:
     name: "Build Documentation"
     runs-on: windows-latest
-
+    needs: [doc-style]
     steps:
       - name: "Set up git credentials"
         run: |
