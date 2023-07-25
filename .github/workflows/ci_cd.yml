@@ -73,7 +73,6 @@ jobs:
       - name: PyAnsys documentation style checks
         uses: ansys/actions/doc-style@v4
         with:
-          skip-install: true
           checkout: false
           token: ${{ secrets.GITHUB_TOKEN }}
 
