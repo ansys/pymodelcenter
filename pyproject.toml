@@ -66,8 +66,3 @@ dev = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton", "codespe
 docs = ["Sphinx", "numpydoc", "ansys-sphinx-theme", "sphinx-copybutton"]
 style = ["codespell", "flake8"]
 test = ["pytest", "pytest-cov"]
-
-[tool.codespell]
-skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*,./doc/source/_templates/*'
-ignore-words = "doc/styles/Vocab/ANSYS/accept.txt"
-quiet-level = 3

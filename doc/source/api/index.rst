@@ -1,4 +1,4 @@
-API Reference
+API reference
 #############
 
 .. currentmodule:: ansys.modelcenter.workflow

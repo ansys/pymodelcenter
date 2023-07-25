@@ -1,8 +1,8 @@
 # Simple makefile to simplify repetitive build env management tasks under posix
 
-CODESPELL_DIRS ?= ./pyaedt
-CODESPELL_SKIP ?= "*.pyc,*.xml,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,flycheck*,./.git/*,./.hypothesis/*,*.yml,./docs/build/*,./docs/images/*,./dist/*,*~,.hypothesis*,./docs/source/examples/*,*cover,*.dat,*.mac,\#*,PKG-INFO,*.mypy_cache/*,*.xml,*.aedt,*.svg"
-CODESPELL_IGNORE ?= "ignore_words.txt"
+CODESPELL_DIRS ?= .
+CODESPELL_SKIP ?= "*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*,./doc/source/_templates/*"
+CODESPELL_IGNORE ?= "doc/styles/Vocab/ANSYS/accept.txt"
 
 all: doctest flake8
 
