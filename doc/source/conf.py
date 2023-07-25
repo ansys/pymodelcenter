@@ -48,7 +48,7 @@ html_theme_options = {
 
 html_context = {
     "display_github": True,  # Integrate GitHub
-    "github_user": "ansys",
+    "github_user": "pyansys",
     "github_repo": "pymodelcenter",
     "github_version": "main",
     "doc_path": "doc/source",
