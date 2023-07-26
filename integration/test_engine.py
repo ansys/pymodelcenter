@@ -72,8 +72,8 @@ def test_can_get_engine_info(engine) -> None:
     info: ewapi.WorkflowEngineInfo = engine.get_server_info()
 
     # Assert
-    assert info.release_year == 23
-    assert info.release_id == 2
+    assert info.release_year == 24
+    assert info.release_id == 1
     assert info.build == 0
     assert info.version_as_string == "24.1.0"
 
