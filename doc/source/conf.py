@@ -17,6 +17,11 @@ release = version = __version__
 cname = os.getenv("DOCUMENTATION_CNAME", "nocname.com")
 switcher_version = get_version_match(__version__)
 
+REPOSITORY_NAME = "pymodelcenter"
+USERNAME = "pyansys"
+BRANCH = "main"
+DOC_PATH = "doc/source"
+
 # use the default ansys logo
 html_logo = pyansys_logo_black
 html_theme = "ansys_sphinx_theme"
@@ -24,7 +29,7 @@ html_short_title = html_title = "PyAnsys ModelCenter Workflow"
 
 # specify the location of your github repo
 html_theme_options = {
-    "github_url": "https://github.com/ansys/pymodelcenter",
+    "github_url": f"https://github.com/ansys/{REPOSITORY_NAME}",
     "check_switcher": False,
     "show_prev_next": False,
     "show_breadcrumbs": True,
@@ -40,7 +45,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "Support",
-            "url": "https://github.com/ansys/pymodelcenter/discussions",
+            "url": f"https://github.com/ansys/{REPOSITORY_NAME}/discussions",
             "icon": "fa fa-comment fa-fw",
         },
     ],
@@ -48,10 +53,10 @@ html_theme_options = {
 
 html_context = {
     "display_github": True,  # Integrate GitHub
-    "github_user": "pyansys",
-    "github_repo": "pymodelcenter",
-    "github_version": "main",
-    "doc_path": "doc/source",
+    "github_user": USERNAME,
+    "github_repo": REPOSITORY_NAME,
+    "github_version": BRANCH,
+    "doc_path": DOC_PATH,
 }
 
 # Sphinx extensions

@@ -94,6 +94,12 @@ jobs:
           - should-release: false
             os: windows-latest
     steps:
+      - name: Set up git Credentials
+        run: |
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
+
       - name: Build wheelhouse and perform smoke test
         uses: ansys/actions/build-wheelhouse@v4
         with:
