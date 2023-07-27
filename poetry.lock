@@ -120,7 +120,7 @@ files = [
 ]
 
 [package.dependencies]
-exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
+exceptiongroup = {version = "*", markers = "python_version < \"3.12\""}
 idna = ">=2.8"
 sniffio = ">=1.1"
 
@@ -373,7 +373,7 @@ files = [
 ]
 
 [package.dependencies]
-tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.11.0a6\" and extra == \"toml\""}
+tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.12\" and extra == \"toml\""}
 
 [package.extras]
 toml = ["tomli"]
@@ -1117,11 +1117,11 @@ files = [
 
 [package.dependencies]
 colorama = {version = "*", markers = "sys_platform == \"win32\""}
-exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
+exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.12\""}
 iniconfig = "*"
 packaging = "*"
 pluggy = ">=0.12,<2.0"
-tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
+tomli = {version = ">=1.0.0", markers = "python_version < \"3.12\""}
 
 [package.extras]
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
@@ -1531,5 +1531,5 @@ test = ["pytest", "pytest-cov"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.8,<3.11"
+python-versions = ">=3.8,<3.12"
 content-hash = "e3f57905d1733e29c2a52c9933a8e58005f30ca8fa649cda1d85a494959e8ea1"
