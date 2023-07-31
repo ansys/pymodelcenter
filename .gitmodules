@@ -1,4 +1,4 @@
 [submodule "grpc-modelcenter"]
 	path = grpc-modelcenter
-	url = https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+	url = https://github.com/ansys-internal/grpc-modelcenter
 	branch = main
