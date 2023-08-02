@@ -2,9 +2,6 @@ from os import PathLike
 from typing import Optional
 from unittest.mock import MagicMock
 
-import ansys.tools.variableinterop as atvi
-import pytest
-
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter import ValueTypeNotSupportedError
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs
@@ -14,6 +11,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import (
     ReferenceProperty,
     ReferencePropertyBase,
 )
+import ansys.tools.variableinterop as atvi
+import pytest
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue

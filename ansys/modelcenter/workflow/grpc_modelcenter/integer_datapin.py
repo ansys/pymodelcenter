@@ -1,10 +1,9 @@
 """Contains definition for IntegerDatapin and IntegerArray."""
 from typing import TYPE_CHECKING
 
+import ansys.modelcenter.workflow.api as mc_api
 import ansys.tools.variableinterop as atvi
 from overrides import overrides
-
-import ansys.modelcenter.workflow.api as mc_api
 
 from ._visitors.variable_value_visitor import VariableValueVisitor
 from .base_datapin import BaseDatapin

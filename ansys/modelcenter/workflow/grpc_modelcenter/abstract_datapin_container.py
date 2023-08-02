@@ -3,9 +3,8 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Mapping
 
-from overrides import overrides
-
 import ansys.modelcenter.workflow.api as mc_api
+from overrides import overrides
 
 from .abstract_workflow_element import AbstractWorkflowElement
 from .create_datapin import create_datapin

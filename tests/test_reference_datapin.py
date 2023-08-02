@@ -2,9 +2,6 @@ from os import PathLike
 from typing import Optional, Type, Union
 import unittest.mock
 
-import ansys.tools.variableinterop as atvi
-import pytest
-
 from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
@@ -13,6 +10,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
 )
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
+import ansys.tools.variableinterop as atvi
+import pytest
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue

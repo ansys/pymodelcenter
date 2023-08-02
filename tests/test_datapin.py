@@ -1,8 +1,5 @@
 import unittest.mock
 
-import ansys.tools.variableinterop as atvi
-import pytest
-
 import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
@@ -21,6 +18,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableTypeResponse,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementIdOrName
+import ansys.tools.variableinterop as atvi
+import pytest
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 

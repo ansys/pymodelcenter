@@ -1,13 +1,12 @@
 """Definition of Component."""
 from typing import TYPE_CHECKING, Optional
 
-from grpc import StatusCode
-from overrides import overrides
-
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable as abstract_renamable
 import ansys.modelcenter.workflow.grpc_modelcenter.group as group
+from grpc import StatusCode
+from overrides import overrides
 
 from .abstract_datapin_container import AbstractGRPCDatapinContainer
 

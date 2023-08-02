@@ -19,11 +19,10 @@ if TYPE_CHECKING:
     from .engine import Engine
 
 import ansys.engineeringworkflow.api as aew_api
-from ansys.tools import variableinterop as atvi
-from overrides import overrides
-
 from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
+from ansys.tools import variableinterop as atvi
+from overrides import overrides
 
 from .proto.element_messages_pb2 import ElementId
 from .proto.variable_value_messages_pb2 import (

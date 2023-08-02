@@ -3,11 +3,10 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Union, overload
 
 import ansys.engineeringworkflow.api as aew_api
-import ansys.tools.variableinterop as atvi
-from overrides import overrides
-
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
+import ansys.tools.variableinterop as atvi
+from overrides import overrides
 
 from . import var_value_convert
 from ..api import IDatapinReferenceBase, IReferenceArrayProperty, IReferenceProperty

@@ -2,16 +2,15 @@ from contextlib import ExitStack
 from typing import Callable, Type
 
 import ansys.engineeringworkflow.api as aew_api
-import ansys.tools.variableinterop as atvi
-import numpy as np
-from overrides import overrides
-
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
 )
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
 from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueTypeNotSupportedError
+import ansys.tools.variableinterop as atvi
+import numpy as np
+from overrides import overrides
 
 
 class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):

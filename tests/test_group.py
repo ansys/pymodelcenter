@@ -1,7 +1,5 @@
 from typing import Dict
 
-import pytest
-
 import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
@@ -19,6 +17,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
     UnsupportedTypeDatapin,
 )
+import pytest
+
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 import tests.test_abstract_workflow_element as awe_tests
 import tests.test_datapin_container as base_tests

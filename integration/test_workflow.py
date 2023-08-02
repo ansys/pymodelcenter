@@ -5,11 +5,10 @@ from typing import Collection, List, Mapping, Set
 import unittest
 
 import ansys.engineeringworkflow.api as ewapi
-import ansys.tools.variableinterop as atvi
-import pytest
-
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+import ansys.tools.variableinterop as atvi
+import pytest
 
 
 def test_getting_the_workflow_root(workflow) -> None:

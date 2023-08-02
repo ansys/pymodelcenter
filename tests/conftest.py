@@ -1,8 +1,5 @@
 from typing import Generator
 
-import numpy
-import pytest
-
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 import (
     HeartbeatRequest,
@@ -10,6 +7,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 impor
     ShutdownRequest,
     ShutdownResponse,
 )
+import numpy
+import pytest
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 

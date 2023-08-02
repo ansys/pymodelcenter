@@ -4,15 +4,14 @@ import os
 from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
 
 import ansys.engineeringworkflow.api as engapi
-import ansys.tools.variableinterop as atvi
-import grpc
-from overrides import overrides
-
 import ansys.modelcenter.workflow.api as wfapi
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
+import ansys.tools.variableinterop as atvi
+import grpc
+from overrides import overrides
 
 from .assembly import Assembly
 from .component import Component

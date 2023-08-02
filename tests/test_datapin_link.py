@@ -1,13 +1,12 @@
 import unittest
 
-import pytest
-
 from ansys.modelcenter.workflow.grpc_modelcenter import DatapinLink
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
 )
 import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
+import pytest
 
 
 class MockWorkflowClientForLinkTest(ModelCenterWorkflowServiceStub):

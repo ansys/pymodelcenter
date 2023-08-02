@@ -1,8 +1,6 @@
 """Defines a function that's used to create a variable object given a type and gRPC info."""
 from typing import TYPE_CHECKING
 
-import ansys.tools.variableinterop as atvi
-
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin as bool_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.file_datapin as file_pin_impl
@@ -14,6 +12,7 @@ import ansys.modelcenter.workflow.grpc_modelcenter.real_datapin as double_pin_im
 import ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin as ref_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.string_datapin as string_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin as unsupported_pin_impl
+import ansys.tools.variableinterop as atvi
 
 from .var_value_convert import grpc_type_enum_to_interop_type
 

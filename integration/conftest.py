@@ -2,9 +2,8 @@
 import os
 from typing import Generator
 
-import pytest
-
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+import pytest
 
 
 @pytest.fixture(scope="session", name="engine")

@@ -5,13 +5,12 @@ from threading import Condition, Thread
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
+from ansys.modelcenter.workflow.api import IEngine, WorkflowType
+import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 import ansys.platform.instancemanagement as pypim
 import grpc
 import numpy
 from overrides import overrides
-
-from ansys.modelcenter.workflow.api import IEngine, WorkflowType
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 
 from .format import Format
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error

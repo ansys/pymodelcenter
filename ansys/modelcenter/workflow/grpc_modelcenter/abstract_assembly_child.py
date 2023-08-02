@@ -3,10 +3,9 @@ from abc import ABC
 from typing import TYPE_CHECKING, Optional, Tuple
 
 import ansys.engineeringworkflow.api as aew_api
-from overrides import overrides
-
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_wfe
+from overrides import overrides
 
 if TYPE_CHECKING:
     from .engine import Engine

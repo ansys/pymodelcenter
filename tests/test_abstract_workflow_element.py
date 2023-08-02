@@ -1,8 +1,6 @@
 import unittest
 
 import ansys.engineeringworkflow.api as aew_api
-import ansys.tools.variableinterop as atvi
-
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
@@ -19,6 +17,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableValue,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementInfo
+import ansys.tools.variableinterop as atvi
+
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
