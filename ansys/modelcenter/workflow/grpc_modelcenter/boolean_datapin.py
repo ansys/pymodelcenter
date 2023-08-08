@@ -11,13 +11,15 @@ from .base_datapin import BaseDatapin
 
 if TYPE_CHECKING:
     from .engine import Engine
+
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import SetBooleanVariableMetadataRequest
+
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
-from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import SetBooleanVariableMetadataRequest
 from .var_metadata_convert import (
     convert_grpc_boolean_array_metadata,
     convert_grpc_boolean_metadata,
