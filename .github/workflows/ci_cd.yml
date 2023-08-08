@@ -107,9 +107,6 @@ jobs:
       - name: "Install dev dependencies"
         run: pip install .[dev]
 
-      - name: "Run gRPC compiler"
-        run: protos/generate-proto.bat
-
       - name: "Create wheel"
         run: |
           pip install build
