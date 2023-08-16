@@ -3,7 +3,7 @@ from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
 from unittest.mock import create_autospec
 
-import ansys.api.modelcenter.v0.engine_messages_pb2 as eng_msgs  # noqa: 501
+import ansys.api.modelcenter.v0.engine_messages_pb2 as eng_msgs
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
 import grpc

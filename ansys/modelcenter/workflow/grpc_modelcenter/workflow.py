@@ -4,7 +4,7 @@ import os
 from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
 
 import ansys.api.modelcenter.v0.element_messages_pb2 as element_msg
-import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
+import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_val_msg
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
 import ansys.engineeringworkflow.api as engapi

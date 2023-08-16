@@ -7,10 +7,10 @@ or have to accept each test taking more than two full seconds apiece.
 I'll leave this here for now so that we can reference this approach if we want to test with an
 actual server w/ mock implementation for some reason in the future.
 """
-import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages  # noqa: 501
-import ansys.api.modelcenter.v0.format_messages_pb2 as format_messages  # noqa: 501
-import ansys.api.modelcenter.v0.grpc_modelcenter_format_pb2_grpc as format_grpc  # noqa: 501
-import ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc as engine_grpc  # noqa: 501
+import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages
+import ansys.api.modelcenter.v0.format_messages_pb2 as format_messages
+import ansys.api.modelcenter.v0.grpc_modelcenter_format_pb2_grpc as format_grpc
+import ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc as engine_grpc
 
 from .mock_engine_server import MockEngineServer
 from .mock_format_server import MockFormatServer

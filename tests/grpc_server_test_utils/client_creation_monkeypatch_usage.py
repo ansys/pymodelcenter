@@ -1,6 +1,6 @@
 """Demonstrates the use of monkeypatch_client_creation."""
-import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages  # noqa: 501
-import ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc as engine_grpc  # noqa: 501
+import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages
+import ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc as engine_grpc
 import grpc
 
 from .client_creation_monkeypatch import monkeypatch_client_creation
