@@ -2,6 +2,9 @@
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
+from ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc import (
+    ModelCenterWorkflowServiceStub,
+)
 import grpc
 
 from . import var_value_convert
@@ -11,26 +14,23 @@ from .grpc_error_interpretation import (
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
-from .proto.grpc_modelcenter_workflow_pb2_grpc import ModelCenterWorkflowServiceStub
 from .var_metadata_convert import convert_grpc_metadata
 from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
 
 if TYPE_CHECKING:
     from .engine import Engine
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
+    ReferencePropertyGetIsInputResponse,
+    ReferencePropertyIdentifier,
+)
 import ansys.engineeringworkflow.api as aew_api
 from ansys.tools import variableinterop as atvi
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
-
-from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import (
-    ReferencePropertyGetIsInputResponse,
-    ReferencePropertyIdentifier,
-    ReferencePropertySetIsInputRequest,
-)
 
 
 class ReferencePropertyBase(IReferencePropertyBase):
@@ -98,14 +98,6 @@ class ReferencePropertyBase(IReferencePropertyBase):
             request
         )
         return response.is_input
-
-    @is_input.setter
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    def is_input(self, is_input: bool):
-        """Setter for is_input property."""
-        target = ReferencePropertyIdentifier(reference_var=self._element_id, prop_name=self._name)
-        request = ReferencePropertySetIsInputRequest(target=target, new_value=is_input)
-        self._client.ReferencePropertySetIsInput(request)
 
     @property
     @overrides

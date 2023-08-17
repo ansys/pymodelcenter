@@ -1,18 +1,8 @@
 from typing import Optional, Type, Union
 import unittest
 
-import ansys.tools.variableinterop as atvi
-import pytest
-
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin import (
-    IntegerArrayDatapin,
-    IntegerDatapin,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ArrayDimensions,
     IntegerArrayValue,
     IntegerVariableMetadata,
@@ -25,6 +15,16 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableState,
     VariableType,
     VariableValue,
+)
+import ansys.tools.variableinterop as atvi
+import pytest
+
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin import (
+    IntegerArrayDatapin,
+    IntegerDatapin,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
     CustomMetadataValueNotSupportedError,
@@ -606,7 +606,11 @@ def test_array_set_disallowed(monkeypatch, engine, set_value):
 
 def test_scalar_get_type(monkeypatch, engine):
     do_get_type_test(
-        monkeypatch, engine, IntegerDatapin, VariableType.VARTYPE_INTEGER, atvi.VariableType.INTEGER
+        monkeypatch,
+        engine,
+        IntegerDatapin,
+        VariableType.VARIABLE_TYPE_INTEGER,
+        atvi.VariableType.INTEGER,
     )
 
 
@@ -615,7 +619,7 @@ def test_array_get_type(monkeypatch, engine):
         monkeypatch,
         engine,
         IntegerArrayDatapin,
-        VariableType.VARTYPE_INTEGER_ARRAY,
+        VariableType.VARIABLE_TYPE_INTEGER_ARRAY,
         atvi.VariableType.INTEGER_ARRAY,
     )
 

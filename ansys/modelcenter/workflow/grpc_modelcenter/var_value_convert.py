@@ -3,11 +3,7 @@
 from contextlib import ExitStack
 from typing import Optional
 
-import ansys.tools.variableinterop as atvi
-import numpy as np
-from overrides import overrides
-
-from .proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ArrayDimensions,
     BooleanArrayValue,
     DoubleArrayValue,
@@ -18,6 +14,9 @@ from .proto.variable_value_messages_pb2 import (
     VariableType,
     VariableValue,
 )
+import ansys.tools.variableinterop as atvi
+import numpy as np
+from overrides import overrides
 
 
 class ValueTypeNotSupportedError(ValueError):
@@ -88,16 +87,16 @@ def mc_type_string_to_interop_type(original: str) -> atvi.VariableType:
 
 
 __GRPC_TO_INTEROP_TYPE_MAP = {
-    VariableType.VARTYPE_INTEGER: atvi.VariableType.INTEGER,
-    VariableType.VARTYPE_REAL: atvi.VariableType.REAL,
-    VariableType.VARTYPE_BOOLEAN: atvi.VariableType.BOOLEAN,
-    VariableType.VARTYPE_STRING: atvi.VariableType.STRING,
-    VariableType.VARTYPE_FILE: atvi.VariableType.FILE,
-    VariableType.VARTYPE_INTEGER_ARRAY: atvi.VariableType.INTEGER_ARRAY,
-    VariableType.VARTYPE_REAL_ARRAY: atvi.VariableType.REAL_ARRAY,
-    VariableType.VARTYPE_BOOLEAN_ARRAY: atvi.VariableType.BOOLEAN_ARRAY,
-    VariableType.VARTYPE_STRING_ARRAY: atvi.VariableType.STRING_ARRAY,
-    VariableType.VARTYPE_FILE_ARRAY: atvi.VariableType.FILE_ARRAY,
+    VariableType.VARIABLE_TYPE_INTEGER: atvi.VariableType.INTEGER,
+    VariableType.VARIABLE_TYPE_REAL: atvi.VariableType.REAL,
+    VariableType.VARIABLE_TYPE_BOOLEAN: atvi.VariableType.BOOLEAN,
+    VariableType.VARIABLE_TYPE_STRING: atvi.VariableType.STRING,
+    VariableType.VARIABLE_TYPE_FILE: atvi.VariableType.FILE,
+    VariableType.VARIABLE_TYPE_INTEGER_ARRAY: atvi.VariableType.INTEGER_ARRAY,
+    VariableType.VARIABLE_TYPE_REAL_ARRAY: atvi.VariableType.REAL_ARRAY,
+    VariableType.VARIABLE_TYPE_BOOLEAN_ARRAY: atvi.VariableType.BOOLEAN_ARRAY,
+    VariableType.VARIABLE_TYPE_STRING_ARRAY: atvi.VariableType.STRING_ARRAY,
+    VariableType.VARIABLE_TYPE_FILE_ARRAY: atvi.VariableType.FILE_ARRAY,
 }
 
 
@@ -120,7 +119,7 @@ def interop_type_to_grpc_type_enum(original: atvi.VariableType) -> VariableType:
     for key, value in __GRPC_TO_INTEROP_TYPE_MAP.items():
         if value == original:
             return key
-    return VariableType.VARTYPE_UNKNOWN
+    return VariableType.VARIABLE_TYPE_UNSPECIFIED
 
 
 def convert_grpc_value_to_atvi(

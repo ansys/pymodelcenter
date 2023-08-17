@@ -2,15 +2,15 @@
 from typing import Iterable, List, Mapping, Type
 import unittest
 
+import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msgs  # noqa: 501
+import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs  # noqa: 501
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi
 import pytest
 
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue
@@ -123,48 +123,48 @@ class MockWorkflowClientForWorkflowTest:
         response = wkf_msgs.ElementInfo()
         response.id.id_string = request.element_full_name.name.replace(".", "_").upper()
         if request.element_full_name.name == "a.component":
-            response.type = elem_msgs.ELEMTYPE_COMPONENT
+            response.type = elem_msgs.ELEMENT_TYPE_COMPONENT
         elif request.element_full_name.name == "Model":
-            response.type = elem_msgs.ELEMTYPE_ASSEMBLY
+            response.type = elem_msgs.ELEMENT_TYPE_ASSEMBLY
         elif request.element_full_name.name == "Workflow.source_comp":
-            response.type = elem_msgs.ELEMTYPE_COMPONENT
+            response.type = elem_msgs.ELEMENT_TYPE_COMPONENT
         elif request.element_full_name.name == "Workflow.dest_comp":
-            response.type = elem_msgs.ELEMTYPE_COMPONENT
+            response.type = elem_msgs.ELEMENT_TYPE_COMPONENT
         elif request.element_full_name.name == "a.assembly":
-            response.type = elem_msgs.ELEMTYPE_ASSEMBLY
+            response.type = elem_msgs.ELEMENT_TYPE_ASSEMBLY
         elif request.element_full_name.name == "model.boolean":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_BOOLEAN
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_BOOLEAN
         elif request.element_full_name.name == "model.booleans":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_BOOLEAN_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_BOOLEAN_ARRAY
         elif request.element_full_name.name == "model.double":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_REAL
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_REAL
         elif request.element_full_name.name == "model.doubles":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_REAL_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_REAL_ARRAY
         elif request.element_full_name.name == "model.integer":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_INTEGER
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_INTEGER
         elif request.element_full_name.name == "model.integers":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_INTEGER_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_INTEGER_ARRAY
         elif request.element_full_name.name == "model.string":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_STRING
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_STRING
         elif request.element_full_name.name == "model.strings":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_STRING_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_STRING_ARRAY
         elif request.element_full_name.name == "model.file":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_FILE
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_FILE
         elif request.element_full_name.name == "model.files":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_FILE_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_FILE_ARRAY
         elif request.element_full_name.name == "model.unknown":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_UNKNOWN
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_UNSPECIFIED
         return response
 
     def WorkflowHalt(self, request: wkf_msgs.WorkflowHaltRequest):
@@ -174,25 +174,25 @@ class MockWorkflowClientForWorkflowTest:
     def VariableGetType(self, request: elem_msgs.ElementId):
         response = var_msgs.VariableTypeResponse()
         if request.id_string == "model.boolean":
-            response.var_type = var_msgs.VARTYPE_BOOLEAN
+            response.var_type = var_msgs.VARIABLE_TYPE_BOOLEAN
         elif request.id_string == "model.booleans":
-            response.var_type = var_msgs.VARTYPE_BOOLEAN_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_BOOLEAN_ARRAY
         elif request.id_string == "model.integer":
-            response.var_type = var_msgs.VARTYPE_INTEGER
+            response.var_type = var_msgs.VARIABLE_TYPE_INTEGER
         elif request.id_string == "model.integers":
-            response.var_type = var_msgs.VARTYPE_INTEGER_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_INTEGER_ARRAY
         elif request.id_string == "model.double":
-            response.var_type = var_msgs.VARTYPE_REAL
+            response.var_type = var_msgs.VARIABLE_TYPE_REAL
         elif request.id_string == "model.doubles":
-            response.var_type = var_msgs.VARTYPE_REAL_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_REAL_ARRAY
         elif request.id_string == "model.string":
-            response.var_type = var_msgs.VARTYPE_STRING
+            response.var_type = var_msgs.VARIABLE_TYPE_STRING
         elif request.id_string == "model.strings":
-            response.var_type = var_msgs.VARTYPE_STRING_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_STRING_ARRAY
         elif request.id_string == "model.file":
-            response.var_type = var_msgs.VARTYPE_FILE
+            response.var_type = var_msgs.VARIABLE_TYPE_FILE
         elif request.id_string == "model.files":
-            response.var_type = var_msgs.VARTYPE_FILE_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_FILE_ARRAY
         return response
 
     def VariableGetState(self, request: wkf_msgs.ElementIdOrName) -> var_msgs.VariableState:
@@ -303,8 +303,8 @@ class MockWorkflowClientForWorkflowTest:
 
     def WorkflowMoveComponent(
         self, request: wkf_msgs.MoveComponentRequest
-    ) -> elem_msgs.ElementIndexInParentResponse:
-        return elem_msgs.ElementIndexInParentResponse()
+    ) -> elem_msgs.ElementIndexParentResponse:
+        return elem_msgs.ElementIndexParentResponse()
 
 
 mock_client: MockWorkflowClientForWorkflowTest
@@ -1123,7 +1123,7 @@ def test_get_element_by_name(
 
 
 def test_move_component_names(setup_function):
-    mock_response = elem_msgs.ElementIndexInParentResponse()
+    mock_response = elem_msgs.ElementIndexParentResponse()
     with unittest.mock.patch.object(
         mock_client, "WorkflowMoveComponent", return_value=mock_response
     ) as mock_grpc_method:
@@ -1132,13 +1132,13 @@ def test_move_component_names(setup_function):
         expected_request = wkf_msgs.MoveComponentRequest(
             target=elem_msgs.ElementId(id_string="A_COMPONENT"),
             new_parent=elem_msgs.ElementId(id_string="A_ASSEMBLY"),
-            index_in_parent=-1,
+            index_parent=-1,
         )
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
 def test_move_component_objects(setup_function, engine):
-    mock_response = elem_msgs.ElementIndexInParentResponse()
+    mock_response = elem_msgs.ElementIndexParentResponse()
     mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), engine=engine)
     mock_assembly = grpcmc.Assembly(elem_msgs.ElementId(id_string="ASSY_3948"), engine=engine)
     with unittest.mock.patch.object(
@@ -1149,7 +1149,7 @@ def test_move_component_objects(setup_function, engine):
         expected_request = wkf_msgs.MoveComponentRequest(
             target=elem_msgs.ElementId(id_string="COMP_4857"),
             new_parent=elem_msgs.ElementId(id_string="ASSY_3948"),
-            index_in_parent=47,
+            index_parent=47,
         )
         mock_grpc_method.assert_called_once_with(expected_request)
 

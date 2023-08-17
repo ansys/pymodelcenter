@@ -1,5 +1,15 @@
 import unittest.mock
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId, VariableIsInputResponse
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
+    GetVariableDependenciesRequest,
+    VariableInfo,
+    VariableInfoCollection,
+    VariableState,
+    VariableType,
+    VariableTypeResponse,
+)
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import ElementIdOrName
 import ansys.tools.variableinterop as atvi
 import pytest
 
@@ -8,19 +18,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
     AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ElementId,
-    VariableIsInputResponse,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    GetVariableDependenciesRequest,
-    VariableInfo,
-    VariableInfoCollection,
-    VariableState,
-    VariableType,
-    VariableTypeResponse,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementIdOrName
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
@@ -108,7 +105,7 @@ def do_test_is_input_component(monkeypatch, engine, sut_type, flag_in_response) 
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response = VariableIsInputResponse(
-        is_input_in_component=flag_in_response, is_input_in_workflow=False
+        is_input_component=flag_in_response, is_input_workflow=False
     )
     with unittest.mock.patch.object(
         mock_client, "VariableGetIsInput", return_value=mock_response
@@ -126,7 +123,7 @@ def do_test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response) -
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response = VariableIsInputResponse(
-        is_input_in_component=False, is_input_in_workflow=flag_in_response
+        is_input_component=False, is_input_workflow=flag_in_response
     )
     with unittest.mock.patch.object(
         mock_client, "VariableGetIsInput", return_value=mock_response
@@ -189,17 +186,17 @@ def test_get_dependents(
         variables=[
             VariableInfo(
                 id=ElementId(id_string="IDVAR_LARRY"),
-                value_type=VariableType.VARTYPE_INTEGER,
+                value_type=VariableType.VARIABLE_TYPE_INTEGER,
                 short_name="larry",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_MOE"),
-                value_type=VariableType.VARTYPE_STRING,
+                value_type=VariableType.VARIABLE_TYPE_STRING,
                 short_name="moe",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_CURLY"),
-                value_type=VariableType.VARTYPE_REAL,
+                value_type=VariableType.VARIABLE_TYPE_REAL,
                 short_name="curly",
             ),
         ]
@@ -217,8 +214,8 @@ def test_get_dependents(
         mock_get_variable_method.assert_called_once_with(
             GetVariableDependenciesRequest(
                 id=sut_element_id,
-                onlyFetchDirectDependencies=only_fetch_direct_dependencies,
-                followSuspended=follow_suspended,
+                only_fetch_direct_dependencies=only_fetch_direct_dependencies,
+                follow_suspended=follow_suspended,
             )
         )
 
@@ -248,17 +245,17 @@ def test_get_precedents(
         variables=[
             VariableInfo(
                 id=ElementId(id_string="IDVAR_LARRY"),
-                value_type=VariableType.VARTYPE_INTEGER,
+                value_type=VariableType.VARIABLE_TYPE_INTEGER,
                 short_name="larry",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_MOE"),
-                value_type=VariableType.VARTYPE_STRING,
+                value_type=VariableType.VARIABLE_TYPE_STRING,
                 short_name="moe",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_CURLY"),
-                value_type=VariableType.VARTYPE_REAL,
+                value_type=VariableType.VARIABLE_TYPE_REAL,
                 short_name="curly",
             ),
         ]
@@ -276,8 +273,8 @@ def test_get_precedents(
         mock_get_variable_method.assert_called_once_with(
             GetVariableDependenciesRequest(
                 id=sut_element_id,
-                onlyFetchDirectDependencies=only_fetch_direct_dependencies,
-                followSuspended=follow_suspended,
+                only_fetch_direct_dependencies=only_fetch_direct_dependencies,
+                follow_suspended=follow_suspended,
             )
         )
 

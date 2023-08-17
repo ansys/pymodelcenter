@@ -13,9 +13,11 @@ from .create_datapin import create_datapin
 if TYPE_CHECKING:
     from .engine import Engine
     from .group import Group
+
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableInfo
+
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
-from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import VariableInfo
 
 
 class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, ABC):

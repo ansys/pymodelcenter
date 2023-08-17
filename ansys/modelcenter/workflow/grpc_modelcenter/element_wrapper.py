@@ -5,8 +5,8 @@ import ansys.engineeringworkflow.api as aew_api
 
 if TYPE_CHECKING:
     from .engine import Engine
-from .proto.element_messages_pb2 import ElementType
-from .proto.workflow_messages_pb2 import ElementInfo
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementType
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import ElementInfo
 
 
 def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
@@ -17,14 +17,17 @@ def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
     import ansys.modelcenter.workflow.grpc_modelcenter.create_datapin as create_variable
     import ansys.modelcenter.workflow.grpc_modelcenter.group as group_impl
 
-    if info.type == ElementType.ELEMTYPE_ASSEMBLY or info.type == ElementType.ELEMTYPE_IFCOMPONENT:
+    if (
+        info.type == ElementType.ELEMENT_TYPE_ASSEMBLY
+        or info.type == ElementType.ELEMENT_TYPE_IFCOMPONENT
+    ):
         return assembly_impl.Assembly(info.id, engine)
-    elif info.type == ElementType.ELEMTYPE_COMPONENT:
+    elif info.type == ElementType.ELEMENT_TYPE_COMPONENT:
         return component_impl.Component(info.id, engine)
-    elif info.type == ElementType.ELEMTYPE_GROUP:
+    elif info.type == ElementType.ELEMENT_TYPE_GROUP:
         return group_impl.Group(info.id, engine)
-    elif info.type == ElementType.ELEMTYPE_VARIABLE:
+    elif info.type == ElementType.ELEMENT_TYPE_VARIABLE:
         return create_variable.create_datapin(info.var_type, info.id, engine)
     else:
-        # (including ELEMTYPE_UNKNOWN)
+        # (including ELEMENT_TYPE_UNSPECIFIED)
         return abstract_elem.UnsupportedWorkflowElement(info.id, engine)

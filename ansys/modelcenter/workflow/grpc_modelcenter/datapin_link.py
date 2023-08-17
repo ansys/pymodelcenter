@@ -1,10 +1,10 @@
 """Implementation of DatapinLink."""
+import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msg
+import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msg
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
 

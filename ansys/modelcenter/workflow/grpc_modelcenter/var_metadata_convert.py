@@ -1,9 +1,7 @@
 """Defines functions for converting between ACVI metadata and gRPC messages."""
 from typing import Union
 
-import ansys.tools.variableinterop as atvi
-
-from .proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     BaseVariableMetadata,
     BooleanVariableMetadata,
     DoubleVariableMetadata,
@@ -14,6 +12,8 @@ from .proto.variable_value_messages_pb2 import (
     StringVariableMetadata,
     VariableValue,
 )
+import ansys.tools.variableinterop as atvi
+
 from .reference_datapin_metadata import ReferenceDatapinMetadata
 from .var_value_convert import (
     ValueTypeNotSupportedError,
