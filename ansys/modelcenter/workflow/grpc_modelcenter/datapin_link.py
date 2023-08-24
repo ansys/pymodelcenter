@@ -1,6 +1,6 @@
 """Implementation of DatapinLink."""
 import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msg
-import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
+import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
 from overrides import overrides
 

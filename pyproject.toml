@@ -38,11 +38,10 @@ python = ">=3.8,<3.11"
 numpy = "^1.22.3"
 overrides = "^6.1"
 ansys-platform-instancemanagement = "^1.1.1"
+ansys-api-modelcenter = "^0.1.0"
 
-# This is the closest version to what we're using in C++ (1.46.6.2).
-# It's probably not strictly necessary to keep these exactly in sync, but it might be helpful.
-grpcio = "~1.46.5"
-grpcio-tools = "~1.46.5"
+grpcio = "~1.47"
+grpcio-tools = "~1.47"
 
 Sphinx =  {version="^6.2", optional=true}
 numpydoc =  {version="^1.5", optional=true}
