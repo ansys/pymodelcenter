@@ -1,15 +1,15 @@
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.format_messages_pb2 as format_messages  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_format_pb2_grpc as format_grpc  # noqa: 501
+import ansys.api.modelcenter.v0.format_messages_pb2 as format_messages  # noqa: 501
+import ansys.api.modelcenter.v0.grpc_modelcenter_format_pb2_grpc as format_grpc  # noqa: 501
 
 from .test_server import TestGRPCServer
 
 
 class MockFormatServicer(format_grpc.ModelCenterFormatServiceServicer):
     def FormatStringToInteger(self, request, context):
-        return format_messages.FormatToIntegerResponse(result=1)
+        return format_messages.FormatIntegerResponse(result=1)
 
     def FormatStringToDouble(self, request, context):
-        return format_messages.FormatToDoubleResponse(result=1.0)
+        return format_messages.FormatDoubleResponse(result=1.0)
 
 
 class MockFormatServer(TestGRPCServer):

@@ -7,10 +7,10 @@ or have to accept each test taking more than two full seconds apiece.
 I'll leave this here for now so that we can reference this approach if we want to test with an
 actual server w/ mock implementation for some reason in the future.
 """
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as engine_messages  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.format_messages_pb2 as format_messages  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_format_pb2_grpc as format_grpc  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_pb2_grpc as engine_grpc  # noqa: 501
+import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages  # noqa: 501
+import ansys.api.modelcenter.v0.format_messages_pb2 as format_messages  # noqa: 501
+import ansys.api.modelcenter.v0.grpc_modelcenter_format_pb2_grpc as format_grpc  # noqa: 501
+import ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc as engine_grpc  # noqa: 501
 
 from .mock_engine_server import MockEngineServer
 from .mock_format_server import MockFormatServer
@@ -30,7 +30,7 @@ def test_mock_format_server():
         with server.get_channel() as channel:
             stub = format_grpc.ModelCenterFormatServiceStub(channel)
             response = stub.FormatStringToDouble(
-                format_messages.FormatFromStringRequest(format="", original="")
+                format_messages.FormatStringRequest(format="", original="")
             )
             assert response.result == 1
 
@@ -44,7 +44,7 @@ def test_combo_server():
             format_stub = format_grpc.ModelCenterFormatServiceStub(channel)
             engine_stub = engine_grpc.GRPCModelCenterServiceStub(channel)
             format_response = format_stub.FormatStringToDouble(
-                format_messages.FormatFromStringRequest(format="", original="")
+                format_messages.FormatStringRequest(format="", original="")
             )
             engine_response = engine_stub.GetEngineInfo(engine_messages.GetServerInfoRequest())
             assert format_response.result == 1

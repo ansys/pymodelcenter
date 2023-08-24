@@ -1,24 +1,18 @@
 import unittest
 
+from ansys.api.modelcenter.v0.custom_metadata_messages_pb2 import (
+    MetadataGetValueRequest,
+    MetadataPropertyNamesResponse,
+)
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId, ElementName, ElementType
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableValue
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import ElementInfo
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
-    MetadataGetValueRequest,
-    MetadataPropertyNamesResponse,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ElementId,
-    ElementName,
-    ElementType,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableValue,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementInfo
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 
@@ -181,6 +175,6 @@ def test_parent_element(monkeypatch, engine) -> None:
         monkeypatch,
         engine,
         AbstractWorkflowElement,
-        ElementType.ELEMTYPE_UNKNOWN,
+        ElementType.ELEMENT_TYPE_UNSPECIFIED,
         AbstractWorkflowElement,
     )

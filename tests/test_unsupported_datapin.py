@@ -1,10 +1,8 @@
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableState
 import ansys.tools.variableinterop as atvi
 import pytest
 
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableState,
-)
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
     DatapinWithUnsupportedTypeException,
     UnsupportedTypeDatapin,

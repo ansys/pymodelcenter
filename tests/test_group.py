@@ -1,5 +1,12 @@
 from typing import Dict
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import (
+    ElementId,
+    ElementIdCollection,
+    ElementName,
+    ElementType,
+)
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableType
 import pytest
 
 import ansys.modelcenter.workflow.api as mc_api
@@ -7,15 +14,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element impor
     AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ElementId,
-    ElementIdCollection,
-    ElementName,
-    ElementType,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableType,
-)
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
     UnsupportedTypeDatapin,
 )
@@ -52,17 +50,17 @@ def test_get_variables_empty(monkeypatch, engine):
 @pytest.mark.parametrize(
     "var_type,expected_wrapper_type",
     [
-        (VariableType.VARTYPE_INTEGER, mc_api.IIntegerDatapin),
-        (VariableType.VARTYPE_REAL, mc_api.IRealDatapin),
-        (VariableType.VARTYPE_BOOLEAN, mc_api.IBooleanDatapin),
-        (VariableType.VARTYPE_STRING, mc_api.IStringDatapin),
-        (VariableType.VARTYPE_FILE, mc_api.IFileDatapin),
-        (VariableType.VARTYPE_INTEGER_ARRAY, mc_api.IIntegerArrayDatapin),
-        (VariableType.VARTYPE_REAL_ARRAY, mc_api.IRealArrayDatapin),
-        (VariableType.VARTYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayDatapin),
-        (VariableType.VARTYPE_STRING_ARRAY, mc_api.IStringArrayDatapin),
-        (VariableType.VARTYPE_FILE_ARRAY, mc_api.IFileArrayDatapin),
-        (VariableType.VARTYPE_UNKNOWN, UnsupportedTypeDatapin),
+        (VariableType.VARIABLE_TYPE_INTEGER, mc_api.IIntegerDatapin),
+        (VariableType.VARIABLE_TYPE_REAL, mc_api.IRealDatapin),
+        (VariableType.VARIABLE_TYPE_BOOLEAN, mc_api.IBooleanDatapin),
+        (VariableType.VARIABLE_TYPE_STRING, mc_api.IStringDatapin),
+        (VariableType.VARIABLE_TYPE_FILE, mc_api.IFileDatapin),
+        (VariableType.VARIABLE_TYPE_INTEGER_ARRAY, mc_api.IIntegerArrayDatapin),
+        (VariableType.VARIABLE_TYPE_REAL_ARRAY, mc_api.IRealArrayDatapin),
+        (VariableType.VARIABLE_TYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayDatapin),
+        (VariableType.VARIABLE_TYPE_STRING_ARRAY, mc_api.IStringArrayDatapin),
+        (VariableType.VARIABLE_TYPE_FILE_ARRAY, mc_api.IFileArrayDatapin),
+        (VariableType.VARIABLE_TYPE_UNSPECIFIED, UnsupportedTypeDatapin),
     ],
 )
 def test_get_variables_one_variable(monkeypatch, engine, var_type, expected_wrapper_type):
@@ -104,7 +102,9 @@ def test_full_name(monkeypatch, engine) -> None:
 
 
 def test_parent_element(monkeypatch, engine) -> None:
-    awe_tests.do_test_parent_element(monkeypatch, engine, Group, ElementType.ELEMTYPE_GROUP, Group)
+    awe_tests.do_test_parent_element(
+        monkeypatch, engine, Group, ElementType.ELEMENT_TYPE_GROUP, Group
+    )
 
 
 def test_get_property_names(monkeypatch, engine) -> None:
