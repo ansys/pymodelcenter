@@ -167,6 +167,10 @@ class MockWorkflowClientForWorkflowTest:
             response.var_type = var_msgs.VARTYPE_UNKNOWN
         return response
 
+    def WorkflowGetState(self, request: wkf_msgs.GetWorkflowStateRequest):
+        response = wkf_msgs.GetWorkflowStateResponse()
+        return response
+
     def WorkflowHalt(self, request: wkf_msgs.WorkflowHaltRequest):
         response = wkf_msgs.WorkflowHaltResponse()
         return response
@@ -1152,6 +1156,56 @@ def test_move_component_objects(setup_function, engine):
             index_in_parent=47,
         )
         mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(
+    "mock_state,expected_state",
+    [
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_UNSPECIFIED,
+            ewapi.WorkflowInstanceState.UNKNOWN,
+            id="Unknown",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_INVALID,
+            ewapi.WorkflowInstanceState.INVALID,
+            id="Invalid",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_RUNNING,
+            ewapi.WorkflowInstanceState.RUNNING,
+            id="Running",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_PAUSED,
+            ewapi.WorkflowInstanceState.PAUSED,
+            id="Paused",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_FAILED,
+            ewapi.WorkflowInstanceState.FAILED,
+            id="Failed",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_SUCCESS,
+            ewapi.WorkflowInstanceState.SUCCESS,
+            id="Success",
+        ),
+        pytest.param(-1, ewapi.WorkflowInstanceState.UNKNOWN, id="Default"),
+    ],
+)
+def test_get_state(setup_function, mock_state, expected_state):
+    mock_response = wkf_msgs.GetWorkflowStateResponse(state=mock_state)
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowGetState", return_value=mock_response
+    ) as mock_grpc_method:
+        response = workflow.get_state()
+
+        expected_request = wkf_msgs.GetWorkflowStateRequest()
+    mock_grpc_method.assert_called_once_with(expected_request)
+
+    assert isinstance(response, ewapi.WorkflowInstanceState)
+    assert expected_state == response
 
 
 # @pytest.mark.parametrize(

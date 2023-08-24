@@ -3,16 +3,18 @@ from contextlib import ExitStack
 import os
 from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
 
+
+import ansys.api.modelcenter.v0.element_messages_pb2 as element_msg
+import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
+import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_val_msg
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import WorkflowInstanceState as WkflInstState
 import ansys.engineeringworkflow.api as engapi
 import ansys.tools.variableinterop as atvi
 import grpc
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as wfapi
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 
 from .assembly import Assembly
 from .component import Component
@@ -80,12 +82,12 @@ class Workflow(wfapi.IWorkflow):
         return grpc_mcd_workflow.ModelCenterWorkflowServiceStub(grpc_channel)
 
     __WORKFLOW_INSTANCE_STATE_MAP = {
-        0: engapi.WorkflowInstanceState.UNKNOWN,
-        1: engapi.WorkflowInstanceState.INVALID,
-        2: engapi.WorkflowInstanceState.RUNNING,
-        3: engapi.WorkflowInstanceState.PAUSED,
-        4: engapi.WorkflowInstanceState.FAILED,
-        5: engapi.WorkflowInstanceState.SUCCESS
+        WkflInstState.WORKFLOW_INSTANCE_STATE_UNSPECIFIED: engapi.WorkflowInstanceState.UNKNOWN,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_INVALID: engapi.WorkflowInstanceState.INVALID,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_RUNNING: engapi.WorkflowInstanceState.RUNNING,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_PAUSED: engapi.WorkflowInstanceState.PAUSED,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_FAILED: engapi.WorkflowInstanceState.FAILED,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_SUCCESS: engapi.WorkflowInstanceState.SUCCESS,
     }
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
@@ -93,9 +95,7 @@ class Workflow(wfapi.IWorkflow):
     def get_state(self) -> engapi.WorkflowInstanceState:
 
         request = workflow_msg.GetWorkflowStateRequest()
-        response: workflow_msg.GetWorkflowStateResponse = self._stub.WorkflowGetState(
-            request
-        )
+        response: workflow_msg.GetWorkflowStateResponse = self._stub.WorkflowGetState(request)
         return (
             Workflow.__WORKFLOW_INSTANCE_STATE_MAP[response.state]
             if response.state in Workflow.__WORKFLOW_INSTANCE_STATE_MAP
