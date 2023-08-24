@@ -5,11 +5,11 @@ import time
 from typing import Collection, List, Mapping, Set
 import unittest
 
+import ansys.engineeringworkflow.api as eng_api
 import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi
 import pytest
 
-import ansys.engineeringworkflow.api as eng_api
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
