@@ -1,6 +1,7 @@
 """Integration tests around Workflow functionality."""
 import os
 import tempfile
+import time
 from typing import Collection, List, Mapping, Set
 import unittest
 
@@ -8,6 +9,7 @@ import ansys.engineeringworkflow.api as ewapi
 import ansys.tools.variableinterop as atvi
 import pytest
 
+import ansys.engineeringworkflow.api as eng_api
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
@@ -271,7 +273,6 @@ def test_running_and_getting_results(workflow) -> None:
 def test_running_asynchronously_and_getting_results(workflow) -> None:
     # Arrange
     validation_names: Set[str] = set()
-    collection_names: Set[str] = {"ワークフロー.all_types_コンポーネント"}
     inputs: Mapping[str, atvi.VariableState] = {
         "ワークフロー.all_types_コンポーネント.boolIn": atvi.VariableState(
             value=atvi.BooleanValue(True), is_valid=True
@@ -300,38 +301,14 @@ def test_running_asynchronously_and_getting_results(workflow) -> None:
     }
 
     # Act
-    result: Mapping[str, atvi.VariableState] = workflow.start_run(
-        inputs=inputs, reset=True, validation_names=validation_names, collect_names=collection_names
-    )
+    workflow.start_run(inputs=inputs, reset=True, validation_names=validation_names)
+    after_run_state = workflow.get_state()
+    time.sleep(1)
+    end_state = workflow.get_state()
 
     # Assert
-    expected_results: Mapping[str, atvi.VariableState] = {
-        "ワークフロー.all_types_コンポーネント.boolOut": atvi.VariableState(
-            value=atvi.BooleanValue(True), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.realOut": atvi.VariableState(
-            value=atvi.RealValue(984.65646754), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.intOut": atvi.VariableState(
-            value=atvi.IntegerValue(1431655765), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.strOut": atvi.VariableState(
-            value=atvi.StringValue("•-•• --- •••- •"), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.arrays.boolOut": atvi.VariableState(
-            value=atvi.BooleanArrayValue(values=[True, False, False, True]), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.arrays.realOut": atvi.VariableState(
-            value=atvi.RealArrayValue(values=[1.1, 2.2, 3.3, 4.4]), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.arrays.intOut": atvi.VariableState(
-            value=atvi.IntegerArrayValue(values=[9, 8, 7, 6]), is_valid=True
-        ),
-        "ワークフロー.all_types_コンポーネント.arrays.strOut": atvi.VariableState(
-            value=atvi.StringArrayValue(values=["風", "林", "火", "山"]), is_valid=True
-        ),
-    }
-    assert expected_results == result
+    assert after_run_state == eng_api.WorkflowInstanceState.RUNNING
+    assert end_state == eng_api.WorkflowInstanceState.PAUSED
 
 
 @pytest.mark.workflow_name("file_tests.pxcz")

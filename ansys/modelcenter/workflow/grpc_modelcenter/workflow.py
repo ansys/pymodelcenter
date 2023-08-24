@@ -80,12 +80,12 @@ class Workflow(wfapi.IWorkflow):
         return grpc_mcd_workflow.ModelCenterWorkflowServiceStub(grpc_channel)
 
     __WORKFLOW_INSTANCE_STATE_MAP = {
-        0: engapi.WorkflowInstanceState.UNKNOWN,
-        1: engapi.WorkflowInstanceState.INVALID,
-        2: engapi.WorkflowInstanceState.RUNNING,
-        3: engapi.WorkflowInstanceState.PAUSED,
-        4: engapi.WorkflowInstanceState.FAILED,
-        5: engapi.WorkflowInstanceState.SUCCESS
+        workflow_msg.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_UNSPECIFIED: engapi.WorkflowInstanceState.UNKNOWN,
+        workflow_msg.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_INVALID: engapi.WorkflowInstanceState.INVALID,
+        workflow_msg.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_RUNNING: engapi.WorkflowInstanceState.RUNNING,
+        workflow_msg.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_PAUSED: engapi.WorkflowInstanceState.PAUSED,
+        workflow_msg.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_FAILED: engapi.WorkflowInstanceState.FAILED,
+        workflow_msg.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_SUCCESS: engapi.WorkflowInstanceState.SUCCESS
     }
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
