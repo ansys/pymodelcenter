@@ -59,7 +59,6 @@ class Workflow(wfapi.IWorkflow):
         engine: Engine
             The Engine creating this Workflow.
         """
-        self._state = engapi.WorkflowInstanceState.UNKNOWN
         self._id = workflow_id
         self._file_name = os.path.basename(file_path)
         self._engine = engine
@@ -80,13 +79,28 @@ class Workflow(wfapi.IWorkflow):
         """Create a client from a grpc channel."""
         return grpc_mcd_workflow.ModelCenterWorkflowServiceStub(grpc_channel)
 
+    __WORKFLOW_INSTANCE_STATE_MAP = {
+        0: engapi.WorkflowInstanceState.UNKNOWN,
+        1: engapi.WorkflowInstanceState.INVALID,
+        2: engapi.WorkflowInstanceState.RUNNING,
+        3: engapi.WorkflowInstanceState.PAUSED,
+        4: engapi.WorkflowInstanceState.FAILED,
+        5: engapi.WorkflowInstanceState.SUCCESS
+    }
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_state(self) -> engapi.WorkflowInstanceState:
-        # if self._instance.getHaltStatus():
-        #     return WorkflowInstanceState.PAUSED
-        # return self._state
-        raise NotImplementedError
+
+        request = workflow_msg.GetWorkflowStateRequest()
+        response: workflow_msg.GetWorkflowStateResponse = self._stub.WorkflowGetState(
+            request
+        )
+        return (
+            Workflow.__WORKFLOW_INSTANCE_STATE_MAP[response.state]
+            if response.state in Workflow.__WORKFLOW_INSTANCE_STATE_MAP
+            else engapi.WorkflowInstanceState.UNKNOWN
+        )
 
     def _create_run_request(
         self,
