@@ -7,6 +7,7 @@ import ansys.api.modelcenter.v0.element_messages_pb2 as element_msg
 import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_val_msg
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import WorkflowInstanceState as WkflInstState
 import ansys.engineeringworkflow.api as engapi
 import ansys.tools.variableinterop as atvi
 import grpc
@@ -59,7 +60,6 @@ class Workflow(wfapi.IWorkflow):
         engine: Engine
             The Engine creating this Workflow.
         """
-        self._state = engapi.WorkflowInstanceState.UNKNOWN
         self._id = workflow_id
         self._file_name = os.path.basename(file_path)
         self._engine = engine
@@ -80,13 +80,26 @@ class Workflow(wfapi.IWorkflow):
         """Create a client from a grpc channel."""
         return grpc_mcd_workflow.ModelCenterWorkflowServiceStub(grpc_channel)
 
+    __WORKFLOW_INSTANCE_STATE_MAP = {
+        WkflInstState.WORKFLOW_INSTANCE_STATE_UNSPECIFIED: engapi.WorkflowInstanceState.UNKNOWN,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_INVALID: engapi.WorkflowInstanceState.INVALID,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_RUNNING: engapi.WorkflowInstanceState.RUNNING,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_PAUSED: engapi.WorkflowInstanceState.PAUSED,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_FAILED: engapi.WorkflowInstanceState.FAILED,
+        WkflInstState.WORKFLOW_INSTANCE_STATE_SUCCESS: engapi.WorkflowInstanceState.SUCCESS,
+    }
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def get_state(self) -> engapi.WorkflowInstanceState:
-        # if self._instance.getHaltStatus():
-        #     return WorkflowInstanceState.PAUSED
-        # return self._state
-        raise NotImplementedError
+
+        request = workflow_msg.GetWorkflowStateRequest()
+        response: workflow_msg.GetWorkflowStateResponse = self._stub.WorkflowGetState(request)
+        return (
+            Workflow.__WORKFLOW_INSTANCE_STATE_MAP[response.state]
+            if response.state in Workflow.__WORKFLOW_INSTANCE_STATE_MAP
+            else engapi.WorkflowInstanceState.UNKNOWN
+        )
 
     def _create_run_request(
         self,
@@ -163,7 +176,19 @@ class Workflow(wfapi.IWorkflow):
         reset: bool,
         validation_names: AbstractSet[str],
     ) -> None:
-        raise NotImplementedError
+        with ExitStack() as local_file_content_pins:
+            request: workflow_msg.WorkflowRunRequest = self._create_run_request(
+                inputs, reset, validation_names, set(), local_file_content_pins
+            )
+            self._stub.WorkflowStartRun(request)
+            return
+        # This line should only be reachable if one of the context managers in
+        # local_file_content_pins suppress an exception, which they should not
+        # be doing.
+        raise engapi.EngineInternalError(
+            "Reached an unexpected state. A local file content context may be suppressing an "
+            "exception? Report this error to the pyModelCenter maintainers."
+        )
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

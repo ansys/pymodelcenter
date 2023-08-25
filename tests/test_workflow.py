@@ -266,6 +266,12 @@ class MockWorkflowClientForWorkflowTest:
         self.workflow_run_requests.append(request)
         return self.workflow_run_response
 
+    def WorkflowStartRun(
+        self, request: wkf_msgs.WorkflowRunRequest
+    ) -> wkf_msgs.WorkflowStartRunResponse:
+        self.workflow_run_requests.append(request)
+        return wkf_msgs.WorkflowStartRunResponse()
+
     def ElementGetFullName(self, request: elem_msgs.ElementId) -> elem_msgs.ElementName:
         if request.id_string == "WORKFLOW_COMP_OUTPUT4":
             return elem_msgs.ElementName(name="Workflow.comp.output4")
@@ -1048,6 +1054,54 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
         reset=reset,
         validation_names=["DESIRED_OUTPUT_VAR_1", "DESIRED_OUTPUT_VAR_2"],
         collection_names=["DESIRED_INTERMEDIATE_VAR_1", "DESIRED_OUTPUT_VAR_2"],
+        inputs={
+            "INPUT_VAR_1": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(int_value=47)
+            ),
+            "INPUT_VAR_2": var_msgs.VariableState(
+                is_valid=False, value=var_msgs.VariableValue(double_value=-867.5309)
+            ),
+            "INPUT_VAR_3": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(bool_value=True)
+            ),
+            "INPUT_VAR_4": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(string_value="this is a test string")
+            ),
+            "INPUT_VAR_5": var_msgs.VariableState(
+                is_valid=True,
+                value=var_msgs.VariableValue(
+                    file_value=var_msgs.FileValue(content_path="some/path")
+                ),
+            ),
+        },
+    )
+    assert mock_client.workflow_run_requests == [expected_request]
+
+
+@pytest.mark.parametrize("reset", [True, False])
+def test_run_asynchronous(setup_function, reset: bool) -> None:
+    # Using a dict as an ordered set
+    validation_names = {"DESIRED_OUTPUT_VAR_1": None, "DESIRED_OUTPUT_VAR_2": None}
+    inputs: Mapping[str, atvi.VariableState] = {
+        "INPUT_VAR_1": atvi.VariableState(is_valid=True, value=atvi.IntegerValue(47)),
+        "INPUT_VAR_2": atvi.VariableState(is_valid=False, value=atvi.RealValue(-867.5309)),
+        "INPUT_VAR_3": atvi.VariableState(is_valid=True, value=atvi.BooleanValue(True)),
+        "INPUT_VAR_4": atvi.VariableState(
+            is_valid=True, value=atvi.StringValue("this is a test string")
+        ),
+        "INPUT_VAR_5": atvi.VariableState(is_valid=True, value=MockFileValue("some/path")),
+    }
+
+    mock_client.workflow_run_response = wkf_msgs.WorkflowStartRunResponse()
+
+    # noinspection PyTypeChecker
+    workflow.start_run(inputs, reset, validation_names)
+
+    expected_request = wkf_msgs.WorkflowRunRequest(
+        target=wkf_msgs.WorkflowId(id="123"),
+        reset=reset,
+        validation_names=["DESIRED_OUTPUT_VAR_1", "DESIRED_OUTPUT_VAR_2"],
+        collection_names=[],
         inputs={
             "INPUT_VAR_1": var_msgs.VariableState(
                 is_valid=True, value=var_msgs.VariableValue(int_value=47)
