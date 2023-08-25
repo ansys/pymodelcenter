@@ -2,15 +2,8 @@ from os import PathLike
 from typing import Optional, Type, Union
 import unittest
 
-import ansys.tools.variableinterop as atvi
-import pytest
-
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.file_datapin import FileArrayDatapin, FileDatapin
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ArrayDimensions,
     FileArrayValue,
     FileValue,
@@ -24,6 +17,13 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableType,
     VariableValue,
 )
+import ansys.tools.variableinterop as atvi
+import pytest
+
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.file_datapin import FileArrayDatapin, FileDatapin
 from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
     CustomMetadataValueNotSupportedError,
 )
@@ -463,7 +463,7 @@ def test_array_set_disallowed(monkeypatch, engine, set_value) -> None:
 
 def test_scalar_get_type(monkeypatch, engine) -> None:
     do_get_type_test(
-        monkeypatch, engine, FileDatapin, VariableType.VARTYPE_FILE, atvi.VariableType.FILE
+        monkeypatch, engine, FileDatapin, VariableType.VARIABLE_TYPE_FILE, atvi.VariableType.FILE
     )
 
 
@@ -472,7 +472,7 @@ def test_array_get_type(monkeypatch, engine) -> None:
         monkeypatch,
         engine,
         FileArrayDatapin,
-        VariableType.VARTYPE_FILE_ARRAY,
+        VariableType.VARIABLE_TYPE_FILE_ARRAY,
         atvi.VariableType.FILE_ARRAY,
     )
 

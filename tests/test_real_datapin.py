@@ -1,14 +1,8 @@
 from typing import Optional, Type, Union
 import unittest
 
-import ansys.tools.variableinterop as atvi
-import pytest
-
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ArrayDimensions,
     DoubleArrayValue,
     DoubleVariableMetadata,
@@ -21,6 +15,12 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableState,
     VariableType,
     VariableValue,
+)
+import ansys.tools.variableinterop as atvi
+import pytest
+
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.real_datapin import RealArrayDatapin, RealDatapin
 
@@ -580,7 +580,7 @@ def test_array_set_disallowed(monkeypatch, engine, set_value):
 
 def test_scalar_get_type(monkeypatch, engine):
     do_get_type_test(
-        monkeypatch, engine, RealDatapin, VariableType.VARTYPE_REAL, atvi.VariableType.REAL
+        monkeypatch, engine, RealDatapin, VariableType.VARIABLE_TYPE_REAL, atvi.VariableType.REAL
     )
 
 
@@ -589,7 +589,7 @@ def test_array_get_type(monkeypatch, engine):
         monkeypatch,
         engine,
         RealArrayDatapin,
-        VariableType.VARTYPE_REAL_ARRAY,
+        VariableType.VARIABLE_TYPE_REAL_ARRAY,
         atvi.VariableType.REAL_ARRAY,
     )
 

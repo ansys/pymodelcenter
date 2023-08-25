@@ -4,6 +4,8 @@ from string import Template
 from threading import Condition, Thread
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
+import ansys.api.modelcenter.v0.engine_messages_pb2 as eng_msg
+from ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
 import grpc
@@ -11,12 +13,10 @@ import numpy
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import IEngine, WorkflowType
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 
 from .format import Format
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .mcd_process import MCDProcess
-from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
 
 
@@ -198,7 +198,9 @@ class Engine(IEngine):
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         request = eng_msg.NewWorkflowRequest(
             path=name,
-            workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
+            workflow_type=eng_msg.WORKFLOW_TYPE_DATA_UNSPECIFIED
+            if workflow_type is WorkflowType.DATA
+            else eng_msg.WORKFLOW_TYPE_PROCESS,
         )
         response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
         return Workflow(response.workflow_id, name, self)
@@ -216,7 +218,9 @@ class Engine(IEngine):
     ) -> Workflow:
         request = eng_msg.LoadWorkflowRequest(
             path=str(file_name),
-            connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
+            connect_err_mode=eng_msg.WORKFLOW_TYPE_IGNORE
+            if ignore_connection_errors
+            else eng_msg.WORKFLOW_TYPE_ERROR_UNSPECIFIED,
         )
         response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
         return Workflow(response.workflow_id, request.path, self)

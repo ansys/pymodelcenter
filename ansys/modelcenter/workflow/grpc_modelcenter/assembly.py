@@ -17,6 +17,20 @@ from .element_wrapper import create_element
 if TYPE_CHECKING:
     from .engine import Engine
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import (
+    AddAssemblyRequest,
+    AddAssemblyVariableRequest,
+    AddAssemblyVariableResponse,
+    ElementId,
+    ElementName,
+)
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import (
+    DeleteAssemblyVariableRequest,
+    ElementIdOrName,
+    ElementInfo,
+    NamedElementWorkflow,
+)
+
 from .group import Group
 from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
@@ -24,19 +38,6 @@ from .grpc_error_interpretation import (
     WRAP_TARGET_NOT_FOUND,
     InvalidInstanceError,
     interpret_rpc_error,
-)
-from .proto.element_messages_pb2 import (
-    AddAssemblyRequest,
-    AddAssemblyVariableRequest,
-    AddAssemblyVariableResponse,
-    ElementId,
-    ElementName,
-)
-from .proto.workflow_messages_pb2 import (
-    DeleteAssemblyVariableRequest,
-    ElementIdOrName,
-    ElementInfo,
-    NamedElementInWorkflow,
 )
 from .var_value_convert import interop_type_to_grpc_type_enum, interop_type_to_mc_type_string
 
@@ -122,7 +123,7 @@ class Assembly(
         var_name = f"{assembly_name}.{name}"
         request = DeleteAssemblyVariableRequest(
             target=ElementIdOrName(
-                target_name=NamedElementInWorkflow(element_full_name=ElementName(name=var_name))
+                target_name=NamedElementWorkflow(element_full_name=ElementName(name=var_name))
             )
         )
         return self._client.AssemblyDeleteVariable(request).existed

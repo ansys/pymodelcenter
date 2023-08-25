@@ -8,16 +8,18 @@ from ansys.modelcenter.workflow.api import IFormat
 
 if TYPE_CHECKING:
     from .engine import Engine
-from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
-from .proto.format_messages_pb2 import (
-    FormatFromDoubleRequest,
-    FormatFromIntegerRequest,
-    FormatFromStringRequest,
-    FormatToDoubleResponse,
-    FormatToIntegerResponse,
-    FormatToStringResponse,
+
+from ansys.api.modelcenter.v0.format_messages_pb2 import (
+    FormatDoubleRequest,
+    FormatDoubleResponse,
+    FormatIntegerRequest,
+    FormatIntegerResponse,
+    FormatStringRequest,
+    FormatStringResponse,
 )
-from .proto.grpc_modelcenter_format_pb2_grpc import ModelCenterFormatServiceStub
+from ansys.api.modelcenter.v0.grpc_modelcenter_format_pb2_grpc import ModelCenterFormatServiceStub
+
+from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 
 
 class Format(IFormat):
@@ -69,60 +71,60 @@ class Format(IFormat):
     @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def string_to_integer(self, string: str) -> int64:
-        request = FormatFromStringRequest(format=self._format, original=string)
-        response: FormatToIntegerResponse = self._stub.FormatStringToInteger(request)
+        request = FormatStringRequest(format=self._format, original=string)
+        response: FormatIntegerResponse = self._stub.FormatStringToInteger(request)
         return response.result
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def string_to_real(self, string: str) -> float64:
-        request = FormatFromStringRequest()
+        request = FormatStringRequest()
         request.format = self._format
         request.original = string
-        response: FormatToDoubleResponse = self._stub.FormatStringToDouble(request)
+        response: FormatDoubleResponse = self._stub.FormatStringToDouble(request)
         return float64(response.result)
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def integer_to_string(self, integer: int64) -> str:
-        request = FormatFromIntegerRequest()
+        request = FormatIntegerRequest()
         request.format = self._format
         request.original = integer
-        response: FormatToStringResponse = self._stub.FormatIntegerToString(request)
+        response: FormatStringResponse = self._stub.FormatIntegerToString(request)
         return response.result
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def real_to_string(self, real: float64) -> str:
-        request = FormatFromDoubleRequest()
+        request = FormatDoubleRequest()
         request.format = self._format
         request.original = real
-        response: FormatToStringResponse = self._stub.FormatDoubleToString(request)
+        response: FormatStringResponse = self._stub.FormatDoubleToString(request)
         return response.result
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def string_to_string(self, string: str) -> str:
-        request = FormatFromStringRequest()
+        request = FormatStringRequest()
         request.format = self._format
         request.original = string
-        response: FormatToStringResponse = self._stub.FormatStringToString(request)
+        response: FormatStringResponse = self._stub.FormatStringToString(request)
         return response.result
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def integer_to_editable_string(self, integer: int64) -> str:
-        request = FormatFromIntegerRequest()
+        request = FormatIntegerRequest()
         request.format = self._format
         request.original = integer
-        response: FormatToStringResponse = self._stub.FormatIntegerToEditString(request)
+        response: FormatStringResponse = self._stub.FormatIntegerToEditString(request)
         return response.result
 
     @interpret_rpc_error(WRAP_INVALID_ARG)
     @overrides
     def real_to_editable_string(self, real: float64) -> str:
-        request = FormatFromDoubleRequest()
+        request = FormatDoubleRequest()
         request.format = self._format
         request.original = real
-        response: FormatToStringResponse = self._stub.FormatDoubleToEditString(request)
+        response: FormatStringResponse = self._stub.FormatDoubleToEditString(request)
         return response.result

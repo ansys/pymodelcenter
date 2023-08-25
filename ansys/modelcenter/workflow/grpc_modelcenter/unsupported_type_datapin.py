@@ -8,7 +8,7 @@ from .base_datapin import BaseDatapin
 
 if TYPE_CHECKING:
     from .engine import Engine
-from .proto.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
 
 
 class DatapinWithUnsupportedTypeException(BaseException):

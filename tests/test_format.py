@@ -1,13 +1,13 @@
 """Tests for Format."""
 from typing import Dict
 
+import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages
+import ansys.api.modelcenter.v0.format_messages_pb2 as format_messages
 import numpy
 from numpy import float64, int64
 import pytest
 
 import ansys.modelcenter.workflow.grpc_modelcenter as mcapi
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as engine_messages  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.format_messages_pb2 as format_messages  # noqa: 501
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
@@ -36,60 +36,60 @@ class MockEngineClientForFormatTest:
         return self._real_to_str_responses
 
     def FormatStringToInteger(
-        self, request: format_messages.FormatFromStringRequest
-    ) -> format_messages.FormatToIntegerResponse:
+        self, request: format_messages.FormatStringRequest
+    ) -> format_messages.FormatIntegerResponse:
         key: str = request.original
         if request.format == "mockFormat":
             key = key.lstrip("ඞ")
-        return format_messages.FormatToIntegerResponse(result=self._str_to_int_responses[key])
+        return format_messages.FormatIntegerResponse(result=self._str_to_int_responses[key])
 
     def FormatStringToDouble(
-        self, request: format_messages.FormatFromStringRequest
-    ) -> format_messages.FormatToDoubleResponse:
+        self, request: format_messages.FormatStringRequest
+    ) -> format_messages.FormatDoubleResponse:
         key: str = request.original
         if request.format == "mockFormat":
             key = key.lstrip("ඞ")
-        return format_messages.FormatToDoubleResponse(result=self._str_to_real_responses[key])
+        return format_messages.FormatDoubleResponse(result=self._str_to_real_responses[key])
 
     def FormatIntegerToString(
-        self, request: format_messages.FormatFromIntegerRequest
-    ) -> format_messages.FormatToStringResponse:
+        self, request: format_messages.FormatIntegerRequest
+    ) -> format_messages.FormatStringResponse:
         result: str = self._int_to_str_responses[request.original]
         if request.format == "mockFormat":
             result = "ඞ" + result
-        return format_messages.FormatToStringResponse(result=result)
+        return format_messages.FormatStringResponse(result=result)
 
     def FormatDoubleToString(
-        self, request: format_messages.FormatFromDoubleRequest
-    ) -> format_messages.FormatToStringResponse:
+        self, request: format_messages.FormatDoubleRequest
+    ) -> format_messages.FormatStringResponse:
         result: str = self._real_to_str_responses[float64(request.original)]
         if request.format == "mockFormat":
             result = "ඞ" + result
-        return format_messages.FormatToStringResponse(result=result)
+        return format_messages.FormatStringResponse(result=result)
 
     def FormatStringToString(
-        self, request: format_messages.FormatFromStringRequest
-    ) -> format_messages.FormatToStringResponse:
+        self, request: format_messages.FormatStringRequest
+    ) -> format_messages.FormatStringResponse:
         result: str = request.original
         if request.format == "mockFormat":
             result = "ඞ" + result
-        return format_messages.FormatToStringResponse(result=result)
+        return format_messages.FormatStringResponse(result=result)
 
     def FormatIntegerToEditString(
-        self, request: format_messages.FormatFromIntegerRequest
-    ) -> format_messages.FormatToStringResponse:
+        self, request: format_messages.FormatIntegerRequest
+    ) -> format_messages.FormatStringResponse:
         result: str = self._int_to_str_responses[request.original]
         if request.format == "mockFormat":
             result = "ඞ" + result
-        return format_messages.FormatToStringResponse(result=result)
+        return format_messages.FormatStringResponse(result=result)
 
     def FormatDoubleToEditString(
-        self, request: format_messages.FormatFromDoubleRequest
-    ) -> format_messages.FormatToStringResponse:
+        self, request: format_messages.FormatDoubleRequest
+    ) -> format_messages.FormatStringResponse:
         result: str = self._real_to_str_responses[float64(request.original)]
         if request.format == "mockFormat":
             result = "ඞ" + result
-        return format_messages.FormatToStringResponse(result=result)
+        return format_messages.FormatStringResponse(result=result)
 
     def Heartbeat(
         self, request: engine_messages.HeartbeatRequest

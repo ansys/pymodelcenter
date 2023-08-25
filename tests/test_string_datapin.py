@@ -1,14 +1,8 @@
 from typing import Type, Union
 import unittest
 
-import ansys.tools.variableinterop as atvi
-import pytest
-
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ArrayDimensions,
     SetMetadataResponse,
     SetStringArrayValueRequest,
@@ -20,6 +14,12 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableState,
     VariableType,
     VariableValue,
+)
+import ansys.tools.variableinterop as atvi
+import pytest
+
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.string_datapin import (
     StringArrayDatapin,
@@ -503,7 +503,7 @@ def test_scalar_get_type(monkeypatch, engine) -> None:
         monkeypatch,
         engine,
         StringDatapin,
-        VariableType.VARTYPE_STRING,
+        VariableType.VARIABLE_TYPE_STRING,
         atvi.VariableType.STRING,
     )
 
@@ -513,7 +513,7 @@ def test_array_get_type(monkeypatch, engine) -> None:
         monkeypatch,
         engine,
         StringArrayDatapin,
-        VariableType.VARTYPE_STRING_ARRAY,
+        VariableType.VARIABLE_TYPE_STRING_ARRAY,
         atvi.VariableType.STRING_ARRAY,
     )
 

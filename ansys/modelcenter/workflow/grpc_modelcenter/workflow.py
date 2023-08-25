@@ -3,9 +3,8 @@ from contextlib import ExitStack
 import os
 from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
 
-
 import ansys.api.modelcenter.v0.element_messages_pb2 as element_msg
-import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
+import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_val_msg
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
 from ansys.api.modelcenter.v0.workflow_messages_pb2 import WorkflowInstanceState as WkflInstState
@@ -177,7 +176,19 @@ class Workflow(wfapi.IWorkflow):
         reset: bool,
         validation_names: AbstractSet[str],
     ) -> None:
-        raise NotImplementedError
+        with ExitStack() as local_file_content_pins:
+            request: workflow_msg.WorkflowRunRequest = self._create_run_request(
+                inputs, reset, validation_names, set(), local_file_content_pins
+            )
+            self._stub.WorkflowStartRun(request)
+            return
+        # This line should only be reachable if one of the context managers in
+        # local_file_content_pins suppress an exception, which they should not
+        # be doing.
+        raise engapi.EngineInternalError(
+            "Reached an unexpected state. A local file content context may be suppressing an "
+            "exception? Report this error to the pyModelCenter maintainers."
+        )
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -190,7 +201,7 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_element_by_name(self, element_name: str) -> engapi.IElement:
-        request = workflow_msg.NamedElementInWorkflow(
+        request = workflow_msg.NamedElementWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=element_name),
         )
@@ -222,7 +233,7 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def get_value(self, var_name: str) -> atvi.VariableState:
         request = workflow_msg.ElementIdOrName(
-            target_name=workflow_msg.NamedElementInWorkflow(
+            target_name=workflow_msg.NamedElementWorkflow(
                 element_full_name=element_msg.ElementName(name=var_name),
                 workflow=workflow_msg.WorkflowId(id=self._id),
             )
@@ -275,13 +286,13 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_variable(self, name: str) -> wfapi.IDatapin:
-        request = workflow_msg.NamedElementInWorkflow(
+        request = workflow_msg.NamedElementWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),
         )
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
-        if response.type != element_msg.ELEMTYPE_VARIABLE:
+        if response.type != element_msg.ELEMENT_TYPE_VARIABLE:
             raise ValueError("Element is not a variable.")
 
         var_type: var_val_msg.VariableType = response.var_type
@@ -295,14 +306,14 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def get_component(self, name: str) -> Component:
-        request = workflow_msg.NamedElementInWorkflow(
+        request = workflow_msg.NamedElementWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),
         )
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
-        if response.type == element_msg.ELEMTYPE_COMPONENT:
+        if response.type == element_msg.ELEMENT_TYPE_COMPONENT:
             return Component(response.id, self._engine)
-        elif response.type == element_msg.ELEMTYPE_IFCOMPONENT:
+        elif response.type == element_msg.ELEMENT_TYPE_IFCOMPONENT:
             # return IfComponent(response.id.id_string)
             raise NotImplementedError()
         else:
@@ -400,7 +411,7 @@ class Workflow(wfapi.IWorkflow):
         request = workflow_msg.MoveComponentRequest(
             target=element_msg.ElementId(id_string=used_component.element_id),
             new_parent=element_msg.ElementId(id_string=used_parent.element_id),
-            index_in_parent=index,
+            index_parent=index,
         )
         self._stub.WorkflowMoveComponent(request)
 
@@ -410,12 +421,12 @@ class Workflow(wfapi.IWorkflow):
         if name is None:
             return self.get_root()
         else:
-            request = workflow_msg.NamedElementInWorkflow(
+            request = workflow_msg.NamedElementWorkflow(
                 workflow=workflow_msg.WorkflowId(id=self._id),
                 element_full_name=element_msg.ElementName(name=name),
             )
             response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
-            if response.type == element_msg.ELEMTYPE_ASSEMBLY:
+            if response.type == element_msg.ELEMENT_TYPE_ASSEMBLY:
                 return Assembly(
                     element_msg.ElementId(id_string=response.id.id_string), self._engine
                 )
@@ -456,45 +467,45 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def get_variable_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
         metadata: atvi.CommonVariableMetadata
-        request = workflow_msg.NamedElementInWorkflow(
+        request = workflow_msg.NamedElementWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),
         )
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
-        if response.type != element_msg.ELEMTYPE_VARIABLE:
+        if response.type != element_msg.ELEMENT_TYPE_VARIABLE:
             raise ValueError("Element is not a variable.")
         elem_id: element_msg.ElementId = response.id
         var_type: var_val_msg.VariableType = response.var_type
 
-        if var_type == var_val_msg.VARTYPE_BOOLEAN:
+        if var_type == var_val_msg.VARIABLE_TYPE_BOOLEAN:
             metadata = atvi.BooleanMetadata()
             self._set_bool_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_INTEGER:
+        elif var_type == var_val_msg.VARIABLE_TYPE_INTEGER:
             metadata = atvi.IntegerMetadata()
             self._set_int_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_REAL:
+        elif var_type == var_val_msg.VARIABLE_TYPE_REAL:
             metadata = atvi.RealMetadata()
             self._set_real_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_STRING:
+        elif var_type == var_val_msg.VARIABLE_TYPE_STRING:
             metadata = atvi.StringMetadata()
             self._set_string_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_FILE:
+        elif var_type == var_val_msg.VARIABLE_TYPE_FILE:
             metadata = atvi.FileMetadata()
             self._set_file_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_BOOLEAN_ARRAY:
+        elif var_type == var_val_msg.VARIABLE_TYPE_BOOLEAN_ARRAY:
             metadata = atvi.BooleanArrayMetadata()
             self._set_bool_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_INTEGER_ARRAY:
+        elif var_type == var_val_msg.VARIABLE_TYPE_INTEGER_ARRAY:
             metadata = atvi.IntegerArrayMetadata()
             self._set_int_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_REAL_ARRAY:
+        elif var_type == var_val_msg.VARIABLE_TYPE_REAL_ARRAY:
             metadata = atvi.RealArrayMetadata()
             self._set_real_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_STRING_ARRAY:
+        elif var_type == var_val_msg.VARIABLE_TYPE_STRING_ARRAY:
             metadata = atvi.StringArrayMetadata()
             self._set_string_metadata(elem_id, metadata)
-        elif var_type == var_val_msg.VARTYPE_FILE_ARRAY:
+        elif var_type == var_val_msg.VARIABLE_TYPE_FILE_ARRAY:
             metadata = atvi.FileArrayMetadata()
             self._set_file_metadata(elem_id, metadata)
         else:

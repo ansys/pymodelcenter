@@ -10,7 +10,7 @@ from .abstract_datapin_container import AbstractGRPCDatapinContainer
 
 if TYPE_CHECKING:
     from .engine import Engine
-from .proto.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
 
 
 class Group(AbstractGRPCDatapinContainer, api.IGroup):

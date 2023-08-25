@@ -9,13 +9,15 @@ import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as 
 
 if TYPE_CHECKING:
     from .engine import Engine
+
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId, ElementName, RenameRequest
+
 from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
     WRAP_NAME_COLLISION,
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
-from .proto.element_messages_pb2 import ElementId, ElementName, RenameRequest
 
 
 class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRenamableElement, ABC):

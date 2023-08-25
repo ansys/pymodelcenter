@@ -14,8 +14,9 @@ from .abstract_datapin_container import AbstractGRPCDatapinContainer
 if TYPE_CHECKING:
     from .engine import Engine
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ComponentInvokeMethodRequest, ElementId
+
 from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, interpret_rpc_error
-from .proto.element_messages_pb2 import ComponentInvokeMethodRequest, ElementId
 
 
 class ComponentReconnectionFailedError(Exception):
