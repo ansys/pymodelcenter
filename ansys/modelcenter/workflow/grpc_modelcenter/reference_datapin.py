@@ -362,12 +362,14 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @abstractmethod
     def __setitem__(self, index: int, value: IDatapinReferenceBase) -> None:
         """
-        TODO.
+        Sets a ReferenceArrayDatapinElement at the index provided.
 
         Parameters
         ----------
-        index
-        value
+        index: int
+            The index in the ReferenceArrayDatapin.
+        value: IDatapinReferenceBase
+            The element to set.
         """
         self.__setitem__(index, value)
 
@@ -375,12 +377,14 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @abstractmethod
     def __setitem__(self, index: slice, value: Iterable[IDatapinReferenceBase]) -> None:
         """
-        TODO.
+        Sets a subsection of the ReferenceArrayDatapinElement.
 
         Parameters
         ----------
-        index
-        value
+        index: slice
+            The slice to take from the array.
+        value: Iterable[IDatapinReferenceBase]
+            A sequence of elements to set.
         """
         self.__setitem__(index, value)
 
@@ -390,12 +394,14 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         value: Union[IDatapinReferenceBase, Iterable[IDatapinReferenceBase]],
     ) -> None:
         """
-        TODO.
+        Implementation of __setitem__ for ReferenceArrayDatapins.
 
         Parameters
         ----------
-        index
-        value
+        index: int | slice
+            The index in the ReferenceArrayDatapin or a slice of the ReferenceArrayDatapin to set.
+        value: IDatapinReferenceBase | Iterable[IDatapinReferenceBase]
+            The element or sequence of elements to set.
         """
         if isinstance(index, slice) or isinstance(value, Iterable):
             raise NotImplementedError()
@@ -413,11 +419,12 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @abstractmethod
     def __delitem__(self, index: int) -> None:
         """
-        TODO.
+        Delete an element at the index provided.
 
         Parameters
         ----------
-        index
+        index: int
+            The index of the element to delete.
         """
         self.__delitem__(index)
 
@@ -425,21 +432,23 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @abstractmethod
     def __delitem__(self, index: slice) -> None:
         """
-        TODO.
+        Delete a subsection of elements.
 
         Parameters
         ----------
-        index
+        index: slice
+            The slice to take from the array.
         """
         self.__delitem__(index)
 
     def __delitem__(self, index: Union[int, slice]) -> None:
         """
-        TODO.
+        Implementation of __delitem__ for ReferenceArrayDatapins.
 
         Parameters
         ----------
-        index
+        index: int | slice
+            The index in the ReferenceArrayDatapin or a slice of it to delete.
         """
         if isinstance(index, slice):
             raise NotImplementedError()
