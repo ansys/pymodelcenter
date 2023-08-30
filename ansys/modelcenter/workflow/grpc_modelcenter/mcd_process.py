@@ -54,7 +54,7 @@ class MCDProcess:
             Flag for if ModelCenter should be started as run only
         heartbeat_interval: numpy.uint
             Interval between heartbeat messages.
-        allowed_heartbead_misses: numpy.uint
+        allowed_heartbeat_misses: numpy.uint
             Number of allowed missed heartbeats before the server terminates.
 
         Return

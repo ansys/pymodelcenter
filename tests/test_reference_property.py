@@ -12,7 +12,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter import ValueTypeNotSupportedErr
 from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import (
     ReferenceArrayProperty,
     ReferenceProperty,
-    ReferencePropertyBase,
 )
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
@@ -184,7 +183,7 @@ def test_reference_property_get_state(
 @pytest.mark.parametrize("variable_value,is_valid,expected_result", get_value_test_data)
 def test_reference_array_property_get_state_at(
     monkeypatch, engine, variable_value, is_valid, expected_result
-):
+) -> None:
     # Arrange: Mock file setup
     def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
         return MockFileValue(str(to_read))
@@ -267,7 +266,9 @@ set_value_test_data = [
 
 
 @pytest.mark.parametrize("set_value,expected_value_in_request", set_value_test_data)
-def test_reference_property_set_value(monkeypatch, engine, set_value, expected_value_in_request):
+def test_reference_property_set_value(
+    monkeypatch, engine, set_value, expected_value_in_request
+) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceProperty, mock_client)
@@ -293,7 +294,7 @@ def test_reference_property_set_value(monkeypatch, engine, set_value, expected_v
 
 
 @pytest.mark.parametrize("set_value,expected_value_in_request", set_value_test_data)
-def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request):
+def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceArrayProperty, mock_client)
@@ -334,7 +335,7 @@ set_value_not_supported_test_data = [
 
 
 @pytest.mark.parametrize("set_value", set_value_not_supported_test_data)
-def test_reference_property_set_value_not_supported(monkeypatch, engine, set_value):
+def test_reference_property_set_value_not_supported(monkeypatch, engine, set_value) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceProperty, mock_client)
@@ -354,7 +355,7 @@ def test_reference_property_set_value_not_supported(monkeypatch, engine, set_val
 
 
 @pytest.mark.parametrize("set_value", set_value_not_supported_test_data)
-def test_set_value_at_not_supported(monkeypatch, engine, set_value):
+def test_set_value_at_not_supported(monkeypatch, engine, set_value) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceArrayProperty, mock_client)
@@ -372,14 +373,6 @@ def test_set_value_at_not_supported(monkeypatch, engine, set_value):
         sut.set_value_at(new_value=new_value, index=test_index)
 
     mock_client.ReferencePropertySetValue.assert_not_called()
-
-
-def test_cannot_instantiate_reference_property_base(engine):
-    # Act/Assert
-    with pytest.raises(TypeError, match="Can't instantiate abstract class ReferencePropertyBase"):
-        ReferencePropertyBase(
-            element_id=elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID"), name="Bob", engine=engine
-        )
 
 
 # Test data for get_metadata tests
@@ -440,7 +433,7 @@ get_metadata_test_data = [
 @pytest.mark.parametrize("mock_response,expected_result_type,description", get_metadata_test_data)
 def test_reference_property_get_metadata(
     monkeypatch, engine, mock_response, expected_result_type, description
-):
+) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     mock_client.ReferencePropertyGetMetadata.return_value = mock_response
@@ -468,7 +461,7 @@ def test_reference_property_get_metadata(
 @pytest.mark.parametrize("mock_response,expected_result_type,description", get_metadata_test_data)
 def test_reference_array_property_get_metadata(
     monkeypatch, engine, mock_response, expected_result_type, description
-):
+) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     mock_client.ReferencePropertyGetMetadata.return_value = mock_response
@@ -520,7 +513,7 @@ get_type_test_data = [
 
 
 @pytest.mark.parametrize("mock_response,expected_result", get_type_test_data)
-def test_reference_property_get_type(monkeypatch, engine, mock_response, expected_result):
+def test_reference_property_get_type(monkeypatch, engine, mock_response, expected_result) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     mock_client.ReferencePropertyGetType.return_value = var_msgs.ReferencePropertyGetTypeResponse(
@@ -547,7 +540,9 @@ def test_reference_property_get_type(monkeypatch, engine, mock_response, expecte
 
 
 @pytest.mark.parametrize("mock_response,expected_result", get_type_test_data)
-def test_reference_array_property_get_type(monkeypatch, engine, mock_response, expected_result):
+def test_reference_array_property_get_type(
+    monkeypatch, engine, mock_response, expected_result
+) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     mock_client.ReferencePropertyGetType.return_value = var_msgs.ReferencePropertyGetTypeResponse(

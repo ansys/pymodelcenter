@@ -4,6 +4,7 @@ import unittest.mock
 
 import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msgs
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkfl_msgs
 import ansys.tools.variableinterop as atvi
 import pytest
 
@@ -45,6 +46,9 @@ class MockWorkflowClientForRefVarTest:
         pass
 
     def ReferenceArrayGetLength(self, request):
+        pass
+
+    def ReferenceArraySetLength(self, request):
         pass
 
     def ReferenceVariableGetMetadata(
@@ -971,3 +975,359 @@ def test_get_reference_array_properties(monkeypatch, engine) -> None:
                 assert ref_prop._engine == engine
             else:
                 assert False, f"{name} not found in reference property map."
+
+
+def test_array_index_set(monkeypatch, engine) -> None:
+    # Arrange: ReferenceDatapin that has an equation
+    mock_client = MockWorkflowClientForRefVarTest()
+    test_equation = "ඞ"
+    mock_get_response = var_msgs.GetReferenceEquationResponse(equation=test_equation)
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetReferenceEquation", return_value=mock_get_response
+    ) as mock_get_method:
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        to_set_element_id = elem_msgs.ElementId(id_string="asdf")
+        datapin_to_set = grpcmc.ReferenceDatapin(to_set_element_id, engine)
+
+        # Arrange: ReferenceArrayDatapin to set the object we just made into
+        mock_response = var_msgs.SetReferenceEquationResponse()
+        with unittest.mock.patch.object(
+            mock_client, "ReferenceVariableSetReferenceEquation", return_value=mock_response
+        ) as mock_set_method:
+            sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+            sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+            # Act
+            sut[4] = datapin_to_set
+
+            # Assert
+            expected_request = var_msgs.SetReferenceEquationRequest(
+                target=sut_element_id, equation=test_equation, index=4
+            )
+            mock_set_method.assert_called_once_with(expected_request)
+
+
+def test_array_delete_last_item(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    array_length = 5
+
+    with unittest.mock.patch.object(
+        mock_client,
+        "ReferenceArrayGetLength",
+        return_value=var_msgs.IntegerValue(value=array_length),
+    ):
+        with unittest.mock.patch.object(
+            mock_client,
+            "ReferenceArraySetLength",
+            return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+        ) as mock_grpc_method:
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+            sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+            # Act
+            del sut[array_length - 1]
+
+            # Assert
+            expected_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                target=sut_element_id, new_size=array_length - 1
+            )
+            mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_array_delete_not_last_item(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    array_length = 5
+
+    with unittest.mock.patch.object(
+        mock_client,
+        "ReferenceArrayGetLength",
+        return_value=var_msgs.IntegerValue(value=array_length),
+    ):
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act
+        with pytest.raises(
+            NotImplementedError, match="Only removing elements at the end of the array is supported"
+        ):
+            del sut[3]
+
+
+def test_array_pop_last_item(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    array_length = 5
+
+    with unittest.mock.patch.object(
+        mock_client,
+        "ReferenceArrayGetLength",
+        return_value=var_msgs.IntegerValue(value=array_length),
+    ):
+        with unittest.mock.patch.object(
+            mock_client,
+            "ReferenceArraySetLength",
+            return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+        ) as mock_grpc_method:
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+            sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+            # Act
+            sut.pop(array_length - 1)
+
+            # Assert
+            expected_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                target=sut_element_id, new_size=array_length - 1
+            )
+            mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_array_pop_not_last_item(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    array_length = 5
+
+    with unittest.mock.patch.object(
+        mock_client,
+        "ReferenceArrayGetLength",
+        return_value=var_msgs.IntegerValue(value=array_length),
+    ):
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act
+        with pytest.raises(
+            NotImplementedError, match="Only removing elements at the end of the array is supported"
+        ):
+            sut.pop(3)
+
+
+def test_array_clear(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    array_length = 5
+
+    with unittest.mock.patch.object(
+        mock_client,
+        "ReferenceArrayGetLength",
+        return_value=var_msgs.IntegerValue(value=array_length),
+    ):
+        with unittest.mock.patch.object(
+            mock_client,
+            "ReferenceArraySetLength",
+            return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+        ) as mock_grpc_method:
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+            sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+            # Act
+            sut.clear()
+
+            # Assert
+            expected_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                target=sut_element_id, new_size=0
+            )
+            mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_array_append(monkeypatch, engine) -> None:
+    # Arrange: ReferenceDatapin that has an equation
+    mock_client = MockWorkflowClientForRefVarTest()
+    test_equation = "ඞ"
+    mock_get_response = var_msgs.GetReferenceEquationResponse(equation=test_equation)
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetReferenceEquation", return_value=mock_get_response
+    ):
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        to_set_element_id = elem_msgs.ElementId(id_string="asdf")
+        datapin_to_set = grpcmc.ReferenceDatapin(to_set_element_id, engine)
+
+        # Arrange: ReferenceArrayDatapin to set the object we just made into
+        mock_response = var_msgs.SetReferenceEquationResponse()
+        with unittest.mock.patch.object(
+            mock_client, "ReferenceVariableSetReferenceEquation", return_value=mock_response
+        ) as mock_set_method:
+            with unittest.mock.patch.object(
+                mock_client, "ReferenceArrayGetLength", return_value=var_msgs.IntegerValue(value=5)
+            ):
+                with unittest.mock.patch.object(
+                    mock_client,
+                    "ReferenceArraySetLength",
+                    return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+                ) as mock_grpc_method:
+                    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+                    sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+                    # Act
+                    sut.append(datapin_to_set)
+
+                    # Assert
+                    expected_length_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                        target=sut_element_id, new_size=6
+                    )
+                    mock_grpc_method.assert_called_once_with(expected_length_request)
+                    expected_set_request = var_msgs.SetReferenceEquationRequest(
+                        target=sut_element_id, equation=test_equation, index=5
+                    )
+                    mock_set_method.assert_called_once_with(expected_set_request)
+
+
+def test_array_extend(monkeypatch, engine) -> None:
+    # Arrange: ReferenceDatapin that has an equation
+    mock_client = MockWorkflowClientForRefVarTest()
+    test_equation = "ඞ"
+    mock_get_response = var_msgs.GetReferenceEquationResponse(equation=test_equation)
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetReferenceEquation", return_value=mock_get_response
+    ):
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        first_datapin_to_set = grpcmc.ReferenceDatapin(
+            elem_msgs.ElementId(id_string="asdf"), engine
+        )
+        second_datapin_to_set = grpcmc.ReferenceDatapin(
+            elem_msgs.ElementId(id_string="qwerty"), engine
+        )
+
+        # Arrange: ReferenceArrayDatapin to set the objects we just made into
+        mock_response = var_msgs.SetReferenceEquationResponse()
+        with unittest.mock.patch.object(
+            mock_client, "ReferenceVariableSetReferenceEquation", return_value=mock_response
+        ) as mock_set_method:
+            with unittest.mock.patch.object(
+                mock_client, "ReferenceArrayGetLength", return_value=var_msgs.IntegerValue(value=5)
+            ):
+                with unittest.mock.patch.object(
+                    mock_client,
+                    "ReferenceArraySetLength",
+                    return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+                ) as mock_grpc_method:
+                    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+                    sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+                    # Act
+                    sut.extend([first_datapin_to_set, second_datapin_to_set])
+
+                    # Assert
+                    expected_length_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                        target=sut_element_id, new_size=7
+                    )
+                    mock_grpc_method.assert_called_once_with(expected_length_request)
+                    first_expected_set_request = var_msgs.SetReferenceEquationRequest(
+                        target=sut_element_id, equation=test_equation, index=5
+                    )
+                    second_expected_set_request = var_msgs.SetReferenceEquationRequest(
+                        target=sut_element_id, equation=test_equation, index=6
+                    )
+                    assert mock_set_method.mock_calls[0].args == (first_expected_set_request,)
+                    assert mock_set_method.mock_calls[1].args == (second_expected_set_request,)
+
+
+def test_array_insert_last_item(monkeypatch, engine) -> None:
+    # Arrange: ReferenceDatapin that has an equation
+    mock_client = MockWorkflowClientForRefVarTest()
+    test_equation = "ඞ"
+    mock_get_response = var_msgs.GetReferenceEquationResponse(equation=test_equation)
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetReferenceEquation", return_value=mock_get_response
+    ):
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        to_set_element_id = elem_msgs.ElementId(id_string="asdf")
+        datapin_to_set = grpcmc.ReferenceDatapin(to_set_element_id, engine)
+
+        # Arrange: ReferenceArrayDatapin to set the object we just made into
+        mock_response = var_msgs.SetReferenceEquationResponse()
+        with unittest.mock.patch.object(
+            mock_client, "ReferenceVariableSetReferenceEquation", return_value=mock_response
+        ) as mock_set_method:
+            with unittest.mock.patch.object(
+                mock_client, "ReferenceArrayGetLength", return_value=var_msgs.IntegerValue(value=5)
+            ):
+                with unittest.mock.patch.object(
+                    mock_client,
+                    "ReferenceArraySetLength",
+                    return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+                ) as mock_grpc_method:
+                    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+                    sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+                    # Act
+                    sut.insert(5, datapin_to_set)
+
+                    # Assert
+                    expected_length_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                        target=sut_element_id, new_size=6
+                    )
+                    mock_grpc_method.assert_called_once_with(expected_length_request)
+                    expected_set_request = var_msgs.SetReferenceEquationRequest(
+                        target=sut_element_id, equation=test_equation, index=5
+                    )
+                    mock_set_method.assert_called_once_with(expected_set_request)
+
+
+def test_array_insert_not_last_item(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+    array_length = 5
+
+    with unittest.mock.patch.object(
+        mock_client,
+        "ReferenceArrayGetLength",
+        return_value=var_msgs.IntegerValue(value=array_length),
+    ):
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+        # Act
+        with pytest.raises(
+            NotImplementedError, match="Only adding elements at the end of the array is supported"
+        ):
+            sut.insert(3, None)
+
+
+def test_array_iadd(monkeypatch, engine) -> None:
+    # Arrange: ReferenceDatapin that has an equation
+    mock_client = MockWorkflowClientForRefVarTest()
+    test_equation = "ඞ"
+    mock_get_response = var_msgs.GetReferenceEquationResponse(equation=test_equation)
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceVariableGetReferenceEquation", return_value=mock_get_response
+    ):
+        monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+        to_set_element_id = elem_msgs.ElementId(id_string="asdf")
+        datapin_to_set = grpcmc.ReferenceDatapin(to_set_element_id, engine)
+
+        # Arrange: ReferenceArrayDatapin to set the object we just made into
+        mock_response = var_msgs.SetReferenceEquationResponse()
+        with unittest.mock.patch.object(
+            mock_client, "ReferenceVariableSetReferenceEquation", return_value=mock_response
+        ) as mock_set_method:
+            with unittest.mock.patch.object(
+                mock_client, "ReferenceArrayGetLength", return_value=var_msgs.IntegerValue(value=5)
+            ):
+                with unittest.mock.patch.object(
+                    mock_client,
+                    "ReferenceArraySetLength",
+                    return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+                ) as mock_grpc_method:
+                    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+                    sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+                    # Act
+                    sut += [datapin_to_set]
+
+                    # Assert
+                    expected_length_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                        target=sut_element_id, new_size=6
+                    )
+                    mock_grpc_method.assert_called_once_with(expected_length_request)
+                    expected_set_request = var_msgs.SetReferenceEquationRequest(
+                        target=sut_element_id, equation=test_equation, index=5
+                    )
+                    mock_set_method.assert_called_once_with(expected_set_request)

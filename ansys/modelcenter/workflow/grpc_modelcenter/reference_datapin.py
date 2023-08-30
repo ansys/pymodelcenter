@@ -1,11 +1,12 @@
 """Contains definition for ReferenceDatapin and ReferenceArrayDatapin."""
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Union, overload
+from typing import TYPE_CHECKING, Iterable, Mapping, MutableSequence, Optional, Union, overload
 
 from ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
 )
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkfl_msgs
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 from overrides import overrides
@@ -310,7 +311,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @overload
     @abstractmethod
-    def __getitem__(self, index: slice) -> Sequence[IDatapinReferenceBase]:
+    def __getitem__(self, index: slice) -> MutableSequence[IDatapinReferenceBase]:
         """
         Gets a subsection of the ReferenceArrayDatapin.
 
@@ -323,12 +324,11 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         ------
         A Sequence of ReferenceArrayDatapinElements
         """
-        # TODO
         return self.__getitem__(index)
 
     def __getitem__(
         self, index: Union[int, slice]
-    ) -> Union[IDatapinReferenceBase, Sequence[IDatapinReferenceBase]]:
+    ) -> Union[IDatapinReferenceBase, MutableSequence[IDatapinReferenceBase]]:
         """
         Implementation of __getitem__ for ReferenceArrayDatapins.
 
@@ -358,6 +358,100 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
                 + " is not supported."
             )
 
+    @overload
+    @abstractmethod
+    def __setitem__(self, index: int, value: IDatapinReferenceBase) -> None:
+        """
+        TODO.
+
+        Parameters
+        ----------
+        index
+        value
+        """
+        self.__setitem__(index, value)
+
+    @overload
+    @abstractmethod
+    def __setitem__(self, index: slice, value: Iterable[IDatapinReferenceBase]) -> None:
+        """
+        TODO.
+
+        Parameters
+        ----------
+        index
+        value
+        """
+        self.__setitem__(index, value)
+
+    def __setitem__(
+        self,
+        index: Union[int, slice],
+        value: Union[IDatapinReferenceBase, Iterable[IDatapinReferenceBase]],
+    ) -> None:
+        """
+        TODO.
+
+        Parameters
+        ----------
+        index
+        value
+        """
+        if isinstance(index, slice) or isinstance(value, Iterable):
+            raise NotImplementedError()
+        elif isinstance(index, int):
+            # set all properties of the array element
+            self[index].equation = value.equation
+        else:
+            raise TypeError(
+                "Indexing ReferenceArrayDatapin using "
+                + type(index).__name__
+                + " is not supported."
+            )
+
+    @overload
+    @abstractmethod
+    def __delitem__(self, index: int) -> None:
+        """
+        TODO.
+
+        Parameters
+        ----------
+        index
+        """
+        self.__delitem__(index)
+
+    @overload
+    @abstractmethod
+    def __delitem__(self, index: slice) -> None:
+        """
+        TODO.
+
+        Parameters
+        ----------
+        index
+        """
+        self.__delitem__(index)
+
+    def __delitem__(self, index: Union[int, slice]) -> None:
+        """
+        TODO.
+
+        Parameters
+        ----------
+        index
+        """
+        if isinstance(index, slice):
+            raise NotImplementedError()
+        elif isinstance(index, int):
+            self.pop(index)
+        else:
+            raise TypeError(
+                "Indexing ReferenceArrayDatapin using "
+                + type(index).__name__
+                + " is not supported."
+            )
+
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     def __len__(self) -> int:
         """
@@ -370,6 +464,65 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         response: var_msgs.IntegerValue = self._client.ReferenceArrayGetLength(self._element_id)
         assert response.value >= 0
         return response.value
+
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
+    def _set_length(self, new_size: int) -> None:
+        request = wkfl_msgs.SetReferenceArrayLengthRequest(
+            target=self._element_id, new_size=new_size
+        )
+        self._client.ReferenceArraySetLength(request)
+
+    @overrides
+    def append(self, value: IDatapinReferenceBase) -> None:
+        self.extend([value])
+
+    @overrides
+    def clear(self) -> None:
+        self._set_length(0)
+
+    @overrides
+    def extend(self, values: Iterable[IDatapinReferenceBase]) -> None:
+        iter_length: int = sum(1 for i in values)
+        current_length: int = len(self)
+        self._set_length(current_length + iter_length)
+        for idx, value in enumerate(values):
+            self[current_length + idx] = value
+
+    @overrides
+    def reverse(self) -> None:
+        raise NotImplementedError("Reversing this array is not supported.")
+
+    @overrides
+    def pop(self, index: int = -1) -> IDatapinReferenceBase:
+        current_length: int = len(self)
+        if index == -1:
+            index = current_length - 1
+        if index != current_length - 1:
+            raise NotImplementedError(
+                "Only removing elements at the end of the array is supported."
+            )
+        value: IDatapinReferenceBase = self[current_length - 1]
+        self._set_length(current_length - 1)
+        return value
+
+    @overrides
+    def insert(self, index: int, value: IDatapinReferenceBase) -> None:
+        current_length: int = len(self)
+        if index != current_length:
+            raise NotImplementedError("Only adding elements at the end of the array is supported.")
+        self._set_length(current_length + 1)
+        self[current_length] = value
+
+    @overrides
+    def remove(self, value: IDatapinReferenceBase) -> None:
+        raise NotImplementedError("Removing arbitrary elements is not supported.")
+
+    @overrides
+    def __iadd__(
+        self: "ReferenceArrayDatapin", values: Iterable[IDatapinReferenceBase]
+    ) -> "ReferenceArrayDatapin":
+        self.extend(values)
+        return self
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides

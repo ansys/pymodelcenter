@@ -1,6 +1,6 @@
 """Contains definitions for array reference datapins."""
 from abc import ABC, abstractmethod
-from typing import Mapping, Sequence
+from typing import Mapping, MutableSequence
 
 from overrides import overrides
 
@@ -10,7 +10,7 @@ from .ireferenceproperty import IReferenceArrayProperty, IReferencePropertyManag
 
 
 class IReferenceArrayDatapin(
-    IDatapin, Sequence[IDatapinReferenceBase], IReferencePropertyManager, ABC
+    IDatapin, MutableSequence[IDatapinReferenceBase], IReferencePropertyManager, ABC
 ):
     """
     Represents a reference array datapin in the workflow.
