@@ -1,6 +1,6 @@
 """Contains definitions for array reference datapins."""
 from abc import ABC, abstractmethod
-from typing import Mapping, MutableSequence
+from typing import Mapping, Sequence
 
 from overrides import overrides
 
@@ -10,7 +10,7 @@ from .ireferenceproperty import IReferenceArrayProperty, IReferencePropertyManag
 
 
 class IReferenceArrayDatapin(
-    IDatapin, MutableSequence[IDatapinReferenceBase], IReferencePropertyManager, ABC
+    IDatapin, Sequence[IDatapinReferenceBase], IReferencePropertyManager, ABC
 ):
     """
     Represents a reference array datapin in the workflow.
@@ -30,4 +30,19 @@ class IReferenceArrayDatapin(
     @abstractmethod
     @overrides
     def get_reference_properties(self) -> Mapping[str, IReferenceArrayProperty]:
+        ...
+
+    @abstractmethod
+    def set_length(self, new_size: int) -> None:
+        """
+        Resize the array.
+
+        If smaller than the current size, elements at the end of the array will be dropped.
+        If larger than the current size, new empty elements will be added to the end of the array.
+
+        Parameters
+        ----------
+        new_size: int
+            The new size of the array.
+        """
         ...
