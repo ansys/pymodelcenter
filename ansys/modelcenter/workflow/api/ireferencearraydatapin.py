@@ -31,3 +31,18 @@ class IReferenceArrayDatapin(
     @overrides
     def get_reference_properties(self) -> Mapping[str, IReferenceArrayProperty]:
         ...
+
+    @abstractmethod
+    def set_length(self, new_size: int) -> None:
+        """
+        Resize the array.
+
+        If smaller than the current size, elements at the end of the array will be dropped.
+        If larger than the current size, new empty elements will be added to the end of the array.
+
+        Parameters
+        ----------
+        new_size: int
+            The new size of the array.
+        """
+        ...

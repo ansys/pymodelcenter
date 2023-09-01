@@ -6,6 +6,7 @@ from ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
 )
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkfl_msgs
 import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 from overrides import overrides
@@ -323,7 +324,6 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         ------
         A Sequence of ReferenceArrayDatapinElements
         """
-        # TODO
         return self.__getitem__(index)
 
     def __getitem__(
@@ -370,6 +370,14 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         response: var_msgs.IntegerValue = self._client.ReferenceArrayGetLength(self._element_id)
         assert response.value >= 0
         return response.value
+
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
+    @overrides
+    def set_length(self, new_size: int) -> None:
+        request = wkfl_msgs.SetReferenceArrayLengthRequest(
+            target=self._element_id, new_size=new_size
+        )
+        self._client.ReferenceArraySetLength(request)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides

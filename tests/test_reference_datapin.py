@@ -4,6 +4,7 @@ import unittest.mock
 
 import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msgs
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkfl_msgs
 import ansys.tools.variableinterop as atvi
 import pytest
 
@@ -45,6 +46,9 @@ class MockWorkflowClientForRefVarTest:
         pass
 
     def ReferenceArrayGetLength(self, request):
+        pass
+
+    def ReferenceArraySetLength(self, request):
         pass
 
     def ReferenceVariableGetMetadata(
@@ -971,3 +975,57 @@ def test_get_reference_array_properties(monkeypatch, engine) -> None:
                 assert ref_prop._engine == engine
             else:
                 assert False, f"{name} not found in reference property map."
+
+
+def test_array_set_length_0(monkeypatch, engine) -> None:
+    # Arrange
+    mock_client = MockWorkflowClientForRefVarTest()
+    sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+
+    with unittest.mock.patch.object(
+        mock_client,
+        "ReferenceArrayGetLength",
+        return_value=var_msgs.IntegerValue(value=5),
+    ):
+        with unittest.mock.patch.object(
+            mock_client,
+            "ReferenceArraySetLength",
+            return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+        ) as mock_grpc_method:
+            monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+            sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+            # Act
+            sut.set_length(0)
+
+            # Assert
+            expected_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                target=sut_element_id, new_size=0
+            )
+            mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_array_extend(monkeypatch, engine) -> None:
+    # Arrange: ReferenceDatapin that has an equation
+    mock_client = MockWorkflowClientForRefVarTest()
+    monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
+
+    with unittest.mock.patch.object(
+        mock_client, "ReferenceArrayGetLength", return_value=var_msgs.IntegerValue(value=5)
+    ):
+        with unittest.mock.patch.object(
+            mock_client,
+            "ReferenceArraySetLength",
+            return_value=wkfl_msgs.SetReferenceArrayLengthResponse(),
+        ) as mock_grpc_method:
+            sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
+            sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
+
+            # Act
+            sut.set_length(7)
+
+            # Assert
+            expected_length_request = wkfl_msgs.SetReferenceArrayLengthRequest(
+                target=sut_element_id, new_size=7
+            )
+            mock_grpc_method.assert_called_once_with(expected_length_request)
