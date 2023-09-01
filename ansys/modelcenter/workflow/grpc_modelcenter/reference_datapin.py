@@ -1,6 +1,6 @@
 """Contains definition for ReferenceDatapin and ReferenceArrayDatapin."""
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Mapping, MutableSequence, Optional, Union, overload
+from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Union, overload
 
 from ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
@@ -311,7 +311,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @overload
     @abstractmethod
-    def __getitem__(self, index: slice) -> MutableSequence[IDatapinReferenceBase]:
+    def __getitem__(self, index: slice) -> Sequence[IDatapinReferenceBase]:
         """
         Gets a subsection of the ReferenceArrayDatapin.
 
@@ -328,7 +328,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     def __getitem__(
         self, index: Union[int, slice]
-    ) -> Union[IDatapinReferenceBase, MutableSequence[IDatapinReferenceBase]]:
+    ) -> Union[IDatapinReferenceBase, Sequence[IDatapinReferenceBase]]:
         """
         Implementation of __getitem__ for ReferenceArrayDatapins.
 
