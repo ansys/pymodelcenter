@@ -108,14 +108,16 @@ class Workflow(wfapi.IWorkflow):
             getting the state.
         - WorkflowInstanceState.INVALID:
             If any datapin validated by the last run is not valid, or the workflow has never been
-            run and the root datapin is invalid.
+            run and the root assembly is invalid. Note that this can be returned by requesting a
+            datapin that will not be validated even if the workflow runs successfully, such as
+            a datapin in an inactive branch of an if-component.
         - WorkflowInstanceState.RUNNING:
             If the workflow is currently running.
+        - WorkflowInstanceState.FAILED:
+            If the last workflow run terminated due to a failure.
         - WorkflowInstanceState.SUCCESS:
             If the workflow ran successfully and all requested datapins are valid.
-        Note that WorkflowInstanceState.PAUSED is never returned, as well as
-        WorkflowInstanceState.FAILED which can be inferred from the WorkflowInstanceState.INVALID
-        state.
+        Note that WorkflowInstanceState.PAUSED is never returned.
         """
         request = workflow_msg.GetWorkflowStateRequest()
         response: workflow_msg.GetWorkflowStateResponse = self._stub.WorkflowGetState(request)
