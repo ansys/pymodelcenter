@@ -90,9 +90,33 @@ class Workflow(wfapi.IWorkflow):
     }
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
     def get_state(self) -> engapi.WorkflowInstanceState:
+        """
+        Get the state of the workflow instance.
 
+        Returns
+        -------
+        WorkflowInstanceState
+            The current state of the workflow instance.
+
+        Notes
+        -----
+        Possible states are:
+
+        - WorkflowInstanceState.UNKNOWN:
+            If any datapin validated by the last run no longer exists, or some other error occurs
+            getting the state.
+        - WorkflowInstanceState.INVALID:
+            If any datapin validated by the last run is not valid, or the workflow has never been
+            run and the root datapin is invalid.
+        - WorkflowInstanceState.RUNNING:
+            If the workflow is currently running.
+        - WorkflowInstanceState.SUCCESS:
+            If the workflow ran successfully and all requested datapins are valid.
+        Note that WorkflowInstanceState.PAUSED is never returned, as well as
+        WorkflowInstanceState.FAILED which can be inferred from the WorkflowInstanceState.INVALID
+        state.
+        """
         request = workflow_msg.GetWorkflowStateRequest()
         response: workflow_msg.GetWorkflowStateResponse = self._stub.WorkflowGetState(request)
         return (
