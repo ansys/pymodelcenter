@@ -22,8 +22,8 @@ if TYPE_CHECKING:
 
 
 class AbstractControlStatement(
-    AbstractGRPCDatapinContainer,
     AbstractRenamableElement,
+    AbstractGRPCDatapinContainer,
     aachild.AbstractAssemblyChild,
     aew_api.IControlStatement,
     ABC,
