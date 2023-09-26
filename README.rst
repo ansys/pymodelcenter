@@ -96,29 +96,28 @@ Usage
 The main classes used to create and run workflows are the ``Engine`` class
 and the ``Workflow`` class.
 
-This is an example of how to load a previously saved workflow, execute
-it, and retrieve the value of a variable:
+This is an example of how create a new workflow, add a component to it, run it, and save it:
 
 .. code:: python
 
     import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
     with grpcmc.Engine() as mc:
-        print("Creating new model...")
-        with mc.new_workflow("d:\\workspace\\Designs\\DEMO\\demo.pxcz") as workflow:
-            root_id = workflow.get_root().element_id
+        print("Creating new workflow...")
+        with mc.new_workflow("d:\\example.pxcz") as workflow:
 
-            print("     Directory: " + workflow.workflow_directory)
-            print("          File: " + workflow.workflow_file_name)
-
+            print("Creating quadratic...")
             workflow.create_component(
-                "common:\\Functions\\Quadratic",
-                "NewQuadratic",
-                root_id,
-                x_pos=50, y_pos=50)
+                server_path="common:\\Functions\\Quadratic",
+                name="NewQuadratic",
+                parent="Model")
+
+            print("Running...")
+            workflow.run(validation_names=["Model.NewQuadratic.y"])
 
             print("Saving...")
             workflow.save_workflow()
+
             print("Done.")
 
 Testing
