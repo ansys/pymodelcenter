@@ -3,6 +3,7 @@ from typing import cast
 import ansys.tools.variableinterop as atvi
 import pytest
 
+from ansys.engineeringworkflow.api import ValueOutOfRangeError
 import ansys.modelcenter.workflow.api as mcapi
 from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
@@ -57,6 +58,24 @@ def test_can_get_reference_array_property_values(workflow, name, expected_value)
     assert result.is_valid is True
     assert result.value == expected_value
 
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_getting_reference_array_property_values_at_out_of_bounds_index_returns_good_error(workflow, index) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.RefPropsScript.arrayInput"
+    )
+    prop: IReferenceArrayProperty = cast(
+        IReferenceArrayProperty, variable.get_reference_properties()["stringParam"]
+    )
+
+    # Act and assert
+    with pytest.raises(ValueOutOfRangeError, match="The specified index is out of range."):
+        prop.get_state_at(index)
+
 
 @pytest.mark.parametrize(
     "name,value",
@@ -108,6 +127,43 @@ def test_can_set_reference_array_property_values(workflow, name, value) -> None:
     result: atvi.VariableState = prop.get_state_at(0)
     assert result.is_valid is True
     assert result.value == value
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_setting_reference_array_property_values_at_out_bounds_index_returns_good_error(workflow, index) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.RefPropsScript.arrayInput"
+    )
+    prop: IReferenceArrayProperty = cast(
+        IReferenceArrayProperty, variable.get_reference_properties()["stringParam"]
+    )
+
+    # Act and assert
+    with pytest.raises(ValueOutOfRangeError, match="The specified index is out of range."):
+        prop.set_value_at(index, atvi.VariableState(value=atvi.StringValue("Sun日"), is_valid=True))
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_getting_reference_array_property_values_at_out_bounds_index_returns_good_error(workflow, index) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.RefPropsScript.arrayInput"
+    )
+    prop: IReferenceArrayProperty = cast(
+        IReferenceArrayProperty, variable.get_reference_properties()["stringParam"]
+    )
+
+    # Act and assert
+    with pytest.raises(ValueOutOfRangeError, match="The specified index is out of range."):
+        prop.get_state_at(index)
 
 
 @pytest.mark.parametrize(
