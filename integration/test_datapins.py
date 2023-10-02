@@ -89,7 +89,7 @@ def test_can_get_file_type_information(workflow, name, var_type) -> None:
 @pytest.mark.workflow_name("reference_tests.pxcz")
 def test_can_get_reference_type_information(workflow, name, var_type) -> None:
     # Arrange
-    parent: grpcmc.Assembly = workflow.get_assembly("Model.ReferenceScript")
+    parent: mcapi.IDriverComponent = workflow.get_element_by_name("Model.ReferenceScript")
     full_name: str = parent.full_name + "." + name
 
     # Act

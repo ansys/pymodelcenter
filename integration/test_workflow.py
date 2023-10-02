@@ -308,7 +308,7 @@ def test_running_asynchronously_and_getting_results(workflow) -> None:
 
     # Assert
     assert after_run_state == eng_api.WorkflowInstanceState.RUNNING
-    assert end_state == eng_api.WorkflowInstanceState.PAUSED
+    assert end_state == eng_api.WorkflowInstanceState.SUCCESS
 
 
 @pytest.mark.workflow_name("file_tests.pxcz")
@@ -403,8 +403,7 @@ def test_configure_optimizer_in_process_model(workflow) -> None:
     #       it's not currently possible to set this up from scratch.
 
     # Retrieve the optimizer and target components.
-    optimizer: mcapi.IAssembly = workflow.get_assembly("Model.Optimizer")
-    target: mcapi.IComponent = workflow.get_component("Model.Optimizer.Target")
+    optimizer: mcapi.IDriverComponent = workflow.get_element_by_name("Model.Optimizer")
 
     # Get the algorithm variable.
     algorithm: mcapi.IDatapin = optimizer.get_datapins()["algorithm"]
@@ -420,7 +419,7 @@ def test_configure_optimizer_in_process_model(workflow) -> None:
             algo_datapin_metadata_cast.enumerated_values,
         )
     }
-    algorithm.set_value(atvi.VariableState(algos["Design Explorer"], True))
+    algorithm.set_value(atvi.VariableState(algos["Design Explorer (deprecated)"], True))
 
     # Get the objective variable.
     objectives: mcapi.IDatapin = optimizer.get_datapins()["objectives"]
