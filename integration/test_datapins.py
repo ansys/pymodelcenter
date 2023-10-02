@@ -688,7 +688,7 @@ def test_setting_reference_array_element_value_at_out_of_bounds_index_gives_good
     with pytest.raises(ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."):
         variable[index].set_value(new_value)
 
-# -1 crash
+
 @pytest.mark.parametrize(
     "index",
     [99, -1],
@@ -747,3 +747,51 @@ def test_getting_non_double_reference_array_values_gets_nan(workflow) -> None:
         atvi.RealArrayValue(values=[numpy.NAN, numpy.NAN, numpy.NAN, numpy.NAN]),
         equal_nan=True,
     )
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_getting_the_reference_directness_with_an_out_of_bounds_index_returns_a_good_error(workflow, index) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable("Model.ReferenceScript.doubleArrayInRef")
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act and assert
+    with pytest.raises(ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."):
+        result = variable[index].is_direct
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_getting_the_reference_equation_with_an_out_of_bounds_index_returns_a_good_error(workflow, index) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable("Model.ReferenceScript.doubleArrayInRef")
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act and assert
+    with pytest.raises(ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."):
+        result = variable[index].equation
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_setting_the_reference_equation_with_an_out_of_bounds_index_returns_a_good_error(workflow, index) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable("Model.ReferenceScript.doubleArrayInRef")
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act and assert
+    with pytest.raises(ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."):
+        variable[index].equation = "ඞ"
