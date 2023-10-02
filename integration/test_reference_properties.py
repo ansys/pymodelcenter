@@ -1,9 +1,9 @@
 from typing import cast
 
+from ansys.engineeringworkflow.api import ValueOutOfRangeError
 import ansys.tools.variableinterop as atvi
 import pytest
 
-from ansys.engineeringworkflow.api import ValueOutOfRangeError
 import ansys.modelcenter.workflow.api as mcapi
 from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
@@ -58,12 +58,15 @@ def test_can_get_reference_array_property_values(workflow, name, expected_value)
     assert result.is_valid is True
     assert result.value == expected_value
 
+
 @pytest.mark.parametrize(
     "index",
     [99, -1],
 )
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
-def test_getting_reference_array_property_values_at_out_of_bounds_index_returns_good_error(workflow, index) -> None:
+def test_getting_reference_array_property_values_at_out_of_bounds_index_returns_good_error(
+    workflow, index
+) -> None:
     # Arrange
     variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
         "Model.RefPropsScript.arrayInput"
@@ -128,12 +131,15 @@ def test_can_set_reference_array_property_values(workflow, name, value) -> None:
     assert result.is_valid is True
     assert result.value == value
 
+
 @pytest.mark.parametrize(
     "index",
     [99, -1],
 )
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
-def test_setting_reference_array_property_values_at_out_bounds_index_returns_good_error(workflow, index) -> None:
+def test_setting_reference_array_property_values_at_out_bounds_index_returns_good_error(
+    workflow, index
+) -> None:
     # Arrange
     variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
         "Model.RefPropsScript.arrayInput"
@@ -152,7 +158,9 @@ def test_setting_reference_array_property_values_at_out_bounds_index_returns_goo
     [99, -1],
 )
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
-def test_getting_reference_array_property_values_at_out_bounds_index_returns_good_error(workflow, index) -> None:
+def test_getting_reference_array_property_values_at_out_bounds_index_returns_good_error(
+    workflow, index
+) -> None:
     # Arrange
     variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
         "Model.RefPropsScript.arrayInput"
