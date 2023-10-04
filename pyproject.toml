@@ -38,7 +38,7 @@ python = ">=3.8,<3.11"
 numpy = "^1.22.3"
 overrides = "^6.1"
 ansys-platform-instancemanagement = "^1.1.1"
-ansys-api-modelcenter = "^0.2.0"
+ansys-api-modelcenter = "^0.3.0"
 
 grpcio = "~1.47"
 grpcio-tools = "~1.47"

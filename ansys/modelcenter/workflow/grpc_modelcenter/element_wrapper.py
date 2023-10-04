@@ -19,7 +19,7 @@ def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
 
     if (
         info.type == ElementType.ELEMENT_TYPE_ASSEMBLY
-        or info.type == ElementType.ELEMENT_TYPE_IFCOMPONENT
+        or info.type == ElementType.ELEMENT_TYPE_DRIVERCOMPONENT
     ):
         return assembly_impl.Assembly(info.id, engine)
     elif info.type == ElementType.ELEMENT_TYPE_COMPONENT:
