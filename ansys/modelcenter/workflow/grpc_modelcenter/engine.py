@@ -220,7 +220,7 @@ class Engine(IEngine):
             path=str(file_name),
             connect_err_mode=eng_msg.OnConnectionErrorMode.ON_CONNECTION_ERROR_MODE_IGNORE
             if ignore_connection_errors
-            else eng_msg.WORKFLOW_TYPE_DATA_DEPENDENCY,
+            else eng_msg.ON_CONNECTION_ERROR_MODE_RAISE_ERROR,
         )
         response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
         return Workflow(response.workflow_id, request.path, self)
