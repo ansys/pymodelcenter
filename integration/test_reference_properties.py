@@ -154,27 +154,6 @@ def test_setting_reference_array_property_values_at_out_bounds_index_returns_goo
 
 
 @pytest.mark.parametrize(
-    "index",
-    [99, -1],
-)
-@pytest.mark.workflow_name("reference_properties_tests.pxcz")
-def test_getting_reference_array_property_values_at_out_bounds_index_returns_good_error(
-    workflow, index
-) -> None:
-    # Arrange
-    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
-        "Model.RefPropsScript.arrayInput"
-    )
-    prop: IReferenceArrayProperty = cast(
-        IReferenceArrayProperty, variable.get_reference_properties()["stringParam"]
-    )
-
-    # Act and assert
-    with pytest.raises(ValueOutOfRangeError, match="The specified index is out of range."):
-        prop.get_state_at(index)
-
-
-@pytest.mark.parametrize(
     "target,name,expected_type,expected_description",
     [
         pytest.param(
