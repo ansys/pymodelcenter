@@ -1,4 +1,5 @@
 import contextlib
+import re
 import tempfile
 import typing
 from typing import Any, Mapping
@@ -712,3 +713,35 @@ def test_getting_non_double_reference_array_values_gets_nan(workflow) -> None:
         atvi.RealArrayValue(values=[numpy.NAN, numpy.NAN, numpy.NAN, numpy.NAN]),
         equal_nan=True,
     )
+
+
+@pytest.mark.parametrize(
+    "equation,expected_msg",
+    [
+        ("Model.ඞ", "Cannot evaluate equation."),
+        (
+            "*+",
+            re.escape(
+                "PHXEquationParser cannot continue.\nThe parser returned this error:\n"
+                'Encountered "*" at line 1, column 1.\r\nWas expecting one of:\r\n    '
+                '<EOF> \r\n    ";" ...\r\n    <INDENTIFIER1> ...\r\n    <INDENTIFIER2> '
+                '...\r\n    "+" ...\r\n    "-" ...\r\n    "!" ...\r\n    <STRING_LITERAL> '
+                "...\r\n    <INTEGER_LITERAL> ...\r\n    <FLOATING_POINT_LITERAL> ...\r\n   "
+                ' "(" ...\r\n    "[" ...\r'
+            ),
+        ),
+    ],
+)
+@pytest.mark.workflow_name("optimizer_setup_test.pxcz")
+def test_set_invalid_reference_equation(workflow, equation, expected_msg) -> None:
+    # Arrange
+    optimizer: mcapi.IDriverComponent = workflow.get_element_by_name("Model.Optimizer")
+    objectives_cast: mcapi.IReferenceArrayDatapin = typing.cast(
+        mcapi.IReferenceArrayDatapin, optimizer.get_datapins()["objectives"]
+    )
+    objectives_cast.set_length(1)
+
+    # Assert
+    with pytest.raises(ValueError, match=expected_msg):
+        # Act
+        objectives_cast[0].equation = equation
