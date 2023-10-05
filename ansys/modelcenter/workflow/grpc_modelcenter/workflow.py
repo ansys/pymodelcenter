@@ -489,7 +489,24 @@ class Workflow(wfapi.IWorkflow):
         response: workflow_msg.WorkflowCreateComponentResponse = self._stub.WorkflowCreateComponent(
             request
         )
-        return Component(response.created, self._engine)
+        parent_elements: workflow_msg.ElementInfoCollection = (
+            self._stub.AssemblyGetAssembliesAndComponents(
+                element_msg.ElementId(id_string=used_parent.element_id)
+            )
+        )
+        one_element: workflow_msg.ElementInfo
+        parent_element_by_id = {
+            one_element.id.id_string: one_element for one_element in parent_elements.elements
+        }
+        created_element = create_element(
+            parent_element_by_id[response.created.id_string], self._engine
+        )
+        if isinstance(created_element, Component):
+            return created_element
+        else:
+            raise engapi.EngineInternalError(
+                "A request to create a component created something that was not a component."
+            )
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
