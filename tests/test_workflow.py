@@ -125,7 +125,7 @@ class MockWorkflowClientForWorkflowTest:
         if request.element_full_name.name == "a.component":
             response.type = elem_msgs.ELEMENT_TYPE_COMPONENT
         elif request.element_full_name.name == "a.drivercomponent":
-            response.type = elem_msgs.ELEMENT_TYPE_IFCOMPONENT
+            response.type = elem_msgs.ELEMENT_TYPE_DRIVERCOMPONENT
         elif request.element_full_name.name == "Model":
             response.type = elem_msgs.ELEMENT_TYPE_ASSEMBLY
         elif request.element_full_name.name == "Workflow.source_comp":

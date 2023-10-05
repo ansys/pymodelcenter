@@ -339,7 +339,7 @@ class Workflow(wfapi.IWorkflow):
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
         if response.type == element_msg.ELEMENT_TYPE_COMPONENT:
             return Component(response.id, self._engine)
-        elif response.type == element_msg.ELEMENT_TYPE_IFCOMPONENT:
+        elif response.type == element_msg.ELEMENT_TYPE_DRIVERCOMPONENT:
             # return IfComponent(response.id.id_string)
             raise NotImplementedError()
         else:

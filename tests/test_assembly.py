@@ -156,7 +156,11 @@ def test_parent_element_other_assembly(monkeypatch, engine) -> None:
 
 def test_parent_element_driver_comp(monkeypatch, engine) -> None:
     awe_tests.do_test_parent_element(
-        monkeypatch, engine, Assembly, ElementType.ELEMENT_TYPE_IFCOMPONENT, mc_api.IDriverComponent
+        monkeypatch,
+        engine,
+        Assembly,
+        ElementType.ELEMENT_TYPE_DRIVERCOMPONENT,
+        mc_api.IDriverComponent,
     )
 
 
@@ -303,7 +307,7 @@ def test_get_child_elements_one_child(
 def test_get_child_assemblies_multiple_children(monkeypatch, engine) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     larry_assembly_info = ElementInfo(
-        id=ElementId(id_string="IDDRIVER_LARRY"), type=ElementType.ELEMENT_TYPE_IFCOMPONENT
+        id=ElementId(id_string="IDDRIVER_LARRY"), type=ElementType.ELEMENT_TYPE_DRIVERCOMPONENT
     )
     mock_client.name_responses["IDDRIVER_LARRY"] = "larry"
     moe_comp_info = ElementInfo(
