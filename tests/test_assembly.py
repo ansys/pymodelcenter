@@ -148,9 +148,19 @@ def test_full_name(monkeypatch, engine) -> None:
     awe_tests.do_test_name(monkeypatch, engine, Assembly)
 
 
-def test_parent_element(monkeypatch, engine) -> None:
+def test_parent_element_other_assembly(monkeypatch, engine) -> None:
     awe_tests.do_test_parent_element(
         monkeypatch, engine, Assembly, ElementType.ELEMENT_TYPE_ASSEMBLY, Assembly
+    )
+
+
+def test_parent_element_driver_comp(monkeypatch, engine) -> None:
+    awe_tests.do_test_parent_element(
+        monkeypatch,
+        engine,
+        Assembly,
+        ElementType.ELEMENT_TYPE_DRIVERCOMPONENT,
+        mc_api.IDriverComponent,
     )
 
 
@@ -297,9 +307,9 @@ def test_get_child_elements_one_child(
 def test_get_child_assemblies_multiple_children(monkeypatch, engine) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     larry_assembly_info = ElementInfo(
-        id=ElementId(id_string="IDASSEMBLY_LARRY"), type=ElementType.ELEMENT_TYPE_ASSEMBLY
+        id=ElementId(id_string="IDDRIVER_LARRY"), type=ElementType.ELEMENT_TYPE_DRIVERCOMPONENT
     )
-    mock_client.name_responses["IDASSEMBLY_LARRY"] = "larry"
+    mock_client.name_responses["IDDRIVER_LARRY"] = "larry"
     moe_comp_info = ElementInfo(
         id=ElementId(id_string="IDCOMP_MOE"), type=ElementType.ELEMENT_TYPE_COMPONENT
     )
@@ -322,12 +332,12 @@ def test_get_child_assemblies_multiple_children(monkeypatch, engine) -> None:
             sut = Assembly(ElementId(id_string="STOOGES"), engine=engine)
             result = sut.get_elements()
             assert len(result) == 3
-            assert isinstance(result["larry"], Assembly)
+            assert isinstance(result["larry"], mc_api.IDriverComponent)
             assert isinstance(result["moe"], Component)
             assert isinstance(result["curly"], Assembly)
             mock_get_assembly_method.assert_called_once_with(ElementId(id_string="STOOGES"))
             name = result["larry"].full_name
-            mock_get_name_method.assert_called_once_with(ElementId(id_string="IDASSEMBLY_LARRY"))
+            mock_get_name_method.assert_called_once_with(ElementId(id_string="IDDRIVER_LARRY"))
             mock_get_name_method.reset_mock()
             name = result["moe"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string="IDCOMP_MOE"))

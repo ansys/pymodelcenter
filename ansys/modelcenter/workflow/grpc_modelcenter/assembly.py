@@ -1,18 +1,14 @@
 """Implementation of Assembly."""
 
-from typing import TYPE_CHECKING, Mapping, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
 
-import ansys.engineeringworkflow.api as aew_api
 import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
 import ansys.modelcenter.workflow.api as mc_api
-import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
+import ansys.modelcenter.workflow.grpc_modelcenter.abstract_control_statement as abstractcs
 
-from .abstract_datapin_container import AbstractGRPCDatapinContainer
-from .abstract_renamable import AbstractRenamableElement
 from .create_datapin import create_datapin
-from .element_wrapper import create_element
 
 if TYPE_CHECKING:
     from .engine import Engine
@@ -27,11 +23,9 @@ from ansys.api.modelcenter.v0.element_messages_pb2 import (
 from ansys.api.modelcenter.v0.workflow_messages_pb2 import (
     DeleteAssemblyVariableRequest,
     ElementIdOrName,
-    ElementInfo,
     NamedElementWorkflow,
 )
 
-from .group import Group
 from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
     WRAP_NAME_COLLISION,
@@ -43,9 +37,7 @@ from .var_value_convert import interop_type_to_grpc_type_enum, interop_type_to_m
 
 
 class Assembly(
-    AbstractRenamableElement,
-    AbstractGRPCDatapinContainer,
-    aachild.AbstractAssemblyChild,
+    abstractcs.AbstractControlStatement,
     mc_api.IAssembly,
 ):
     """
@@ -86,22 +78,6 @@ class Assembly(
             else:
                 raise
         return result
-
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def get_elements(self) -> Mapping[str, aew_api.IElement]:
-        result = self._client.AssemblyGetAssembliesAndComponents(self._element_id)
-        one_child_element_info: ElementInfo
-        child_elements = [
-            create_element(one_child_element_info, self._engine)
-            for one_child_element_info in result.elements
-        ]
-        one_child_element: aew_api.IElement
-        return {element.name: element for element in child_elements}
-
-    @overrides
-    def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
-        return Group(element_id, self._engine)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION, **WRAP_INVALID_ARG})
     @overrides

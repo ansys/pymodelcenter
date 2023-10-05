@@ -1,4 +1,5 @@
 import contextlib
+import re
 import tempfile
 import typing
 from typing import Any, Mapping
@@ -89,7 +90,7 @@ def test_can_get_file_type_information(workflow, name, var_type) -> None:
 @pytest.mark.workflow_name("reference_tests.pxcz")
 def test_can_get_reference_type_information(workflow, name, var_type) -> None:
     # Arrange
-    parent: grpcmc.Assembly = workflow.get_assembly("Model.ReferenceScript")
+    parent: mcapi.IDriverComponent = workflow.get_element_by_name("Model.ReferenceScript")
     full_name: str = parent.full_name + "." + name
 
     # Act
@@ -674,6 +675,53 @@ def test_can_set_reference_array_element_value_and_metadata(workflow, var_name) 
 
 
 @pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_setting_reference_array_element_value_at_out_of_bounds_index_gives_good_error(
+    workflow, index
+) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.ReferenceScript.doubleArrayInRef"
+    )
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act and assert
+    with pytest.raises(
+        ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."
+    ):
+        variable[index].set_value(new_value)
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_getting_reference_array_element_value_at_out_of_bounds_index_gives_good_error(
+    workflow, index
+) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.ReferenceScript.doubleArrayInRef"
+    )
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act
+    variable[0].set_value(new_value)
+
+    # Assert
+    with pytest.raises(
+        ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."
+    ):
+        variable[index].get_value()
+
+
+@pytest.mark.parametrize(
     "var_name",
     ["Model.ReferenceScript.doubleArrayInRef", "Model.ReferenceScript.doubleArrayOutRef"],
 )
@@ -712,3 +760,101 @@ def test_getting_non_double_reference_array_values_gets_nan(workflow) -> None:
         atvi.RealArrayValue(values=[numpy.NAN, numpy.NAN, numpy.NAN, numpy.NAN]),
         equal_nan=True,
     )
+
+
+@pytest.mark.parametrize(
+    "equation,expected_msg",
+    [
+        ("Model.ඞ", "Cannot evaluate equation."),
+        (
+            "*+",
+            re.escape(
+                "PHXEquationParser cannot continue.\nThe parser returned this error:\n"
+                'Encountered "*" at line 1, column 1.\r\nWas expecting one of:\r\n    '
+                '<EOF> \r\n    ";" ...\r\n    <INDENTIFIER1> ...\r\n    <INDENTIFIER2> '
+                '...\r\n    "+" ...\r\n    "-" ...\r\n    "!" ...\r\n    <STRING_LITERAL> '
+                "...\r\n    <INTEGER_LITERAL> ...\r\n    <FLOATING_POINT_LITERAL> ...\r\n   "
+                ' "(" ...\r\n    "[" ...\r'
+            ),
+        ),
+    ],
+)
+@pytest.mark.workflow_name("optimizer_setup_test.pxcz")
+def test_set_invalid_reference_equation(workflow, equation, expected_msg) -> None:
+    # Arrange
+    optimizer: mcapi.IDriverComponent = workflow.get_element_by_name("Model.Optimizer")
+    objectives_cast: mcapi.IReferenceArrayDatapin = typing.cast(
+        mcapi.IReferenceArrayDatapin, optimizer.get_datapins()["objectives"]
+    )
+    objectives_cast.set_length(1)
+
+    # Assert
+    with pytest.raises(ValueError, match=expected_msg):
+        # Act
+        objectives_cast[0].equation = equation
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_getting_the_reference_directness_with_an_out_of_bounds_index_returns_a_good_error(
+    workflow, index
+) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.ReferenceScript.doubleArrayInRef"
+    )
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act and assert
+    with pytest.raises(
+        ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."
+    ):
+        result = variable[index].is_direct
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_getting_the_reference_equation_with_an_out_of_bounds_index_returns_a_good_error(
+    workflow, index
+) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.ReferenceScript.doubleArrayInRef"
+    )
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act and assert
+    with pytest.raises(
+        ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."
+    ):
+        result = variable[index].equation
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_tests.pxcz")
+def test_setting_the_reference_equation_with_an_out_of_bounds_index_returns_a_good_error(
+    workflow, index
+) -> None:
+    # Arrange
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.ReferenceScript.doubleArrayInRef"
+    )
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+
+    # Act and assert
+    with pytest.raises(
+        ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."
+    ):
+        variable[index].equation = "ඞ"

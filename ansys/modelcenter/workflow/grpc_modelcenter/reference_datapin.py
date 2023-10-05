@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
 
 from .grpc_error_interpretation import (
+    WRAP_INVALID_ARG,
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
@@ -81,7 +82,7 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
         return response.equation
 
     @equation.setter
-    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS, **WRAP_INVALID_ARG})
     @overrides
     def equation(self, equation: str) -> None:
         request = var_msgs.SetReferenceEquationRequest(
@@ -218,7 +219,7 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
         return response.equation
 
     @equation.setter
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def equation(self, equation: str) -> None:
         request = var_msgs.SetReferenceEquationRequest(target=self._element_id, equation=equation)

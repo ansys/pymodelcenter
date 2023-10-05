@@ -151,6 +151,7 @@ class ReferenceArrayProperty(ReferencePropertyBase, IReferenceArrayProperty):
     def __init__(self, element_id: ElementId, name: str, engine: "Engine") -> None:
         super().__init__(element_id=element_id, name=name, engine=engine)
 
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value_at(self, index: int, new_value: atvi.VariableState) -> None:
         grpc_value = var_value_convert.convert_interop_value_to_grpc(new_value.value)

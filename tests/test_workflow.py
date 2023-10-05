@@ -124,6 +124,8 @@ class MockWorkflowClientForWorkflowTest:
         response.id.id_string = request.element_full_name.name.replace(".", "_").upper()
         if request.element_full_name.name == "a.component":
             response.type = elem_msgs.ELEMENT_TYPE_COMPONENT
+        elif request.element_full_name.name == "a.drivercomponent":
+            response.type = elem_msgs.ELEMENT_TYPE_DRIVERCOMPONENT
         elif request.element_full_name.name == "Model":
             response.type = elem_msgs.ELEMENT_TYPE_ASSEMBLY
         elif request.element_full_name.name == "Workflow.source_comp":
@@ -1163,6 +1165,7 @@ def test_get_variable_on_wrong_type(setup_function) -> None:
     [
         ("a.component", mcapi.IComponent, "A_COMPONENT"),
         ("a.assembly", mcapi.IAssembly, "A_ASSEMBLY"),
+        ("a.drivercomponent", mcapi.IDriverComponent, "A_DRIVERCOMPONENT"),
         ("model.boolean", mcapi.IBooleanDatapin, "MODEL_BOOLEAN"),
         ("model.integer", mcapi.IIntegerDatapin, "MODEL_INTEGER"),
         ("model.string", mcapi.IStringDatapin, "MODEL_STRING"),

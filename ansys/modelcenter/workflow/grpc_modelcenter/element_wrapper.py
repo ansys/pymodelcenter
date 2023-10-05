@@ -15,13 +15,13 @@ def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
     import ansys.modelcenter.workflow.grpc_modelcenter.assembly as assembly_impl
     import ansys.modelcenter.workflow.grpc_modelcenter.component as component_impl
     import ansys.modelcenter.workflow.grpc_modelcenter.create_datapin as create_variable
+    import ansys.modelcenter.workflow.grpc_modelcenter.driver_component as driver_comp_impl
     import ansys.modelcenter.workflow.grpc_modelcenter.group as group_impl
 
-    if (
-        info.type == ElementType.ELEMENT_TYPE_ASSEMBLY
-        or info.type == ElementType.ELEMENT_TYPE_DRIVERCOMPONENT
-    ):
+    if info.type == ElementType.ELEMENT_TYPE_ASSEMBLY:
         return assembly_impl.Assembly(info.id, engine)
+    elif info.type == ElementType.ELEMENT_TYPE_DRIVERCOMPONENT:
+        return driver_comp_impl.DriverComponent(info.id, engine)
     elif info.type == ElementType.ELEMENT_TYPE_COMPONENT:
         return component_impl.Component(info.id, engine)
     elif info.type == ElementType.ELEMENT_TYPE_GROUP:

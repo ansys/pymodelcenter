@@ -32,8 +32,8 @@ class ComponentDownloadValuesFailedError(Exception):
 
 
 class Component(
-    AbstractGRPCDatapinContainer,
     abstract_renamable.AbstractRenamableElement,
+    AbstractGRPCDatapinContainer,
     aachild.AbstractAssemblyChild,
     mc_api.IComponent,
 ):
