@@ -357,7 +357,8 @@ def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
         )
         parent = root if workflow_type == mcapi.WorkflowType.DATA else optimizer
         target: mcapi.IComponent = workflow.create_component(
-            "common:\\Functions\\Quadratic", "Target",
+            "common:\\Functions\\Quadratic",
+            "Target",
             parent,
         )
         optimizer.get_datapins()["algorithm"].set_value(
