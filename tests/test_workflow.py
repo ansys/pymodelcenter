@@ -865,7 +865,7 @@ def test_create_component(setup_function) -> None:
         assert component.element_id == "zxcv"
 
 
-def test_create_component_parent_object(setup_function, engine) -> None:
+def test_create_component_parent_assembly_object(setup_function, engine) -> None:
     # Execute
     response = wkf_msgs.WorkflowCreateComponentResponse(
         created=elem_msgs.ElementId(id_string="zxcv")
@@ -877,6 +877,35 @@ def test_create_component_parent_object(setup_function, engine) -> None:
             server_path="common:\\Functions\\Quadratic",
             name="二次",
             parent=grpcmc.Assembly(elem_msgs.ElementId(id_string="45df304"), engine=engine),
+            init_string=None,
+            av_position=None,
+            insert_before=None,
+        )
+
+        # Verify
+        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+            source_path="common:\\Functions\\Quadratic",
+            name="二次",
+            init_str=None,
+            parent=elem_msgs.ElementId(id_string="45df304"),
+            after_comp=None,
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+        assert component.element_id == "zxcv"
+
+
+def test_create_component_parent_driver_component_object(setup_function, engine) -> None:
+    # Execute
+    response = wkf_msgs.WorkflowCreateComponentResponse(
+        created=elem_msgs.ElementId(id_string="zxcv")
+    )
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowCreateComponent", return_value=response
+    ) as mock_grpc_method:
+        component: grpcmc.Component = workflow.create_component(
+            server_path="common:\\Functions\\Quadratic",
+            name="二次",
+            parent=grpcmc.DriverComponent(elem_msgs.ElementId(id_string="45df304"), engine=engine),
             init_string=None,
             av_position=None,
             insert_before=None,
@@ -1198,7 +1227,7 @@ def test_move_component_names(setup_function):
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-def test_move_component_objects(setup_function, engine):
+def test_move_component_assembly_object(setup_function, engine):
     mock_response = elem_msgs.ElementIndexParentResponse()
     mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), engine=engine)
     mock_assembly = grpcmc.Assembly(elem_msgs.ElementId(id_string="ASSY_3948"), engine=engine)
@@ -1210,6 +1239,25 @@ def test_move_component_objects(setup_function, engine):
         expected_request = wkf_msgs.MoveComponentRequest(
             target=elem_msgs.ElementId(id_string="COMP_4857"),
             new_parent=elem_msgs.ElementId(id_string="ASSY_3948"),
+            index_parent=47,
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_move_component_driver_comp_object(setup_function, engine):
+    mock_response = elem_msgs.ElementIndexParentResponse()
+    mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), engine=engine)
+    mock_driver_component = grpcmc.DriverComponent(
+        elem_msgs.ElementId(id_string="DRCMP_5853"), engine=engine
+    )
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowMoveComponent", return_value=mock_response
+    ) as mock_grpc_method:
+        workflow.move_component(mock_component, mock_driver_component, 47)
+
+        expected_request = wkf_msgs.MoveComponentRequest(
+            target=elem_msgs.ElementId(id_string="COMP_4857"),
+            new_parent=elem_msgs.ElementId(id_string="DRCMP_5853"),
             index_parent=47,
         )
         mock_grpc_method.assert_called_once_with(expected_request)

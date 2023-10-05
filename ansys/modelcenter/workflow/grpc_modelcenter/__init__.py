@@ -14,6 +14,7 @@ from .component import (
     ComponentReconnectionFailedError,
 )
 from .datapin_link import DatapinLink
+from .driver_component import DriverComponent
 from .engine import Engine, WorkflowAlreadyLoadedError
 from .file_datapin import FileArrayDatapin, FileDatapin
 from .format import Format

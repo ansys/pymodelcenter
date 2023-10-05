@@ -425,14 +425,14 @@ class Workflow(wfapi.IWorkflow):
     def move_component(
         self,
         component: Union[wfapi.IComponent, str],
-        parent: Union[wfapi.IAssembly, str],
+        parent: Union[engapi.IControlStatement, str],
         index: int = -1,
     ) -> None:
         used_component: wfapi.IComponent = (
             component if isinstance(component, wfapi.IComponent) else self.get_component(component)
         )
-        used_parent: wfapi.IAssembly = (
-            parent if isinstance(parent, wfapi.IAssembly) else self.get_assembly(parent)
+        used_parent: engapi.IControlStatement = (
+            parent if isinstance(parent, engapi.IControlStatement) else self.get_assembly(parent)
         )
         request = workflow_msg.MoveComponentRequest(
             target=element_msg.ElementId(id_string=used_component.element_id),
@@ -465,16 +465,18 @@ class Workflow(wfapi.IWorkflow):
         self,
         server_path: str,
         name: str,
-        parent: Union[wfapi.IAssembly, str],
+        parent: Union[engapi.IControlStatement, str],
         *,
         init_string: Optional[str] = None,
         av_position: Optional[Tuple[int, int]] = None,
-        insert_before: Optional[Union[wfapi.IComponent, wfapi.IAssembly, str]] = None,
+        insert_before: Optional[Union[wfapi.IComponent, engapi.IControlStatement, str]] = None,
     ) -> Component:
         request = workflow_msg.WorkflowCreateComponentRequest(
             source_path=server_path, name=name, init_str=init_string
         )
-        used_parent = parent if isinstance(parent, wfapi.IAssembly) else self.get_assembly(parent)
+        used_parent = (
+            parent if isinstance(parent, engapi.IControlStatement) else self.get_assembly(parent)
+        )
         request.parent.id_string = used_parent.element_id
         if av_position is not None:
             request.coords.x_pos = av_position[0]
