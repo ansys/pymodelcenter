@@ -332,9 +332,13 @@ def test_run_setting_file_vars(workflow) -> None:
             )
 
 
-def test_create_and_run_optimizer_very_basic(engine) -> None:
+@pytest.mark.parametrize(
+    "workflow_type",
+    [mcapi.WorkflowType.DATA, mcapi.WorkflowType.PROCESS],
+)
+def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
     """
-    Set up a very basic optimization problem from scratch in a data dependency workflow.
+    Set up a very basic optimization problem from scratch.
     """
     workflow_name = "optimizer_create_test.pxcz"
     workflow_path: str = os.path.join(os.getcwd(), workflow_name)
@@ -342,7 +346,7 @@ def test_create_and_run_optimizer_very_basic(engine) -> None:
         os.remove(workflow_path)  # delete the file if it already exists
 
     # Create a new workflow
-    with engine.new_workflow(workflow_path, workflow_type=mcapi.WorkflowType.DATA) as workflow:
+    with engine.new_workflow(workflow_path, workflow_type=workflow_type) as workflow:
         # Add an optimizer and a quadratic
         root: mcapi.IAssembly = workflow.get_root()
         optimizer: mcapi.IComponent = workflow.create_component(
@@ -351,8 +355,11 @@ def test_create_and_run_optimizer_very_basic(engine) -> None:
             "Optimizer",
             root,
         )
+        parent = root if workflow_type == mcapi.WorkflowType.DATA else optimizer
         target: mcapi.IComponent = workflow.create_component(
-            "common:\\Functions\\Quadratic", "Target", root
+            "common:\\Functions\\Quadratic",
+            "Target",
+            parent,
         )
         optimizer.get_datapins()["algorithm"].set_value(
             atvi.VariableState("4F3D67F6-5838-460F-8696-821D34C527AF", True)
@@ -365,7 +372,7 @@ def test_create_and_run_optimizer_very_basic(engine) -> None:
             mcapi.IReferenceArrayDatapin, objectives
         )
         objectives_cast.set_length(1)
-        objectives_cast[0].equation = "Model.Target.y"
+        objectives_cast[0].equation = target.full_name + ".y"
         objective_ref_props = objectives_cast.get_reference_properties()
         assert "goal" in objective_ref_props
         objective_ref_props["goal"].set_value_at(0, atvi.VariableState("solveFor", True))
@@ -375,7 +382,7 @@ def test_create_and_run_optimizer_very_basic(engine) -> None:
         assert isinstance(dvs, mcapi.IReferenceArrayDatapin)
         dvs_cast: mcapi.IReferenceArrayDatapin = cast(mcapi.IReferenceArrayDatapin, dvs)
         dvs_cast.set_length(1)
-        dvs_cast[0].equation = "Model.Target.x"
+        dvs_cast[0].equation = target.full_name + ".x"
         dvs_ref_props = dvs.get_reference_properties()
         assert "startValue" in dvs_ref_props
         dvs_ref_props["startValue"].set_value_at(
@@ -386,78 +393,10 @@ def test_create_and_run_optimizer_very_basic(engine) -> None:
         assert "upperBound" in dvs_ref_props
         dvs_ref_props["upperBound"].set_value_at(0, atvi.VariableState(atvi.RealValue(10.0), True))
 
+        workflow.save_workflow()
         # Run the workflow
         workflow.run(validation_names={"Model.Optimizer.optimizationToolReturnStatus"})
 
         # Verify that optimization occurred
-        assert workflow.get_variable("Model.Target.y").get_value().is_valid
-        assert workflow.get_variable("Model.Target.y").get_value().value == 0.0
-
-
-@pytest.mark.workflow_name("optimizer_setup_test.pxcz")
-def test_configure_optimizer_in_process_model(workflow) -> None:
-    """
-    Test that an existing optimizer can be reconfigured in a process model.
-    """
-    # TODO: Because of an oversight in how the API works with drivers in process models,
-    #       it's not currently possible to set this up from scratch.
-
-    # Retrieve the optimizer and target components.
-    optimizer: mcapi.IDriverComponent = workflow.get_element_by_name("Model.Optimizer")
-
-    # Get the algorithm variable.
-    algorithm: mcapi.IDatapin = optimizer.get_datapins()["algorithm"]
-    algo_datapin_metadata: atvi.CommonVariableMetadata = algorithm.get_metadata()
-    assert isinstance(algo_datapin_metadata, atvi.StringMetadata)
-    algo_datapin_metadata_cast: atvi.StringMetadata = cast(
-        atvi.StringMetadata, algo_datapin_metadata
-    )
-    algos = {
-        alias: value
-        for (alias, value) in zip(
-            algo_datapin_metadata_cast.enumerated_aliases,
-            algo_datapin_metadata_cast.enumerated_values,
-        )
-    }
-    algorithm.set_value(atvi.VariableState(algos["Design Explorer (deprecated)"], True))
-
-    # Get the objective variable.
-    objectives: mcapi.IDatapin = optimizer.get_datapins()["objectives"]
-    assert isinstance(objectives, mcapi.IReferenceArrayDatapin)
-    objectives_cast: mcapi.IReferenceArrayDatapin = cast(mcapi.IReferenceArrayDatapin, objectives)
-
-    # Configure objectives.
-    objectives_cast.set_length(1)
-    objectives_cast[0].equation = "Model.Optimizer.Target.z"
-    objective_ref_props = objectives.get_reference_properties()
-    assert "goal" in objective_ref_props
-    objective_ref_props["goal"].set_value_at(0, atvi.VariableState("minimize", True))
-
-    # Get design variables
-    dvs: mcapi.IDatapin = optimizer.get_datapins()["continuousDesignVariables"]
-    assert isinstance(dvs, mcapi.IReferenceArrayDatapin)
-    dvs_cast: mcapi.IReferenceArrayDatapin = cast(mcapi.IReferenceArrayDatapin, dvs)
-
-    # Configure design variables
-    dvs_cast.set_length(2)
-    dvs_cast[0].equation = "Model.Optimizer.Target.x"
-    dvs_ref_props = dvs.get_reference_properties()
-    dvs_cast[1].equation = "Model.Optimizer.Target.y"
-    assert "startValue" in dvs_ref_props
-    dvs_ref_props["startValue"].set_value_at(0, atvi.VariableState(atvi.StringValue("4.0"), True))
-    dvs_ref_props["startValue"].set_value_at(1, atvi.VariableState(atvi.StringValue("4.0"), True))
-    assert "lowerBound" in dvs_ref_props
-    dvs_ref_props["lowerBound"].set_value_at(0, atvi.VariableState(atvi.RealValue(-5.0), True))
-    dvs_ref_props["lowerBound"].set_value_at(1, atvi.VariableState(atvi.RealValue(-5.0), True))
-    assert "upperBound" in dvs_ref_props
-    dvs_ref_props["upperBound"].set_value_at(0, atvi.VariableState(atvi.RealValue(5.0), True))
-    dvs_ref_props["upperBound"].set_value_at(1, atvi.VariableState(atvi.RealValue(5.0), True))
-
-    # Run the workflow.
-    workflow.save_workflow()
-    workflow.run()
-
-    assert workflow.get_variable("Model.Optimizer.Target.x").get_value().value == 0.0
-    assert workflow.get_variable("Model.Optimizer.Target.y").get_value().value == 0.0
-    assert workflow.get_variable("Model.Optimizer.Target.z").get_value().value == 0.0
-    assert workflow.get_variable("Model.Optimizer.Target.z").get_value().is_valid
+        assert workflow.get_variable(target.full_name + ".y").get_value().is_valid
+        assert workflow.get_variable(target.full_name + ".y").get_value().value == 0.0

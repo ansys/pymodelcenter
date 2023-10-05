@@ -211,7 +211,10 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def move_component(
-        self, component: Union[IComponent, str], parent: Union[IAssembly, str], index: int = -1
+        self,
+        component: Union[IComponent, str],
+        parent: Union[aew_api.IControlStatement, str],
+        index: int = -1,
     ) -> None:
         """
         Move the component to the parent at the given index.
@@ -243,7 +246,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         self,
         server_path: str,
         name: str,
-        parent: Union[IAssembly, str],
+        parent: Union[aew_api.IControlStatement, str],
         *,
         init_string: Optional[str] = None,
         av_position: Optional[Tuple[int, int]] = None,
