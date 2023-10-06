@@ -380,7 +380,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         )
         self._client.ReferenceArraySetLength(request)
 
-    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
+    @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS, **WRAP_INVALID_ARG})
     @overrides
     def set_value(self, value: atvi.VariableState) -> None:
         if not isinstance(value.value, atvi.RealArrayValue):

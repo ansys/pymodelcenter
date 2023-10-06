@@ -747,6 +747,20 @@ def test_can_set_reference_array_value_and_metadata(workflow, var_name) -> None:
 
 
 @pytest.mark.workflow_name("reference_tests.pxcz")
+def test_setting_reference_array_multidimensional_raises_good_error(workflow) -> None:
+    # Arrange
+    variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.doubleArrayInRef")
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(
+        value=atvi.RealArrayValue(values=[[2.0, 3.0, 4.0, 5.0], [3.0, 4.0, 5.0, 6.0]]),
+        is_valid=True,
+    )
+
+    with pytest.raises(ValueError, match="can only be set using a 1D double array."):
+        variable.set_value(new_value)
+
+
+@pytest.mark.workflow_name("reference_tests.pxcz")
 def test_getting_non_double_reference_array_values_gets_nan(workflow) -> None:
     # Arrange
     variable: mcapi.IDatapin = workflow.get_variable("Model.ReferenceScript.intArrayInRef")
