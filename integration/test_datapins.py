@@ -793,19 +793,19 @@ def test_getting_non_double_reference_array_values_gets_nan(workflow) -> None:
         ),
     ],
 )
-@pytest.mark.workflow_name("optimizer_setup_test.pxcz")
+@pytest.mark.workflow_name("reference_tests.pxcz")
 def test_set_invalid_reference_equation(workflow, equation, expected_msg) -> None:
     # Arrange
-    optimizer: mcapi.IDriverComponent = workflow.get_element_by_name("Model.Optimizer")
-    objectives_cast: mcapi.IReferenceArrayDatapin = typing.cast(
-        mcapi.IReferenceArrayDatapin, optimizer.get_datapins()["objectives"]
+    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
+        "Model.ReferenceScript.doubleArrayInRef"
     )
-    objectives_cast.set_length(1)
+    do_ref_setup(variable)
+    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Assert
     with pytest.raises(ValueError, match=expected_msg):
         # Act
-        objectives_cast[0].equation = equation
+        variable[0].equation = equation
 
 
 @pytest.mark.parametrize(
