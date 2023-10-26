@@ -86,11 +86,11 @@ def test_getting_and_setting_a_datapin_value(workflow) -> None:
     new_value: atvi.IVariableValue = atvi.RealValue(87.32498)
 
     # Act
-    initial_state: ewapi.VariableState = workflow.get_value(
+    initial_state: ewapi.VariableState = workflow.get_datapin_state(
         var_name="ワークフロー.all_types_コンポーネント.realIn"
     )
     workflow.set_value(var_name="ワークフロー.all_types_コンポーネント.realIn", value=new_value)
-    final_state: ewapi.VariableState = workflow.get_value(
+    final_state: ewapi.VariableState = workflow.get_datapin_state(
         var_name="ワークフロー.all_types_コンポーネント.realIn"
     )
 
@@ -398,5 +398,5 @@ def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
         workflow.run(validation_names={"Model.Optimizer.optimizationToolReturnStatus"})
 
         # Verify that optimization occurred
-        assert workflow.get_datapin(target.full_name + ".y").get_value().is_valid
-        assert workflow.get_datapin(target.full_name + ".y").get_value().value == 0.0
+        assert workflow.get_datapin(target.full_name + ".y").get_datapin_state().is_valid
+        assert workflow.get_datapin(target.full_name + ".y").get_datapin_state().value == 0.0

@@ -38,9 +38,9 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
 
     @abstractmethod
-    def get_value(self, var_name: str) -> atvi.VariableState:
+    def get_datapin_state(self, var_name: str) -> atvi.VariableState:
         """
-        Get the value of a datapin.
+        Get the state of a datapin.
 
         Parameters
         ----------

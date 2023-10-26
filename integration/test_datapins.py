@@ -566,7 +566,9 @@ def test_can_set_scalar_file_value_content(workflow) -> None:
 
             workflow.run()
 
-            string_value = workflow.get_value("Model.fileReader.scalarFileContents").safe_value
+            string_value = workflow.get_datapin_state(
+                "Model.fileReader.scalarFileContents"
+            ).safe_value
             assert (
                 string_value == "This is some temporary file content.\r\n"
                 "This is some more temporary file content."
@@ -605,7 +607,9 @@ def test_can_set_array_file_value_content(workflow) -> None:
 
             workflow.run()
 
-            string_array_value = workflow.get_value("Model.fileReader.fileArrayContents").safe_value
+            string_array_value = workflow.get_datapin_state(
+                "Model.fileReader.fileArrayContents"
+            ).safe_value
             assert string_array_value == atvi.StringArrayValue(
                 [2, 2],
                 [

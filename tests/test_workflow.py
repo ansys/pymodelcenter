@@ -573,7 +573,7 @@ get_value_tests = [
 @pytest.mark.parametrize("var_name,expected", get_value_tests)
 def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue):
     # SUT
-    result: var_msgs.VariableState = workflow.get_value(var_name)
+    result: var_msgs.VariableState = workflow.get_datapin_state(var_name)
 
     # Verify
     assert result.value == expected
@@ -583,7 +583,7 @@ def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue)
 def test_get_value_unknown(setup_function) -> None:
     # SUT
     with pytest.raises(ValueError) as err:
-        result: var_msgs.VariableState = workflow.get_value("model.unknown")
+        result: var_msgs.VariableState = workflow.get_datapin_state("model.unknown")
 
     # Verify
     assert (

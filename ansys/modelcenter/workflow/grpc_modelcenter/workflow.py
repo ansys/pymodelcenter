@@ -257,7 +257,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_value(self, var_name: str) -> atvi.VariableState:
+    def get_datapin_state(self, var_name: str) -> atvi.VariableState:
         request = workflow_msg.ElementIdOrName(
             target_name=workflow_msg.NamedElementWorkflow(
                 element_full_name=element_msg.ElementName(name=var_name),

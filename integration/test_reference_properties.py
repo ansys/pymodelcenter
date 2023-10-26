@@ -44,9 +44,7 @@ def test_can_get_reference_property_values(workflow, name, expected_value) -> No
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_get_reference_array_property_values(workflow, name, expected_value) -> None:
     # Arrange
-    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin(
-        "Model.RefPropsScript.arrayInput"
-    )
+    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin("Model.RefPropsScript.arrayInput")
     prop: IReferenceArrayProperty = cast(
         IReferenceArrayProperty, datapin.get_reference_properties()[name]
     )
@@ -68,9 +66,7 @@ def test_getting_reference_array_property_values_at_out_of_bounds_index_returns_
     workflow, index
 ) -> None:
     # Arrange
-    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin(
-        "Model.RefPropsScript.arrayInput"
-    )
+    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin("Model.RefPropsScript.arrayInput")
     prop: IReferenceArrayProperty = cast(
         IReferenceArrayProperty, datapin.get_reference_properties()["stringParam"]
     )
@@ -116,9 +112,7 @@ def test_can_set_reference_property_values(workflow, name, value) -> None:
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_set_reference_array_property_values(workflow, name, value) -> None:
     # Arrange
-    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin(
-        "Model.RefPropsScript.arrayInput"
-    )
+    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin("Model.RefPropsScript.arrayInput")
     prop: IReferenceArrayProperty = cast(
         IReferenceArrayProperty, datapin.get_reference_properties()[name]
     )
@@ -141,9 +135,7 @@ def test_setting_reference_array_property_values_at_out_bounds_index_returns_goo
     workflow, index
 ) -> None:
     # Arrange
-    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin(
-        "Model.RefPropsScript.arrayInput"
-    )
+    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin("Model.RefPropsScript.arrayInput")
     prop: IReferenceArrayProperty = cast(
         IReferenceArrayProperty, datapin.get_reference_properties()["stringParam"]
     )
