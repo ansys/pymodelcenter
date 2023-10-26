@@ -33,7 +33,7 @@ class Group(AbstractGRPCDatapinContainer, api.IGroup):
         ----------
         element_id : ElementId
             ID of the group.
-        engine: Engine
+        engine : Engine
             ``Engine`` that created this group.
         """
         super(Group, self).__init__(element_id=element_id, engine=engine)

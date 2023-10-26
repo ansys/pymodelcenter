@@ -33,7 +33,7 @@ class IDatapinReferenceBase(ABC):
 
         Parameters
         ----------
-        equation: str
+        equation : str
             Reference equation
         """
         ...

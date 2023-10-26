@@ -22,10 +22,10 @@ class IDatapin(aew_api.IDatapin, ABC):
 
         Parameters
         ----------
-        only_fetch_direct_dependents: bool, optional
+        only_fetch_direct_dependents : bool, optional
             Flag for if only the direct dependents should be returned,
             or if all dependents should be returned recursively.
-        follow_suspended_links: bool, optional
+        follow_suspended_links : bool, optional
             Flag for if suspended links between datapins should be followed.
 
         Returns
@@ -43,10 +43,10 @@ class IDatapin(aew_api.IDatapin, ABC):
 
         Parameters
         ----------
-        only_fetch_direct_precedents: bool, optional
+        only_fetch_direct_precedents : bool, optional
             Flag for if only the direct precedents should be returned,
             or if all dependents should be returned recursively.
-        follow_suspended_links: bool, optional
+        follow_suspended_links : bool, optional
             Flag for if suspended links between datapins should be followed.
 
         Returns

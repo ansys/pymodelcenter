@@ -30,9 +30,9 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Parameters
         ----------
-        name: str
+        name : str
             Filename or path where the new workflow will be made.
-        workflow_type: WorkflowType, optional
+        workflow_type : WorkflowType, optional
             Type of workflow to create. Defaults to a data workflow.
 
         Returns
@@ -49,7 +49,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Parameters
         ----------
-        fmt: str
+        fmt : str
             Specified string format for the IFormat object.
 
         Returns
@@ -69,7 +69,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Parameters
         ----------
-        pref: str
+        pref : str
             Name of the preference for which to return the value.
 
         Returns
@@ -88,7 +88,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Parameters
         ----------
-        pref: str
+        pref : str
             Name of the preference to set.
         value: Union[bool, int, float, str]
             Value to set.

@@ -42,7 +42,7 @@ class IReferenceArrayDatapin(
 
         Parameters
         ----------
-        new_size: int
+        new_size : int
             New size of the array.
         """
         ...

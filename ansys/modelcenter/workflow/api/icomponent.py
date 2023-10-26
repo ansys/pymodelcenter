@@ -58,7 +58,7 @@ class IComponent(
 
         Parameters
         ----------
-        method: str
+        method : str
             Name of the method to invoke.
         """
 
