@@ -201,8 +201,9 @@ def convert_grpc_value_to_atvi(
 class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
     """Produces a gRPC ``VariableValue`` message for a given ``atvi.IVariableValue`` object."""
 
-    def __init__(self, local_file_context_stack: Optional[ExitStack] = None,
-                 engine_is_local: bool = True):
+    def __init__(
+        self, local_file_context_stack: Optional[ExitStack] = None, engine_is_local: bool = True
+    ):
         """
         Initialize a new instance.
 
