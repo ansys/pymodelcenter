@@ -283,7 +283,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         Parameters
         ----------
         element_id : ElementId
-            ID of the variable.
+            ID of the datapin.
         engine : Engine
             ``Engine`` that created this datapin.
         """

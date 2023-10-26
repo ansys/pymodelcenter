@@ -29,7 +29,7 @@ from .var_metadata_convert import (
 
 class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
     """
-    Represents a gRPC string variable on the workflow.
+    Represents a gRPC string datapin in the workflow.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from

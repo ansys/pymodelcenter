@@ -311,7 +311,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_variable(self, name: str) -> wfapi.IDatapin:
+    def get_datapin(self, name: str) -> wfapi.IDatapin:
         request = workflow_msg.NamedElementWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),
@@ -319,7 +319,7 @@ class Workflow(wfapi.IWorkflow):
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
         if response.type != element_msg.ELEMENT_TYPE_VARIABLE:
-            raise ValueError("Element is not a variable.")
+            raise ValueError("Element is not a datapin.")
 
         var_type: var_val_msg.VariableType = response.var_type
 
@@ -510,7 +510,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_variable_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
+    def get_datapin_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
         metadata: atvi.CommonVariableMetadata
         request = workflow_msg.NamedElementWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
@@ -519,7 +519,7 @@ class Workflow(wfapi.IWorkflow):
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
         if response.type != element_msg.ELEMENT_TYPE_VARIABLE:
-            raise ValueError("Element is not a variable.")
+            raise ValueError("Element is not a datapin.")
         elem_id: element_msg.ElementId = response.id
         var_type: var_val_msg.VariableType = response.var_type
 
@@ -554,7 +554,7 @@ class Workflow(wfapi.IWorkflow):
             metadata = atvi.FileArrayMetadata()
             self._set_file_metadata(elem_id, metadata)
         else:
-            raise ValueError("Unknown variable type.")
+            raise ValueError("Unknown datapin type.")
         return metadata
 
     def _set_bool_metadata(
@@ -563,7 +563,7 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
     ) -> None:
         """
-        Query gRPC for metadata for a boolean variable, and populate the given metadata object.
+        Query gRPC for metadata for a boolean datapin, and populate the given metadata object.
 
         Parameters
         ----------
@@ -583,7 +583,7 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
     ) -> None:
         """
-        Query gRPC for metadata for a real variable, and populate the given metadata object.
+        Query gRPC for metadata for a real datapin, and populate the given metadata object.
 
         Parameters
         ----------
@@ -607,7 +607,7 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
     ) -> None:
         """
-        Query gRPC for metadata for an integer variable, and populate the given metadata object.
+        Query gRPC for metadata for an integer datapin, and populate the given metadata object.
 
         Parameters
         ----------
@@ -633,7 +633,7 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
     ) -> None:
         """
-        Query gRPC for metadata for a string variable, and populate the given metadata object.
+        Query gRPC for metadata for a string datapin, and populate the given metadata object.
 
         Parameters
         ----------
@@ -653,7 +653,7 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.FileMetadata, atvi.FileArrayMetadata],
     ) -> None:
         """
-        Query gRPC for metadata for a file variable, and populate the given metadata object.
+        Query gRPC for metadata for a file datapin, and populate the given metadata object.
 
         Parameters
         ----------
@@ -668,5 +668,5 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
-        var = self.get_variable(var_name)
+        var = self.get_datapin(var_name)
         var.set_value(atvi.VariableState(value, True))

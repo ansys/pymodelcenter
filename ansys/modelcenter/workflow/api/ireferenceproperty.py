@@ -24,7 +24,7 @@ class IReferencePropertyBase(ABC):
     @abstractmethod
     def get_metadata(self) -> atvi.CommonVariableMetadata:
         """
-        Get the variable value metadata for this property.
+        Get the metadata for this property.
 
         Returns
         -------
@@ -36,7 +36,7 @@ class IReferencePropertyBase(ABC):
     @abstractmethod
     def set_metadata(self, new_value: atvi.CommonVariableMetadata) -> None:
         """
-        Set the variable value metadata for this property.
+        Set the metadata for this property.
 
         Note that this method only has an effect for reference properties where the datatype
         is numeric, in which case the display format passed in is set.

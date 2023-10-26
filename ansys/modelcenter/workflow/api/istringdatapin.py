@@ -1,4 +1,4 @@
-"""Definitions of string variable."""
+"""Definitions of string datapin."""
 from abc import ABC, abstractmethod
 
 import ansys.tools.variableinterop as atvi

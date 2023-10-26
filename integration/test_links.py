@@ -17,10 +17,10 @@ def test_can_get_link_information(workflow) -> None:
 
     # Assert
     expected_rhs_to_lhs_map = {
-        "Model.Quadratic.x": workflow.get_variable("Model.Quadratic1.x").element_id,
-        "Model.Quadratic.a": workflow.get_variable("Model.Quadratic1.a").element_id,
-        "Model.Quadratic.b": workflow.get_variable("Model.Quadratic1.b").element_id,
-        "Model.Quadratic.c": workflow.get_variable("Model.Quadratic1.c").element_id,
+        "Model.Quadratic.x": workflow.get_datapin("Model.Quadratic1.x").element_id,
+        "Model.Quadratic.a": workflow.get_datapin("Model.Quadratic1.a").element_id,
+        "Model.Quadratic.b": workflow.get_datapin("Model.Quadratic1.b").element_id,
+        "Model.Quadratic.c": workflow.get_datapin("Model.Quadratic1.c").element_id,
     }
     actual_rhs_to_lhs_map = {link.rhs: link.lhs for link in links}
     case.assertCountEqual(expected_rhs_to_lhs_map, actual_rhs_to_lhs_map)
@@ -42,7 +42,7 @@ def test_can_break_a_link(workflow) -> None:
 @pytest.mark.workflow_name("linked_quadratics.pxcz")
 def test_can_get_link_suspension_state(workflow) -> None:
     links = {link.lhs: link for link in workflow.get_links()}
-    downstream_var: mcapi.IDatapin = workflow.get_variable("Model.Quadratic1.x")
+    downstream_var: mcapi.IDatapin = workflow.get_datapin("Model.Quadratic1.x")
 
     # Setup: Get the link we intend to suspend. Verify it looks like we think.
     assert downstream_var.element_id in links
@@ -64,10 +64,10 @@ def test_can_get_link_suspension_state(workflow) -> None:
 def test_can_suspend_and_resume_a_link(workflow) -> None:
     # Setup: Get all the links in the model as well as the link we think is involved.
     links = {link.lhs: link for link in workflow.get_links()}
-    upstream_var: mcapi.IDatapin = workflow.get_variable("Model.Quadratic.x")
-    downstream_var: mcapi.IDatapin = workflow.get_variable("Model.Quadratic1.x")
-    control_upstream_var: mcapi.IDatapin = workflow.get_variable("Model.Quadratic.a")
-    control_downstream_var: mcapi.IDatapin = workflow.get_variable("Model.Quadratic1.a")
+    upstream_var: mcapi.IDatapin = workflow.get_datapin("Model.Quadratic.x")
+    downstream_var: mcapi.IDatapin = workflow.get_datapin("Model.Quadratic1.x")
+    control_upstream_var: mcapi.IDatapin = workflow.get_datapin("Model.Quadratic.a")
+    control_downstream_var: mcapi.IDatapin = workflow.get_datapin("Model.Quadratic1.a")
 
     # Setup: Get the link we intend to suspend. Verify it looks like we think.
     assert downstream_var.element_id in links

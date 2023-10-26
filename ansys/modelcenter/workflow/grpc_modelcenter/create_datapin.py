@@ -1,4 +1,4 @@
-"""Defines a function that's used to create a variable object given a type and gRPC info."""
+"""Defines a function that's used to create a datapin object given a type and gRPC info."""
 from typing import TYPE_CHECKING
 
 from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableType

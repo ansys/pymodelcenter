@@ -25,7 +25,7 @@ class ValueTypeNotSupportedError(ValueError):
 
 class _ModelCenterTypeStringConverter(atvi.IVariableTypePseudoVisitor[str]):
     def visit_unknown(self) -> str:
-        raise ValueError("Cannot determine a ModelCenter type for an unknown variable type.")
+        raise ValueError("Cannot determine a ModelCenter type for an unknown datapin type.")
 
     def visit_int(self) -> str:
         return "int"

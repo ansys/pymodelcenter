@@ -15,7 +15,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueT
 
 
 class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
-    """Visitor for setting variable values via ModelCenter gRPC API."""
+    """Visitor for setting datapin values via ModelCenter gRPC API."""
 
     def __init__(
         self,
@@ -29,7 +29,7 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         Parameters
         ----------
         var_id : element_msg.ElementId
-            Name of variable to set.
+            ID of the datapin to set.
         stub : ModelCenterWorkflowServiceStub
             gRPC stub to use.
         engine_is_local : bool

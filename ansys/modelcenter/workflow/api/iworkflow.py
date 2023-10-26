@@ -59,7 +59,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """
 
     @abstractmethod
-    def get_variable_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
+    def get_datapin_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
         """
         Get metadata from a datapin.
 
@@ -118,14 +118,14 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         """Close the current workflow."""
 
     @abstractmethod
-    def get_variable(self, name: str) -> IDatapin:
+    def get_datapin(self, name: str) -> IDatapin:
         """
         Get a datapin with a given name.
 
         Parameters
         ----------
         name : str
-            Full ModelCenter path of the variable.
+            Full ModelCenter path of the datapin.
 
         Returns
         -------

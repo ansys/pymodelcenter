@@ -1,4 +1,4 @@
-"""Provides an object-oriented way to interact with ModelCenter variable groups via gRPC."""
+"""Provides an object-oriented way to interact with ModelCenter datapin groups via gRPC."""
 from typing import TYPE_CHECKING
 
 from overrides import overrides
