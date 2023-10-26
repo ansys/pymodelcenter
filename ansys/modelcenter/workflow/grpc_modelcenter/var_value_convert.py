@@ -201,13 +201,14 @@ def convert_grpc_value_to_atvi(
 class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
     """Produces a gRPC ``VariableValue`` message for a given ``atvi.IVariableValue`` object."""
 
-    def __init__(self, local_file_context_stack: Optional[ExitStack], engine_is_local: bool):
+    def __init__(self, local_file_context_stack: Optional[ExitStack] = None,
+                 engine_is_local: bool = True):
         """
         Initialize a new instance.
 
         Parameters
         ==========
-        local_file_context_stack : ExitStack
+        local_file_context_stack : ExitStack, optional
             Exit stack into which local file content contexts will be opened.
             It is the caller's responsibility to close / exit this object.
             If ``None`` is passed, any attempt to convert a file value
