@@ -272,7 +272,7 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def create_link(
-        self, variable: Union[wfapi.IDatapin, str], equation: Union[str, wfapi.IDatapin]
+        self, datapin: Union[wfapi.IDatapin, str], equation: Union[str, wfapi.IDatapin]
     ) -> None:
         eq: str
         if isinstance(equation, str):
@@ -280,10 +280,10 @@ class Workflow(wfapi.IWorkflow):
         else:
             eq = equation.full_name
         request = workflow_msg.WorkflowCreateLinkRequest(equation=eq)
-        if isinstance(variable, str):
-            request.target.id_string = self.get_element_by_name(variable).element_id
+        if isinstance(datapin, str):
+            request.target.id_string = self.get_element_by_name(datapin).element_id
         else:
-            request.target.id_string = variable.element_id
+            request.target.id_string = datapin.element_id
         response: workflow_msg.WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)

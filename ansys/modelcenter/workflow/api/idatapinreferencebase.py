@@ -16,11 +16,12 @@ class IDatapinReferenceBase(ABC):
     @abstractmethod
     def equation(self) -> str:
         """
-        The reference equation describing what values this variable references.
+        Reference equation describing what values this variable references.
 
         Returns
         -------
-        The reference equation.
+        str
+            The reference equation.
         """
         ...
 
@@ -33,7 +34,7 @@ class IDatapinReferenceBase(ABC):
         Parameters
         ----------
         equation: str
-            The reference equation
+            Reference equation
         """
         ...
 
@@ -49,7 +50,8 @@ class IDatapinReferenceBase(ABC):
 
         Return
         ------
-        True if the datapin is a direct reference.
+        bool
+            ``True`` if the datapin is a direct reference.
         """
         ...
 

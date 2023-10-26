@@ -116,7 +116,7 @@ def test_getting_a_variable_and_its_metadata(workflow) -> None:
 def test_creating_and_getting_links(workflow) -> None:
     # Act
     workflow.create_link(
-        variable="ワークフロー.all_types_コンポーネント.realIn", equation="ワークフロー.all_types_コンポーネント.intIn"
+        datapin="ワークフロー.all_types_コンポーネント.realIn", equation="ワークフロー.all_types_コンポーネント.intIn"
     )
     links: List[mcapi.IDatapinLink] = list(workflow.get_links())
 

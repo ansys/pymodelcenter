@@ -22,67 +22,80 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
         """
-        Set the value of a variable.
-
-        A wrapper around the
-        IModelCenter.setValue(BSTR varName, BSTR value) method.
+        Set the value of a datapin.
 
         Parameters
         ----------
         var_name : str
-            Full ModelCenter path of the variable.
-        value : acvi.IVariableValue
-            The new value to set.
+            Full ModelCenter path of the datapin.
+        value : atvi.IVariableValue
+            New value to set.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If a datapin with the given name does not exist.
         """
 
     @abstractmethod
     def get_value(self, var_name: str) -> atvi.VariableState:
         """
-        Get the value of a variable.
+        Get the value of a datapin.
 
         Parameters
         ----------
         var_name :  str
-            Full ModelCenter path of the variable.
+            Full ModelCenter path of the datapin.
 
         Returns
         -------
         VariableState
-            The value as a VariableState.
+            Value as a ``VariableState``.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If a datapin with the given name does not exist.
         """
 
     @abstractmethod
     def get_variable_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
         """
-        Get metadata from a variable.
-
-        Throws an exception if the variable is not found.
+        Get metadata from a datapin.
 
         Parameters
         ----------
         name : str
-            The full name of the variable.
+            Full name of the datapin.
 
         Returns
         -------
-        CommonVariableMetadata
-            The metadata, in the form of a CommonVariableMetadata
-            implementation.
+        atvi.CommonVariableMetadata
+            Metadata of the datapin.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If a datapin with the given name does not exist.
         """
 
     @abstractmethod
-    def create_link(self, variable: Union[IDatapin, str], equation: Union[str, IDatapin]) -> None:
+    def create_link(self, datapin: Union[IDatapin, str], equation: Union[str, IDatapin]) -> None:
         """
         Create a link to the specified datapin based on the specified equation.
 
         Parameters
         ----------
-        variable : Union[IDatapin, str]
-            The variable that the link should target,
-            or its full name.
+        datapin : Union[IDatapin, str]
+            The datapin that the link should target, or its full name.
         equation : Union[str, IDatapin]
-            Equation of the link. You may also pass an IDatapin object here,
-            and its name will become the equation.
+            Equation of the link. You may also pass an ``IDatapin``
+            object here, and its name will become the equation.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If either the target or equation datapin does not exist.
         """
 
     @abstractmethod
@@ -107,7 +120,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @abstractmethod
     def get_variable(self, name: str) -> IDatapin:
         """
-        Get variable of given name.
+        Get a datapin with a given name.
 
         Parameters
         ----------
@@ -117,7 +130,12 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Returns
         -------
         IDatapin
-            The variable.
+            Datapin with the given name.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If a datapin with the given name does not exist.
         """
 
     @abstractmethod
@@ -127,13 +145,18 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Parameters
         ----------
-        name: str
+        name : str
             The full path to the component.
 
         Returns
         -------
         IComponent
-            The component.
+            Component with the given name.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If a component with the given name does not exist.
         """
 
     @abstractmethod
@@ -145,6 +168,11 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         ----------
         name : str
             Full ModelCenter path of the component to remove.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If a component with the given name does not exist.
         """
 
     @abstractmethod
@@ -159,16 +187,18 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         name : str
             Desired name of the new Assembly.
         parent : Union[IAssembly, str]
-            Full ModelCenter path of the parent Assembly, or an IAssembly that represents it.
-        assembly_type : str, optional
-            Type of the assembly to create. Pass None to create a regular data-dependency assembly
-            (equivalent to passing AssemblyType.ASSEMBLY).
+            Full ModelCenter path of the parent ``IAssembly``, or an
+            ``IAssembly`` that represents it.
+        assembly_type : AssemblyType, optional
+            Type of the assembly to create. Pass ``None`` to create a
+            regular data-dependency assembly (equivalent to passing
+            ``AssemblyType.ASSEMBLY``).
 
         Returns
         -------
         IAssembly
+            Created assembly.
         """
-        # TODO: document / define enumeration for allowed assembly types.
 
     @abstractmethod
     def auto_link(
@@ -180,14 +210,19 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         src_comp : str
-            The source component or the full name of the component desired.
+            Source component, or the full name of the component desired.
         dest_comp : str
-            The destination component or the full name of the component desired.
+            Destination component, or the full name of the component desired.
 
         Returns
         -------
         Collection[IDatapinLink]
-            A collection of the created links.
+            Collection of the created links.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If either the source or destination component does not exist.
         """
 
     @abstractmethod
@@ -222,11 +257,16 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         component : Union[IComponent, str]
-            The component to move.
+            Component to move.
         parent : str
             Owning object of the component.
-        index
+        index : int, optional
             Position in the parent.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If the target component does not exist.
         """
 
     @abstractmethod
@@ -236,9 +276,15 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
         Parameters
         ----------
-        name : Optional[str]
+        name : str, optional
             The full name of the desired assembly.
-            If None is passed, the root assembly of the workflow is returned.
+            If ``None`` is passed, the root assembly of the workflow is
+            returned.
+
+        Raises
+        ------
+        InvalidInstanceError
+            If an assembly with the given name does not exist.
         """
 
     @abstractmethod
@@ -258,19 +304,20 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         server_path : str
-            The MCRE source path of the new component.
+            Source path of the new component, such as the url to the
+            component in ModelCenter Remote Execution.
         name : str
             Name of the new component.
-        parent : str
+        parent : Union[aew_api.IControlStatement, str]
             Parent assembly of the component.
-        init_string: Optional[str]
-            The initialization string.
-        av_position: Optional[Tuple[int, int]]
-            The position on the analysis view at which to insert the component.
-        insert_before: Optional[Union[IComponent, IAssembly, str]]
-            The component before which this component should be inserted.
+        init_string: str, optional
+            Initialization string.
+        av_position: Tuple[int, int], optional
+            Position in the analysis view at which to insert the component.
+        insert_before: Union[IComponent, IAssembly, str], optional
+            Component before which this component should be inserted.
         Returns
         -------
         IComponent
-            The created component.
+            Created component.
         """

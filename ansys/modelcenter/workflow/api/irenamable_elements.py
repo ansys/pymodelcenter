@@ -5,7 +5,7 @@ import ansys.engineeringworkflow.api as aew_api
 
 
 class IRenamableElement(aew_api.IElement, ABC):
-    """An interface for workflow elements that can be renamed."""
+    """Defines an interface for workflow elements that can be renamed."""
 
     @abstractmethod
     def rename(self, new_name: str) -> None:
@@ -15,5 +15,5 @@ class IRenamableElement(aew_api.IElement, ABC):
         Parameters
         ----------
         new_name : str
-            The new short name for the item.
+            New short name for the item.
         """

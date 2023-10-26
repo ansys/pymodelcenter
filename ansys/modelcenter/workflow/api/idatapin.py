@@ -22,16 +22,16 @@ class IDatapin(aew_api.IDatapin, ABC):
 
         Parameters
         ----------
-        only_fetch_direct_dependents: bool
+        only_fetch_direct_dependents: bool, optional
             Flag for if only the direct dependents should be returned,
             or if all dependents should be returned recursively.
-        follow_suspended_links: bool
+        follow_suspended_links: bool, optional
             Flag for if suspended links between datapins should be followed.
 
         Returns
         -------
         Collection[aew_api.IDatapin]
-            A collection of dependent datapins.
+            Collection of dependent datapins.
         """
 
     @abstractmethod
@@ -43,14 +43,14 @@ class IDatapin(aew_api.IDatapin, ABC):
 
         Parameters
         ----------
-        only_fetch_direct_precedents: bool
+        only_fetch_direct_precedents: bool, optional
             Flag for if only the direct precedents should be returned,
             or if all dependents should be returned recursively.
-        follow_suspended_links: bool
+        follow_suspended_links: bool, optional
             Flag for if suspended links between datapins should be followed.
 
         Returns
         -------
         Collection[aew_api.IDatapin]
-            A collection of precedent datapins.
+            Collection of precedent datapins.
         """

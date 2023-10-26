@@ -42,18 +42,19 @@ class IAssemblyChild(ABC):
         Returns
         -------
         Optional[IAssembly]
-            The parent assembly or None if this assembly is the root of the workflow.
+            Parent assembly or ``None`` if this assembly is the root of
+            the workflow.
         """
 
     @abstractmethod
     def get_analysis_view_position(self) -> Tuple[int, int]:
         """
-        Get the position on the analysis view.
+        Get the position of the assembly within the analysis view.
 
         Returns
         -------
         Tuple[int, int]
-            A 2-tuple where the first element is the x-coordinate and the second element is the
+            2-tuple where the first element is the x-coordinate and the second element is the
             y-coordinate.
         """
 
@@ -66,8 +67,9 @@ class IAssembly(
     ABC,
 ):
     """
-    A ModelCenter assembly organizes components and other assemblies in a workflow.
+    Represents a ModelCenter assembly.
 
+    Assemblies organize components and other assemblies in a workflow.
     Additionally, assemblies can have datapins appended to themselves,
     allowing them to act as a way to abstract subordinate parts of the model.
 
@@ -89,16 +91,16 @@ class IAssembly(
         Parameters
         ----------
         name : str
-            the name of the subassembly
-        av_pos : Optional[Tuple[int,int]]
-            the position of the subassembly in the parent assembly's analysis view
-        assembly_type : AssemblyType
-            the type of assembly to create. If None is passed, a regular data-dependency assembly
-            is created (same as passing AssemblyType.ASSEMBLY).
+            Name of the sub-assembly.
+        av_pos : Tuple[int,int], optional
+            Position of the sub-assembly in the parent assembly's analysis view.
+        assembly_type : AssemblyType, optional
+            Type of assembly to create. If ``None`` is passed, a regular data-dependency assembly
+            is created (same as passing ``AssemblyType.ASSEMBLY``).
         Returns
         -------
         IAssembly
-            The created assembly object.
+            Created assembly object.
         """
 
     def add_datapin(self, name: str, mc_type: atvi.VariableType) -> aew_api.IDatapin:
@@ -110,8 +112,8 @@ class IAssembly(
         name : str
             Name of the new datapin to create.
 
-        mc_type
-            The type for the new datapin.
+        mc_type: atvi.VariableType
+            Type for the new datapin.
 
         Returns
         -------
@@ -135,6 +137,6 @@ class IAssembly(
         Returns
         -------
         bool
-            True if the specified datapin was located and deleted,
-            False if it was not and no action was taken.
+            ``True`` if the specified datapin was located and deleted,
+            ``False`` if it was not and no action was taken.
         """
