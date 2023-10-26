@@ -32,8 +32,8 @@ class FileDatapin(BaseDatapin, mc_api.IFileDatapin):
     Represents a file datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -42,10 +42,10 @@ class FileDatapin(BaseDatapin, mc_api.IFileDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
+        element_id : ElementId
+            ID of the datapin.
         engine: Engine
-            The Engine that created this datapin.
+            ``Engine`` that created this datapin.
         """
         super(FileDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -88,8 +88,8 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
     Represents a file array datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     @overrides
@@ -99,10 +99,10 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(FileArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 

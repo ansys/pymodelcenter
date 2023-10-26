@@ -44,8 +44,8 @@ class Assembly(
     Represents an assembly in ModelCenter.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -55,9 +55,9 @@ class Assembly(
         Parameters
         ----------
         element_id : ElementId
-            The id of the .
+            ID of the assembly.
         engine: Engine
-            The engine that created this assembly.
+            ``Engine`` that created this assembly.
         """
         super(Assembly, self).__init__(element_id=element_id, engine=engine)
 

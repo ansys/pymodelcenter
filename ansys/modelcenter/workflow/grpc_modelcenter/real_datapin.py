@@ -32,8 +32,8 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
     Represents a real (double-precision floating point) datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -42,10 +42,10 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the datapin.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(RealDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -87,8 +87,8 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
     Represents a real (double-precision floating point) array datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -97,10 +97,10 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the datapin.
+        element_id : ElementId
+            ID of the datapin.
         engine: Engine
-            The Engine that created this datapin.
+            ``Engine`` that created this datapin.
         """
         super(RealArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 

@@ -10,7 +10,21 @@ from ansys.api.modelcenter.v0.workflow_messages_pb2 import ElementInfo
 
 
 def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
-    """Create an appropriately-typed wrapper given a gRPC element info."""
+    """
+    Create an appropriately-typed wrapper given a gRPC element info.
+
+    Parameters
+    ----------
+    info : ElementInfo
+        Element information from gRPC.
+    engine : Engine
+        ``Engine`` used to create the element.
+
+    Returns
+    -------
+    aew_api.IElement
+        Created element.
+    """
     import ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element as abstract_elem
     import ansys.modelcenter.workflow.grpc_modelcenter.assembly as assembly_impl
     import ansys.modelcenter.workflow.grpc_modelcenter.component as component_impl

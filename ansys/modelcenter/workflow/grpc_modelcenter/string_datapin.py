@@ -32,8 +32,8 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
     Represents a gRPC string variable on the workflow.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -42,10 +42,10 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
+        element_id : ElementId
+            ID of the datapin.
         engine: Engine
-            The Engine that created this datapin.
+            ``Engine`` that created this datapin.
         """
         super(StringDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -84,11 +84,11 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
 class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
     """
-    Represents a gRPC double / real array variable on the workflow.
+    Represents a gRPC double / real array datapin on the workflow.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -97,10 +97,10 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(StringArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 

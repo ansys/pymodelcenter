@@ -38,11 +38,11 @@ class Component(
     mc_api.IComponent,
 ):
     """
-    A component in a Workflow.
+    Defines a component in a workflow.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -52,9 +52,9 @@ class Component(
         Parameters
         ----------
         element_id : ElementId
-            The id of the component.
+            ID of the component.
         engine : Engine
-            The Engine that created this component.
+            ``Engine`` that created this component.
         """
         super(Component, self).__init__(element_id=element_id, engine=engine)
 

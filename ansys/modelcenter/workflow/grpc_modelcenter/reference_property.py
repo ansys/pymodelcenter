@@ -35,7 +35,7 @@ from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferencePr
 
 class ReferencePropertyBase(IReferencePropertyBase):
     """
-    A base class for reference properties that defines common methods.
+    Base class for reference properties that defines common methods.
 
     .. note::
         This base class should not be used directly. Instead, use ReferenceProperty or
@@ -49,12 +49,12 @@ class ReferencePropertyBase(IReferencePropertyBase):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the reference that owns this property.
-        name: str
-            The name of the property.
-        engine: Engine
-            The Engine that created this property.
+        element_id : ElementId
+            ID of the reference that owns this property.
+        name : str
+            Name of the property.
+        engine : Engine
+            ``Engine`` that created this property.
         """
         self._element_id: ElementId = element_id
         self._name = name

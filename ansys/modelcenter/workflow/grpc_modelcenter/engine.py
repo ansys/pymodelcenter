@@ -41,8 +41,8 @@ class WorkflowAlreadyLoadedError(Exception):
     """
     Raised to indicate that a workflow is already loaded.
 
-    This error may be raised if the underlying ModelCenter engine only supports
-    a single workflow loaded at a time.
+    This error may be raised if the underlying ModelCenter engine only
+    supports a single workflow loaded at a time.
     """
 
     ...
@@ -63,16 +63,16 @@ class Engine(IEngine):
 
         Parameters
         ----------
-        is_run_only: bool
-            True if ModelCenter should be started in run-only mode, otherwise False.
-        force_local: bool
-            True if ModelCenter should be started on the local machine even if pypim is configured,
-            otherwise False.
-        heartbeat_interval: numpy.uint
-            The number of milliseconds within which a heartbeat call must be made before the server
+        is_run_only : bool
+            ``True`` if ModelCenter should be started in run-only mode, otherwise ``False``.
+        force_local : bool
+            ``True`` if ModelCenter should be started on the local machine even if pypim is
+            configured, otherwise ``False``.
+        heartbeat_interval : numpy.uint
+            Number of milliseconds within which a heartbeat call must be made before the server
             considers a heartbeat signal to have been missed.
-        allowed_heartbeat_misses: numpy.uint
-            The number of heartbeat misses allowed before the server will terminate.
+        allowed_heartbeat_misses : numpy.uint
+            Number of heartbeat misses allowed before the server will terminate.
         """
         self._is_closed = False
         self._is_run_only: bool = is_run_only
@@ -101,18 +101,16 @@ class Engine(IEngine):
 
         Parameters
         ----------
-        force_local: bool
-            True if ModelCenter should be started on the local machine even if pypim is configured,
-            otherwise False.
+        force_local : bool
+            ``True`` if ModelCenter should be started on the local machine even if pypim is
+            configured, otherwise ``False``.
         """
         if pypim.is_configured() and not force_local:
             if self._is_run_only:
                 raise Exception("pypim does not support running ModelCenter in run-only mode.")
             else:
                 pim = pypim.connect()
-                self._instance = pim.create_instance(
-                    product_name="modelcenter-desktop", product_version=None
-                )
+                self._instance = pim.create_instance(product_name="modelcenter")
                 self._instance.wait_for_ready()
                 self._channel = self._instance.build_grpc_channel()
         else:
@@ -143,7 +141,7 @@ class Engine(IEngine):
 
     @interpret_rpc_error()
     def close(self):
-        """Shut down the grpc server and clear out all objects."""
+        """Shut down the gRPC server and clear out all objects."""
         self._is_closed = True
 
         if self._heartbeat_condition is not None:
@@ -169,22 +167,43 @@ class Engine(IEngine):
 
     @staticmethod
     def _create_client(grpc_channel) -> GRPCModelCenterServiceStub:
-        """Create a client from a grpc channel."""
+        """Create a client from a gRPC channel."""
         return GRPCModelCenterServiceStub(grpc_channel)
 
     @property
     def is_local(self) -> bool:
-        """Get if MCD was started locally, or remotely."""
+        """
+        Get if MCD was started locally, or remotely.
+
+        Returns
+        -------
+        bool
+            ``True`` if MCD was started locally, otherwise ``False``.
+        """
         return self._process is not None
 
     @property
     def channel(self) -> Optional[grpc.Channel]:
-        """Get the grpc channel Used to communicate with MCD."""
+        """
+        Get the gRPC channel used to communicate with MCD.
+
+        Returns
+        -------
+        grpc.Channel
+            The ``grpc.Channel`` object, or ``None`` if it has not been created.
+        """
         return self._channel
 
     @property
     def process_id(self) -> int:
-        """Get the id of the connected process; useful for debugging."""
+        """
+        Get the ID of the connected process; useful for debugging.
+
+        Returns
+        -------
+        int
+            Process ID of the connected MCD.
+        """
         if self._process is not None:
             return self._process.get_process_id()  # pragma: no cover
         else:

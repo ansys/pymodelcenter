@@ -32,8 +32,8 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
     Represents an integer datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -42,10 +42,10 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(IntegerDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -87,8 +87,8 @@ class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
     Represents an integer array datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -97,10 +97,10 @@ class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(IntegerArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 

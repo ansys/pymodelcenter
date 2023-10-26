@@ -29,10 +29,10 @@ class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRen
 
         Parameters
         ----------
-        element_id: ElementId
-            The element ID of the group this object represents in ModelCenter.
+        element_id : ElementId
+            ID of the group this object represents in ModelCenter.
         engine: Engine
-            The Engine that created this element.
+            ``Engine`` that created this element.
         """
         super(AbstractRenamableElement, self).__init__(element_id=element_id, engine=engine)
 

@@ -18,8 +18,8 @@ class Group(AbstractGRPCDatapinContainer, api.IGroup):
     Represents a group in the workflow.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
@@ -32,9 +32,9 @@ class Group(AbstractGRPCDatapinContainer, api.IGroup):
         Parameters
         ----------
         element_id : ElementId
-            The id of the element.
+            ID of the group.
         engine: Engine
-            The engine that created this group.
+            ``Engine`` that created this group.
         """
         super(Group, self).__init__(element_id=element_id, engine=engine)
 

@@ -20,7 +20,16 @@ class UnexpectedEngineError(Exception):
     """
 
     def __init__(self, message: str, code: grpc.StatusCode):
-        """Initialize a new instance."""
+        """
+        Initialize a new instance.
+
+        Parameters
+        ----------
+        message : str
+            Detailed description of the error cause.
+        code : grpc.StatusCode
+            Error code from gRPC.
+        """
         super(UnexpectedEngineError, self).__init__(
             f"The ModelCenter engine reported an unexpected error:\n"
             f"Message:{message}\n"
@@ -32,7 +41,14 @@ class EngineDisconnectedError(Exception):
     """Raised when the gRPC client indicates that the ModelCenter service is not available."""
 
     def __init__(self, message: str):
-        """Initialize a new instance."""
+        """
+        Initialize a new instance.
+
+        Parameters
+        ----------
+        message : str
+            Detailed description of the error cause.
+        """
         super(EngineDisconnectedError, self).__init__(
             f"The connection to the ModelCenter engine is not available. Did you make a call to "
             f"shut it down?\nDetail: {message}"
@@ -43,7 +59,14 @@ class InvalidInstanceError(Exception):
     """Raised when a gRPC error indicates that the target element ID is not valid anymore."""
 
     def __init__(self, message: str):
-        """Initialize a new instance."""
+        """
+        Initialize a new instance.
+
+        Parameters
+        ----------
+        message : str
+            Detailed description of the error cause.
+        """
         super(InvalidInstanceError, self).__init__(
             f"The ModelCenter engine was not able to locate the target element. "
             f"The element may have been deleted or its workflow unloaded.\nDetail: {message}"
@@ -91,7 +114,7 @@ def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exceptio
     Parameters
     ----------
     additional_codes : Mapping[grpc.StatusCode, Type[Exception]]
-        a map of additional codes to wrap
+        Map of additional codes to wrap.
     """
 
     def interpret_rpc_error_parameterized(orig_func) -> Any:

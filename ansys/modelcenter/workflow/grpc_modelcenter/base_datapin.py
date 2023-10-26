@@ -32,9 +32,9 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
         Parameters
         ----------
         element_id : ElementId
-            The id of the element.
-        engine: Engine
-            The Engine that created this datapin.
+            ID of the element.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(BaseDatapin, self).__init__(element_id=element_id, engine=engine)
 

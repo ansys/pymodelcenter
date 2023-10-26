@@ -18,14 +18,14 @@ class DriverComponent(
     mc_api.IDriverComponent,
 ):
     """
-    A driver component in a workflow.
+    Defines a driver component in a workflow.
 
     In process-mode workflows, driver components can contain children.
     In data-mode workflows, driver components should still be instantiated with an instance
     of this class, but the method to get child elements will simply return an empty collection.
 
     .. note::
-    This class should not be directly instantiated by clients. Get a Workflow object
+    This class should not be directly instantiated by clients. Get a ``Workflow`` object
     from an instantiated engine, and use it to get valid instances of Assembly,
     Component or DriverComponent.
     """
@@ -37,8 +37,8 @@ class DriverComponent(
         Parameters
         ----------
         element_id : ElementId
-            The id of the component.
+            ID of the component.
         engine : Engine
-            The Engine that created this component.
+            ``Engine`` that created this component.
         """
         super(DriverComponent, self).__init__(element_id=element_id, engine=engine)

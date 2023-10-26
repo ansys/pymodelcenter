@@ -32,8 +32,8 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
     Represents a boolean datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -42,10 +42,10 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(BooleanDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -90,8 +90,8 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
     Represents a boolean array datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     @overrides
@@ -137,8 +137,8 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
         Parameters
         ----------
         element_id: ElementId
-            The id of the variable.
+            ID of the datapin.
         engine: Engine
-            The Engine that created this datapin.
+            ``Engine`` that created this datapin.
         """
         super(BooleanArrayDatapin, self).__init__(element_id=element_id, engine=engine)
