@@ -38,10 +38,9 @@ python = ">=3.9,<3.12"
 numpy = "^1.22.3"
 overrides = "^6.1"
 ansys-platform-instancemanagement = "^1.1.1"
-ansys-api-modelcenter = "^0.3.0"
+ansys-api-modelcenter = "^0.3.1"
 
-grpcio = "~1.47"
-grpcio-tools = "~1.47"
+grpcio = "^1.59"
 
 Sphinx =  {version="^6.2", optional=true}
 numpydoc =  {version="^1.5", optional=true}
