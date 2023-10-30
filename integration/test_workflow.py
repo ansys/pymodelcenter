@@ -361,7 +361,7 @@ def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
             "Target",
             parent,
         )
-        optimizer.get_datapins()["algorithm"].set_value(
+        optimizer.get_datapins()["algorithm"].set_state(
             atvi.VariableState("4F3D67F6-5838-460F-8696-821D34C527AF", True)
         )
 

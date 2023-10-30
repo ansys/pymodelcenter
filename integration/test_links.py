@@ -83,31 +83,31 @@ def test_can_suspend_and_resume_a_link(workflow) -> None:
     link.suspend()
 
     # Verify: Set the upstream side of the control and suspended links.
-    upstream_var.set_value(atvi.VariableState(atvi.RealValue(4.7), True))
-    control_upstream_var.set_value(atvi.VariableState(atvi.RealValue(867.5309), True))
+    upstream_var.set_state(atvi.VariableState(atvi.RealValue(4.7), True))
+    control_upstream_var.set_state(atvi.VariableState(atvi.RealValue(867.5309), True))
 
-    # Verify: Check that the downstream side has the value we expect.
-    assert downstream_var.get_value().value == atvi.RealValue(1.0)
-    assert control_downstream_var.get_value().value == atvi.RealValue(1.0)
+    # Verify: Check that the downstream side has the state we expect.
+    assert downstream_var.get_state().value == atvi.RealValue(1.0)
+    assert control_downstream_var.get_state().value == atvi.RealValue(1.0)
 
     # Verify: Run the workflow.
     workflow.run()
 
     # Verify: The downstream side should not have been changed for the suspended link,
-    assert downstream_var.get_value().safe_value == atvi.RealValue(1.0)
+    assert downstream_var.get_state().safe_value == atvi.RealValue(1.0)
     # but it should have been for the control link.
-    assert control_downstream_var.get_value().safe_value == atvi.RealValue(867.5309)
+    assert control_downstream_var.get_state().safe_value == atvi.RealValue(867.5309)
 
     # Execute, stage II: Resume the target link
     link.resume()
 
     # Verify: Set the upstream side of the control and resumed links.
-    upstream_var.set_value(atvi.VariableState(atvi.RealValue(17.76), True))
-    control_upstream_var.set_value(atvi.VariableState(atvi.RealValue(9000.1), True))
+    upstream_var.set_state(atvi.VariableState(atvi.RealValue(17.76), True))
+    control_upstream_var.set_state(atvi.VariableState(atvi.RealValue(9000.1), True))
 
     # Verify: Run the workflow.
     workflow.run()
 
     # Verify: The downstream side should be set for both links.
-    assert downstream_var.get_value().safe_value == atvi.RealValue(17.76)
-    assert control_downstream_var.get_value().safe_value == atvi.RealValue(9000.1)
+    assert downstream_var.get_state().safe_value == atvi.RealValue(17.76)
+    assert control_downstream_var.get_state().safe_value == atvi.RealValue(9000.1)

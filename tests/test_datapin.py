@@ -77,7 +77,7 @@ def do_get_state_test(monkeypatch, engine, sut_type, mock_response, expected_acv
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(element_id=sut_element_id, engine=engine)
 
-        result: atvi.VariableState = sut.get_value()
+        result: atvi.VariableState = sut.get_state()
 
         mock_grpc_method.assert_called_once_with(ElementIdOrName(target_id=sut_element_id))
         assert result.value == expected_acvi_state.value
@@ -96,7 +96,7 @@ def do_get_state_test_with_hid(monkeypatch, engine, sut_type) -> None:
         sut = sut_type(element_id=sut_element_id, engine=engine)
 
         with pytest.raises(ValueError, match="does not yet support HIDs."):
-            sut.get_value("some_hid")
+            sut.get_state("some_hid")
 
         mock_grpc_method.assert_not_called()
 
@@ -146,7 +146,7 @@ class MockVariable(BaseDatapin):
     def get_metadata(self) -> atvi.CommonVariableMetadata:
         pass
 
-    def set_value(self, value: VariableState) -> None:
+    def set_state(self, state: VariableState) -> None:
         pass
 
 
@@ -164,7 +164,7 @@ def test_get_state_conversion_failure(monkeypatch, engine) -> None:
 
         with pytest.raises(Exception) as err:
             # SUT
-            result: atvi.VariableState = sut.get_value(None)
+            result: atvi.VariableState = sut.get_state(None)
 
         # Verification
         assert err.value.args[0] == "Unexpected failure converting gRPC value response"

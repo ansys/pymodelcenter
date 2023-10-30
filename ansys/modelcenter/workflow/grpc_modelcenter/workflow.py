@@ -669,4 +669,4 @@ class Workflow(wfapi.IWorkflow):
     @overrides
     def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
         var = self.get_datapin(var_name)
-        var.set_value(atvi.VariableState(value, True))
+        var.set_state(atvi.VariableState(value, True))

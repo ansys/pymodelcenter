@@ -83,8 +83,8 @@ test = ["pytest (>=7.0,<8.0)", "pytest-cov (>=3.0,<4.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/ansys/ansys-engineeringworkflow-api.git"
-reference = "b6694b6188acb14f05f3c2a3994564db544b6c7d"
-resolved_reference = "b6694b6188acb14f05f3c2a3994564db544b6c7d"
+reference = "94f0978718fc4a776e9e0d5fd5baec20cdf6064c"
+resolved_reference = "94f0978718fc4a776e9e0d5fd5baec20cdf6064c"
 
 [[package]]
 name = "ansys-platform-instancemanagement"
@@ -546,14 +546,14 @@ protobuf = ["grpcio-tools (>=1.59.0)"]
 
 [[package]]
 name = "identify"
-version = "2.5.30"
+version = "2.5.31"
 description = "File identification library for Python"
 category = "main"
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "identify-2.5.30-py2.py3-none-any.whl", hash = "sha256:afe67f26ae29bab007ec21b03d4114f41316ab9dd15aa8736a167481e108da54"},
-    {file = "identify-2.5.30.tar.gz", hash = "sha256:f302a4256a15c849b91cfcdcec052a8ce914634b2f77ae87dad29cd749f2d88d"},
+    {file = "identify-2.5.31-py2.py3-none-any.whl", hash = "sha256:90199cb9e7bd3c5407a9b7e81b4abec4bb9d249991c79439ec8af740afc6293d"},
+    {file = "identify-2.5.31.tar.gz", hash = "sha256:7736b3c7a28233637e3c36550646fc6389bedd74ae84cb788200cc8e2dd60b75"},
 ]
 
 [package.extras]
@@ -1460,4 +1460,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "b43fd6ad374e8cf127d63f8e13b113e22c2ae919b2a5d344082f690041258291"
+content-hash = "abf5bcd545985a34981bc663e2fa840fdefab61f7bd292e6601220a2b7449517"

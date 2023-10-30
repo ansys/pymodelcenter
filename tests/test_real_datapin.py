@@ -456,10 +456,10 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = RealDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Verify
         expected_request = SetDoubleValueRequest(
@@ -489,11 +489,11 @@ def test_scalar_set_disallowed(monkeypatch, engine, set_value):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = RealDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute / verify:
         with pytest.raises(TypeError):
-            sut.set_value(new_value)
+            sut.set_state(new_state)
 
         # Verify
         mock_grpc_method.assert_not_called()
@@ -535,10 +535,10 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = RealArrayDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Verify
         expected_request = SetDoubleArrayValueRequest(
@@ -568,11 +568,11 @@ def test_array_set_disallowed(monkeypatch, engine, set_value):
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = RealArrayDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute / verify:
         with pytest.raises(TypeError):
-            sut.set_value(new_value)
+            sut.set_state(new_state)
 
         # Verify
         mock_grpc_method.assert_not_called()

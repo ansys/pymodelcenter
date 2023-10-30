@@ -27,7 +27,7 @@ def test_set_metadata(monkeypatch, engine) -> None:
         sut.set_metadata(atvi.BooleanMetadata())
 
 
-def test_set_value(monkeypatch, engine) -> None:
+def test_set_state(monkeypatch, engine) -> None:
     # Setup
     mock_client = MockWorkflowClientForUnsupportedDatapinTest()
     monkeypatch_client_creation(monkeypatch, UnsupportedTypeDatapin, mock_client)
@@ -35,7 +35,7 @@ def test_set_value(monkeypatch, engine) -> None:
 
     # SUT/Verification
     with pytest.raises(DatapinWithUnsupportedTypeException):
-        sut.set_value(VariableState())
+        sut.set_state(VariableState())
 
 
 def test_get_metadata(monkeypatch, engine) -> None:

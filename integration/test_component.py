@@ -93,15 +93,15 @@ def test_handle_invoke_method(workflow) -> None:
     # Run the workflow to validate outputs.
     workflow.run()
 
-    assert time.get_value().is_valid
-    assert distance.get_value().is_valid
+    assert time.get_state().is_valid
+    assert distance.get_state().is_valid
 
     # Act
     component.invoke_method("Reload Input Values")
 
     # Verify
-    assert time.get_value().is_valid is False
-    assert distance.get_value().is_valid is False
+    assert time.get_state().is_valid is False
+    assert distance.get_state().is_valid is False
 
 
 def test_handle_downloading_values_from_local_component(workflow) -> None:
@@ -126,17 +126,17 @@ def test_can_download_variables(workflow) -> None:
     speed = variables["speed"]
     weight = variables["grossWeight"]
 
-    speed.set_value(atvi.VariableState(value=atvi.RealValue(20.0), is_valid=True))
-    weight.set_value(atvi.VariableState(value=atvi.RealValue(2750.5), is_valid=True))
-    assert speed.get_value().value == 20.0
-    assert weight.get_value().value == 2750.5
+    speed.set_state(atvi.VariableState(value=atvi.RealValue(20.0), is_valid=True))
+    weight.set_state(atvi.VariableState(value=atvi.RealValue(2750.5), is_valid=True))
+    assert speed.get_state().value == 20.0
+    assert weight.get_state().value == 2750.5
 
     # Act
     component.download_values()
 
     # Verify
-    assert speed.get_value().value == 60
-    assert weight.get_value().value == 3200
+    assert speed.get_state().value == 60
+    assert weight.get_state().value == 3200
 
 
 def test_invalidate_component(workflow) -> None:
@@ -148,14 +148,14 @@ def test_invalidate_component(workflow) -> None:
     workflow.run()
 
     # Make sure outputs are valid.
-    assert variables["boolOut"].get_value().is_valid
-    assert variables["realOut"].get_value().is_valid
+    assert variables["boolOut"].get_state().is_valid
+    assert variables["realOut"].get_state().is_valid
 
     component.invalidate()
 
     # Verify outputs are invalidated.
-    assert not variables["boolOut"].get_value().is_valid
-    assert not variables["realOut"].get_value().is_valid
+    assert not variables["boolOut"].get_state().is_valid
+    assert not variables["realOut"].get_state().is_valid
 
 
 def test_can_set_component_properties(workflow) -> None:

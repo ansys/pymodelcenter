@@ -1,4 +1,4 @@
-"""Classes for representing variables that exist in ModelCenter with unsupported value types."""
+"""Classes for representing variables that exist in ModelCenter with unsupported state types."""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
@@ -27,8 +27,8 @@ class UnsupportedTypeDatapin(BaseDatapin):
     Represents a datapin with an unsupported datatype.
 
     Generally speaking, it will be possible to perform interactions that don't require
-    retrieving or otherwise interacting with the datapin's value or metadata. Attempts to
-    set or get the value or metadata will raise a DatapinWithUnsupportedTypeException.
+    retrieving or otherwise interacting with the datapin's state or metadata. Attempts to
+    set or get the state or metadata will raise a DatapinWithUnsupportedTypeException.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -40,7 +40,7 @@ class UnsupportedTypeDatapin(BaseDatapin):
         raise DatapinWithUnsupportedTypeException()
 
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
+    def set_state(self, state: atvi.VariableState) -> None:
         raise DatapinWithUnsupportedTypeException()
 
     @overrides

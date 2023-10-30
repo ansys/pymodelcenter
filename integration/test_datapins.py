@@ -218,7 +218,7 @@ def do_string_assert(datapin: mcapi.IDatapin) -> None:
 
 
 @pytest.mark.parametrize(
-    "var_name,val_type,value,var_setup,var_assert,is_array",
+    "var_name,val_type,state,var_setup,var_assert,is_array",
     [
         (
             "ワークフロー.all_types_コンポーネント.boolIn",
@@ -289,18 +289,18 @@ def do_string_assert(datapin: mcapi.IDatapin) -> None:
     ],
 )
 def test_can_manipulate_type_specific_datapin_information(
-    workflow, var_name, val_type, value, var_setup, var_assert, is_array
+    workflow, var_name, val_type, state, var_setup, var_assert, is_array
 ) -> None:
     # Arrange
     datapin: mcapi.IDatapin = workflow.get_datapin(var_name)
     var_setup(datapin, is_array)
 
     # Act
-    datapin.set_value(value)
-    value_result: ewapi.VariableState = datapin.get_value()
+    datapin.set_state(state)
+    state_result: ewapi.VariableState = datapin.get_state()
 
     # Assert
-    assert value_result == value
+    assert state_result == state
     assert datapin.value_type == val_type
     var_assert(datapin)
 
@@ -494,7 +494,7 @@ def do_file_assert(datapin: mcapi.IDatapin) -> None:
 
 
 @pytest.mark.parametrize(
-    "var_name,val_type,value,var_setup,var_assert,is_array",
+    "var_name,val_type,state,var_setup,var_assert,is_array",
     [
         (
             "Model.fileASCIIIn",
@@ -536,18 +536,18 @@ def do_file_assert(datapin: mcapi.IDatapin) -> None:
 )
 @pytest.mark.workflow_name("file_tests.pxcz")
 def test_can_manipulate_type_specific_file_information(
-    workflow, var_name, val_type, value, var_setup, var_assert, is_array
+    workflow, var_name, val_type, state, var_setup, var_assert, is_array
 ) -> None:
     # Arrange
     datapin: mcapi.IDatapin = workflow.get_datapin(var_name)
     var_setup(datapin, is_array)
 
     # Act
-    # datapin.set_value(value)  # TODO: File set not yet implemented
-    value_result: ewapi.VariableState = datapin.get_value()
+    # datapin.set_state(state)  # TODO: File set not yet implemented
+    state_result: ewapi.VariableState = datapin.get_state()
 
     # Assert
-    # assert value_result == value
+    # assert state_result == state
     assert datapin.value_type == val_type
     var_assert(datapin)
 
@@ -561,8 +561,10 @@ def test_can_set_scalar_file_value_content(workflow) -> None:
         )
         temp_file.flush()
         with atvi.NonManagingFileScope() as file_scope:
-            new_value = file_scope.read_from_file(temp_file.name, mime_type=None, encoding=None)
-            input_datapin.set_value(atvi.VariableState(new_value, True))
+            new_value: atvi.FileValue = file_scope.read_from_file(
+                temp_file.name, mime_type=None, encoding=None
+            )
+            input_datapin.set_state(atvi.VariableState(new_value, True))
 
             workflow.run()
 
@@ -603,7 +605,7 @@ def test_can_set_array_file_value_content(workflow) -> None:
                     ],
                 ],
             )
-            input_datapin.set_value(atvi.VariableState(new_value, True))
+            input_datapin.set_state(atvi.VariableState(new_value, True))
 
             workflow.run()
 
@@ -645,14 +647,14 @@ def test_can_set_reference_value_and_metadata(workflow, var_name) -> None:
     # Arrange
     datapin: mcapi.IDatapin = workflow.get_datapin(var_name)
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+    new_state = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Act
-    datapin.set_value(new_value)
-    value_result: ewapi.VariableState = datapin.get_value()
+    datapin.set_state(new_state)
+    state_result: ewapi.VariableState = datapin.get_state()
 
     # Assert
-    assert value_result == new_value
+    assert state_result == new_state
     assert datapin.value_type == atvi.VariableType.UNKNOWN
     do_ref_assert(datapin)
 
@@ -666,14 +668,14 @@ def test_can_set_reference_array_element_value_and_metadata(workflow, var_name) 
     # Arrange
     datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin(var_name)
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+    new_state = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Act
-    datapin[0].set_value(new_value)
-    value_result: ewapi.VariableState = datapin.get_value()
+    datapin[0].set_state(new_state)
+    state_result: ewapi.VariableState = datapin.get_state()
 
     # Assert
-    assert value_result.value[0] == new_value.value
+    assert state_result.value[0] == new_state.value
     assert datapin.value_type == atvi.VariableType.UNKNOWN
     do_ref_assert(datapin)
 
@@ -691,13 +693,13 @@ def test_setting_reference_array_element_value_at_out_of_bounds_index_gives_good
         "Model.ReferenceScript.doubleArrayInRef"
     )
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+    new_state = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Act and assert
     with pytest.raises(
         ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."
     ):
-        datapin[index].set_value(new_value)
+        datapin[index].set_state(new_state)
 
 
 @pytest.mark.parametrize(
@@ -713,16 +715,16 @@ def test_getting_reference_array_element_value_at_out_of_bounds_index_gives_good
         "Model.ReferenceScript.doubleArrayInRef"
     )
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+    new_state = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Act
-    datapin[0].set_value(new_value)
+    datapin[0].set_state(new_state)
 
     # Assert
     with pytest.raises(
         ewapi.ValueOutOfRangeError, match="The requested index is outside the bounds of the array."
     ):
-        datapin[index].get_value()
+        datapin[index].get_state()
 
 
 @pytest.mark.parametrize(
@@ -734,17 +736,17 @@ def test_can_set_reference_array_value_and_metadata(workflow, var_name) -> None:
     # Arrange
     datapin: mcapi.IDatapin = workflow.get_datapin(var_name)
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(
+    new_state = atvi.VariableState(
         value=atvi.RealArrayValue(values=[2.0, 3.0, 4.0, 5.0]), is_valid=False
     )
 
     # Act
-    datapin.set_value(new_value)
-    value_result: ewapi.VariableState = datapin.get_value()
+    datapin.set_state(new_state)
+    state_result: ewapi.VariableState = datapin.get_state()
     length = len(datapin)
 
     # Assert
-    assert value_result == new_value
+    assert state_result == new_state
     assert datapin.value_type == atvi.VariableType.UNKNOWN
     assert length == 4
     do_ref_assert(datapin)
@@ -755,13 +757,13 @@ def test_setting_reference_array_multidimensional_raises_good_error(workflow) ->
     # Arrange
     datapin: mcapi.IDatapin = workflow.get_datapin("Model.ReferenceScript.doubleArrayInRef")
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(
+    new_state = atvi.VariableState(
         value=atvi.RealArrayValue(values=[[2.0, 3.0, 4.0, 5.0], [3.0, 4.0, 5.0, 6.0]]),
         is_valid=True,
     )
 
     with pytest.raises(ValueError, match="can only be set using a 1D double array."):
-        datapin.set_value(new_value)
+        datapin.set_state(new_state)
 
 
 @pytest.mark.workflow_name("reference_tests.pxcz")
@@ -770,11 +772,11 @@ def test_getting_non_double_reference_array_values_gets_nan(workflow) -> None:
     datapin: mcapi.IDatapin = workflow.get_datapin("Model.ReferenceScript.intArrayInRef")
 
     # Act
-    value_result: ewapi.VariableState = datapin.get_value()
+    state_result: ewapi.VariableState = datapin.get_state()
 
     # Assert
     assert numpy.array_equal(
-        value_result.value,
+        state_result.value,
         atvi.RealArrayValue(values=[numpy.NAN, numpy.NAN, numpy.NAN, numpy.NAN]),
         equal_nan=True,
     )
@@ -804,7 +806,7 @@ def test_set_invalid_reference_equation(workflow, equation, expected_msg) -> Non
         "Model.ReferenceScript.doubleArrayInRef"
     )
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+    new_state = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Assert
     with pytest.raises(ValueError, match=expected_msg):
@@ -825,7 +827,7 @@ def test_getting_the_reference_directness_with_an_out_of_bounds_index_returns_a_
         "Model.ReferenceScript.doubleArrayInRef"
     )
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+    new_state = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Act and assert
     with pytest.raises(
@@ -847,7 +849,7 @@ def test_getting_the_reference_equation_with_an_out_of_bounds_index_returns_a_go
         "Model.ReferenceScript.doubleArrayInRef"
     )
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+    new_state = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Act and assert
     with pytest.raises(
@@ -869,7 +871,7 @@ def test_setting_the_reference_equation_with_an_out_of_bounds_index_returns_a_go
         "Model.ReferenceScript.doubleArrayInRef"
     )
     do_ref_setup(datapin)
-    new_value = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
+    new_state = atvi.VariableState(value=atvi.RealValue(2.0), is_valid=True)
 
     # Act and assert
     with pytest.raises(

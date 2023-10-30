@@ -46,7 +46,7 @@ class IDatapinReferenceBase(ABC):
 
         Direct reference datapins refer to one specific other datapin exactly; their equations
         are just the name of one other datapin. Only direct-reference datapins that refer
-        to a datapin that can be set directly can use set_value to set the referenced datapin.
+        to a datapin that can be set directly can use set_state to set the referenced datapin.
 
         Return
         ------
@@ -56,13 +56,13 @@ class IDatapinReferenceBase(ABC):
         ...
 
     @abstractmethod
-    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
-        """Get the value of the reference equation."""
+    def get_state(self, hid: Optional[str] = None) -> atvi.VariableState:
+        """Get the state of the reference equation."""
 
     @abstractmethod
-    def set_value(self, value: atvi.VariableState) -> None:
+    def set_state(self, state: atvi.VariableState) -> None:
         """
-        Set the value of the referenced datapin.
+        Set the state of the referenced datapin.
 
         This method only works if this is a direct reference; that is,
         if the equation is just the name of a single other datapin with no modification.

@@ -74,13 +74,13 @@ class FileDatapin(BaseDatapin, mc_api.IFileDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        if not isinstance(value.value, atvi.FileValue):
-            raise atvi.IncompatibleTypesException(value.value.variable_type, atvi.VariableType.FILE)
+    def set_state(self, state: atvi.VariableState) -> None:
+        if not isinstance(state.value, atvi.FileValue):
+            raise atvi.IncompatibleTypesException(state.value.variable_type, atvi.VariableType.FILE)
         set_visitor: VariableValueVisitor = VariableValueVisitor(
             self._element_id, self._client, self._engine.is_local
         )
-        value.value.accept(set_visitor)
+        state.value.accept(set_visitor)
 
 
 class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
@@ -131,12 +131,12 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        if not isinstance(value.value, atvi.FileArrayValue):
+    def set_state(self, state: atvi.VariableState) -> None:
+        if not isinstance(state.value, atvi.FileArrayValue):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.FILE_ARRAY
+                state.value.variable_type, atvi.VariableType.FILE_ARRAY
             )
         set_visitor: VariableValueVisitor = VariableValueVisitor(
             self._element_id, self._client, self._engine.is_local
         )
-        value.value.accept(set_visitor)
+        state.value.accept(set_visitor)

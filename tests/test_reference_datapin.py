@@ -149,10 +149,10 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
         sut = grpcmc.ReferenceDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Act
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Assert
         expected_request = var_msgs.SetReferenceValueRequest(
@@ -180,11 +180,11 @@ def test_scalar_set_disallowed(monkeypatch, engine, set_value):
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
         sut = grpcmc.ReferenceDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Act
         with pytest.raises(atvi.IncompatibleTypesException):
-            sut.set_value(new_value)
+            sut.set_state(new_state)
 
         # Assert
         mock_grpc_method.assert_not_called()
@@ -311,7 +311,7 @@ def test_get_value(monkeypatch, engine, variable_value, is_valid, expected_resul
         sut = grpcmc.ReferenceDatapin(element_id=sut_element_id, engine=engine)
 
         # Act
-        result: atvi.VariableState = sut.get_value()
+        result: atvi.VariableState = sut.get_state()
 
         # Assert
         expected_request = var_msgs.GetReferenceValueRequest(target=sut_element_id)
@@ -334,7 +334,7 @@ def test_get_value_with_hid(monkeypatch, engine) -> None:
 
         # Act/Assert
         with pytest.raises(ValueError, match="does not yet support HIDs."):
-            sut.get_value("some_hid")
+            sut.get_state("some_hid")
 
         mock_grpc_method.assert_not_called()
 
@@ -371,10 +371,10 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = grpcmc.ReferenceArrayDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Act
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Assert
         expected_request = var_msgs.SetDoubleArrayValueRequest(
@@ -407,11 +407,11 @@ def test_array_set_disallowed(monkeypatch, engine, set_value):
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut_element_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
         sut = grpcmc.ReferenceArrayDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Act
         with pytest.raises(atvi.IncompatibleTypesException):
-            sut.set_value(new_value)
+            sut.set_state(new_state)
 
         # Assert
         mock_grpc_method.assert_not_called()
@@ -861,7 +861,7 @@ def test_array_index_get_value(
         sut = grpcmc.ReferenceArrayDatapin(element_id=sut_element_id, engine=engine)
 
         # Act
-        result: atvi.VariableState = sut[test_index].get_value()
+        result: atvi.VariableState = sut[test_index].get_state()
 
         # Assert
         expected_request = var_msgs.GetReferenceValueRequest(
@@ -886,7 +886,7 @@ def test_array_index_get_value_with_hid(monkeypatch, engine) -> None:
 
         # Act/Assert
         with pytest.raises(ValueError, match="does not yet support HIDs."):
-            sut[0].get_value("some_hid")
+            sut[0].get_state("some_hid")
 
         mock_grpc_method.assert_not_called()
 

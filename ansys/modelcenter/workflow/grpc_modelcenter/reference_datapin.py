@@ -104,7 +104,7 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
+    def get_state(self, hid: Optional[str] = None) -> atvi.VariableState:
         if hid is not None:
             raise ValueError("This engine implementation does not yet support HIDs.")
         request = var_msgs.GetReferenceValueRequest(
@@ -122,18 +122,18 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
+    def set_state(self, state: atvi.VariableState) -> None:
         if (
-            not isinstance(value.value, atvi.BooleanValue)
-            and not isinstance(value.value, atvi.RealValue)
-            and not isinstance(value.value, atvi.IntegerValue)
-            and not isinstance(value.value, atvi.StringValue)
-            and not isinstance(value.value, atvi.FileValue)
+            not isinstance(state.value, atvi.BooleanValue)
+            and not isinstance(state.value, atvi.RealValue)
+            and not isinstance(state.value, atvi.IntegerValue)
+            and not isinstance(state.value, atvi.StringValue)
+            and not isinstance(state.value, atvi.FileValue)
         ):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.UNKNOWN
+                state.value.variable_type, atvi.VariableType.UNKNOWN
             )
-        new_value = var_value_convert.convert_interop_value_to_grpc(value.value)
+        new_value = var_value_convert.convert_interop_value_to_grpc(state.value)
         request = var_msgs.SetReferenceValueRequest(
             target=self._parent_element_id, index=self._index, new_value=new_value
         )
@@ -192,18 +192,18 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
+    def set_state(self, state: atvi.VariableState) -> None:
         if (
-            not isinstance(value.value, atvi.BooleanValue)
-            and not isinstance(value.value, atvi.RealValue)
-            and not isinstance(value.value, atvi.IntegerValue)
-            and not isinstance(value.value, atvi.StringValue)
-            and not isinstance(value.value, atvi.FileValue)
+            not isinstance(state.value, atvi.BooleanValue)
+            and not isinstance(state.value, atvi.RealValue)
+            and not isinstance(state.value, atvi.IntegerValue)
+            and not isinstance(state.value, atvi.StringValue)
+            and not isinstance(state.value, atvi.FileValue)
         ):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.UNKNOWN
+                state.value.variable_type, atvi.VariableType.UNKNOWN
             )
-        new_value = var_value_convert.convert_interop_value_to_grpc(value.value)
+        new_value = var_value_convert.convert_interop_value_to_grpc(state.value)
         request = var_msgs.SetReferenceValueRequest(target=self._element_id, new_value=new_value)
         response = self._client.ReferenceVariableSetValue(request)
         return response.was_changed
@@ -237,7 +237,7 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
+    def get_state(self, hid: Optional[str] = None) -> atvi.VariableState:
         if hid is not None:
             raise ValueError("This engine implementation does not yet support HIDs.")
         request = var_msgs.GetReferenceValueRequest(target=self._element_id)
@@ -383,12 +383,12 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS, **WRAP_INVALID_ARG})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        if not isinstance(value.value, atvi.RealArrayValue):
+    def set_state(self, state: atvi.VariableState) -> None:
+        if not isinstance(state.value, atvi.RealArrayValue):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.REAL_ARRAY
+                state.value.variable_type, atvi.VariableType.REAL_ARRAY
             )
-        new_value = var_value_convert.convert_interop_value_to_grpc(value.value).double_array_value
+        new_value = var_value_convert.convert_interop_value_to_grpc(state.value).double_array_value
         request = var_msgs.SetDoubleArrayValueRequest(target=self._element_id, new_value=new_value)
         response = self._client.ReferenceArraySetReferencedValues(request)
         return response.was_changed

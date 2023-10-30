@@ -92,7 +92,7 @@ def test_can_set_reference_property_values(workflow, name, value) -> None:
     prop: IReferenceProperty = cast(IReferenceProperty, datapin.get_reference_properties()[name])
 
     # Act
-    prop.set_value(atvi.VariableState(value=value, is_valid=True))
+    prop.set_state(atvi.VariableState(value=value, is_valid=True))
 
     # Assert
     result: atvi.VariableState = prop.get_state()

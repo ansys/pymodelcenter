@@ -131,8 +131,8 @@ class ReferenceProperty(ReferencePropertyBase, IReferenceProperty):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def set_value(self, new_value: atvi.VariableState) -> None:
-        grpc_value = var_value_convert.convert_interop_value_to_grpc(new_value.value)
+    def set_state(self, new_state: atvi.VariableState) -> None:
+        grpc_value = var_value_convert.convert_interop_value_to_grpc(new_state.value)
         target_prop = var_msgs.IndexedReferencePropertyIdentifier(
             target_prop=var_msgs.ReferencePropertyIdentifier(
                 reference_var=self._element_id, prop_name=self._name
@@ -153,8 +153,8 @@ class ReferenceArrayProperty(ReferencePropertyBase, IReferenceArrayProperty):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value_at(self, index: int, new_value: atvi.VariableState) -> None:
-        grpc_value = var_value_convert.convert_interop_value_to_grpc(new_value.value)
+    def set_value_at(self, index: int, new_state: atvi.VariableState) -> None:
+        grpc_value = var_value_convert.convert_interop_value_to_grpc(new_state.value)
         target_prop = var_msgs.IndexedReferencePropertyIdentifier(
             target_prop=var_msgs.ReferencePropertyIdentifier(
                 reference_var=self._element_id, prop_name=self._name

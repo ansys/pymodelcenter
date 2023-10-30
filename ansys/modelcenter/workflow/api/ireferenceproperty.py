@@ -93,13 +93,13 @@ class IReferenceProperty(IReferencePropertyBase, ABC):
         pass
 
     @abstractmethod
-    def set_value(self, new_value: atvi.VariableState) -> None:
+    def set_state(self, new_state: atvi.VariableState) -> None:
         """
         Set the state of the property.
 
         Parameters
         ----------
-        new_value : atvi.VariableState
+        new_state : atvi.VariableState
             New state of the property.
         """
         pass
@@ -109,7 +109,7 @@ class IReferenceArrayProperty(IReferencePropertyBase, ABC):
     """Defines methods for reference array properties."""
 
     @abstractmethod
-    def set_value_at(self, index: int, new_value: atvi.VariableState) -> None:
+    def set_value_at(self, index: int, new_state: atvi.VariableState) -> None:
         """
         Set the state of a particular index.
 
@@ -117,7 +117,7 @@ class IReferenceArrayProperty(IReferencePropertyBase, ABC):
         ----------
         index : int
             Index at which to set the state.
-        new_value: atvi.VariableState
+        new_state: atvi.VariableState
             New state of the property.
         """
 

@@ -74,8 +74,8 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        self._do_set_value(value.value)
+    def set_state(self, state: atvi.VariableState) -> None:
+        self._do_set_value(state.value)
 
     @atvi.implicit_coerce
     def _do_set_value(self, value: atvi.RealValue) -> None:
@@ -129,8 +129,8 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        self._do_set_value(value.value)
+    def set_state(self, state: atvi.VariableState) -> None:
+        self._do_set_value(state.value)
 
     @atvi.implicit_coerce
     def _do_set_value(self, value: atvi.RealArrayValue) -> None:
