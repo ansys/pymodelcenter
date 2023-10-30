@@ -38,8 +38,8 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
     Represents a single element in a ReferenceArrayDatapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of a ReferenceArrayDatapin,
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of a ReferenceArrayDatapin,
         which can then be indexed to get an object of this type.
     """
 
@@ -55,14 +55,14 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
 
         Parameters
         ----------
-        parent_client: ModelCenterWorkflowServiceStub
-            The client used by the parent array
-        parent_element_id: ElementId
-            The id of the parent array.
-        index: int
-            This reference variable's index in the parent array.
-        parent_engine: Engine
-            The Engine that created the parent array datapin.
+        parent_client : ModelCenterWorkflowServiceStub
+            Client used by the parent array.
+        parent_element_id : ElementId
+            ID of the parent array.
+        index : int
+            This reference datapin's index in the parent array.
+        parent_engine : Engine
+            ``Engine`` that created the parent array datapin.
         """
         self._client = parent_client
         self._parent_element_id = parent_element_id
@@ -104,7 +104,7 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
+    def get_state(self, hid: Optional[str] = None) -> atvi.VariableState:
         if hid is not None:
             raise ValueError("This engine implementation does not yet support HIDs.")
         request = var_msgs.GetReferenceValueRequest(
@@ -122,18 +122,18 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
+    def set_state(self, state: atvi.VariableState) -> None:
         if (
-            not isinstance(value.value, atvi.BooleanValue)
-            and not isinstance(value.value, atvi.RealValue)
-            and not isinstance(value.value, atvi.IntegerValue)
-            and not isinstance(value.value, atvi.StringValue)
-            and not isinstance(value.value, atvi.FileValue)
+            not isinstance(state.value, atvi.BooleanValue)
+            and not isinstance(state.value, atvi.RealValue)
+            and not isinstance(state.value, atvi.IntegerValue)
+            and not isinstance(state.value, atvi.StringValue)
+            and not isinstance(state.value, atvi.FileValue)
         ):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.UNKNOWN
+                state.value.variable_type, atvi.VariableType.UNKNOWN
             )
-        new_value = var_value_convert.convert_interop_value_to_grpc(value.value)
+        new_value = var_value_convert.convert_interop_value_to_grpc(state.value)
         request = var_msgs.SetReferenceValueRequest(
             target=self._parent_element_id, index=self._index, new_value=new_value
         )
@@ -169,8 +169,8 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
     Represents a reference datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -179,10 +179,10 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
+        element_id : ElementId
+            ID of the datapin.
         engine: Engine
-            The Engine that created this datapin.
+            ``Engine`` that created this datapin.
         """
         super(ReferenceDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -192,18 +192,18 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
+    def set_state(self, state: atvi.VariableState) -> None:
         if (
-            not isinstance(value.value, atvi.BooleanValue)
-            and not isinstance(value.value, atvi.RealValue)
-            and not isinstance(value.value, atvi.IntegerValue)
-            and not isinstance(value.value, atvi.StringValue)
-            and not isinstance(value.value, atvi.FileValue)
+            not isinstance(state.value, atvi.BooleanValue)
+            and not isinstance(state.value, atvi.RealValue)
+            and not isinstance(state.value, atvi.IntegerValue)
+            and not isinstance(state.value, atvi.StringValue)
+            and not isinstance(state.value, atvi.FileValue)
         ):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.UNKNOWN
+                state.value.variable_type, atvi.VariableType.UNKNOWN
             )
-        new_value = var_value_convert.convert_interop_value_to_grpc(value.value)
+        new_value = var_value_convert.convert_interop_value_to_grpc(state.value)
         request = var_msgs.SetReferenceValueRequest(target=self._element_id, new_value=new_value)
         response = self._client.ReferenceVariableSetValue(request)
         return response.was_changed
@@ -237,7 +237,7 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
+    def get_state(self, hid: Optional[str] = None) -> atvi.VariableState:
         if hid is not None:
             raise ValueError("This engine implementation does not yet support HIDs.")
         request = var_msgs.GetReferenceValueRequest(target=self._element_id)
@@ -271,8 +271,8 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     Represents a reference array datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     @overrides
@@ -282,10 +282,10 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(ReferenceArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -301,12 +301,12 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
         Parameters
         ----------
-        index: int
-            The index in the ReferenceArrayDatapin.
+        index : int
+            Index in the ``ReferenceArrayDatapin``.
 
         Return
         ------
-        The ReferenceArrayDatapinElement at the given index.
+        The ``ReferenceArrayDatapinElement`` at the given index.
         """
         return self.__getitem__(index)
 
@@ -314,16 +314,16 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @abstractmethod
     def __getitem__(self, index: slice) -> Sequence[IDatapinReferenceBase]:
         """
-        Gets a subsection of the ReferenceArrayDatapin.
+        Gets a subsection of the ``ReferenceArrayDatapin``.
 
         Parameters
         ----------
-        index: slice
-            The slice to take from the array.
+        index : slice
+            Slice to take from the array.
 
         Return
         ------
-        A Sequence of ReferenceArrayDatapinElements
+        ``Sequence`` of ``ReferenceArrayDatapinElements``.
         """
         return self.__getitem__(index)
 
@@ -331,17 +331,18 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         self, index: Union[int, slice]
     ) -> Union[IDatapinReferenceBase, Sequence[IDatapinReferenceBase]]:
         """
-        Implementation of __getitem__ for ReferenceArrayDatapins.
+        Implementation of __getitem__ for ``ReferenceArrayDatapins``.
 
         Parameters
         ----------
         index: int | slice
-            The index in the ReferenceArrayDatapin or a slice of the ReferenceArrayDatapin to
-            return.
+            Index in the ``ReferenceArrayDatapin`` or a slice of the
+            ``ReferenceArrayDatapin`` to return.
 
         Return
         ------
-        The ReferenceArrayDatapinElement at the given index or a slice of the ReferenceArrayDatapin.
+        ``ReferenceArrayDatapinElement`` at the given index or a slice
+        of the ``ReferenceArrayDatapin``.
         """
         if isinstance(index, slice):
             raise NotImplementedError()
@@ -362,11 +363,11 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     def __len__(self) -> int:
         """
-        Gets the length of this reference array.
+        Get the length of this reference array.
 
-        Return
-        ------
-        The length of the reference array.
+        Returns
+        -------
+        Length of the reference array.
         """
         response: var_msgs.IntegerValue = self._client.ReferenceArrayGetLength(self._element_id)
         assert response.value >= 0
@@ -382,12 +383,12 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS, **WRAP_INVALID_ARG})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        if not isinstance(value.value, atvi.RealArrayValue):
+    def set_state(self, state: atvi.VariableState) -> None:
+        if not isinstance(state.value, atvi.RealArrayValue):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.REAL_ARRAY
+                state.value.variable_type, atvi.VariableType.REAL_ARRAY
             )
-        new_value = var_value_convert.convert_interop_value_to_grpc(value.value).double_array_value
+        new_value = var_value_convert.convert_interop_value_to_grpc(state.value).double_array_value
         request = var_msgs.SetDoubleArrayValueRequest(target=self._element_id, new_value=new_value)
         response = self._client.ReferenceArraySetReferencedValues(request)
         return response.was_changed

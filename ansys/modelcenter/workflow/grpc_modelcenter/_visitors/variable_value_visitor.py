@@ -15,7 +15,7 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueT
 
 
 class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
-    """Visitor for setting variable values via ModelCenter gRPC API."""
+    """Visitor for setting datapin values via ModelCenter gRPC API."""
 
     def __init__(
         self,
@@ -28,10 +28,12 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
         Parameters
         ----------
-        var_id: str
-            Name of variable to set.
-        stub: ModelCenterWorkflowServiceStub
+        var_id : element_msg.ElementId
+            ID of the datapin to set.
+        stub : ModelCenterWorkflowServiceStub
             gRPC stub to use.
+        engine_is_local : bool
+            Whether the engine running locally or on a remote machine.
         """
         self._var_id = var_id
         self._stub = stub
@@ -157,14 +159,16 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
         Parameters
         ----------
-        value: acvi.IVariableValue
-            The new value to set.
-        request_type: Type
-            The type of request (e.g. SetIntegerValueRequest)
-        value_type: Type
-            The type of value to set, from protobuf (e.g. int, float, etc.)
-        grpc_call: Callable
-            The method used to make the gRPC call (e.g. IntegerVariableSetValue)
+        value : acvi.IVariableValue
+            New value to set.
+        request_type : Type
+            Type of the request (e.g. ``SetIntegerValueRequest``)
+        value_type : Type
+            Type of the value to set, from protobuf (e.g. ``int``,
+            ``float``, etc.)
+        grpc_call : Callable
+            Method used to make the gRPC call (e.g.
+            ``IntegerVariableSetValue``)
 
         Returns
         -------
@@ -188,13 +192,15 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         Parameters
         ----------
         value: acvi.CommonArrayValue
-            The new value to set.
+            New value to set.
         request_type: Type
-            The type of request (e.g. SetIntegerArrayValueRequest)
+            Type of the request (e.g. ``SetIntegerArrayValueRequest``)
         value_type: Type
-            The type of value to set, from protobuf (e.g. IntegerArrayValue, DoubleArrayValue, etc.)
+            Type of the value to set, from protobuf (e.g.
+            ``IntegerArrayValue``, ``DoubleArrayValue``, etc.)
         grpc_call: Callable
-            The method used to make the gRPC call (e.g. IntegerArraySetValue)
+            The method used to make the gRPC call (e.g.
+            ``IntegerArraySetValue``)
 
         Returns
         -------

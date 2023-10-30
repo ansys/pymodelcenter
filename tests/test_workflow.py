@@ -573,7 +573,7 @@ get_value_tests = [
 @pytest.mark.parametrize("var_name,expected", get_value_tests)
 def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue):
     # SUT
-    result: var_msgs.VariableState = workflow.get_value(var_name)
+    result: var_msgs.VariableState = workflow.get_datapin_state(var_name)
 
     # Verify
     assert result.value == expected
@@ -583,7 +583,7 @@ def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue)
 def test_get_value_unknown(setup_function) -> None:
     # SUT
     with pytest.raises(ValueError) as err:
-        result: var_msgs.VariableState = workflow.get_value("model.unknown")
+        result: var_msgs.VariableState = workflow.get_datapin_state("model.unknown")
 
     # Verify
     assert (
@@ -644,7 +644,7 @@ def test_get_bool_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.BOOLEAN_ARRAY if is_array else atvi.VariableType.BOOLEAN
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -658,7 +658,7 @@ def test_get_int_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.INTEGER_ARRAY if is_array else atvi.VariableType.INTEGER
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -678,7 +678,7 @@ def test_get_real_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.REAL_ARRAY if is_array else atvi.VariableType.REAL
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -698,7 +698,7 @@ def test_get_string_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.STRING_ARRAY if is_array else atvi.VariableType.STRING
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -714,7 +714,7 @@ def test_get_file_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.FILE_ARRAY if is_array else atvi.VariableType.FILE
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -724,15 +724,15 @@ def test_get_file_meta_data(setup_function, is_array: bool) -> None:
 def test_get_variable_meta_data_on_invalid_element(setup_function) -> None:
     # SUT
     with pytest.raises(ValueError) as err:
-        metadata = workflow.get_variable_meta_data("model.component")
-    assert err.value.args[0] == "Element is not a variable."
+        metadata = workflow.get_datapin_meta_data("model.component")
+    assert err.value.args[0] == "Element is not a datapin."
 
 
 def test_get_variable_meta_data_on_unknown_type(setup_function) -> None:
     # SUT
     with pytest.raises(ValueError) as err:
-        metadata = workflow.get_variable_meta_data("model.unknown")
-    assert err.value.args[0] == "Unknown variable type."
+        metadata = workflow.get_datapin_meta_data("model.unknown")
+    assert err.value.args[0] == "Unknown datapin type."
 
 
 @pytest.mark.parametrize(
@@ -1339,7 +1339,7 @@ def test_run_asynchronous(setup_function, reset: bool) -> None:
 )
 def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
     # Execute
-    result: mcapi.IDatapin = workflow.get_variable(name)
+    result: mcapi.IDatapin = workflow.get_datapin(name)
 
     # Verify
     assert type(result) == expected_type
@@ -1348,8 +1348,8 @@ def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
 def test_get_variable_on_wrong_type(setup_function) -> None:
     # Execute
     with pytest.raises(ValueError) as err:
-        result: mcapi.IDatapin = workflow.get_variable("fail")
-    assert err.value.args[0] == "Element is not a variable."
+        result: mcapi.IDatapin = workflow.get_datapin("fail")
+    assert err.value.args[0] == "Element is not a datapin."
 
 
 @pytest.mark.parametrize(

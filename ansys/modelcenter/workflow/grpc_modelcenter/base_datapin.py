@@ -32,9 +32,9 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
         Parameters
         ----------
         element_id : ElementId
-            The id of the element.
-        engine: Engine
-            The Engine that created this datapin.
+            ID of the element.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(BaseDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -61,7 +61,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
+    def get_state(self, hid: Optional[str] = None) -> atvi.VariableState:
         if hid is not None:
             raise ValueError("This engine implementation does not yet support HIDs.")
         response = self._client.VariableGetState(ElementIdOrName(target_id=self._element_id))

@@ -31,7 +31,7 @@ def test_getting_elements_by_name(workflow) -> None:
     component: ewapi.IElement = workflow.get_element_by_name(
         element_name="ワークフロー.all_types_コンポーネント"
     )
-    variable: ewapi.IElement = workflow.get_element_by_name(
+    element: ewapi.IElement = workflow.get_element_by_name(
         element_name="ワークフロー.all_types_コンポーネント.boolIn"
     )
 
@@ -40,8 +40,8 @@ def test_getting_elements_by_name(workflow) -> None:
     assert assembly.full_name == "ワークフロー"
     assert isinstance(component, grpcmc.Component)
     assert component.full_name == "ワークフロー.all_types_コンポーネント"
-    assert isinstance(variable, grpcmc.BooleanDatapin)
-    assert variable.full_name == "ワークフロー.all_types_コンポーネント.boolIn"
+    assert isinstance(element, grpcmc.BooleanDatapin)
+    assert element.full_name == "ワークフロー.all_types_コンポーネント.boolIn"
 
 
 def test_creating_a_new_assembly(workflow) -> None:
@@ -81,16 +81,16 @@ def test_removing_a_component(workflow) -> None:
     assert ex is not None
 
 
-def test_getting_and_setting_a_variable_value(workflow) -> None:
+def test_getting_and_setting_a_datapin_value(workflow) -> None:
     # Arrange
     new_value: atvi.IVariableValue = atvi.RealValue(87.32498)
 
     # Act
-    initial_state: ewapi.VariableState = workflow.get_value(
+    initial_state: ewapi.VariableState = workflow.get_datapin_state(
         var_name="ワークフロー.all_types_コンポーネント.realIn"
     )
     workflow.set_value(var_name="ワークフロー.all_types_コンポーネント.realIn", value=new_value)
-    final_state: ewapi.VariableState = workflow.get_value(
+    final_state: ewapi.VariableState = workflow.get_datapin_state(
         var_name="ワークフロー.all_types_コンポーネント.realIn"
     )
 
@@ -101,22 +101,22 @@ def test_getting_and_setting_a_variable_value(workflow) -> None:
     assert final_state.is_valid is True
 
 
-def test_getting_a_variable_and_its_metadata(workflow) -> None:
+def test_getting_a_datapin_and_its_metadata(workflow) -> None:
     # Act
-    variable: mcapi.IDatapin = workflow.get_variable(name="ワークフロー.all_types_コンポーネント.realIn")
-    metadata: atvi.CommonVariableMetadata = workflow.get_variable_meta_data(
+    datapin: mcapi.IDatapin = workflow.get_datapin(name="ワークフロー.all_types_コンポーネント.realIn")
+    metadata: atvi.CommonVariableMetadata = workflow.get_datapin_meta_data(
         name="ワークフロー.all_types_コンポーネント.realIn"
     )
 
     # Assert
-    assert variable.full_name == "ワークフロー.all_types_コンポーネント.realIn"
+    assert datapin.full_name == "ワークフロー.all_types_コンポーネント.realIn"
     assert metadata.variable_type == atvi.VariableType.REAL
 
 
 def test_creating_and_getting_links(workflow) -> None:
     # Act
     workflow.create_link(
-        variable="ワークフロー.all_types_コンポーネント.realIn", equation="ワークフロー.all_types_コンポーネント.intIn"
+        datapin="ワークフロー.all_types_コンポーネント.realIn", equation="ワークフロー.all_types_コンポーネント.intIn"
     )
     links: List[mcapi.IDatapinLink] = list(workflow.get_links())
 
@@ -361,7 +361,7 @@ def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
             "Target",
             parent,
         )
-        optimizer.get_datapins()["algorithm"].set_value(
+        optimizer.get_datapins()["algorithm"].set_state(
             atvi.VariableState("4F3D67F6-5838-460F-8696-821D34C527AF", True)
         )
 
@@ -377,7 +377,7 @@ def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
         assert "goal" in objective_ref_props
         objective_ref_props["goal"].set_value_at(0, atvi.VariableState("solveFor", True))
 
-        # Configure the design variable
+        # Configure the design datapin
         dvs: mcapi.IDatapin = optimizer.get_datapins()["continuousDesignVariables"]
         assert isinstance(dvs, mcapi.IReferenceArrayDatapin)
         dvs_cast: mcapi.IReferenceArrayDatapin = cast(mcapi.IReferenceArrayDatapin, dvs)
@@ -398,5 +398,5 @@ def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
         workflow.run(validation_names={"Model.Optimizer.optimizationToolReturnStatus"})
 
         # Verify that optimization occurred
-        assert workflow.get_variable(target.full_name + ".y").get_value().is_valid
-        assert workflow.get_variable(target.full_name + ".y").get_value().value == 0.0
+        assert workflow.get_datapin(target.full_name + ".y").get_datapin_state().is_valid
+        assert workflow.get_datapin(target.full_name + ".y").get_datapin_state().value == 0.0

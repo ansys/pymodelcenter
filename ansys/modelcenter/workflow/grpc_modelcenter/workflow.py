@@ -40,25 +40,25 @@ class WorkflowRunFailedError(Exception):
 
 class Workflow(wfapi.IWorkflow):
     """
-    Represents a Workflow or Model in ModelCenter.
+    Represents a workflow or model in ModelCenter.
 
     .. note::
-        This class should not be directly instantiated by clients. Create an Engine, and use it to
-        get a valid instance of this object.
+        This class should not be directly instantiated by clients. Create an ``Engine``, and use it
+        to get a valid instance of this object.
     """
 
     def __init__(self, workflow_id: str, file_path: str, engine: "Engine"):
         """
-        Initialize a new Workflow instance.
+        Initialize a new ``Workflow`` instance.
 
         Parameters
         ----------
-        workflow_id: str
-            The workflow's ID.
-        file_path: str
-            The path to the workflow file on disk.
-        engine: Engine
-            The Engine creating this Workflow.
+        workflow_id : str
+            ID of the workflow.
+        file_path : str
+            Path to the workflow file.
+        engine : Engine
+            ``Engine`` creating this ``Workflow``.
         """
         self._id = workflow_id
         self._file_name = os.path.basename(file_path)
@@ -77,7 +77,7 @@ class Workflow(wfapi.IWorkflow):
 
     @staticmethod
     def _create_client(grpc_channel) -> grpc_mcd_workflow.ModelCenterWorkflowServiceStub:
-        """Create a client from a grpc channel."""
+        """Create a client from a gRPC channel."""
         return grpc_mcd_workflow.ModelCenterWorkflowServiceStub(grpc_channel)
 
     __WORKFLOW_INSTANCE_STATE_MAP = {
@@ -97,27 +97,27 @@ class Workflow(wfapi.IWorkflow):
         Returns
         -------
         WorkflowInstanceState
-            The current state of the workflow instance.
+            Current state of the workflow instance.
 
         Notes
         -----
         Possible states are:
 
-        - WorkflowInstanceState.UNKNOWN:
+        - ``WorkflowInstanceState.UNKNOWN``:
             If any datapin validated by the last run no longer exists, or some other error occurs
             getting the state.
-        - WorkflowInstanceState.INVALID:
+        - ``WorkflowInstanceState.INVALID``:
             If any datapin validated by the last run is not valid, or the workflow has never been
             run and the root assembly is invalid. Note that this can be returned by requesting a
             datapin that will not be validated even if the workflow runs successfully, such as
             a datapin in an inactive branch of an if-component.
-        - WorkflowInstanceState.RUNNING:
+        - ``WorkflowInstanceState.RUNNING``:
             If the workflow is currently running.
-        - WorkflowInstanceState.FAILED:
+        - ``WorkflowInstanceState.FAILED``:
             If the last workflow run terminated due to a failure.
-        - WorkflowInstanceState.SUCCESS:
+        - ``WorkflowInstanceState.SUCCESS``:
             If the workflow ran successfully and all requested datapins are valid.
-        Note that WorkflowInstanceState.PAUSED is never returned.
+        Note that ``WorkflowInstanceState.PAUSED`` is never returned.
         """
         request = workflow_msg.GetWorkflowStateRequest()
         response: workflow_msg.GetWorkflowStateResponse = self._stub.WorkflowGetState(request)
@@ -242,7 +242,7 @@ class Workflow(wfapi.IWorkflow):
         Returns
         -------
         str
-            The workflow directory.
+            Directory containing the workflow.
         """
         request = workflow_msg.WorkflowId(id=self._id)
         response: workflow_msg.WorkflowGetDirectoryResponse = self._stub.WorkflowGetDirectory(
@@ -257,7 +257,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_value(self, var_name: str) -> atvi.VariableState:
+    def get_datapin_state(self, var_name: str) -> atvi.VariableState:
         request = workflow_msg.ElementIdOrName(
             target_name=workflow_msg.NamedElementWorkflow(
                 element_full_name=element_msg.ElementName(name=var_name),
@@ -272,7 +272,7 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
     def create_link(
-        self, variable: Union[wfapi.IDatapin, str], equation: Union[str, wfapi.IDatapin]
+        self, datapin: Union[wfapi.IDatapin, str], equation: Union[str, wfapi.IDatapin]
     ) -> None:
         eq: str
         if isinstance(equation, str):
@@ -280,10 +280,10 @@ class Workflow(wfapi.IWorkflow):
         else:
             eq = equation.full_name
         request = workflow_msg.WorkflowCreateLinkRequest(equation=eq)
-        if isinstance(variable, str):
-            request.target.id_string = self.get_element_by_name(variable).element_id
+        if isinstance(datapin, str):
+            request.target.id_string = self.get_element_by_name(datapin).element_id
         else:
-            request.target.id_string = variable.element_id
+            request.target.id_string = datapin.element_id
         response: workflow_msg.WorkflowCreateLinkResponse = self._stub.WorkflowCreateLink(request)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
@@ -311,7 +311,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_variable(self, name: str) -> wfapi.IDatapin:
+    def get_datapin(self, name: str) -> wfapi.IDatapin:
         request = workflow_msg.NamedElementWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
             element_full_name=element_msg.ElementName(name=name),
@@ -319,7 +319,7 @@ class Workflow(wfapi.IWorkflow):
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
         if response.type != element_msg.ELEMENT_TYPE_VARIABLE:
-            raise ValueError("Element is not a variable.")
+            raise ValueError("Element is not a datapin.")
 
         var_type: var_val_msg.VariableType = response.var_type
 
@@ -510,7 +510,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG})
     @overrides
-    def get_variable_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
+    def get_datapin_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
         metadata: atvi.CommonVariableMetadata
         request = workflow_msg.NamedElementWorkflow(
             workflow=workflow_msg.WorkflowId(id=self._id),
@@ -519,7 +519,7 @@ class Workflow(wfapi.IWorkflow):
         response: workflow_msg.ElementInfo = self._stub.WorkflowGetElementByName(request)
 
         if response.type != element_msg.ELEMENT_TYPE_VARIABLE:
-            raise ValueError("Element is not a variable.")
+            raise ValueError("Element is not a datapin.")
         elem_id: element_msg.ElementId = response.id
         var_type: var_val_msg.VariableType = response.var_type
 
@@ -554,7 +554,7 @@ class Workflow(wfapi.IWorkflow):
             metadata = atvi.FileArrayMetadata()
             self._set_file_metadata(elem_id, metadata)
         else:
-            raise ValueError("Unknown variable type.")
+            raise ValueError("Unknown datapin type.")
         return metadata
 
     def _set_bool_metadata(
@@ -563,14 +563,14 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
     ) -> None:
         """
-        Query grpc for metadata for a boolean variable, and populate the given metadata object.
+        Query gRPC for metadata for a boolean datapin, and populate the given metadata object.
 
         Parameters
         ----------
-        var_id: ElementId
-        The id of the variable.
-        metadata: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata]
-        The metadata object to populate.
+        var_id : ElementId
+            ID of the datapin.
+        metadata : Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata]
+            Metadata object to populate.
         """
         response: var_val_msg.BooleanVariableMetadata = self._stub.BooleanVariableGetMetadata(
             var_id
@@ -583,14 +583,14 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
     ) -> None:
         """
-        Query grpc for metadata for a real variable, and populate the given metadata object.
+        Query gRPC for metadata for a real datapin, and populate the given metadata object.
 
         Parameters
         ----------
-        var_id: ElementId
-        The id of the variable.
-        metadata: Union[atvi.RealMetadata, atvi.RealArrayMetadata]
-        The metadata object to populate.
+        var_id : ElementId
+            ID of the datapin.
+        metadata : Union[atvi.RealMetadata, atvi.RealArrayMetadata]
+            Metadata object to populate.
         """
         response: var_val_msg.DoubleVariableMetadata = self._stub.DoubleVariableGetMetadata(var_id)
         metadata.description = response.base_metadata.description
@@ -607,14 +607,14 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
     ) -> None:
         """
-        Query grpc for metadata for an integer variable, and populate the given metadata object.
+        Query gRPC for metadata for an integer datapin, and populate the given metadata object.
 
         Parameters
         ----------
-        var_id: ElementId
-        The id of the variable.
-        metadata: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata]
-        The metadata object to populate.
+        var_id : ElementId
+            ID of the datapin.
+        metadata : Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata]
+            Metadata object to populate.
         """
         response: var_val_msg.IntegerVariableMetadata = self._stub.IntegerVariableGetMetadata(
             var_id
@@ -633,14 +633,14 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
     ) -> None:
         """
-        Query grpc for metadata for a string variable, and populate the given metadata object.
+        Query gRPC for metadata for a string datapin, and populate the given metadata object.
 
         Parameters
         ----------
-        var_id: ElementId
-        The id of the variable.
-        metadata: Union[atvi.StringMetadata, atvi.StringArrayMetadata]
-        The metadata object to populate.
+        var_id : ElementId
+            ID of the datapin.
+        metadata : Union[atvi.StringMetadata, atvi.StringArrayMetadata]
+            Metadata object to populate.
         """
         response: var_val_msg.StringVariableMetadata = self._stub.StringVariableGetMetadata(var_id)
         metadata.description = response.base_metadata.description
@@ -653,14 +653,14 @@ class Workflow(wfapi.IWorkflow):
         metadata: Union[atvi.FileMetadata, atvi.FileArrayMetadata],
     ) -> None:
         """
-        Query grpc for metadata for a file variable, and populate the given metadata object.
+        Query gRPC for metadata for a file datapin, and populate the given metadata object.
 
         Parameters
         ----------
-        var_id: ElementId
-        The id of the variable.
-        metadata: Union[atvi.FileMetadata, atvi.FileArrayMetadata]
-        The metadata object to populate.
+        var_id : ElementId
+            ID of the datapin.
+        metadata : Union[atvi.FileMetadata, atvi.FileArrayMetadata]
+            Metadata object to populate.
         """
         response: var_val_msg.FileVariableMetadata = self._stub.FileVariableGetMetadata(var_id)
         metadata.description = response.base_metadata.description
@@ -668,5 +668,5 @@ class Workflow(wfapi.IWorkflow):
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
     @overrides
     def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
-        var = self.get_variable(var_name)
-        var.set_value(atvi.VariableState(value, True))
+        var = self.get_datapin(var_name)
+        var.set_state(atvi.VariableState(value, True))

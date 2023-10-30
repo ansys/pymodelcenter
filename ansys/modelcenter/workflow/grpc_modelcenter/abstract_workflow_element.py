@@ -29,7 +29,7 @@ from .var_value_convert import convert_grpc_value_to_atvi, convert_interop_value
 
 
 class AbstractWorkflowElement(aew_api.IElement, ABC):
-    """An abstract base class for gRPC-backed workflow elements."""
+    """Defines an abstract base class for gRPC-backed workflow elements."""
 
     def _create_client(self, channel: grpc.Channel) -> ModelCenterWorkflowServiceStub:
         return ModelCenterWorkflowServiceStub(channel)  # pragma: no cover
@@ -40,10 +40,10 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
 
         Parameters
         ----------
-        element_id: ElementId
-            The element ID of the group this object represents in ModelCenter.
-        engine: Engine
-            The Engine that created this element.
+        element_id : ElementId
+            ID of the group this object represents in ModelCenter.
+        engine : Engine
+            ``Engine`` that created this element.
         """
         self._engine = engine
         self._client: ModelCenterWorkflowServiceStub = self._create_client(engine.channel)
@@ -131,9 +131,9 @@ class UnsupportedWorkflowElement(AbstractWorkflowElement):
 
         Parameters
         ----------
-        element_id: ElementId
-            The element ID of the element this object represents in ModelCenter.
-        engine: Engine
-            The Engine that created this element.
+        element_id : ElementId
+            ID of the element this object represents in ModelCenter.
+        engine : Engine
+            ``Engine`` that created this element.
         """
         super(UnsupportedWorkflowElement, self).__init__(element_id=element_id, engine=engine)

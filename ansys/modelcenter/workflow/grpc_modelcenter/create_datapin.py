@@ -1,4 +1,4 @@
-"""Defines a function that's used to create a variable object given a type and gRPC info."""
+"""Defines a function that's used to create a datapin object given a type and gRPC info."""
 from typing import TYPE_CHECKING
 
 from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableType
@@ -66,16 +66,17 @@ def create_datapin(
     var_value_type: VariableType, element_id: ElementId, engine: "Engine"
 ) -> mc_api.IDatapin:
     """
-    Given a datapin type from gRPC and an element ID and Engine, create a datapin wrapper object.
+    Given a ``VariableType`` object and an ``ElementId`` and ``Engine``, create a \
+    ``mc_api.IDatapin`` object.
 
     Parameters
     ----------
     var_value_type : VariableType
-        The variable type that the variable should be.
+        ``VariableType`` that the datapin should be.
     element_id : ElementId
-        The element ID of the particular variable.
+        ID of the particular datapin.
     engine : Engine
-        The Engine that created this datapin.
+        ``Engine`` that created this datapin.
     """
     if var_value_type == VariableType.VARIABLE_TYPE_REFERENCE:
         return ref_pin_impl.ReferenceDatapin(element_id=element_id, engine=engine)

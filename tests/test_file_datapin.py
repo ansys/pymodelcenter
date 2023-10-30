@@ -329,10 +329,10 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = FileDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Verify
         expected_request = SetFileValueRequest(
@@ -356,7 +356,7 @@ def test_scalar_set_remote_produces_good_error(monkeypatch, engine) -> None:
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = FileDatapin(sut_element_id, engine)
             with pytest.raises(ValueTypeNotSupportedError, match="remote"):
-                sut.set_value(atvi.VariableState(atvi.EMPTY_FILE, True))
+                sut.set_state(atvi.VariableState(atvi.EMPTY_FILE, True))
             mock_grpc_method.assert_not_called()
 
 
@@ -397,10 +397,10 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = FileArrayDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Verify
         expected_request = SetFileArrayValueRequest(
@@ -424,7 +424,7 @@ def test_array_set_remote_produces_good_error(monkeypatch, engine) -> None:
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = FileArrayDatapin(sut_element_id, engine)
             with pytest.raises(ValueTypeNotSupportedError, match="remote"):
-                sut.set_value(atvi.VariableState(atvi.FileArrayValue(0, []), True))
+                sut.set_state(atvi.VariableState(atvi.FileArrayValue(0, []), True))
             mock_grpc_method.assert_not_called()
 
 
@@ -451,11 +451,11 @@ def test_array_set_disallowed(monkeypatch, engine, set_value) -> None:
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = FileArrayDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute / verify:
         with pytest.raises(atvi.IncompatibleTypesException):
-            sut.set_value(new_value)
+            sut.set_state(new_state)
 
         # Verify
         mock_grpc_method.assert_not_called()

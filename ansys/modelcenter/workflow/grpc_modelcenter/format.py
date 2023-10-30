@@ -27,8 +27,8 @@ class Format(IFormat):
     Formatter for converting between strings and values.
 
     .. note::
-        This class should not be directly instantiated by clients. Create an Engine, and use it to
-        get a valid instance of this object.
+        This class should not be directly instantiated by clients. Create an ``Engine``, and use it
+        to get a valid instance of this object.
     """
 
     def __init__(self, fmt: str, engine: "Engine"):
@@ -37,10 +37,10 @@ class Format(IFormat):
 
         Parameters
         ----------
-        fmt: str
-            The format string this formatter will use.
-        engine: Engine
-            The Engine creating this formatter.
+        fmt : str
+            Format string this formatter will use.
+        engine : Engine
+            ``Engine`` creating this formatter.
         """
         self._format: str = fmt
         if self._format == "":
@@ -49,13 +49,7 @@ class Format(IFormat):
 
     @staticmethod
     def _create_client(grpc_channel) -> ModelCenterFormatServiceStub:
-        """
-        Create a client from a grpc channel.
-
-        If this test approach is to be used, each implementation class will need a method
-        like this that can be patched out. As a suggested convention, it should be an instance
-        method that takes a channel and returns a client.
-        """
+        """Create a client from a gRPC channel."""
         return ModelCenterFormatServiceStub(grpc_channel)
 
     @property  # type: ignore

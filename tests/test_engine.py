@@ -400,9 +400,7 @@ def test_creation_via_pypim(monkeypatch) -> None:
     # Assert
     assert mock_is_configured.called
     assert mock_connect.called
-    mock_pypim_client.create_instance.assert_called_with(
-        product_name="modelcenter-desktop", product_version=None
-    )
+    mock_pypim_client.create_instance.assert_called_with(product_name="modelcenter")
     assert mock_instance.wait_for_ready.called
     assert mock_instance.build_grpc_channel.called
     assert result_channel == pim_channel

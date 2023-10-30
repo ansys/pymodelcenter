@@ -32,8 +32,8 @@ class FileDatapin(BaseDatapin, mc_api.IFileDatapin):
     Represents a file datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -42,10 +42,10 @@ class FileDatapin(BaseDatapin, mc_api.IFileDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
+        element_id : ElementId
+            ID of the datapin.
         engine: Engine
-            The Engine that created this datapin.
+            ``Engine`` that created this datapin.
         """
         super(FileDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -74,13 +74,13 @@ class FileDatapin(BaseDatapin, mc_api.IFileDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        if not isinstance(value.value, atvi.FileValue):
-            raise atvi.IncompatibleTypesException(value.value.variable_type, atvi.VariableType.FILE)
+    def set_state(self, state: atvi.VariableState) -> None:
+        if not isinstance(state.value, atvi.FileValue):
+            raise atvi.IncompatibleTypesException(state.value.variable_type, atvi.VariableType.FILE)
         set_visitor: VariableValueVisitor = VariableValueVisitor(
             self._element_id, self._client, self._engine.is_local
         )
-        value.value.accept(set_visitor)
+        state.value.accept(set_visitor)
 
 
 class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
@@ -88,8 +88,8 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
     Represents a file array datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     @overrides
@@ -99,10 +99,10 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(FileArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -131,12 +131,12 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        if not isinstance(value.value, atvi.FileArrayValue):
+    def set_state(self, state: atvi.VariableState) -> None:
+        if not isinstance(state.value, atvi.FileArrayValue):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.FILE_ARRAY
+                state.value.variable_type, atvi.VariableType.FILE_ARRAY
             )
         set_visitor: VariableValueVisitor = VariableValueVisitor(
             self._element_id, self._client, self._engine.is_local
         )
-        value.value.accept(set_visitor)
+        state.value.accept(set_visitor)

@@ -14,8 +14,8 @@ class DatapinLink(wfapi.IDatapinLink):
     A link between datapins in a workflow.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(
@@ -26,8 +26,10 @@ class DatapinLink(wfapi.IDatapinLink):
 
         Parameters
         ----------
-        lhs_id: The left hand side of the link equation.
-        rhs: The right hand side of the link equation.
+        lhs_id : str
+            Left-hand side of the link equation.
+        rhs: str
+            Right-hand side of the link equation.
         """
         self._stub = stub
         self._lhs_id = lhs_id

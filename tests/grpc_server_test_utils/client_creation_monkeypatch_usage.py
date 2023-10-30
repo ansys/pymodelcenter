@@ -15,7 +15,7 @@ class ExamplePyModelCenterImplementationObject:
 
     def _create_client(self, grpc_channel) -> engine_grpc.GRPCModelCenterServiceStub:
         """
-        Create a client from a grpc channel.
+        Create a client from a gRPC channel.
 
         If this test approach is to be used, each implementation class will need a method
         like this that can be patched out. As a suggested convention, it should be an instance

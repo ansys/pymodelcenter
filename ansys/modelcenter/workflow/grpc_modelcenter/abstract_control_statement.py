@@ -32,7 +32,7 @@ class AbstractControlStatement(
     An abstract base for control statements (driver components and assemblies).
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object
         from an instantiated engine, and use it to get valid instances of Assembly,
         Component or DriverComponent.
     """
@@ -44,9 +44,9 @@ class AbstractControlStatement(
         Parameters
         ----------
         element_id : ElementId
-            The id of the .
-        engine: Engine
-            The engine that created this assembly.
+            ID of the control statement.
+        engine : Engine
+            ``Engine`` that created this control statement.
         """
         super(AbstractControlStatement, self).__init__(element_id=element_id, engine=engine)
 

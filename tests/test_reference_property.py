@@ -217,7 +217,7 @@ def test_reference_array_property_get_state_at(
     assert result.is_valid == expected_result.is_valid
 
 
-# Test data for set_value tests.
+# Test data for set_state tests.
 set_value_test_data = [
     (atvi.BooleanValue(True), var_msgs.VariableValue(bool_value=True)),
     (atvi.RealValue(4.7), var_msgs.VariableValue(double_value=4.7)),
@@ -266,7 +266,7 @@ set_value_test_data = [
 
 
 @pytest.mark.parametrize("set_value,expected_value_in_request", set_value_test_data)
-def test_reference_property_set_value(
+def test_reference_property_set_state(
     monkeypatch, engine, set_value, expected_value_in_request
 ) -> None:
     # Arrange: gRPC client
@@ -278,10 +278,10 @@ def test_reference_property_set_value(
     sut_name = "Bob"
     sut = grpcmc.ReferenceProperty(element_id=sut_id, name=sut_name, engine=engine)
 
-    new_value = atvi.VariableState(set_value, True)
+    new_state = atvi.VariableState(set_value, True)
 
     # Act
-    sut.set_value(new_value=new_value)
+    sut.set_state(new_state=new_state)
 
     # Assert
     expected_target = var_msgs.IndexedReferencePropertyIdentifier(
@@ -294,7 +294,7 @@ def test_reference_property_set_value(
 
 
 @pytest.mark.parametrize("set_value,expected_value_in_request", set_value_test_data)
-def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request) -> None:
+def test_set_state_at(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceArrayProperty, mock_client)
@@ -304,11 +304,11 @@ def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request)
     sut_name = "Bob"
     sut = grpcmc.ReferenceArrayProperty(element_id=sut_id, name=sut_name, engine=engine)
 
-    new_value = atvi.VariableState(set_value, True)
+    new_state = atvi.VariableState(set_value, True)
     test_index = 5
 
     # Act
-    sut.set_value_at(test_index, new_value=new_value)
+    sut.set_value_at(test_index, new_state=new_state)
 
     # Assert
     expected_target = var_msgs.IndexedReferencePropertyIdentifier(
@@ -321,7 +321,7 @@ def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request)
     mock_client.ReferencePropertySetValue.assert_called_once_with(expected_request)
 
 
-# Test data for set_value not supported tests.
+# Test data for set_state not supported tests.
 set_value_not_supported_test_data = [
     atvi.FileArrayValue(
         shape_=(2, 2),
@@ -335,7 +335,7 @@ set_value_not_supported_test_data = [
 
 
 @pytest.mark.parametrize("set_value", set_value_not_supported_test_data)
-def test_reference_property_set_value_not_supported(monkeypatch, engine, set_value) -> None:
+def test_reference_property_set_state_not_supported(monkeypatch, engine, set_value) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceProperty, mock_client)
@@ -345,17 +345,17 @@ def test_reference_property_set_value_not_supported(monkeypatch, engine, set_val
     sut_name = "Bob"
     sut = grpcmc.ReferenceProperty(element_id=sut_id, name=sut_name, engine=engine)
 
-    new_value = atvi.VariableState(set_value, True)
+    new_state = atvi.VariableState(set_value, True)
 
     # Act/Assert
     with pytest.raises(ValueTypeNotSupportedError):
-        sut.set_value(new_value=new_value)
+        sut.set_state(new_state=new_state)
 
     mock_client.ReferencePropertySetValue.assert_not_called()
 
 
 @pytest.mark.parametrize("set_value", set_value_not_supported_test_data)
-def test_set_value_at_not_supported(monkeypatch, engine, set_value) -> None:
+def test_set_state_at_not_supported(monkeypatch, engine, set_value) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceArrayProperty, mock_client)
@@ -365,12 +365,12 @@ def test_set_value_at_not_supported(monkeypatch, engine, set_value) -> None:
     sut_name = "Bob"
     sut = grpcmc.ReferenceArrayProperty(element_id=sut_id, name=sut_name, engine=engine)
 
-    new_value = atvi.VariableState(set_value, True)
+    new_state = atvi.VariableState(set_value, True)
     test_index = 5
 
     # Act/Assert
     with pytest.raises(ValueTypeNotSupportedError):
-        sut.set_value_at(new_value=new_value, index=test_index)
+        sut.set_value_at(new_state=new_state, index=test_index)
 
     mock_client.ReferencePropertySetValue.assert_not_called()
 

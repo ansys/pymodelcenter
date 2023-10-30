@@ -5,8 +5,7 @@ from numpy import float64, int64
 
 
 class IFormat(ABC):
-    """Class for formatting values in various string formats \
-    (percentage, currency, etc.)."""
+    """Formats values in various string formats (percentage, currency, etc.)."""
 
     @property
     @abstractmethod
@@ -159,7 +158,7 @@ class IFormat(ABC):
         Returns
         -------
         str
-            The format string used to format values.
+            Format string used to format values.
         """
 
     @format.setter
@@ -178,12 +177,12 @@ class IFormat(ABC):
         Parameters
         ----------
         string: str
-            The formatted string.
+            Formatted string to convert.
 
         Returns
         -------
         int64
-            The value of the string.
+            Value of the string.
         """
 
     @abstractmethod
@@ -197,12 +196,12 @@ class IFormat(ABC):
         Parameters
         ----------
         string: str
-            The formatted string.
+            Formatted string to convert.
 
         Returns
         -------
         float64
-            The value of the string.
+            Value of the string.
         """
 
     @abstractmethod
@@ -213,12 +212,12 @@ class IFormat(ABC):
         Parameters
         ----------
         integer: int64
-            The value to format.
+            Value to format.
 
         Returns
         -------
         str
-            The formatted string.
+            Value formatted as a string.
         """
 
     @abstractmethod
@@ -229,12 +228,12 @@ class IFormat(ABC):
         Parameters
         ----------
         real: float64
-            The value to format.
+            Value to format.
 
         Returns
         -------
         str
-            The formatted string.
+            Value formatted as a string.
         """
 
     @abstractmethod
@@ -245,12 +244,12 @@ class IFormat(ABC):
         Parameters
         ----------
         string: str
-            The unformatted string.
+            Unformatted string to format.
 
         Returns
         -------
         str
-            The formatted string.
+            Formatted string.
         """
 
     @abstractmethod
@@ -262,12 +261,12 @@ class IFormat(ABC):
         Parameters
         ----------
         integer: int64
-            The value to format.
+            Value to format.
 
         Returns
         -------
         str
-            The formatted string.
+            Value formatted as an editable string.
         """
 
     @abstractmethod
@@ -279,10 +278,10 @@ class IFormat(ABC):
         Parameters
         ----------
         real: float64
-            The value to format.
+            Value to format.
 
         Returns
         -------
         str
-            The formatted string.
+            Value formatted as an editable string.
         """

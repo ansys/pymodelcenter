@@ -25,7 +25,7 @@ class ValueTypeNotSupportedError(ValueError):
 
 class _ModelCenterTypeStringConverter(atvi.IVariableTypePseudoVisitor[str]):
     def visit_unknown(self) -> str:
-        raise ValueError("Cannot determine a ModelCenter type for an unknown variable type.")
+        raise ValueError("Cannot determine a ModelCenter type for an unknown datapin type.")
 
     def visit_int(self) -> str:
         return "int"
@@ -59,7 +59,7 @@ class _ModelCenterTypeStringConverter(atvi.IVariableTypePseudoVisitor[str]):
 
 
 def interop_type_to_mc_type_string(original: atvi.VariableType) -> str:
-    """Given an atvi interop type, create the corresponding ModelCenter type string."""
+    """Given an ``atvi.VariableType``, create the corresponding ModelCenter type string."""
     return atvi.vartype_accept(_ModelCenterTypeStringConverter(), original)
 
 
@@ -78,7 +78,7 @@ __MCDSTR_TO_INTEROP_TYPE_MAP = {
 
 
 def mc_type_string_to_interop_type(original: str) -> atvi.VariableType:
-    """Given a ModelCenter type string, create the corresponding ATVI interop type."""
+    """Given a ModelCenter type string, create the corresponding ``atvi.VariableType``."""
     return (
         __MCDSTR_TO_INTEROP_TYPE_MAP[original]
         if original in __MCDSTR_TO_INTEROP_TYPE_MAP
@@ -101,7 +101,7 @@ __GRPC_TO_INTEROP_TYPE_MAP = {
 
 
 def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
-    """Given a value of the GRPC type enumeration, return the appropriate value of the ATVI enum."""
+    """Given a value of ``VariableType``, return the appropriate value of ``atvi.VariableType``."""
     return (
         __GRPC_TO_INTEROP_TYPE_MAP[original]
         if original in __GRPC_TO_INTEROP_TYPE_MAP
@@ -111,10 +111,10 @@ def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
 
 def interop_type_to_grpc_type_enum(original: atvi.VariableType) -> VariableType:
     """
-    Given a value of the ATVI type enum, return the appropriate GRPC type enumeration.
+    Given a value of ``atvi.VaribleType`` object, return the appropriate ``VariableType``.
 
-    NOTE: This does not handle reference types, as they map to atvi.VariableType.UNKNOWN, and are
-    thus indistinguishable from actual unknown types.
+    NOTE: This does not handle reference types, as they map to ``atvi.VariableType.UNKNOWN``, and
+    are thus indistinguishable from actual unknown types.
     """
     for key, value in __GRPC_TO_INTEROP_TYPE_MAP.items():
         if value == original:
@@ -126,19 +126,19 @@ def convert_grpc_value_to_atvi(
     original: VariableValue, engine_is_local: bool = True
 ) -> atvi.IVariableValue:
     """
-    Produce an IVariableValue from the Python variable interop library from a grpc message.
+    Produce an ``atvi.IVariableValue`` object from a gRPC message.
 
     Parameters
     ----------
-    original: VariableValue
-        The original gRPC message.
-    engine_is_local: bool
-        True if the Engine that created the file is running on the local machine, False if it is
-        remote.
+    original : VariableValue
+        Original gRPC message.
+    engine_is_local : bool
+        ``True`` if the ``Engine`` that created the file is running on the local machine, ``False``
+        if it is remote.
 
     Returns
     -------
-    The converted value.
+    Converted value.
     """
     if original.HasField("int_value"):
         return atvi.IntegerValue(original.int_value)
@@ -199,21 +199,23 @@ def convert_grpc_value_to_atvi(
 
 
 class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
-    """Produces a gRPC VariableValue message for a given IVariableValue."""
+    """Produces a gRPC ``VariableValue`` message for a given ``atvi.IVariableValue`` object."""
 
-    def __init__(self, local_file_context_stack: Optional[ExitStack], engine_is_local: bool):
+    def __init__(
+        self, local_file_context_stack: Optional[ExitStack] = None, engine_is_local: bool = True
+    ):
         """
         Initialize a new instance.
 
         Parameters
         ==========
-        local_file_context_stack : Optional[ExitStack]
-            An exit stack into which local file content contexts will be opened.
+        local_file_context_stack : ExitStack, optional
+            Exit stack into which local file content contexts will be opened.
             It is the caller's responsibility to close / exit this object.
-            If None is passed, any attempt to convert a file value
-            raises a ValueTypeNotSupportedError.
-        engine_is_local : bool
-            A flag indicating whether the ModelCenter engine is local.
+            If ``None`` is passed, any attempt to convert a file value
+            raises a ``ValueTypeNotSupportedError``.
+        engine_is_local : bool, optional
+            Flag indicating whether the ModelCenter engine is local.
             This may impact how or whether file value conversion is supported.
         """
         self._local_file_context_stack = local_file_context_stack
@@ -311,5 +313,5 @@ def convert_interop_value_to_grpc(
     local_file_context_stack: Optional[ExitStack] = None,
     engine_is_local=False,
 ) -> VariableValue:
-    """Produce an equivalent gRPC VariableValue message from an IVariableValue."""
+    """Create an equivalent ``VariableValue`` message from a ``atvi.IVariableValue`` object."""
     return original.accept(ToGRPCVisitor(local_file_context_stack, engine_is_local))
