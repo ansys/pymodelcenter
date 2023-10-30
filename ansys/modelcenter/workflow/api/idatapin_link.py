@@ -40,31 +40,31 @@ class IDatapinLink(ABC):
         Check whether the link is suspended.
 
         Returns
-        =======
-        bool:
-            True if the link is suspended, and False otherwise.
+        -------
+        bool
+            ``True`` if the link is suspended, and ``False`` otherwise.
         """
 
     @property
     @abstractmethod
     def lhs(self) -> str:
         """
-        The left-hand side of the link.
+        Left-hand side of the link.
 
         The left-hand side receives a value from the right-hand
         side (analogous to a variable assignment in most languages). This will always be
-        a simple variable name, except in cases where the link targets a single array index,
-        in which case it will be the name of the variable plus an array index.
+        a simple datapin name, except in cases where the link targets a single array index,
+        in which case it will be the name of the datapin plus an array index.
         """
 
     @property
     @abstractmethod
     def rhs(self) -> str:
         """
-        Get the right-hand side (source) of the link equation.
+        Right-hand side (source) of the link equation.
 
-        This will be a simple equation containing the names of
-        the other variables on which this link depends.
+        This is a simple equation containing the names of the other
+        datapins on which this link depends.
         """
 
     @rhs.setter

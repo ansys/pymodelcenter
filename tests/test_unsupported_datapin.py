@@ -1,7 +1,5 @@
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableState,
-)
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableState
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
     DatapinWithUnsupportedTypeException,
     UnsupportedTypeDatapin,
@@ -28,7 +26,7 @@ def test_set_metadata(monkeypatch, engine) -> None:
         sut.set_metadata(atvi.BooleanMetadata())
 
 
-def test_set_value(monkeypatch, engine) -> None:
+def test_set_state(monkeypatch, engine) -> None:
     # Setup
     mock_client = MockWorkflowClientForUnsupportedDatapinTest()
     monkeypatch_client_creation(monkeypatch, UnsupportedTypeDatapin, mock_client)
@@ -36,7 +34,7 @@ def test_set_value(monkeypatch, engine) -> None:
 
     # SUT/Verification
     with pytest.raises(DatapinWithUnsupportedTypeException):
-        sut.set_value(VariableState())
+        sut.set_state(VariableState())
 
 
 def test_get_metadata(monkeypatch, engine) -> None:

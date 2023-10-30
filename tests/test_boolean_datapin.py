@@ -1,15 +1,8 @@
 from typing import Type, Union
 import unittest
 
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin import (
-    BooleanArrayDatapin,
-    BooleanDatapin,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ArrayDimensions,
     BooleanArrayValue,
     BooleanVariableMetadata,
@@ -21,6 +14,13 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableState,
     VariableType,
     VariableValue,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin import (
+    BooleanArrayDatapin,
+    BooleanDatapin,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
     CustomMetadataValueNotSupportedError,
@@ -330,7 +330,7 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
         new_value = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_value)
 
         # Verify
         expected_request = SetBooleanValueRequest(
@@ -365,7 +365,7 @@ def test_scalar_set_disallowed(monkeypatch, engine, set_value):
 
         # Execute / verify:
         with pytest.raises(atvi.IncompatibleTypesException):
-            sut.set_value(new_value)
+            sut.set_state(new_value)
 
         # Verify
         mock_grpc_method.assert_not_called()
@@ -397,7 +397,7 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
         new_value = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_value)
 
         # Verify
         expected_request = SetBooleanArrayValueRequest(
@@ -432,7 +432,7 @@ def test_array_set_disallowed(monkeypatch, engine, set_value):
 
         # Execute / verify:
         with pytest.raises(atvi.IncompatibleTypesException):
-            sut.set_value(new_value)
+            sut.set_state(new_value)
 
         # Verify
         mock_grpc_method.assert_not_called()
@@ -440,7 +440,11 @@ def test_array_set_disallowed(monkeypatch, engine, set_value):
 
 def test_scalar_get_type(monkeypatch, engine):
     do_get_type_test(
-        monkeypatch, engine, BooleanDatapin, VariableType.VARTYPE_BOOLEAN, atvi.VariableType.BOOLEAN
+        monkeypatch,
+        engine,
+        BooleanDatapin,
+        VariableType.VARIABLE_TYPE_BOOLEAN,
+        atvi.VariableType.BOOLEAN,
     )
 
 
@@ -449,7 +453,7 @@ def test_array_get_type(monkeypatch, engine):
         monkeypatch,
         engine,
         BooleanArrayDatapin,
-        VariableType.VARTYPE_BOOLEAN_ARRAY,
+        VariableType.VARIABLE_TYPE_BOOLEAN_ARRAY,
         atvi.VariableType.BOOLEAN_ARRAY,
     )
 

@@ -1,15 +1,7 @@
 import unittest.mock
 
-import ansys.modelcenter.workflow.api as mc_api
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ElementId,
-    VariableIsInputResponse,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId, VariableIsInputResponse
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     GetVariableDependenciesRequest,
     VariableInfo,
     VariableInfoCollection,
@@ -17,7 +9,12 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableType,
     VariableTypeResponse,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import ElementIdOrName
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import ElementIdOrName
+import ansys.modelcenter.workflow.api as mc_api
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
 import ansys.tools.variableinterop as atvi
 import pytest
 
@@ -49,7 +46,7 @@ class MockWorkflowClientForVariableTest:
 
 
 def do_get_type_test(monkeypatch, engine, sut_type, type_in_response, expected_acvi_type) -> None:
-    """Perform a test of interop_type on a particular base variable."""
+    """Perform a test of interop_type on a particular base datapin."""
 
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
@@ -69,7 +66,7 @@ def do_get_type_test(monkeypatch, engine, sut_type, type_in_response, expected_a
 
 
 def do_get_state_test(monkeypatch, engine, sut_type, mock_response, expected_acvi_state) -> None:
-    """Perform a test of get_state on a particular base variable."""
+    """Perform a test of get_state on a particular base datapin."""
 
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
@@ -79,7 +76,7 @@ def do_get_state_test(monkeypatch, engine, sut_type, mock_response, expected_acv
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = sut_type(element_id=sut_element_id, engine=engine)
 
-        result: atvi.VariableState = sut.get_value()
+        result: atvi.VariableState = sut.get_state()
 
         mock_grpc_method.assert_called_once_with(ElementIdOrName(target_id=sut_element_id))
         assert result.value == expected_acvi_state.value
@@ -87,7 +84,7 @@ def do_get_state_test(monkeypatch, engine, sut_type, mock_response, expected_acv
 
 
 def do_get_state_test_with_hid(monkeypatch, engine, sut_type) -> None:
-    """Perform a test of get_state on a particular base variable."""
+    """Perform a test of get_state on a particular base datapin."""
 
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
@@ -98,7 +95,7 @@ def do_get_state_test_with_hid(monkeypatch, engine, sut_type) -> None:
         sut = sut_type(element_id=sut_element_id, engine=engine)
 
         with pytest.raises(ValueError, match="does not yet support HIDs."):
-            sut.get_value("some_hid")
+            sut.get_state("some_hid")
 
         mock_grpc_method.assert_not_called()
 
@@ -107,7 +104,7 @@ def do_test_is_input_component(monkeypatch, engine, sut_type, flag_in_response) 
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response = VariableIsInputResponse(
-        is_input_in_component=flag_in_response, is_input_in_workflow=False
+        is_input_component=flag_in_response, is_input_workflow=False
     )
     with unittest.mock.patch.object(
         mock_client, "VariableGetIsInput", return_value=mock_response
@@ -125,7 +122,7 @@ def do_test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response) -
     mock_client = MockWorkflowClientForVariableTest()
     sut_element_id = ElementId(id_string="VAR_UNDER_TEST_ID")
     mock_response = VariableIsInputResponse(
-        is_input_in_component=False, is_input_in_workflow=flag_in_response
+        is_input_component=False, is_input_workflow=flag_in_response
     )
     with unittest.mock.patch.object(
         mock_client, "VariableGetIsInput", return_value=mock_response
@@ -140,7 +137,7 @@ def do_test_is_input_workflow(monkeypatch, engine, sut_type, flag_in_response) -
 
 
 class MockVariable(BaseDatapin):
-    """Mock variable for generic tests."""
+    """Mock datapin for generic tests."""
 
     def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
         pass
@@ -148,12 +145,12 @@ class MockVariable(BaseDatapin):
     def get_metadata(self) -> atvi.CommonVariableMetadata:
         pass
 
-    def set_value(self, value: VariableState) -> None:
+    def set_state(self, state: VariableState) -> None:
         pass
 
 
 def test_get_state_conversion_failure(monkeypatch, engine) -> None:
-    """Perform a test of get_state on a particular base variable."""
+    """Perform a test of get_state on a particular base datapin."""
 
     # Setup
     mock_client = MockWorkflowClientForVariableTest()
@@ -166,7 +163,7 @@ def test_get_state_conversion_failure(monkeypatch, engine) -> None:
 
         with pytest.raises(Exception) as err:
             # SUT
-            result: atvi.VariableState = sut.get_value(None)
+            result: atvi.VariableState = sut.get_state(None)
 
         # Verification
         assert err.value.args[0] == "Unexpected failure converting gRPC value response"
@@ -188,17 +185,17 @@ def test_get_dependents(
         variables=[
             VariableInfo(
                 id=ElementId(id_string="IDVAR_LARRY"),
-                value_type=VariableType.VARTYPE_INTEGER,
+                value_type=VariableType.VARIABLE_TYPE_INTEGER,
                 short_name="larry",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_MOE"),
-                value_type=VariableType.VARTYPE_STRING,
+                value_type=VariableType.VARIABLE_TYPE_STRING,
                 short_name="moe",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_CURLY"),
-                value_type=VariableType.VARTYPE_REAL,
+                value_type=VariableType.VARIABLE_TYPE_REAL,
                 short_name="curly",
             ),
         ]
@@ -216,14 +213,14 @@ def test_get_dependents(
         mock_get_variable_method.assert_called_once_with(
             GetVariableDependenciesRequest(
                 id=sut_element_id,
-                onlyFetchDirectDependencies=only_fetch_direct_dependencies,
-                followSuspended=follow_suspended,
+                only_fetch_direct_dependencies=only_fetch_direct_dependencies,
+                follow_suspended=follow_suspended,
             )
         )
 
         assert len(result) == 3
 
-        # Verify: Different variable types are properly converted from VariableInfo to Datapin types
+        # Verify: Different datapin types are properly converted from VariableInfo to Datapin types
         assert isinstance(result[0], mc_api.IIntegerDatapin)
         assert result[0].element_id == "IDVAR_LARRY"
         assert isinstance(result[1], mc_api.IStringDatapin)
@@ -247,17 +244,17 @@ def test_get_precedents(
         variables=[
             VariableInfo(
                 id=ElementId(id_string="IDVAR_LARRY"),
-                value_type=VariableType.VARTYPE_INTEGER,
+                value_type=VariableType.VARIABLE_TYPE_INTEGER,
                 short_name="larry",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_MOE"),
-                value_type=VariableType.VARTYPE_STRING,
+                value_type=VariableType.VARIABLE_TYPE_STRING,
                 short_name="moe",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_CURLY"),
-                value_type=VariableType.VARTYPE_REAL,
+                value_type=VariableType.VARIABLE_TYPE_REAL,
                 short_name="curly",
             ),
         ]
@@ -275,14 +272,14 @@ def test_get_precedents(
         mock_get_variable_method.assert_called_once_with(
             GetVariableDependenciesRequest(
                 id=sut_element_id,
-                onlyFetchDirectDependencies=only_fetch_direct_dependencies,
-                followSuspended=follow_suspended,
+                only_fetch_direct_dependencies=only_fetch_direct_dependencies,
+                follow_suspended=follow_suspended,
             )
         )
 
         assert len(result) == 3
 
-        # Verify: Different variable types are properly converted from VariableInfo to Datapin types
+        # Verify: Different datapin types are properly converted from VariableInfo to Datapin types
         assert isinstance(result[0], mc_api.IIntegerDatapin)
         assert result[0].element_id == "IDVAR_LARRY"
         assert isinstance(result[1], mc_api.IStringDatapin)

@@ -1,20 +1,13 @@
 from typing import Dict, Optional
 import unittest.mock
 
-import ansys.engineeringworkflow.api as aew_api
-import ansys.modelcenter.workflow.api as mc_api
-from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.custom_metadata_messages_pb2 import (
+from ansys.api.modelcenter.v0.custom_metadata_messages_pb2 import (
     MetadataGetValueRequest,
     MetadataSetValueRequest,
     MetadataSetValueResponse,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ELEMTYPE_ASSEMBLY,
+from ansys.api.modelcenter.v0.element_messages_pb2 import (
+    ELEMENT_TYPE_ASSEMBLY,
     AddAssemblyRequest,
     AddAssemblyResponse,
     AddAssemblyVariableRequest,
@@ -27,23 +20,27 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 impo
     DeleteAssemblyVariableResponse,
     ElementId,
     ElementIdCollection,
-    ElementIndexInParentResponse,
+    ElementIndexParentResponse,
     ElementName,
     ElementType,
     RenameRequest,
     RenameResponse,
 )
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableType,
-    VariableValue,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 import (
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableType, VariableValue
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import (
     DeleteAssemblyVariableRequest,
     ElementIdOrName,
     ElementInfo,
     ElementInfoCollection,
-    NamedElementInWorkflow,
+    NamedElementWorkflow,
 )
+import ansys.engineeringworkflow.api as aew_api
+import ansys.modelcenter.workflow.api as mc_api
+from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
     UnsupportedTypeDatapin,
 )
@@ -85,7 +82,7 @@ class MockWorkflowClientForAssemblyTest:
     def ElementGetParentElement(self, request: ElementId) -> ElementInfo:
         return ElementInfo(
             id=ElementId(id_string=self._parent_id_responses[request.id_string]),
-            type=ELEMTYPE_ASSEMBLY,
+            type=ELEMENT_TYPE_ASSEMBLY,
         )
 
     def RegistryGetVariables(self, request: ElementId) -> ElementIdCollection:
@@ -125,8 +122,8 @@ class MockWorkflowClientForAssemblyTest:
     def AssemblyGetAssembliesAndComponents(self, request: ElementId) -> ElementInfoCollection:
         return ElementInfoCollection()
 
-    def ElementGetIndexInParent(self, request: ElementId) -> ElementIndexInParentResponse:
-        return ElementIndexInParentResponse()
+    def ElementGetIndexInParent(self, request: ElementId) -> ElementIndexParentResponse:
+        return ElementIndexParentResponse()
 
     def WorkflowGetElementByName(self, request: ElementName) -> ElementId:
         return ElementId()
@@ -151,9 +148,19 @@ def test_full_name(monkeypatch, engine) -> None:
     awe_tests.do_test_name(monkeypatch, engine, Assembly)
 
 
-def test_parent_element(monkeypatch, engine) -> None:
+def test_parent_element_other_assembly(monkeypatch, engine) -> None:
     awe_tests.do_test_parent_element(
-        monkeypatch, engine, Assembly, ElementType.ELEMTYPE_ASSEMBLY, Assembly
+        monkeypatch, engine, Assembly, ElementType.ELEMENT_TYPE_ASSEMBLY, Assembly
+    )
+
+
+def test_parent_element_driver_comp(monkeypatch, engine) -> None:
+    awe_tests.do_test_parent_element(
+        monkeypatch,
+        engine,
+        Assembly,
+        ElementType.ELEMENT_TYPE_DRIVERCOMPONENT,
+        mc_api.IDriverComponent,
     )
 
 
@@ -162,7 +169,7 @@ def test_parent_element_root(monkeypatch, engine) -> None:
     id_in_response = ""
     sut_element_id = ElementId(id_string="SUT_ELEMENT")
     mock_response = ElementInfo(
-        id=ElementId(id_string=id_in_response), type=ElementType.ELEMTYPE_ASSEMBLY
+        id=ElementId(id_string=id_in_response), type=ElementType.ELEMENT_TYPE_ASSEMBLY
     )
     with unittest.mock.patch.object(
         mock_client, "ElementGetParentElement", return_value=mock_response
@@ -237,8 +244,8 @@ def test_can_get_parent_grpc_reports_nonassembly(monkeypatch, engine) -> None:
     sut_element_id = ElementId(id_string="SUT_ELEMENT")
     mock_response = ElementInfo(
         id=ElementId(id_string=id_in_response),
-        type=ElementType.ELEMTYPE_VARIABLE,
-        var_type=VariableType.VARTYPE_INTEGER,
+        type=ElementType.ELEMENT_TYPE_VARIABLE,
+        var_type=VariableType.VARIABLE_TYPE_INTEGER,
     )
     with unittest.mock.patch.object(
         mock_client, "ElementGetParentElement", return_value=mock_response
@@ -267,7 +274,10 @@ def test_get_child_elements_empty(monkeypatch, engine) -> None:
 
 @pytest.mark.parametrize(
     "type_in_response,expected_wrapper_type",
-    [(ElementType.ELEMTYPE_ASSEMBLY, Assembly), (ElementType.ELEMTYPE_COMPONENT, Component)],
+    [
+        (ElementType.ELEMENT_TYPE_ASSEMBLY, Assembly),
+        (ElementType.ELEMENT_TYPE_COMPONENT, Component),
+    ],
 )
 def test_get_child_elements_one_child(
     monkeypatch, engine, type_in_response: ElementType, expected_wrapper_type
@@ -297,15 +307,15 @@ def test_get_child_elements_one_child(
 def test_get_child_assemblies_multiple_children(monkeypatch, engine) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
     larry_assembly_info = ElementInfo(
-        id=ElementId(id_string="IDASSEMBLY_LARRY"), type=ElementType.ELEMTYPE_ASSEMBLY
+        id=ElementId(id_string="IDDRIVER_LARRY"), type=ElementType.ELEMENT_TYPE_DRIVERCOMPONENT
     )
-    mock_client.name_responses["IDASSEMBLY_LARRY"] = "larry"
+    mock_client.name_responses["IDDRIVER_LARRY"] = "larry"
     moe_comp_info = ElementInfo(
-        id=ElementId(id_string="IDCOMP_MOE"), type=ElementType.ELEMTYPE_COMPONENT
+        id=ElementId(id_string="IDCOMP_MOE"), type=ElementType.ELEMENT_TYPE_COMPONENT
     )
     mock_client.name_responses["IDCOMP_MOE"] = "moe"
     curly_assembly_info = ElementInfo(
-        id=ElementId(id_string="IDASSEMBLY_CURLY"), type=ElementType.ELEMTYPE_ASSEMBLY
+        id=ElementId(id_string="IDASSEMBLY_CURLY"), type=ElementType.ELEMENT_TYPE_ASSEMBLY
     )
     mock_client.name_responses["IDASSEMBLY_CURLY"] = "curly"
     response = ElementInfoCollection(
@@ -322,12 +332,12 @@ def test_get_child_assemblies_multiple_children(monkeypatch, engine) -> None:
             sut = Assembly(ElementId(id_string="STOOGES"), engine=engine)
             result = sut.get_elements()
             assert len(result) == 3
-            assert isinstance(result["larry"], Assembly)
+            assert isinstance(result["larry"], mc_api.IDriverComponent)
             assert isinstance(result["moe"], Component)
             assert isinstance(result["curly"], Assembly)
             mock_get_assembly_method.assert_called_once_with(ElementId(id_string="STOOGES"))
             name = result["larry"].full_name
-            mock_get_name_method.assert_called_once_with(ElementId(id_string="IDASSEMBLY_LARRY"))
+            mock_get_name_method.assert_called_once_with(ElementId(id_string="IDDRIVER_LARRY"))
             mock_get_name_method.reset_mock()
             name = result["moe"].full_name
             mock_get_name_method.assert_called_once_with(ElementId(id_string="IDCOMP_MOE"))
@@ -343,17 +353,17 @@ def test_get_variables_empty(monkeypatch, engine) -> None:
 @pytest.mark.parametrize(
     "var_type,expected_wrapper_type",
     [
-        (VariableType.VARTYPE_INTEGER, mc_api.IIntegerDatapin),
-        (VariableType.VARTYPE_REAL, mc_api.IRealDatapin),
-        (VariableType.VARTYPE_BOOLEAN, mc_api.IBooleanDatapin),
-        (VariableType.VARTYPE_STRING, mc_api.IStringDatapin),
-        (VariableType.VARTYPE_FILE, mc_api.IFileDatapin),
-        (VariableType.VARTYPE_INTEGER_ARRAY, mc_api.IIntegerArrayDatapin),
-        (VariableType.VARTYPE_REAL_ARRAY, mc_api.IRealArrayDatapin),
-        (VariableType.VARTYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayDatapin),
-        (VariableType.VARTYPE_STRING_ARRAY, mc_api.IStringArrayDatapin),
-        (VariableType.VARTYPE_FILE_ARRAY, mc_api.IFileArrayDatapin),
-        (VariableType.VARTYPE_UNKNOWN, UnsupportedTypeDatapin),
+        (VariableType.VARIABLE_TYPE_INTEGER, mc_api.IIntegerDatapin),
+        (VariableType.VARIABLE_TYPE_REAL, mc_api.IRealDatapin),
+        (VariableType.VARIABLE_TYPE_BOOLEAN, mc_api.IBooleanDatapin),
+        (VariableType.VARIABLE_TYPE_STRING, mc_api.IStringDatapin),
+        (VariableType.VARIABLE_TYPE_FILE, mc_api.IFileDatapin),
+        (VariableType.VARIABLE_TYPE_INTEGER_ARRAY, mc_api.IIntegerArrayDatapin),
+        (VariableType.VARIABLE_TYPE_REAL_ARRAY, mc_api.IRealArrayDatapin),
+        (VariableType.VARIABLE_TYPE_BOOLEAN_ARRAY, mc_api.IBooleanArrayDatapin),
+        (VariableType.VARIABLE_TYPE_STRING_ARRAY, mc_api.IStringArrayDatapin),
+        (VariableType.VARIABLE_TYPE_FILE_ARRAY, mc_api.IFileArrayDatapin),
+        (VariableType.VARIABLE_TYPE_UNSPECIFIED, UnsupportedTypeDatapin),
     ],
 )
 def test_get_variables_one_variable(monkeypatch, engine, var_type, expected_wrapper_type) -> None:
@@ -424,7 +434,7 @@ def test_assembly_create_variable_unknown_type(monkeypatch, engine) -> None:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), engine=engine)
         with pytest.raises(
-            ValueError, match="Cannot determine a ModelCenter type for an unknown variable type."
+            ValueError, match="Cannot determine a ModelCenter type for an unknown datapin type."
         ):
             sut.add_datapin("created_variable_name", atvi.VariableType.UNKNOWN)
         mock_add_var_method.assert_not_called()
@@ -487,7 +497,7 @@ def test_assembly_set_int_metadata_property(monkeypatch, engine) -> None:
 
 def test_get_index_in_parent(monkeypatch, engine) -> None:
     mock_client = MockWorkflowClientForAssemblyTest()
-    mock_response = ElementIndexInParentResponse(index=3)
+    mock_response = ElementIndexParentResponse(index=3)
     with unittest.mock.patch.object(
         mock_client, "ElementGetIndexInParent", return_value=mock_response
     ) as mock_method:
@@ -503,7 +513,7 @@ def test_delete_variable(monkeypatch, engine) -> None:
     target_assembly_name = "Model.DeleteVarAssembly"
     target_assembly_id = "TARGET_ASSEMBLY"
     mock_client.name_responses[target_assembly_id] = target_assembly_name
-    target_variable_name = NamedElementInWorkflow(
+    target_variable_name = NamedElementWorkflow(
         element_full_name=ElementName(name="Model.DeleteVarAssembly.VarToDelete")
     )
     with unittest.mock.patch.object(

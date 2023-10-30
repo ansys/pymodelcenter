@@ -1,12 +1,12 @@
 from contextlib import ExitStack
 from typing import Callable, Type
 
-import ansys.engineeringworkflow.api as aew_api
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as element_msg
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
+import ansys.api.modelcenter.v0.element_messages_pb2 as element_msg
+from ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
 )
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_val_msg
+import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_val_msg
+import ansys.engineeringworkflow.api as aew_api
 from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueTypeNotSupportedError
 import ansys.tools.variableinterop as atvi
 import numpy as np
@@ -14,7 +14,7 @@ from overrides import overrides
 
 
 class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
-    """Visitor for setting variable values via ModelCenter gRPC API."""
+    """Visitor for setting datapin values via ModelCenter gRPC API."""
 
     def __init__(
         self,
@@ -27,10 +27,12 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
         Parameters
         ----------
-        var_id: str
-            Name of variable to set.
-        stub: ModelCenterWorkflowServiceStub
+        var_id : element_msg.ElementId
+            ID of the datapin to set.
+        stub : ModelCenterWorkflowServiceStub
             gRPC stub to use.
+        engine_is_local : bool
+            Whether the engine running locally or on a remote machine.
         """
         self._var_id = var_id
         self._stub = stub
@@ -156,14 +158,16 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
         Parameters
         ----------
-        value: acvi.IVariableValue
-            The new value to set.
-        request_type: Type
-            The type of request (e.g. SetIntegerValueRequest)
-        value_type: Type
-            The type of value to set, from protobuf (e.g. int, float, etc.)
-        grpc_call: Callable
-            The method used to make the gRPC call (e.g. IntegerVariableSetValue)
+        value : acvi.IVariableValue
+            New value to set.
+        request_type : Type
+            Type of the request (e.g. ``SetIntegerValueRequest``)
+        value_type : Type
+            Type of the value to set, from protobuf (e.g. ``int``,
+            ``float``, etc.)
+        grpc_call : Callable
+            Method used to make the gRPC call (e.g.
+            ``IntegerVariableSetValue``)
 
         Returns
         -------
@@ -187,13 +191,15 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         Parameters
         ----------
         value: acvi.CommonArrayValue
-            The new value to set.
+            New value to set.
         request_type: Type
-            The type of request (e.g. SetIntegerArrayValueRequest)
+            Type of the request (e.g. ``SetIntegerArrayValueRequest``)
         value_type: Type
-            The type of value to set, from protobuf (e.g. IntegerArrayValue, DoubleArrayValue, etc.)
+            Type of the value to set, from protobuf (e.g.
+            ``IntegerArrayValue``, ``DoubleArrayValue``, etc.)
         grpc_call: Callable
-            The method used to make the gRPC call (e.g. IntegerArraySetValue)
+            The method used to make the gRPC call (e.g.
+            ``IntegerArraySetValue``)
 
         Returns
         -------

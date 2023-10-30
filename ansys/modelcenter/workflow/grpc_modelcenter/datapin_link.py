@@ -1,8 +1,8 @@
 """Implementation of DatapinLink."""
+import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msg
+import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
 import ansys.modelcenter.workflow.api as wfapi
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msg
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow  # noqa: E501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
 from overrides import overrides
 
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
@@ -13,8 +13,8 @@ class DatapinLink(wfapi.IDatapinLink):
     A link between datapins in a workflow.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(
@@ -25,8 +25,10 @@ class DatapinLink(wfapi.IDatapinLink):
 
         Parameters
         ----------
-        lhs_id: The left hand side of the link equation.
-        rhs: The right hand side of the link equation.
+        lhs_id : str
+            Left-hand side of the link equation.
+        rhs: str
+            Right-hand side of the link equation.
         """
         self._stub = stub
         self._lhs_id = lhs_id

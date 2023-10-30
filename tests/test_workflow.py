@@ -2,12 +2,12 @@
 from typing import Iterable, List, Mapping, Type
 import unittest
 
+import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msgs  # noqa: 501
+import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs  # noqa: 501
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 import ansys.engineeringworkflow.api as ewapi
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 import ansys.tools.variableinterop as atvi
 import pytest
 
@@ -24,6 +24,11 @@ class MockWorkflowClientForWorkflowTest:
         self.was_link_created: bool = False
         self.workflow_run_requests: List[wkf_msgs.WorkflowRunRequest] = []
         self.workflow_run_response = wkf_msgs.WorkflowRunResponse()
+
+    def AssemblyGetAssembliesAndComponents(
+        self, request: elem_msgs.ElementId
+    ) -> wkf_msgs.ElementInfoCollection:
+        return wkf_msgs.ElementInfoCollection()
 
     def AssemblyAddAssembly(
         self, request: elem_msgs.AddAssemblyRequest
@@ -122,48 +127,54 @@ class MockWorkflowClientForWorkflowTest:
         response = wkf_msgs.ElementInfo()
         response.id.id_string = request.element_full_name.name.replace(".", "_").upper()
         if request.element_full_name.name == "a.component":
-            response.type = elem_msgs.ELEMTYPE_COMPONENT
+            response.type = elem_msgs.ELEMENT_TYPE_COMPONENT
+        elif request.element_full_name.name == "a.drivercomponent":
+            response.type = elem_msgs.ELEMENT_TYPE_DRIVERCOMPONENT
         elif request.element_full_name.name == "Model":
-            response.type = elem_msgs.ELEMTYPE_ASSEMBLY
+            response.type = elem_msgs.ELEMENT_TYPE_ASSEMBLY
         elif request.element_full_name.name == "Workflow.source_comp":
-            response.type = elem_msgs.ELEMTYPE_COMPONENT
+            response.type = elem_msgs.ELEMENT_TYPE_COMPONENT
         elif request.element_full_name.name == "Workflow.dest_comp":
-            response.type = elem_msgs.ELEMTYPE_COMPONENT
+            response.type = elem_msgs.ELEMENT_TYPE_COMPONENT
         elif request.element_full_name.name == "a.assembly":
-            response.type = elem_msgs.ELEMTYPE_ASSEMBLY
+            response.type = elem_msgs.ELEMENT_TYPE_ASSEMBLY
         elif request.element_full_name.name == "model.boolean":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_BOOLEAN
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_BOOLEAN
         elif request.element_full_name.name == "model.booleans":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_BOOLEAN_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_BOOLEAN_ARRAY
         elif request.element_full_name.name == "model.double":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_REAL
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_REAL
         elif request.element_full_name.name == "model.doubles":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_REAL_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_REAL_ARRAY
         elif request.element_full_name.name == "model.integer":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_INTEGER
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_INTEGER
         elif request.element_full_name.name == "model.integers":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_INTEGER_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_INTEGER_ARRAY
         elif request.element_full_name.name == "model.string":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_STRING
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_STRING
         elif request.element_full_name.name == "model.strings":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_STRING_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_STRING_ARRAY
         elif request.element_full_name.name == "model.file":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_FILE
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_FILE
         elif request.element_full_name.name == "model.files":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_FILE_ARRAY
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_FILE_ARRAY
         elif request.element_full_name.name == "model.unknown":
-            response.type = elem_msgs.ELEMTYPE_VARIABLE
-            response.var_type = var_msgs.VARTYPE_UNKNOWN
+            response.type = elem_msgs.ELEMENT_TYPE_VARIABLE
+            response.var_type = var_msgs.VARIABLE_TYPE_UNSPECIFIED
+        return response
+
+    def WorkflowGetState(self, request: wkf_msgs.GetWorkflowStateRequest):
+        response = wkf_msgs.GetWorkflowStateResponse()
         return response
 
     def WorkflowHalt(self, request: wkf_msgs.WorkflowHaltRequest):
@@ -173,25 +184,25 @@ class MockWorkflowClientForWorkflowTest:
     def VariableGetType(self, request: elem_msgs.ElementId):
         response = var_msgs.VariableTypeResponse()
         if request.id_string == "model.boolean":
-            response.var_type = var_msgs.VARTYPE_BOOLEAN
+            response.var_type = var_msgs.VARIABLE_TYPE_BOOLEAN
         elif request.id_string == "model.booleans":
-            response.var_type = var_msgs.VARTYPE_BOOLEAN_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_BOOLEAN_ARRAY
         elif request.id_string == "model.integer":
-            response.var_type = var_msgs.VARTYPE_INTEGER
+            response.var_type = var_msgs.VARIABLE_TYPE_INTEGER
         elif request.id_string == "model.integers":
-            response.var_type = var_msgs.VARTYPE_INTEGER_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_INTEGER_ARRAY
         elif request.id_string == "model.double":
-            response.var_type = var_msgs.VARTYPE_REAL
+            response.var_type = var_msgs.VARIABLE_TYPE_REAL
         elif request.id_string == "model.doubles":
-            response.var_type = var_msgs.VARTYPE_REAL_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_REAL_ARRAY
         elif request.id_string == "model.string":
-            response.var_type = var_msgs.VARTYPE_STRING
+            response.var_type = var_msgs.VARIABLE_TYPE_STRING
         elif request.id_string == "model.strings":
-            response.var_type = var_msgs.VARTYPE_STRING_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_STRING_ARRAY
         elif request.id_string == "model.file":
-            response.var_type = var_msgs.VARTYPE_FILE
+            response.var_type = var_msgs.VARIABLE_TYPE_FILE
         elif request.id_string == "model.files":
-            response.var_type = var_msgs.VARTYPE_FILE_ARRAY
+            response.var_type = var_msgs.VARIABLE_TYPE_FILE_ARRAY
         return response
 
     def VariableGetState(self, request: wkf_msgs.ElementIdOrName) -> var_msgs.VariableState:
@@ -265,6 +276,12 @@ class MockWorkflowClientForWorkflowTest:
         self.workflow_run_requests.append(request)
         return self.workflow_run_response
 
+    def WorkflowStartRun(
+        self, request: wkf_msgs.WorkflowRunRequest
+    ) -> wkf_msgs.WorkflowStartRunResponse:
+        self.workflow_run_requests.append(request)
+        return wkf_msgs.WorkflowStartRunResponse()
+
     def ElementGetFullName(self, request: elem_msgs.ElementId) -> elem_msgs.ElementName:
         if request.id_string == "WORKFLOW_COMP_OUTPUT4":
             return elem_msgs.ElementName(name="Workflow.comp.output4")
@@ -302,8 +319,8 @@ class MockWorkflowClientForWorkflowTest:
 
     def WorkflowMoveComponent(
         self, request: wkf_msgs.MoveComponentRequest
-    ) -> elem_msgs.ElementIndexInParentResponse:
-        return elem_msgs.ElementIndexInParentResponse()
+    ) -> elem_msgs.ElementIndexParentResponse:
+        return elem_msgs.ElementIndexParentResponse()
 
 
 mock_client: MockWorkflowClientForWorkflowTest
@@ -555,7 +572,7 @@ get_value_tests = [
 @pytest.mark.parametrize("var_name,expected", get_value_tests)
 def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue):
     # SUT
-    result: var_msgs.VariableState = workflow.get_value(var_name)
+    result: var_msgs.VariableState = workflow.get_datapin_state(var_name)
 
     # Verify
     assert result.value == expected
@@ -565,7 +582,7 @@ def test_get_value(setup_function, var_name: str, expected: atvi.IVariableValue)
 def test_get_value_unknown(setup_function) -> None:
     # SUT
     with pytest.raises(ValueError) as err:
-        result: var_msgs.VariableState = workflow.get_value("model.unknown")
+        result: var_msgs.VariableState = workflow.get_datapin_state("model.unknown")
 
     # Verify
     assert (
@@ -626,7 +643,7 @@ def test_get_bool_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.BOOLEAN_ARRAY if is_array else atvi.VariableType.BOOLEAN
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -640,7 +657,7 @@ def test_get_int_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.INTEGER_ARRAY if is_array else atvi.VariableType.INTEGER
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -660,7 +677,7 @@ def test_get_real_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.REAL_ARRAY if is_array else atvi.VariableType.REAL
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -680,7 +697,7 @@ def test_get_string_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.STRING_ARRAY if is_array else atvi.VariableType.STRING
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -696,7 +713,7 @@ def test_get_file_meta_data(setup_function, is_array: bool) -> None:
     expected_type = atvi.VariableType.FILE_ARRAY if is_array else atvi.VariableType.FILE
 
     # SUT
-    metadata = workflow.get_variable_meta_data(var)
+    metadata = workflow.get_datapin_meta_data(var)
 
     # Verification
     assert metadata.variable_type == expected_type
@@ -706,15 +723,15 @@ def test_get_file_meta_data(setup_function, is_array: bool) -> None:
 def test_get_variable_meta_data_on_invalid_element(setup_function) -> None:
     # SUT
     with pytest.raises(ValueError) as err:
-        metadata = workflow.get_variable_meta_data("model.component")
-    assert err.value.args[0] == "Element is not a variable."
+        metadata = workflow.get_datapin_meta_data("model.component")
+    assert err.value.args[0] == "Element is not a datapin."
 
 
 def test_get_variable_meta_data_on_unknown_type(setup_function) -> None:
     # SUT
     with pytest.raises(ValueError) as err:
-        metadata = workflow.get_variable_meta_data("model.unknown")
-    assert err.value.args[0] == "Unknown variable type."
+        metadata = workflow.get_datapin_meta_data("model.unknown")
+    assert err.value.args[0] == "Unknown datapin type."
 
 
 @pytest.mark.parametrize(
@@ -823,148 +840,335 @@ def test_save_workflow_as(setup_function):
     assert mock_client.was_save_asd
 
 
-def test_create_component(setup_function) -> None:
+@pytest.mark.parametrize("should_be_driver", [True, False])
+def test_create_component(setup_function, should_be_driver: bool) -> None:
     # Execute
     response = wkf_msgs.WorkflowCreateComponentResponse(
         created=elem_msgs.ElementId(id_string="zxcv")
     )
+    parent_get_response = wkf_msgs.ElementInfoCollection(
+        elements=[
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="zxcv"),
+                type=elem_msgs.ELEMENT_TYPE_DRIVERCOMPONENT
+                if should_be_driver
+                else elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="also_not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+        ]
+    )
     with unittest.mock.patch.object(
         mock_client, "WorkflowCreateComponent", return_value=response
-    ) as mock_grpc_method:
-        component: grpcmc.Component = workflow.create_component(
-            server_path="common:\\Functions\\Quadratic",
-            name="二次",
-            parent="Model",
-            init_string=None,
-            av_position=None,
-            insert_before=None,
-        )
+    ) as mock_create_component_method:
+        with unittest.mock.patch.object(
+            mock_client, "AssemblyGetAssembliesAndComponents", return_value=parent_get_response
+        ) as mock_get_elements:
+            component: grpcmc.Component = workflow.create_component(
+                server_path="common:\\Functions\\Quadratic",
+                name="二次",
+                parent="Model",
+                init_string=None,
+                av_position=None,
+                insert_before=None,
+            )
 
-        # Verify
-        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
-            source_path="common:\\Functions\\Quadratic",
-            name="二次",
-            init_str=None,
-            parent=elem_msgs.ElementId(id_string="MODEL"),
-            after_comp=None,
-        )
-        mock_grpc_method.assert_called_once_with(expected_request)
-        assert component.element_id == "zxcv"
+            # Verify
+            expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+                source_path="common:\\Functions\\Quadratic",
+                name="二次",
+                init_str=None,
+                parent=elem_msgs.ElementId(id_string="MODEL"),
+                after_comp=None,
+            )
+            mock_create_component_method.assert_called_once_with(expected_request)
+            mock_get_elements.assert_called_once_with(elem_msgs.ElementId(id_string="MODEL"))
+            assert isinstance(
+                component, mcapi.IDriverComponent if should_be_driver else mcapi.IComponent
+            )
+            assert component.element_id == "zxcv"
 
 
-def test_create_component_parent_object(setup_function, engine) -> None:
+def test_create_component_parent_assembly_object(setup_function, engine) -> None:
     # Execute
     response = wkf_msgs.WorkflowCreateComponentResponse(
         created=elem_msgs.ElementId(id_string="zxcv")
     )
+    parent_get_response = wkf_msgs.ElementInfoCollection(
+        elements=[
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="zxcv"), type=elem_msgs.ELEMENT_TYPE_COMPONENT
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="also_not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+        ]
+    )
     with unittest.mock.patch.object(
         mock_client, "WorkflowCreateComponent", return_value=response
     ) as mock_grpc_method:
-        component: grpcmc.Component = workflow.create_component(
-            server_path="common:\\Functions\\Quadratic",
-            name="二次",
-            parent=grpcmc.Assembly(elem_msgs.ElementId(id_string="45df304"), engine=engine),
-            init_string=None,
-            av_position=None,
-            insert_before=None,
-        )
+        with unittest.mock.patch.object(
+            mock_client, "AssemblyGetAssembliesAndComponents", return_value=parent_get_response
+        ) as mock_get_elements:
+            component: grpcmc.Component = workflow.create_component(
+                server_path="common:\\Functions\\Quadratic",
+                name="二次",
+                parent=grpcmc.Assembly(elem_msgs.ElementId(id_string="45df304"), engine=engine),
+                init_string=None,
+                av_position=None,
+                insert_before=None,
+            )
 
-        # Verify
-        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
-            source_path="common:\\Functions\\Quadratic",
-            name="二次",
-            init_str=None,
-            parent=elem_msgs.ElementId(id_string="45df304"),
-            after_comp=None,
-        )
-        mock_grpc_method.assert_called_once_with(expected_request)
-        assert component.element_id == "zxcv"
+            # Verify
+            expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+                source_path="common:\\Functions\\Quadratic",
+                name="二次",
+                init_str=None,
+                parent=elem_msgs.ElementId(id_string="45df304"),
+                after_comp=None,
+            )
+            mock_get_elements.assert_called_once_with(elem_msgs.ElementId(id_string="45df304"))
+            mock_grpc_method.assert_called_once_with(expected_request)
+            assert component.element_id == "zxcv"
+
+
+def test_create_component_parent_driver_component_object(setup_function, engine) -> None:
+    # Execute
+    response = wkf_msgs.WorkflowCreateComponentResponse(
+        created=elem_msgs.ElementId(id_string="zxcv")
+    )
+    parent_get_response = wkf_msgs.ElementInfoCollection(
+        elements=[
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="zxcv"), type=elem_msgs.ELEMENT_TYPE_COMPONENT
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="also_not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+        ]
+    )
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowCreateComponent", return_value=response
+    ) as mock_grpc_method:
+        with unittest.mock.patch.object(
+            mock_client, "AssemblyGetAssembliesAndComponents", return_value=parent_get_response
+        ) as mock_get_elements:
+            component: grpcmc.Component = workflow.create_component(
+                server_path="common:\\Functions\\Quadratic",
+                name="二次",
+                parent=grpcmc.DriverComponent(
+                    elem_msgs.ElementId(id_string="45df304"), engine=engine
+                ),
+                init_string=None,
+                av_position=None,
+                insert_before=None,
+            )
+
+            # Verify
+            expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+                source_path="common:\\Functions\\Quadratic",
+                name="二次",
+                init_str=None,
+                parent=elem_msgs.ElementId(id_string="45df304"),
+                after_comp=None,
+            )
+            mock_get_elements.assert_called_once_with(elem_msgs.ElementId(id_string="45df304"))
+            mock_grpc_method.assert_called_once_with(expected_request)
+            assert component.element_id == "zxcv"
 
 
 def test_create_component_at_xy_pos(setup_function) -> None:
     # Setup
-    response = wkf_msgs.WorkflowCreateComponentResponse()
+    response = wkf_msgs.WorkflowCreateComponentResponse(
+        created=elem_msgs.ElementId(id_string="zxcv")
+    )
+    parent_get_response = wkf_msgs.ElementInfoCollection(
+        elements=[
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="zxcv"), type=elem_msgs.ELEMENT_TYPE_COMPONENT
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="also_not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+        ]
+    )
     with unittest.mock.patch.object(
         mock_client, "WorkflowCreateComponent", return_value=response
     ) as mock_grpc_method:
-        # Execute
-        component: grpcmc.Component = workflow.create_component(
-            server_path="common:\\Functions\\Quadratic",
-            name="二次",
-            parent="Model",
-            init_string=None,
-            av_position=(3, 5),
-            insert_before=None,
-        )
+        with unittest.mock.patch.object(
+            mock_client, "AssemblyGetAssembliesAndComponents", return_value=parent_get_response
+        ) as mock_get_elements:
+            # Execute
+            component: grpcmc.Component = workflow.create_component(
+                server_path="common:\\Functions\\Quadratic",
+                name="二次",
+                parent="Model",
+                init_string=None,
+                av_position=(3, 5),
+                insert_before=None,
+            )
 
-        # Verify
-        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
-            source_path="common:\\Functions\\Quadratic",
-            name="二次",
-            init_str=None,
-            parent=elem_msgs.ElementId(id_string="MODEL"),
-            coords=elem_msgs.AnalysisViewPosition(x_pos=3, y_pos=5),
-            after_comp=None,
-        )
-        mock_grpc_method.assert_called_once_with(expected_request)
+            # Verify
+            expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+                source_path="common:\\Functions\\Quadratic",
+                name="二次",
+                init_str=None,
+                parent=elem_msgs.ElementId(id_string="MODEL"),
+                coords=elem_msgs.AnalysisViewPosition(x_pos=3, y_pos=5),
+                after_comp=None,
+            )
+            mock_grpc_method.assert_called_once_with(expected_request)
+            mock_get_elements.assert_called_once_with(elem_msgs.ElementId(id_string="MODEL"))
 
 
 def test_create_component_after_comp_by_id(setup_function) -> None:
     # Setup
-    response = wkf_msgs.WorkflowCreateComponentResponse()
+    response = wkf_msgs.WorkflowCreateComponentResponse(
+        created=elem_msgs.ElementId(id_string="zxcv")
+    )
+    parent_get_response = wkf_msgs.ElementInfoCollection(
+        elements=[
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="zxcv"), type=elem_msgs.ELEMENT_TYPE_COMPONENT
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="also_not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+        ]
+    )
     with unittest.mock.patch.object(
         mock_client, "WorkflowCreateComponent", return_value=response
     ) as mock_grpc_method:
-        # Execute
-        component: grpcmc.Component = workflow.create_component(
-            server_path="common:\\Functions\\Quadratic",
-            name="二次",
-            parent="Model",
-            init_string=None,
-            av_position=None,
-            insert_before="Model.before_comp",
-        )
+        with unittest.mock.patch.object(
+            mock_client, "AssemblyGetAssembliesAndComponents", return_value=parent_get_response
+        ) as mock_get_elements:
+            # Execute
+            component: grpcmc.Component = workflow.create_component(
+                server_path="common:\\Functions\\Quadratic",
+                name="二次",
+                parent="Model",
+                init_string=None,
+                av_position=None,
+                insert_before="Model.before_comp",
+            )
 
-        # Verify
-        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
-            source_path="common:\\Functions\\Quadratic",
-            name="二次",
-            init_str=None,
-            parent=elem_msgs.ElementId(id_string="MODEL"),
-            coords=None,
-            after_comp=elem_msgs.ElementId(id_string="MODEL_BEFORE_COMP"),
-        )
-        mock_grpc_method.assert_called_once_with(expected_request)
+            # Verify
+            expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+                source_path="common:\\Functions\\Quadratic",
+                name="二次",
+                init_str=None,
+                parent=elem_msgs.ElementId(id_string="MODEL"),
+                coords=None,
+                after_comp=elem_msgs.ElementId(id_string="MODEL_BEFORE_COMP"),
+            )
+            mock_grpc_method.assert_called_once_with(expected_request)
+            mock_get_elements.assert_called_once_with(elem_msgs.ElementId(id_string="MODEL"))
 
 
 def test_create_component_after_comp_by_component(setup_function, engine) -> None:
     # Setup
-    response = wkf_msgs.WorkflowCreateComponentResponse()
+    response = wkf_msgs.WorkflowCreateComponentResponse(
+        created=elem_msgs.ElementId(id_string="zxcv")
+    )
+    parent_get_response = wkf_msgs.ElementInfoCollection(
+        elements=[
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="zxcv"), type=elem_msgs.ELEMENT_TYPE_COMPONENT
+            ),
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="also_not_just_created"),
+                type=elem_msgs.ELEMENT_TYPE_COMPONENT,
+            ),
+        ]
+    )
     with unittest.mock.patch.object(
         mock_client, "WorkflowCreateComponent", return_value=response
     ) as mock_grpc_method:
-        # Execute
-        component: grpcmc.Component = workflow.create_component(
-            server_path="common:\\Functions\\Quadratic",
-            name="二次",
-            parent="Model",
-            init_string=None,
-            av_position=None,
-            insert_before=grpcmc.Component(
-                element_id=elem_msgs.ElementId(id_string="43q48a93cd300cab"), engine=engine
-            ),
-        )
+        with unittest.mock.patch.object(
+            mock_client, "AssemblyGetAssembliesAndComponents", return_value=parent_get_response
+        ) as mock_get_elements:
+            # Execute
+            component: grpcmc.Component = workflow.create_component(
+                server_path="common:\\Functions\\Quadratic",
+                name="二次",
+                parent="Model",
+                init_string=None,
+                av_position=None,
+                insert_before=grpcmc.Component(
+                    element_id=elem_msgs.ElementId(id_string="43q48a93cd300cab"), engine=engine
+                ),
+            )
 
-        # Verify
-        expected_request = wkf_msgs.WorkflowCreateComponentRequest(
-            source_path="common:\\Functions\\Quadratic",
-            name="二次",
-            init_str=None,
-            parent=elem_msgs.ElementId(id_string="MODEL"),
-            coords=None,
-            after_comp=elem_msgs.ElementId(id_string="43q48a93cd300cab"),
-        )
-        mock_grpc_method.assert_called_once_with(expected_request)
+            # Verify
+            expected_request = wkf_msgs.WorkflowCreateComponentRequest(
+                source_path="common:\\Functions\\Quadratic",
+                name="二次",
+                init_str=None,
+                parent=elem_msgs.ElementId(id_string="MODEL"),
+                coords=None,
+                after_comp=elem_msgs.ElementId(id_string="43q48a93cd300cab"),
+            )
+            mock_grpc_method.assert_called_once_with(expected_request)
+            mock_get_elements.assert_called_once_with(elem_msgs.ElementId(id_string="MODEL"))
+
+
+def test_create_component_not_component(setup_function) -> None:
+    # Execute
+    response = wkf_msgs.WorkflowCreateComponentResponse(
+        created=elem_msgs.ElementId(id_string="zxcv")
+    )
+    parent_get_response = wkf_msgs.ElementInfoCollection(
+        elements=[
+            wkf_msgs.ElementInfo(
+                id=elem_msgs.ElementId(id_string="zxcv"), type=elem_msgs.ELEMENT_TYPE_ASSEMBLY
+            )
+        ]
+    )
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowCreateComponent", return_value=response
+    ) as mock_create_component_method:
+        with unittest.mock.patch.object(
+            mock_client, "AssemblyGetAssembliesAndComponents", return_value=parent_get_response
+        ) as mock_get_elements:
+            with pytest.raises(ewapi.EngineInternalError, match="not a component"):
+                component: grpcmc.Component = workflow.create_component(
+                    server_path="common:\\Functions\\Quadratic",
+                    name="二次",
+                    parent="Model",
+                    init_string=None,
+                    av_position=None,
+                    insert_before=None,
+                )
 
 
 def test_create_link(setup_function) -> None:
@@ -1070,6 +1274,54 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
     assert mock_client.workflow_run_requests == [expected_request]
 
 
+@pytest.mark.parametrize("reset", [True, False])
+def test_run_asynchronous(setup_function, reset: bool) -> None:
+    # Using a dict as an ordered set
+    validation_names = {"DESIRED_OUTPUT_VAR_1": None, "DESIRED_OUTPUT_VAR_2": None}
+    inputs: Mapping[str, atvi.VariableState] = {
+        "INPUT_VAR_1": atvi.VariableState(is_valid=True, value=atvi.IntegerValue(47)),
+        "INPUT_VAR_2": atvi.VariableState(is_valid=False, value=atvi.RealValue(-867.5309)),
+        "INPUT_VAR_3": atvi.VariableState(is_valid=True, value=atvi.BooleanValue(True)),
+        "INPUT_VAR_4": atvi.VariableState(
+            is_valid=True, value=atvi.StringValue("this is a test string")
+        ),
+        "INPUT_VAR_5": atvi.VariableState(is_valid=True, value=MockFileValue("some/path")),
+    }
+
+    mock_client.workflow_run_response = wkf_msgs.WorkflowStartRunResponse()
+
+    # noinspection PyTypeChecker
+    workflow.start_run(inputs, reset, validation_names)
+
+    expected_request = wkf_msgs.WorkflowRunRequest(
+        target=wkf_msgs.WorkflowId(id="123"),
+        reset=reset,
+        validation_names=["DESIRED_OUTPUT_VAR_1", "DESIRED_OUTPUT_VAR_2"],
+        collection_names=[],
+        inputs={
+            "INPUT_VAR_1": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(int_value=47)
+            ),
+            "INPUT_VAR_2": var_msgs.VariableState(
+                is_valid=False, value=var_msgs.VariableValue(double_value=-867.5309)
+            ),
+            "INPUT_VAR_3": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(bool_value=True)
+            ),
+            "INPUT_VAR_4": var_msgs.VariableState(
+                is_valid=True, value=var_msgs.VariableValue(string_value="this is a test string")
+            ),
+            "INPUT_VAR_5": var_msgs.VariableState(
+                is_valid=True,
+                value=var_msgs.VariableValue(
+                    file_value=var_msgs.FileValue(content_path="some/path")
+                ),
+            ),
+        },
+    )
+    assert mock_client.workflow_run_requests == [expected_request]
+
+
 @pytest.mark.parametrize(
     "name,expected_type",
     [
@@ -1085,7 +1337,7 @@ def test_run_synchronous(setup_function, reset: bool) -> None:
 )
 def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
     # Execute
-    result: mcapi.IDatapin = workflow.get_variable(name)
+    result: mcapi.IDatapin = workflow.get_datapin(name)
 
     # Verify
     assert type(result) == expected_type
@@ -1094,8 +1346,8 @@ def test_get_variable(setup_function, name: str, expected_type: Type) -> None:
 def test_get_variable_on_wrong_type(setup_function) -> None:
     # Execute
     with pytest.raises(ValueError) as err:
-        result: mcapi.IDatapin = workflow.get_variable("fail")
-    assert err.value.args[0] == "Element is not a variable."
+        result: mcapi.IDatapin = workflow.get_datapin("fail")
+    assert err.value.args[0] == "Element is not a datapin."
 
 
 @pytest.mark.parametrize(
@@ -1103,6 +1355,7 @@ def test_get_variable_on_wrong_type(setup_function) -> None:
     [
         ("a.component", mcapi.IComponent, "A_COMPONENT"),
         ("a.assembly", mcapi.IAssembly, "A_ASSEMBLY"),
+        ("a.drivercomponent", mcapi.IDriverComponent, "A_DRIVERCOMPONENT"),
         ("model.boolean", mcapi.IBooleanDatapin, "MODEL_BOOLEAN"),
         ("model.integer", mcapi.IIntegerDatapin, "MODEL_INTEGER"),
         ("model.string", mcapi.IStringDatapin, "MODEL_STRING"),
@@ -1121,7 +1374,7 @@ def test_get_element_by_name(
 
 
 def test_move_component_names(setup_function):
-    mock_response = elem_msgs.ElementIndexInParentResponse()
+    mock_response = elem_msgs.ElementIndexParentResponse()
     with unittest.mock.patch.object(
         mock_client, "WorkflowMoveComponent", return_value=mock_response
     ) as mock_grpc_method:
@@ -1130,13 +1383,13 @@ def test_move_component_names(setup_function):
         expected_request = wkf_msgs.MoveComponentRequest(
             target=elem_msgs.ElementId(id_string="A_COMPONENT"),
             new_parent=elem_msgs.ElementId(id_string="A_ASSEMBLY"),
-            index_in_parent=-1,
+            index_parent=-1,
         )
         mock_grpc_method.assert_called_once_with(expected_request)
 
 
-def test_move_component_objects(setup_function, engine):
-    mock_response = elem_msgs.ElementIndexInParentResponse()
+def test_move_component_assembly_object(setup_function, engine):
+    mock_response = elem_msgs.ElementIndexParentResponse()
     mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), engine=engine)
     mock_assembly = grpcmc.Assembly(elem_msgs.ElementId(id_string="ASSY_3948"), engine=engine)
     with unittest.mock.patch.object(
@@ -1147,9 +1400,78 @@ def test_move_component_objects(setup_function, engine):
         expected_request = wkf_msgs.MoveComponentRequest(
             target=elem_msgs.ElementId(id_string="COMP_4857"),
             new_parent=elem_msgs.ElementId(id_string="ASSY_3948"),
-            index_in_parent=47,
+            index_parent=47,
         )
         mock_grpc_method.assert_called_once_with(expected_request)
+
+
+def test_move_component_driver_comp_object(setup_function, engine):
+    mock_response = elem_msgs.ElementIndexParentResponse()
+    mock_component = grpcmc.Component(elem_msgs.ElementId(id_string="COMP_4857"), engine=engine)
+    mock_driver_component = grpcmc.DriverComponent(
+        elem_msgs.ElementId(id_string="DRCMP_5853"), engine=engine
+    )
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowMoveComponent", return_value=mock_response
+    ) as mock_grpc_method:
+        workflow.move_component(mock_component, mock_driver_component, 47)
+
+        expected_request = wkf_msgs.MoveComponentRequest(
+            target=elem_msgs.ElementId(id_string="COMP_4857"),
+            new_parent=elem_msgs.ElementId(id_string="DRCMP_5853"),
+            index_parent=47,
+        )
+        mock_grpc_method.assert_called_once_with(expected_request)
+
+
+@pytest.mark.parametrize(
+    "mock_state,expected_state",
+    [
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_UNSPECIFIED,
+            ewapi.WorkflowInstanceState.UNKNOWN,
+            id="Unknown",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_INVALID,
+            ewapi.WorkflowInstanceState.INVALID,
+            id="Invalid",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_RUNNING,
+            ewapi.WorkflowInstanceState.RUNNING,
+            id="Running",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_PAUSED,
+            ewapi.WorkflowInstanceState.PAUSED,
+            id="Paused",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_FAILED,
+            ewapi.WorkflowInstanceState.FAILED,
+            id="Failed",
+        ),
+        pytest.param(
+            wkf_msgs.WorkflowInstanceState.WORKFLOW_INSTANCE_STATE_SUCCESS,
+            ewapi.WorkflowInstanceState.SUCCESS,
+            id="Success",
+        ),
+        pytest.param(-1, ewapi.WorkflowInstanceState.UNKNOWN, id="Default"),
+    ],
+)
+def test_get_state(setup_function, mock_state, expected_state):
+    mock_response = wkf_msgs.GetWorkflowStateResponse(state=mock_state)
+    with unittest.mock.patch.object(
+        mock_client, "WorkflowGetState", return_value=mock_response
+    ) as mock_grpc_method:
+        response = workflow.get_state()
+
+        expected_request = wkf_msgs.GetWorkflowStateRequest()
+    mock_grpc_method.assert_called_once_with(expected_request)
+
+    assert isinstance(response, ewapi.WorkflowInstanceState)
+    assert expected_state == response
 
 
 # @pytest.mark.parametrize(

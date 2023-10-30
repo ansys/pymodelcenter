@@ -11,13 +11,14 @@ from .base_datapin import BaseDatapin
 if TYPE_CHECKING:
     from .engine import Engine
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import SetDoubleVariableMetadataRequest
+
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
-from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import SetDoubleVariableMetadataRequest
 from .var_metadata_convert import (
     convert_grpc_real_array_metadata,
     convert_grpc_real_metadata,
@@ -30,8 +31,8 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
     Represents a real (double-precision floating point) datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -40,10 +41,10 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the datapin.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(RealDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -72,8 +73,8 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        self._do_set_value(value.value)
+    def set_state(self, state: atvi.VariableState) -> None:
+        self._do_set_value(state.value)
 
     @atvi.implicit_coerce
     def _do_set_value(self, value: atvi.RealValue) -> None:
@@ -85,8 +86,8 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
     Represents a real (double-precision floating point) array datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -95,10 +96,10 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the datapin.
+        element_id : ElementId
+            ID of the datapin.
         engine: Engine
-            The Engine that created this datapin.
+            ``Engine`` that created this datapin.
         """
         super(RealArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -127,8 +128,8 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        self._do_set_value(value.value)
+    def set_state(self, state: atvi.VariableState) -> None:
+        self._do_set_value(state.value)
 
     @atvi.implicit_coerce
     def _do_set_value(self, value: atvi.RealArrayValue) -> None:

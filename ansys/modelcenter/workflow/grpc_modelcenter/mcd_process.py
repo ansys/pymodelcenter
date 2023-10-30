@@ -50,16 +50,16 @@ class MCDProcess:
 
         Parameters
         ----------
-        run_only: bool
+        run_only : bool
             Flag for if ModelCenter should be started as run only
-        heartbeat_interval: numpy.uint
+        heartbeat_interval : numpy.uint
             Interval between heartbeat messages.
-        allowed_heartbead_misses: numpy.uint
+        allowed_heartbeat_misses : numpy.uint
             Number of allowed missed heartbeats before the server terminates.
 
-        Return
-        ------
-        The port number the gRPC server was started on.
+        Returns
+        -------
+        Port number the gRPC server was started on.
         """
         args = [
             self._exe_path,

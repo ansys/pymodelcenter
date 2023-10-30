@@ -2,12 +2,8 @@ from os import PathLike
 from typing import Optional, Type, Union
 import unittest
 
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.file_datapin import FileArrayDatapin, FileDatapin
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ArrayDimensions,
     FileArrayValue,
     FileValue,
@@ -21,6 +17,10 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableType,
     VariableValue,
 )
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.file_datapin import FileArrayDatapin, FileDatapin
 from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
     CustomMetadataValueNotSupportedError,
 )
@@ -328,10 +328,10 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = FileDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Verify
         expected_request = SetFileValueRequest(
@@ -355,7 +355,7 @@ def test_scalar_set_remote_produces_good_error(monkeypatch, engine) -> None:
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = FileDatapin(sut_element_id, engine)
             with pytest.raises(ValueTypeNotSupportedError, match="remote"):
-                sut.set_value(atvi.VariableState(atvi.EMPTY_FILE, True))
+                sut.set_state(atvi.VariableState(atvi.EMPTY_FILE, True))
             mock_grpc_method.assert_not_called()
 
 
@@ -396,10 +396,10 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = FileArrayDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Verify
         expected_request = SetFileArrayValueRequest(
@@ -423,7 +423,7 @@ def test_array_set_remote_produces_good_error(monkeypatch, engine) -> None:
             monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
             sut = FileArrayDatapin(sut_element_id, engine)
             with pytest.raises(ValueTypeNotSupportedError, match="remote"):
-                sut.set_value(atvi.VariableState(atvi.FileArrayValue(0, []), True))
+                sut.set_state(atvi.VariableState(atvi.FileArrayValue(0, []), True))
             mock_grpc_method.assert_not_called()
 
 
@@ -450,11 +450,11 @@ def test_array_set_disallowed(monkeypatch, engine, set_value) -> None:
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = FileArrayDatapin(sut_element_id, engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute / verify:
         with pytest.raises(atvi.IncompatibleTypesException):
-            sut.set_value(new_value)
+            sut.set_state(new_state)
 
         # Verify
         mock_grpc_method.assert_not_called()
@@ -462,7 +462,7 @@ def test_array_set_disallowed(monkeypatch, engine, set_value) -> None:
 
 def test_scalar_get_type(monkeypatch, engine) -> None:
     do_get_type_test(
-        monkeypatch, engine, FileDatapin, VariableType.VARTYPE_FILE, atvi.VariableType.FILE
+        monkeypatch, engine, FileDatapin, VariableType.VARIABLE_TYPE_FILE, atvi.VariableType.FILE
     )
 
 
@@ -471,7 +471,7 @@ def test_array_get_type(monkeypatch, engine) -> None:
         monkeypatch,
         engine,
         FileArrayDatapin,
-        VariableType.VARTYPE_FILE_ARRAY,
+        VariableType.VARIABLE_TYPE_FILE_ARRAY,
         atvi.VariableType.FILE_ARRAY,
     )
 

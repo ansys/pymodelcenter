@@ -20,7 +20,7 @@ class IReferenceArrayDatapin(
 
     In particular, because reference arrays may refer to datapins of more than one type,
     getting their values is more complex than with other datapin types. Implementations of this
-    interface will implement IDatapin.get_value and set_value in a manner that is
+    interface will implement IDatapin.get_state and set_state in a manner that is
     intended mostly for convenience and feature parity with legacy ModelCenter APIs,
     but if you are attempting to work with reference arrays in particular,
     consider using get_reference_value and set_refererence_value to query and manipulate the values
@@ -30,4 +30,19 @@ class IReferenceArrayDatapin(
     @abstractmethod
     @overrides
     def get_reference_properties(self) -> Mapping[str, IReferenceArrayProperty]:
+        ...
+
+    @abstractmethod
+    def set_length(self, new_size: int) -> None:
+        """
+        Resize the array.
+
+        If smaller than the current size, elements at the end of the array will be dropped.
+        If larger than the current size, new empty elements will be added to the end of the array.
+
+        Parameters
+        ----------
+        new_size : int
+            New size of the array.
+        """
         ...

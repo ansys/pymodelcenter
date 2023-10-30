@@ -11,7 +11,7 @@ def monkeypatch_client_creation(
         or a monkeypatch context object during the lifespan of which the patch will apply.
     :param target_class: the class to monkeypatch. This should be the implementation class
         from grpc_modelcenter that is under test. The class should have a method it uses
-        to create a client from a grpc channel that can be replaced.
+        to create a client from a gRPC channel that can be replaced.
     :param mock_client: the mock client to return
     :param client_creation_func: the name of the method to patch.
     """

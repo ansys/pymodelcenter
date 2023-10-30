@@ -48,7 +48,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
         # Only perform wheelhouse builds for Windows and macOS when releasing
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
@@ -71,13 +71,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
         os: ['windows-latest']
 
     steps:
       - name: "Set up git credentials"
         run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys-internal/grpc-modelcenter.insteadOf https://github.com/ansys-internal/grpc-modelcenter
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
 
@@ -93,9 +93,6 @@ jobs:
 
       - name: "Install dev dependencies"
         run: pip install .[dev]
-
-      - name: "Run gRPC compiler"
-        run: protos/generate-proto.bat
 
       - name: "Create wheel"
         run: |
@@ -129,7 +126,7 @@ jobs:
     steps:
       - name: "Set up git credentials"
         run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/Phoenix-Integration-Inc/grpc-modelcenter.insteadOf https://github.com/Phoenix-Integration-Inc/grpc-modelcenter
+          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys-internal/grpc-modelcenter.insteadOf https://github.com/ansys-internal/grpc-modelcenter
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
 
@@ -137,7 +134,7 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.PHX_NIGHTLY_SECRET }}
-          
+
       - name: "Set up Python"
         uses: actions/setup-python@v2
         with:
@@ -146,9 +143,6 @@ jobs:
       - name: "Install library, with docs extra"
         run: |
           pip install .[docs]
-
-      - name: "Run gRPC compiler"
-        run: protos/generate-proto.bat
 
       - name: "Build HTML"
         run: doc/make.bat html

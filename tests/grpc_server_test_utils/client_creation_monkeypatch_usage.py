@@ -1,6 +1,6 @@
 """Demonstrates the use of monkeypatch_client_creation."""
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as engine_messages  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_pb2_grpc as engine_grpc  # noqa: 501
+import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages
+import ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc as engine_grpc
 import grpc
 
 from .client_creation_monkeypatch import monkeypatch_client_creation
@@ -12,7 +12,7 @@ class ExamplePyModelCenterImplementationObject:
 
     def _create_client(self, grpc_channel) -> engine_grpc.GRPCModelCenterServiceStub:
         """
-        Create a client from a grpc channel.
+        Create a client from a gRPC channel.
 
         If this test approach is to be used, each implementation class will need a method
         like this that can be patched out. As a suggested convention, it should be an instance

@@ -13,8 +13,9 @@ from .abstract_datapin_container import AbstractGRPCDatapinContainer
 if TYPE_CHECKING:
     from .engine import Engine
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ComponentInvokeMethodRequest, ElementId
+
 from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, interpret_rpc_error
-from .proto.element_messages_pb2 import ComponentInvokeMethodRequest, ElementId
 
 
 class ComponentReconnectionFailedError(Exception):
@@ -30,17 +31,17 @@ class ComponentDownloadValuesFailedError(Exception):
 
 
 class Component(
-    AbstractGRPCDatapinContainer,
     abstract_renamable.AbstractRenamableElement,
+    AbstractGRPCDatapinContainer,
     aachild.AbstractAssemblyChild,
     mc_api.IComponent,
 ):
     """
-    A component in a Workflow.
+    Defines a component in a workflow.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -50,9 +51,9 @@ class Component(
         Parameters
         ----------
         element_id : ElementId
-            The id of the component.
+            ID of the component.
         engine : Engine
-            The Engine that created this component.
+            ``Engine`` that created this component.
         """
         super(Component, self).__init__(element_id=element_id, engine=engine)
 

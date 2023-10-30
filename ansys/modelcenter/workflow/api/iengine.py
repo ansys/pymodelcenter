@@ -21,7 +21,7 @@ class WorkflowType(Enum):
 
 
 class IEngine(IFileBasedWorkflowEngine, ABC):
-    """Engine class used to wrap around MockModelCenter class."""
+    """Manages creating and running engineering workflows."""
 
     @abstractmethod
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
@@ -30,15 +30,15 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Parameters
         ----------
-        name: str
-            A filename or path where the new workflow will be made.
-        workflow_type: WorkflowType
-            The type of workflow to create. Defaults to a data workflow.
+        name : str
+            Filename or path where the new workflow will be made.
+        workflow_type : WorkflowType, optional
+            Type of workflow to create. Defaults to a data workflow.
 
         Returns
         -------
         IWorkflow
-            A new Workflow instance.
+            Created ``IWorkflow`` instance.
         """
 
     @abstractmethod
@@ -49,13 +49,13 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
         Parameters
         ----------
-        fmt: str
+        fmt : str
             Specified string format for the IFormat object.
 
         Returns
         -------
         IFormat
-            A Format object that formats in the given style.
+            Format object that formats in the given style.
         """
 
     @abstractmethod
@@ -64,18 +64,18 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         Get the value of a preference.
 
         Preferences control how the engine behaves in various ways.
-        The value returned may be boolean, integer, real, or string
-        typed.
+        The value returned may be ``bool``, ``int``, ``float``, or
+        ``str`` typed.
 
         Parameters
         ----------
-        pref: str
-            The name of the preference for which to return the value.
+        pref : str
+            Name of the preference for which to return the value.
 
         Returns
         -------
         Union[bool, int, float, str]
-            The value of the given preference.
+            Value of the given preference.
         """
 
     @abstractmethod
@@ -84,14 +84,14 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         Set the value of a preference.
 
         Preferences control how the engine behaves in various ways.
-        The value may be boolean, integer, real, or string typed.
+        The value may be ``bool`, ``int`, ``float``, or ``str`` typed.
 
         Parameters
         ----------
-        pref: str
-            The name of the preference to set.
+        pref : str
+            Name of the preference to set.
         value: Union[bool, int, float, str]
-            The value to set.
+            Value to set.
         """
 
     @abstractmethod
@@ -102,7 +102,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         Returns
         -------
         Mapping[str, Collection[str]]
-            A mapping representing the units available in the engine.
+            Mapping representing the units available in the engine.
             The keys in the map are the names of unit categories,
             and the values are collections containing all the unit names for that category.
         """
@@ -118,5 +118,5 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         Returns
         -------
         bool
-            True if in Run-Only mode; otherwise, False.
+            ``True`` if in Run-Only mode; otherwise, ``False``.
         """

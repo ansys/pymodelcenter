@@ -9,13 +9,14 @@ from overrides import overrides
 if TYPE_CHECKING:
     from .engine import Engine
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId, ElementName, RenameRequest
+
 from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
     WRAP_NAME_COLLISION,
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
-from .proto.element_messages_pb2 import ElementId, ElementName, RenameRequest
 
 
 class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRenamableElement, ABC):
@@ -27,10 +28,10 @@ class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRen
 
         Parameters
         ----------
-        element_id: ElementId
-            The element ID of the group this object represents in ModelCenter.
+        element_id : ElementId
+            ID of the group this object represents in ModelCenter.
         engine: Engine
-            The Engine that created this element.
+            ``Engine`` that created this element.
         """
         super(AbstractRenamableElement, self).__init__(element_id=element_id, engine=engine)
 

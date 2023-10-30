@@ -7,7 +7,7 @@ name = "ansys-modelcenter-workflow"
 version = "0.1.dev0"
 description = "A python wrapper for ModelCenter Desktop"
 readme = "README.rst"
-requires-python = ">=3.8,<4"
+requires-python = ">=3.9,<4"
 license = {file = "LICENSE"}
 authors = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
 maintainers = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
@@ -26,6 +26,7 @@ classifiers = [
 ]
 dependencies = [
     "ansys-platform-instancemanagement>=1.1.1",
+    "ansys-api-modelcenter>=0.3.1",
     "numpy>=1.22.3",
     "overrides>=6.1",
 ]
@@ -40,16 +41,14 @@ doc=[
 ]
 
 tests = [
-    "grpcio==1.50.0",
-    "grpcio-tools==1.56.2",
+    "grpcio==1.59.0",
     "pytest==7.4.0",
     "pytest-cov==4.1.0",
 ]
 
 dev = [
-    "ansys-engineeringworkflow-api", # not released yet
-    "pyansys-tools-variableinterop", # not released yet
-
+    "ansys-engineeringworkflow-api@git+https://github.com/ansys/ansys-engineeringworkflow-api.git@94f0978718fc4a776e9e0d5fd5baec20cdf6064c", # not released yet
+    "pyansys-tools-variableinterop@git+https://github.com/ansys/pyansys-tools-variableinterop.git@6e9a179e23e38377e671736eb71b86a5d7f656ec", # not released yet
 ]
 
 [project.urls]

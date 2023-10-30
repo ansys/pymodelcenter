@@ -14,7 +14,7 @@ class IComponent(
     assembly.IAssemblyChild,
     ABC,
 ):
-    """A component in a Workflow."""
+    """Represents a component in a Workflow."""
 
     # ModelCenter
 
@@ -26,7 +26,7 @@ class IComponent(
         Returns
         -------
         str
-            The source of the component.
+            Source of the component.
         """
 
     @property
@@ -47,7 +47,7 @@ class IComponent(
         Returns
         -------
         str
-            The type of the component.
+            Type of the component.
         """
 
     @abstractmethod
@@ -57,8 +57,8 @@ class IComponent(
 
         Parameters
         ----------
-        method: str
-            The name of the method to invoke.
+        method : str
+            Name of the method to invoke.
         """
 
     @abstractmethod

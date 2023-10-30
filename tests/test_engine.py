@@ -3,6 +3,7 @@ from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
 from unittest.mock import create_autospec
 
+import ansys.api.modelcenter.v0.engine_messages_pb2 as eng_msgs
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcapi
@@ -10,7 +11,6 @@ import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation import (
     EngineDisconnectedError,
 )
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msgs  # noqa: 501
 import ansys.platform.instancemanagement as pypim
 import grpc
 import numpy
@@ -399,9 +399,7 @@ def test_creation_via_pypim(monkeypatch) -> None:
     # Assert
     assert mock_is_configured.called
     assert mock_connect.called
-    mock_pypim_client.create_instance.assert_called_with(
-        product_name="modelcenter-desktop", product_version=None
-    )
+    mock_pypim_client.create_instance.assert_called_with(product_name="modelcenter")
     assert mock_instance.wait_for_ready.called
     assert mock_instance.build_grpc_channel.called
     assert result_channel == pim_channel

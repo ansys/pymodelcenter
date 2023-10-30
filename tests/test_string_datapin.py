@@ -1,11 +1,8 @@
 from typing import Type, Union
 import unittest
 
-from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
-    AbstractWorkflowElement,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ArrayDimensions,
     SetMetadataResponse,
     SetStringArrayValueRequest,
@@ -17,6 +14,9 @@ from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_p
     VariableState,
     VariableType,
     VariableValue,
+)
+from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
+    AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.string_datapin import (
     StringArrayDatapin,
@@ -376,10 +376,10 @@ def test_scalar_set_allowed(monkeypatch, engine, set_value, expected_value_in_re
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = StringDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Verify
         expected_request = SetStringValueRequest(
@@ -407,11 +407,11 @@ def test_scalar_set_disallowed(monkeypatch, engine, set_value) -> None:
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = StringDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute / verify:
         with pytest.raises(TypeError):
-            sut.set_value(new_value)
+            sut.set_state(new_state)
 
         # Verify
         mock_grpc_method.assert_not_called()
@@ -456,10 +456,10 @@ def test_array_set_allowed(monkeypatch, engine, set_value, expected_value_in_req
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = StringArrayDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute
-        sut.set_value(new_value)
+        sut.set_state(new_state)
 
         # Verify
         expected_request = SetStringArrayValueRequest(
@@ -487,11 +487,11 @@ def test_array_set_disallowed(monkeypatch, engine, set_value) -> None:
     ) as mock_grpc_method:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = StringArrayDatapin(sut_element_id, engine=engine)
-        new_value = atvi.VariableState(set_value, True)
+        new_state = atvi.VariableState(set_value, True)
 
         # Execute / verify:
         with pytest.raises(TypeError):
-            sut.set_value(new_value)
+            sut.set_state(new_state)
 
         # Verify
         mock_grpc_method.assert_not_called()
@@ -502,7 +502,7 @@ def test_scalar_get_type(monkeypatch, engine) -> None:
         monkeypatch,
         engine,
         StringDatapin,
-        VariableType.VARTYPE_STRING,
+        VariableType.VARIABLE_TYPE_STRING,
         atvi.VariableType.STRING,
     )
 
@@ -512,7 +512,7 @@ def test_array_get_type(monkeypatch, engine) -> None:
         monkeypatch,
         engine,
         StringArrayDatapin,
-        VariableType.VARTYPE_STRING_ARRAY,
+        VariableType.VARIABLE_TYPE_STRING_ARRAY,
         atvi.VariableType.STRING_ARRAY,
     )
 

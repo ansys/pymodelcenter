@@ -4,9 +4,10 @@ from string import Template
 from threading import Condition, Thread
 from typing import Collection, Dict, List, Mapping, Optional, Union
 
+import ansys.api.modelcenter.v0.engine_messages_pb2 as eng_msg
+from ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 from ansys.modelcenter.workflow.api import IEngine, WorkflowType
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as eng_msg
 import ansys.platform.instancemanagement as pypim
 import grpc
 import numpy
@@ -15,7 +16,6 @@ from overrides import overrides
 from .format import Format
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .mcd_process import MCDProcess
-from .proto.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from .workflow import Workflow
 
 
@@ -40,8 +40,8 @@ class WorkflowAlreadyLoadedError(Exception):
     """
     Raised to indicate that a workflow is already loaded.
 
-    This error may be raised if the underlying ModelCenter engine only supports
-    a single workflow loaded at a time.
+    This error may be raised if the underlying ModelCenter engine only
+    supports a single workflow loaded at a time.
     """
 
     ...
@@ -62,16 +62,16 @@ class Engine(IEngine):
 
         Parameters
         ----------
-        is_run_only: bool
-            True if ModelCenter should be started in run-only mode, otherwise False.
-        force_local: bool
-            True if ModelCenter should be started on the local machine even if pypim is configured,
-            otherwise False.
-        heartbeat_interval: numpy.uint
-            The number of milliseconds within which a heartbeat call must be made before the server
+        is_run_only : bool
+            ``True`` if ModelCenter should be started in run-only mode, otherwise ``False``.
+        force_local : bool
+            ``True`` if ModelCenter should be started on the local machine even if pypim is
+            configured, otherwise ``False``.
+        heartbeat_interval : numpy.uint
+            Number of milliseconds within which a heartbeat call must be made before the server
             considers a heartbeat signal to have been missed.
-        allowed_heartbeat_misses: numpy.uint
-            The number of heartbeat misses allowed before the server will terminate.
+        allowed_heartbeat_misses : numpy.uint
+            Number of heartbeat misses allowed before the server will terminate.
         """
         self._is_closed = False
         self._is_run_only: bool = is_run_only
@@ -100,18 +100,16 @@ class Engine(IEngine):
 
         Parameters
         ----------
-        force_local: bool
-            True if ModelCenter should be started on the local machine even if pypim is configured,
-            otherwise False.
+        force_local : bool
+            ``True`` if ModelCenter should be started on the local machine even if pypim is
+            configured, otherwise ``False``.
         """
         if pypim.is_configured() and not force_local:
             if self._is_run_only:
                 raise Exception("pypim does not support running ModelCenter in run-only mode.")
             else:
                 pim = pypim.connect()
-                self._instance = pim.create_instance(
-                    product_name="modelcenter-desktop", product_version=None
-                )
+                self._instance = pim.create_instance(product_name="modelcenter")
                 self._instance.wait_for_ready()
                 self._channel = self._instance.build_grpc_channel()
         else:
@@ -142,7 +140,7 @@ class Engine(IEngine):
 
     @interpret_rpc_error()
     def close(self):
-        """Shut down the grpc server and clear out all objects."""
+        """Shut down the gRPC server and clear out all objects."""
         self._is_closed = True
 
         if self._heartbeat_condition is not None:
@@ -168,22 +166,43 @@ class Engine(IEngine):
 
     @staticmethod
     def _create_client(grpc_channel) -> GRPCModelCenterServiceStub:
-        """Create a client from a grpc channel."""
+        """Create a client from a gRPC channel."""
         return GRPCModelCenterServiceStub(grpc_channel)
 
     @property
     def is_local(self) -> bool:
-        """Get if MCD was started locally, or remotely."""
+        """
+        Get if MCD was started locally, or remotely.
+
+        Returns
+        -------
+        bool
+            ``True`` if MCD was started locally, otherwise ``False``.
+        """
         return self._process is not None
 
     @property
     def channel(self) -> Optional[grpc.Channel]:
-        """Get the grpc channel Used to communicate with MCD."""
+        """
+        Get the gRPC channel used to communicate with MCD.
+
+        Returns
+        -------
+        grpc.Channel
+            The ``grpc.Channel`` object, or ``None`` if it has not been created.
+        """
         return self._channel
 
     @property
     def process_id(self) -> int:
-        """Get the id of the connected process; useful for debugging."""
+        """
+        Get the ID of the connected process; useful for debugging.
+
+        Returns
+        -------
+        int
+            Process ID of the connected MCD.
+        """
         if self._process is not None:
             return self._process.get_process_id()  # pragma: no cover
         else:
@@ -197,7 +216,9 @@ class Engine(IEngine):
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         request = eng_msg.NewWorkflowRequest(
             path=name,
-            workflow_type=eng_msg.DATA if workflow_type is WorkflowType.DATA else eng_msg.PROCESS,
+            workflow_type=eng_msg.WORKFLOW_TYPE_DATA_DEPENDENCY
+            if workflow_type is WorkflowType.DATA
+            else eng_msg.WORKFLOW_TYPE_PROCESS,
         )
         response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
         return Workflow(response.workflow_id, name, self)
@@ -215,7 +236,9 @@ class Engine(IEngine):
     ) -> Workflow:
         request = eng_msg.LoadWorkflowRequest(
             path=str(file_name),
-            connect_err_mode=eng_msg.IGNORE if ignore_connection_errors else eng_msg.ERROR,
+            connect_err_mode=eng_msg.OnConnectionErrorMode.ON_CONNECTION_ERROR_MODE_IGNORE
+            if ignore_connection_errors
+            else eng_msg.ON_CONNECTION_ERROR_MODE_RAISE_ERROR,
         )
         response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
         return Workflow(response.workflow_id, request.path, self)

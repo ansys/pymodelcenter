@@ -1,5 +1,6 @@
 from typing import cast
 
+from ansys.engineeringworkflow.api import ValueOutOfRangeError
 import ansys.modelcenter.workflow.api as mcapi
 from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
@@ -19,8 +20,8 @@ import pytest
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_get_reference_property_values(workflow, name, expected_value) -> None:
     # Arrange
-    variable: mcapi.IReferenceDatapin = workflow.get_variable("Model.RefPropsScript.scalarInput")
-    prop: IReferenceProperty = cast(IReferenceProperty, variable.get_reference_properties()[name])
+    datapin: mcapi.IReferenceDatapin = workflow.get_datapin("Model.RefPropsScript.scalarInput")
+    prop: IReferenceProperty = cast(IReferenceProperty, datapin.get_reference_properties()[name])
 
     # Act
     result: atvi.VariableState = prop.get_state()
@@ -42,11 +43,9 @@ def test_can_get_reference_property_values(workflow, name, expected_value) -> No
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_get_reference_array_property_values(workflow, name, expected_value) -> None:
     # Arrange
-    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
-        "Model.RefPropsScript.arrayInput"
-    )
+    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin("Model.RefPropsScript.arrayInput")
     prop: IReferenceArrayProperty = cast(
-        IReferenceArrayProperty, variable.get_reference_properties()[name]
+        IReferenceArrayProperty, datapin.get_reference_properties()[name]
     )
 
     # Act
@@ -55,6 +54,25 @@ def test_can_get_reference_array_property_values(workflow, name, expected_value)
     # Assert
     assert result.is_valid is True
     assert result.value == expected_value
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_getting_reference_array_property_values_at_out_of_bounds_index_returns_good_error(
+    workflow, index
+) -> None:
+    # Arrange
+    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin("Model.RefPropsScript.arrayInput")
+    prop: IReferenceArrayProperty = cast(
+        IReferenceArrayProperty, datapin.get_reference_properties()["stringParam"]
+    )
+
+    # Act and assert
+    with pytest.raises(ValueOutOfRangeError, match="The specified index is out of range."):
+        prop.get_state_at(index)
 
 
 @pytest.mark.parametrize(
@@ -69,11 +87,11 @@ def test_can_get_reference_array_property_values(workflow, name, expected_value)
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_set_reference_property_values(workflow, name, value) -> None:
     # Arrange
-    variable: mcapi.IReferenceDatapin = workflow.get_variable("Model.RefPropsScript.scalarInput")
-    prop: IReferenceProperty = cast(IReferenceProperty, variable.get_reference_properties()[name])
+    datapin: mcapi.IReferenceDatapin = workflow.get_datapin("Model.RefPropsScript.scalarInput")
+    prop: IReferenceProperty = cast(IReferenceProperty, datapin.get_reference_properties()[name])
 
     # Act
-    prop.set_value(atvi.VariableState(value=value, is_valid=True))
+    prop.set_state(atvi.VariableState(value=value, is_valid=True))
 
     # Assert
     result: atvi.VariableState = prop.get_state()
@@ -93,11 +111,9 @@ def test_can_set_reference_property_values(workflow, name, value) -> None:
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_set_reference_array_property_values(workflow, name, value) -> None:
     # Arrange
-    variable: mcapi.IReferenceArrayDatapin = workflow.get_variable(
-        "Model.RefPropsScript.arrayInput"
-    )
+    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin("Model.RefPropsScript.arrayInput")
     prop: IReferenceArrayProperty = cast(
-        IReferenceArrayProperty, variable.get_reference_properties()[name]
+        IReferenceArrayProperty, datapin.get_reference_properties()[name]
     )
 
     # Act
@@ -107,6 +123,25 @@ def test_can_set_reference_array_property_values(workflow, name, value) -> None:
     result: atvi.VariableState = prop.get_state_at(0)
     assert result.is_valid is True
     assert result.value == value
+
+
+@pytest.mark.parametrize(
+    "index",
+    [99, -1],
+)
+@pytest.mark.workflow_name("reference_properties_tests.pxcz")
+def test_setting_reference_array_property_values_at_out_bounds_index_returns_good_error(
+    workflow, index
+) -> None:
+    # Arrange
+    datapin: mcapi.IReferenceArrayDatapin = workflow.get_datapin("Model.RefPropsScript.arrayInput")
+    prop: IReferenceArrayProperty = cast(
+        IReferenceArrayProperty, datapin.get_reference_properties()["stringParam"]
+    )
+
+    # Act and assert
+    with pytest.raises(ValueOutOfRangeError, match="The specified index is out of range."):
+        prop.set_value_at(index, atvi.VariableState(value=atvi.StringValue("Sun日"), is_valid=True))
 
 
 @pytest.mark.parametrize(
@@ -175,8 +210,8 @@ def test_can_get_reference_property_metadata(
     workflow, target: str, name: str, expected_type, expected_description: str
 ) -> None:
     # Arrange
-    variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
-    prop: IReferenceProperty = variable.get_reference_properties()[name]
+    datapin: mcapi.IReferenceDatapin = workflow.get_datapin(target)
+    prop: IReferenceProperty = datapin.get_reference_properties()[name]
 
     # Act
     result: atvi.CommonVariableMetadata = prop.get_metadata()
@@ -244,8 +279,8 @@ def test_can_get_reference_property_value_type(
     workflow, target: str, name: str, expected_type: atvi.VariableType
 ) -> None:
     # Arrange
-    variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
-    prop: IReferenceProperty = variable.get_reference_properties()[name]
+    datapin: mcapi.IReferenceDatapin = workflow.get_datapin(target)
+    prop: IReferenceProperty = datapin.get_reference_properties()[name]
 
     # Act
     result: atvi.VariableType = prop.get_value_type()
@@ -266,8 +301,8 @@ def test_can_get_reference_property_value_type(
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_can_get_if_a_reference_property_is_an_input(workflow, target: str, is_input: bool) -> None:
     # Arrange
-    variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
-    prop: IReferenceProperty = variable.get_reference_properties()["realParam"]
+    datapin: mcapi.IReferenceDatapin = workflow.get_datapin(target)
+    prop: IReferenceProperty = datapin.get_reference_properties()["realParam"]
 
     # Act
     result: bool = prop.is_input
@@ -286,11 +321,11 @@ def test_can_get_if_a_reference_property_is_an_input(workflow, target: str, is_i
 @pytest.mark.workflow_name("reference_properties_tests.pxcz")
 def test_get_reference_properties(workflow, target: str, ref_prop_type: type):
     # Arrange
-    variable: mcapi.IReferenceDatapin = workflow.get_variable(target)
+    datapin: mcapi.IReferenceDatapin = workflow.get_datapin(target)
     expected_names = ["stringParam", "realParam", "intParam", "boolParam"]
 
     # Act
-    result = variable.get_reference_properties()
+    result = datapin.get_reference_properties()
 
     # Assert
     assert len(result) == len(expected_names)
@@ -300,7 +335,7 @@ def test_get_reference_properties(workflow, target: str, ref_prop_type: type):
             ref_prop: ReferenceProperty = cast(ReferenceProperty, result[name])
 
             assert ref_prop.name == name
-            assert ref_prop._element_id == variable._element_id
-            assert ref_prop._engine == variable._engine
+            assert ref_prop._element_id == datapin._element_id
+            assert ref_prop._engine == datapin._engine
         else:
             assert False, f"{name} not found in reference property map."

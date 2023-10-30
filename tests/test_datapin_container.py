@@ -1,21 +1,21 @@
 from typing import Dict
 import unittest.mock
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import (
+    ElementId,
+    ElementIdCollection,
+    ElementName,
+)
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
+    VariableInfo,
+    VariableInfoCollection,
+    VariableType,
+)
 import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
 from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import (
-    ElementId,
-    ElementIdCollection,
-    ElementName,
-)
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableInfo,
-    VariableInfoCollection,
-    VariableType,
-)
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
@@ -89,17 +89,17 @@ def do_test_get_datapins_multiple_variables(monkeypatch, engine, sut_type) -> No
         variables=[
             VariableInfo(
                 id=ElementId(id_string="IDVAR_LARRY"),
-                value_type=VariableType.VARTYPE_INTEGER,
+                value_type=VariableType.VARIABLE_TYPE_INTEGER,
                 short_name="larry",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_MOE"),
-                value_type=VariableType.VARTYPE_STRING,
+                value_type=VariableType.VARIABLE_TYPE_STRING,
                 short_name="moe",
             ),
             VariableInfo(
                 id=ElementId(id_string="IDVAR_CURLY"),
-                value_type=VariableType.VARTYPE_REAL,
+                value_type=VariableType.VARIABLE_TYPE_REAL,
                 short_name="curly",
             ),
         ]

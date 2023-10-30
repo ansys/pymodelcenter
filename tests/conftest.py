@@ -1,12 +1,12 @@
 from typing import Generator
 
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 import (
+from ansys.api.modelcenter.v0.engine_messages_pb2 import (
     HeartbeatRequest,
     HeartbeatResponse,
     ShutdownRequest,
     ShutdownResponse,
 )
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 import numpy
 import pytest
 

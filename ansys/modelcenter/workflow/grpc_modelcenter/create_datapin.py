@@ -1,13 +1,11 @@
-"""Defines a function that's used to create a variable object given a type and gRPC info."""
+"""Defines a function that's used to create a datapin object given a type and gRPC info."""
 from typing import TYPE_CHECKING
 
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableType
 import ansys.modelcenter.workflow.api as mc_api
 import ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin as bool_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.file_datapin as file_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin as int_pin_impl
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 import (
-    VariableType,
-)
 import ansys.modelcenter.workflow.grpc_modelcenter.real_datapin as double_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin as ref_pin_impl
 import ansys.modelcenter.workflow.grpc_modelcenter.string_datapin as string_pin_impl
@@ -19,7 +17,7 @@ from .var_value_convert import grpc_type_enum_to_interop_type
 if TYPE_CHECKING:
     from .engine import Engine
 
-from .proto.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
 
 
 class _DatapinCreationVisitor(atvi.IVariableTypePseudoVisitor[mc_api.IDatapin]):
@@ -67,20 +65,21 @@ def create_datapin(
     var_value_type: VariableType, element_id: ElementId, engine: "Engine"
 ) -> mc_api.IDatapin:
     """
-    Given a datapin type from gRPC and an element ID and Engine, create a datapin wrapper object.
+    Given a ``VariableType`` object and an ``ElementId`` and ``Engine``, create a \
+    ``mc_api.IDatapin`` object.
 
     Parameters
     ----------
     var_value_type : VariableType
-        The variable type that the variable should be.
+        ``VariableType`` that the datapin should be.
     element_id : ElementId
-        The element ID of the particular variable.
+        ID of the particular datapin.
     engine : Engine
-        The Engine that created this datapin.
+        ``Engine`` that created this datapin.
     """
-    if var_value_type == VariableType.VARTYPE_REFERENCE:
+    if var_value_type == VariableType.VARIABLE_TYPE_REFERENCE:
         return ref_pin_impl.ReferenceDatapin(element_id=element_id, engine=engine)
-    elif var_value_type == VariableType.VARTYPE_REFERENCE_ARRAY:
+    elif var_value_type == VariableType.VARIABLE_TYPE_REFERENCE_ARRAY:
         return ref_pin_impl.ReferenceArrayDatapin(element_id=element_id, engine=engine)
     else:
         atvi_type: atvi.VariableType = grpc_type_enum_to_interop_type(var_value_type)

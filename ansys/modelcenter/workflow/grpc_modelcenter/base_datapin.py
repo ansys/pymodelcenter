@@ -13,10 +13,11 @@ from .abstract_workflow_element import AbstractWorkflowElement
 if TYPE_CHECKING:
     from .engine import Engine
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import GetVariableDependenciesRequest
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import ElementIdOrName
+
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
-from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import GetVariableDependenciesRequest
-from .proto.workflow_messages_pb2 import ElementIdOrName
 from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_interop_type
 
 
@@ -30,9 +31,9 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
         Parameters
         ----------
         element_id : ElementId
-            The id of the element.
-        engine: Engine
-            The Engine that created this datapin.
+            ID of the element.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(BaseDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -48,18 +49,18 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
     @overrides
     def is_input_to_component(self) -> bool:
         response = self._client.VariableGetIsInput(self._element_id)
-        return response.is_input_in_component
+        return response.is_input_component
 
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
     def is_input_to_workflow(self) -> bool:
         response = self._client.VariableGetIsInput(self._element_id)
-        return response.is_input_in_workflow
+        return response.is_input_workflow
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
-    def get_value(self, hid: Optional[str] = None) -> atvi.VariableState:
+    def get_state(self, hid: Optional[str] = None) -> atvi.VariableState:
         if hid is not None:
             raise ValueError("This engine implementation does not yet support HIDs.")
         response = self._client.VariableGetState(ElementIdOrName(target_id=self._element_id))
@@ -79,8 +80,8 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
     ) -> Collection[mc_api.IDatapin]:
         request = GetVariableDependenciesRequest(
             id=self._element_id,
-            onlyFetchDirectDependencies=only_fetch_direct_dependents,
-            followSuspended=follow_suspended_links,
+            only_fetch_direct_dependencies=only_fetch_direct_dependents,
+            follow_suspended=follow_suspended_links,
         )
 
         response = self._client.VariableGetDependents(request)
@@ -97,8 +98,8 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
     ) -> Collection[mc_api.IDatapin]:
         request = GetVariableDependenciesRequest(
             id=self._element_id,
-            onlyFetchDirectDependencies=only_fetch_direct_precedents,
-            followSuspended=follow_suspended_links,
+            only_fetch_direct_dependencies=only_fetch_direct_precedents,
+            follow_suspended=follow_suspended_links,
         )
 
         response = self._client.VariableGetPrecedents(request)

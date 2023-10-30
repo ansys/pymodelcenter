@@ -2,14 +2,13 @@ from os import PathLike
 from typing import Optional
 from unittest.mock import MagicMock
 
+import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msgs
+import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter import ValueTypeNotSupportedError
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 as elem_msgs
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.variable_value_messages_pb2 as var_msgs
 from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import (
     ReferenceArrayProperty,
     ReferenceProperty,
-    ReferencePropertyBase,
 )
 import ansys.tools.variableinterop as atvi
 import pytest
@@ -43,33 +42,6 @@ def test_get_is_input(monkeypatch, engine, value) -> None:
     )
     mock_client.ReferencePropertyGetIsInput.assert_called_once_with(expected_request)
     assert is_input == value
-
-
-@pytest.mark.parametrize(
-    "value",
-    [True, False],
-)
-def test_set_is_input(monkeypatch, engine, value) -> None:
-    # Arrange: gRPC client
-    mock_client = MagicMock()
-    mock_response = var_msgs.ReferencePropertyGetIsInputResponse(is_input=True)
-    mock_client.ReferencePropertySetIsInput.return_value = mock_response
-    monkeypatch_client_creation(monkeypatch, ReferenceProperty, mock_client)
-
-    # Arrange: SUT
-    sut_id = elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID")
-    sut_name = "Bob"
-    sut = grpcmc.ReferenceProperty(element_id=sut_id, name=sut_name, engine=engine)
-
-    # Act
-    sut.is_input = value
-
-    # Assert
-    expected_target = var_msgs.ReferencePropertyIdentifier(reference_var=sut_id, prop_name=sut_name)
-    expected_request = var_msgs.ReferencePropertySetIsInputRequest(
-        target=expected_target, new_value=value
-    )
-    mock_client.ReferencePropertySetIsInput.assert_called_once_with(expected_request)
 
 
 # Test data for get_value tests
@@ -210,7 +182,7 @@ def test_reference_property_get_state(
 @pytest.mark.parametrize("variable_value,is_valid,expected_result", get_value_test_data)
 def test_reference_array_property_get_state_at(
     monkeypatch, engine, variable_value, is_valid, expected_result
-):
+) -> None:
     # Arrange: Mock file setup
     def mock_read(self, to_read: PathLike, mime_type: Optional[str], encoding: Optional[str]):
         return MockFileValue(str(to_read))
@@ -244,7 +216,7 @@ def test_reference_array_property_get_state_at(
     assert result.is_valid == expected_result.is_valid
 
 
-# Test data for set_value tests.
+# Test data for set_state tests.
 set_value_test_data = [
     (atvi.BooleanValue(True), var_msgs.VariableValue(bool_value=True)),
     (atvi.RealValue(4.7), var_msgs.VariableValue(double_value=4.7)),
@@ -293,7 +265,9 @@ set_value_test_data = [
 
 
 @pytest.mark.parametrize("set_value,expected_value_in_request", set_value_test_data)
-def test_reference_property_set_value(monkeypatch, engine, set_value, expected_value_in_request):
+def test_reference_property_set_state(
+    monkeypatch, engine, set_value, expected_value_in_request
+) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceProperty, mock_client)
@@ -303,10 +277,10 @@ def test_reference_property_set_value(monkeypatch, engine, set_value, expected_v
     sut_name = "Bob"
     sut = grpcmc.ReferenceProperty(element_id=sut_id, name=sut_name, engine=engine)
 
-    new_value = atvi.VariableState(set_value, True)
+    new_state = atvi.VariableState(set_value, True)
 
     # Act
-    sut.set_value(new_value=new_value)
+    sut.set_state(new_state=new_state)
 
     # Assert
     expected_target = var_msgs.IndexedReferencePropertyIdentifier(
@@ -319,7 +293,7 @@ def test_reference_property_set_value(monkeypatch, engine, set_value, expected_v
 
 
 @pytest.mark.parametrize("set_value,expected_value_in_request", set_value_test_data)
-def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request):
+def test_set_state_at(monkeypatch, engine, set_value, expected_value_in_request) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceArrayProperty, mock_client)
@@ -329,11 +303,11 @@ def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request)
     sut_name = "Bob"
     sut = grpcmc.ReferenceArrayProperty(element_id=sut_id, name=sut_name, engine=engine)
 
-    new_value = atvi.VariableState(set_value, True)
+    new_state = atvi.VariableState(set_value, True)
     test_index = 5
 
     # Act
-    sut.set_value_at(test_index, new_value=new_value)
+    sut.set_value_at(test_index, new_state=new_state)
 
     # Assert
     expected_target = var_msgs.IndexedReferencePropertyIdentifier(
@@ -346,7 +320,7 @@ def test_set_value_at(monkeypatch, engine, set_value, expected_value_in_request)
     mock_client.ReferencePropertySetValue.assert_called_once_with(expected_request)
 
 
-# Test data for set_value not supported tests.
+# Test data for set_state not supported tests.
 set_value_not_supported_test_data = [
     atvi.FileArrayValue(
         shape_=(2, 2),
@@ -360,7 +334,7 @@ set_value_not_supported_test_data = [
 
 
 @pytest.mark.parametrize("set_value", set_value_not_supported_test_data)
-def test_reference_property_set_value_not_supported(monkeypatch, engine, set_value):
+def test_reference_property_set_state_not_supported(monkeypatch, engine, set_value) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceProperty, mock_client)
@@ -370,17 +344,17 @@ def test_reference_property_set_value_not_supported(monkeypatch, engine, set_val
     sut_name = "Bob"
     sut = grpcmc.ReferenceProperty(element_id=sut_id, name=sut_name, engine=engine)
 
-    new_value = atvi.VariableState(set_value, True)
+    new_state = atvi.VariableState(set_value, True)
 
     # Act/Assert
     with pytest.raises(ValueTypeNotSupportedError):
-        sut.set_value(new_value=new_value)
+        sut.set_state(new_state=new_state)
 
     mock_client.ReferencePropertySetValue.assert_not_called()
 
 
 @pytest.mark.parametrize("set_value", set_value_not_supported_test_data)
-def test_set_value_at_not_supported(monkeypatch, engine, set_value):
+def test_set_state_at_not_supported(monkeypatch, engine, set_value) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     monkeypatch_client_creation(monkeypatch, ReferenceArrayProperty, mock_client)
@@ -390,22 +364,14 @@ def test_set_value_at_not_supported(monkeypatch, engine, set_value):
     sut_name = "Bob"
     sut = grpcmc.ReferenceArrayProperty(element_id=sut_id, name=sut_name, engine=engine)
 
-    new_value = atvi.VariableState(set_value, True)
+    new_state = atvi.VariableState(set_value, True)
     test_index = 5
 
     # Act/Assert
     with pytest.raises(ValueTypeNotSupportedError):
-        sut.set_value_at(new_value=new_value, index=test_index)
+        sut.set_value_at(new_state=new_state, index=test_index)
 
     mock_client.ReferencePropertySetValue.assert_not_called()
-
-
-def test_cannot_instantiate_reference_property_base(engine):
-    # Act/Assert
-    with pytest.raises(TypeError, match="Can't instantiate abstract class ReferencePropertyBase"):
-        ReferencePropertyBase(
-            element_id=elem_msgs.ElementId(id_string="VAR_UNDER_TEST_ID"), name="Bob", engine=engine
-        )
 
 
 # Test data for get_metadata tests
@@ -466,7 +432,7 @@ get_metadata_test_data = [
 @pytest.mark.parametrize("mock_response,expected_result_type,description", get_metadata_test_data)
 def test_reference_property_get_metadata(
     monkeypatch, engine, mock_response, expected_result_type, description
-):
+) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     mock_client.ReferencePropertyGetMetadata.return_value = mock_response
@@ -494,7 +460,7 @@ def test_reference_property_get_metadata(
 @pytest.mark.parametrize("mock_response,expected_result_type,description", get_metadata_test_data)
 def test_reference_array_property_get_metadata(
     monkeypatch, engine, mock_response, expected_result_type, description
-):
+) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     mock_client.ReferencePropertyGetMetadata.return_value = mock_response
@@ -521,24 +487,32 @@ def test_reference_array_property_get_metadata(
 
 # Test data for get_type
 get_type_test_data = [
-    pytest.param(var_msgs.VARTYPE_UNKNOWN, atvi.VariableType.UNKNOWN, id="unknown"),
-    pytest.param(var_msgs.VARTYPE_REAL, atvi.VariableType.REAL, id="real"),
-    pytest.param(var_msgs.VARTYPE_REAL_ARRAY, atvi.VariableType.REAL_ARRAY, id="real_arr"),
-    pytest.param(var_msgs.VARTYPE_INTEGER, atvi.VariableType.INTEGER, id="int"),
-    pytest.param(var_msgs.VARTYPE_INTEGER_ARRAY, atvi.VariableType.INTEGER_ARRAY, id="int_arr"),
-    pytest.param(var_msgs.VARTYPE_BOOLEAN, atvi.VariableType.BOOLEAN, id="bool"),
-    pytest.param(var_msgs.VARTYPE_BOOLEAN_ARRAY, atvi.VariableType.BOOLEAN_ARRAY, id="bool_arr"),
-    pytest.param(var_msgs.VARTYPE_STRING, atvi.VariableType.STRING, id="string"),
-    pytest.param(var_msgs.VARTYPE_STRING_ARRAY, atvi.VariableType.STRING_ARRAY, id="string_arr"),
-    pytest.param(var_msgs.VARTYPE_FILE, atvi.VariableType.FILE, id="file"),
-    pytest.param(var_msgs.VARTYPE_FILE_ARRAY, atvi.VariableType.FILE_ARRAY, id="file_arr"),
-    pytest.param(var_msgs.VARTYPE_REFERENCE, atvi.VariableType.UNKNOWN, id="reference"),
-    pytest.param(var_msgs.VARTYPE_REFERENCE_ARRAY, atvi.VariableType.UNKNOWN, id="reference_arr"),
+    pytest.param(var_msgs.VARIABLE_TYPE_UNSPECIFIED, atvi.VariableType.UNKNOWN, id="unknown"),
+    pytest.param(var_msgs.VARIABLE_TYPE_REAL, atvi.VariableType.REAL, id="real"),
+    pytest.param(var_msgs.VARIABLE_TYPE_REAL_ARRAY, atvi.VariableType.REAL_ARRAY, id="real_arr"),
+    pytest.param(var_msgs.VARIABLE_TYPE_INTEGER, atvi.VariableType.INTEGER, id="int"),
+    pytest.param(
+        var_msgs.VARIABLE_TYPE_INTEGER_ARRAY, atvi.VariableType.INTEGER_ARRAY, id="int_arr"
+    ),
+    pytest.param(var_msgs.VARIABLE_TYPE_BOOLEAN, atvi.VariableType.BOOLEAN, id="bool"),
+    pytest.param(
+        var_msgs.VARIABLE_TYPE_BOOLEAN_ARRAY, atvi.VariableType.BOOLEAN_ARRAY, id="bool_arr"
+    ),
+    pytest.param(var_msgs.VARIABLE_TYPE_STRING, atvi.VariableType.STRING, id="string"),
+    pytest.param(
+        var_msgs.VARIABLE_TYPE_STRING_ARRAY, atvi.VariableType.STRING_ARRAY, id="string_arr"
+    ),
+    pytest.param(var_msgs.VARIABLE_TYPE_FILE, atvi.VariableType.FILE, id="file"),
+    pytest.param(var_msgs.VARIABLE_TYPE_FILE_ARRAY, atvi.VariableType.FILE_ARRAY, id="file_arr"),
+    pytest.param(var_msgs.VARIABLE_TYPE_REFERENCE, atvi.VariableType.UNKNOWN, id="reference"),
+    pytest.param(
+        var_msgs.VARIABLE_TYPE_REFERENCE_ARRAY, atvi.VariableType.UNKNOWN, id="reference_arr"
+    ),
 ]
 
 
 @pytest.mark.parametrize("mock_response,expected_result", get_type_test_data)
-def test_reference_property_get_type(monkeypatch, engine, mock_response, expected_result):
+def test_reference_property_get_type(monkeypatch, engine, mock_response, expected_result) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     mock_client.ReferencePropertyGetType.return_value = var_msgs.ReferencePropertyGetTypeResponse(
@@ -565,7 +539,9 @@ def test_reference_property_get_type(monkeypatch, engine, mock_response, expecte
 
 
 @pytest.mark.parametrize("mock_response,expected_result", get_type_test_data)
-def test_reference_array_property_get_type(monkeypatch, engine, mock_response, expected_result):
+def test_reference_array_property_get_type(
+    monkeypatch, engine, mock_response, expected_result
+) -> None:
     # Arrange: gRPC client
     mock_client = MagicMock()
     mock_client.ReferencePropertyGetType.return_value = var_msgs.ReferencePropertyGetTypeResponse(

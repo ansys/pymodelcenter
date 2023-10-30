@@ -1,22 +1,30 @@
 """Implementation of Assembly."""
 
-from typing import TYPE_CHECKING, Mapping, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
 
-import ansys.engineeringworkflow.api as aew_api
 import ansys.modelcenter.workflow.api as mc_api
-import ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child as aachild
+import ansys.modelcenter.workflow.grpc_modelcenter.abstract_control_statement as abstractcs
 import ansys.tools.variableinterop as atvi
 from overrides import overrides
 
-from .abstract_datapin_container import AbstractGRPCDatapinContainer
-from .abstract_renamable import AbstractRenamableElement
 from .create_datapin import create_datapin
-from .element_wrapper import create_element
 
 if TYPE_CHECKING:
     from .engine import Engine
 
-from .group import Group
+from ansys.api.modelcenter.v0.element_messages_pb2 import (
+    AddAssemblyRequest,
+    AddAssemblyVariableRequest,
+    AddAssemblyVariableResponse,
+    ElementId,
+    ElementName,
+)
+from ansys.api.modelcenter.v0.workflow_messages_pb2 import (
+    DeleteAssemblyVariableRequest,
+    ElementIdOrName,
+    NamedElementWorkflow,
+)
+
 from .grpc_error_interpretation import (
     WRAP_INVALID_ARG,
     WRAP_NAME_COLLISION,
@@ -24,34 +32,19 @@ from .grpc_error_interpretation import (
     InvalidInstanceError,
     interpret_rpc_error,
 )
-from .proto.element_messages_pb2 import (
-    AddAssemblyRequest,
-    AddAssemblyVariableRequest,
-    AddAssemblyVariableResponse,
-    ElementId,
-    ElementName,
-)
-from .proto.workflow_messages_pb2 import (
-    DeleteAssemblyVariableRequest,
-    ElementIdOrName,
-    ElementInfo,
-    NamedElementInWorkflow,
-)
 from .var_value_convert import interop_type_to_grpc_type_enum, interop_type_to_mc_type_string
 
 
 class Assembly(
-    AbstractRenamableElement,
-    AbstractGRPCDatapinContainer,
-    aachild.AbstractAssemblyChild,
+    abstractcs.AbstractControlStatement,
     mc_api.IAssembly,
 ):
     """
     Represents an assembly in ModelCenter.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -61,9 +54,9 @@ class Assembly(
         Parameters
         ----------
         element_id : ElementId
-            The id of the .
+            ID of the assembly.
         engine: Engine
-            The engine that created this assembly.
+            ``Engine`` that created this assembly.
         """
         super(Assembly, self).__init__(element_id=element_id, engine=engine)
 
@@ -85,22 +78,6 @@ class Assembly(
                 raise
         return result
 
-    @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
-    @overrides
-    def get_elements(self) -> Mapping[str, aew_api.IElement]:
-        result = self._client.AssemblyGetAssembliesAndComponents(self._element_id)
-        one_child_element_info: ElementInfo
-        child_elements = [
-            create_element(one_child_element_info, self._engine)
-            for one_child_element_info in result.elements
-        ]
-        one_child_element: aew_api.IElement
-        return {element.name: element for element in child_elements}
-
-    @overrides
-    def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
-        return Group(element_id, self._engine)
-
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_NAME_COLLISION, **WRAP_INVALID_ARG})
     @overrides
     def add_datapin(self, name: str, mc_type: atvi.VariableType) -> mc_api.IDatapin:
@@ -121,7 +98,7 @@ class Assembly(
         var_name = f"{assembly_name}.{name}"
         request = DeleteAssemblyVariableRequest(
             target=ElementIdOrName(
-                target_name=NamedElementInWorkflow(element_full_name=ElementName(name=var_name))
+                target_name=NamedElementWorkflow(element_full_name=ElementName(name=var_name))
             )
         )
         return self._client.AssemblyDeleteVariable(request).existed

@@ -11,13 +11,14 @@ from .base_datapin import BaseDatapin
 if TYPE_CHECKING:
     from .engine import Engine
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import SetBooleanVariableMetadataRequest
+
 from .grpc_error_interpretation import (
     WRAP_OUT_OF_BOUNDS,
     WRAP_TARGET_NOT_FOUND,
     interpret_rpc_error,
 )
-from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import SetBooleanVariableMetadataRequest
 from .var_metadata_convert import (
     convert_grpc_boolean_array_metadata,
     convert_grpc_boolean_metadata,
@@ -30,8 +31,8 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
     Represents a boolean datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -40,10 +41,10 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
 
         Parameters
         ----------
-        element_id: ElementId
-            The id of the variable.
-        engine: Engine
-            The Engine that created this datapin.
+        element_id : ElementId
+            ID of the datapin.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(BooleanDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -72,15 +73,15 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        if not isinstance(value.value, atvi.BooleanValue):
+    def set_state(self, state: atvi.VariableState) -> None:
+        if not isinstance(state.value, atvi.BooleanValue):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.BOOLEAN
+                state.value.variable_type, atvi.VariableType.BOOLEAN
             )
         set_visitor: VariableValueVisitor = VariableValueVisitor(
             self._element_id, self._client, self._engine.is_local
         )
-        value.value.accept(set_visitor)
+        state.value.accept(set_visitor)
 
 
 class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
@@ -88,8 +89,8 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
     Represents a boolean array datapin.
 
     .. note::
-        This class should not be directly instantiated by clients. Get a Workflow object from
-        an instantiated Engine, and use it to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+        an instantiated ``Engine``, and use it to get a valid instance of this object.
     """
 
     @overrides
@@ -117,15 +118,15 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
     @overrides
-    def set_value(self, value: atvi.VariableState) -> None:
-        if not isinstance(value.value, atvi.BooleanArrayValue):
+    def set_state(self, state: atvi.VariableState) -> None:
+        if not isinstance(state.value, atvi.BooleanArrayValue):
             raise atvi.IncompatibleTypesException(
-                value.value.variable_type, atvi.VariableType.BOOLEAN_ARRAY
+                state.value.variable_type, atvi.VariableType.BOOLEAN_ARRAY
             )
         set_visitor: VariableValueVisitor = VariableValueVisitor(
             self._element_id, self._client, self._engine.is_local
         )
-        value.value.accept(set_visitor)
+        state.value.accept(set_visitor)
 
     @overrides
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -135,8 +136,8 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
         Parameters
         ----------
         element_id: ElementId
-            The id of the variable.
+            ID of the datapin.
         engine: Engine
-            The Engine that created this datapin.
+            ``Engine`` that created this datapin.
         """
         super(BooleanArrayDatapin, self).__init__(element_id=element_id, engine=engine)

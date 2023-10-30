@@ -1,11 +1,11 @@
 import unittest
 
-from ansys.modelcenter.workflow.grpc_modelcenter import DatapinLink
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.element_messages_pb2 import ElementId
-from ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_workflow_pb2_grpc import (
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc import (
     ModelCenterWorkflowServiceStub,
 )
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.workflow_messages_pb2 as workflow_msg
+import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
+from ansys.modelcenter.workflow.grpc_modelcenter import DatapinLink
 import pytest
 
 

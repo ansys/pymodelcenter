@@ -13,24 +13,32 @@ if TYPE_CHECKING:
     from .engine import Engine
     from .group import Group
 
+from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
+from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableInfo
+
 from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_error
-from .proto.element_messages_pb2 import ElementId
-from .proto.variable_value_messages_pb2 import VariableInfo
 
 
 class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, ABC):
-    """An abstract base class for elements that return child variables and groups."""
+    """Abstract base class for elements that return child variables and groups."""
 
     @abstractmethod
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         """
         Create an object to represent a child group.
 
-        Concrete implementations should implement this with a concrete IGroup implementation.
+        Concrete implementations should implement this with a concrete
+        ``mc_api.IGroup`` implementation.
 
         Parameters
         ----------
-        element_id: the element ID of the child group.
+        element_id : ElementId
+            ID of the child group.
+
+        Returns
+        -------
+        mc_api.IGroup
+            Created child group.
         """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
@@ -39,8 +47,10 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
 
         Parameters
         ----------
-        element_id: the element ID of the group this object represents in ModelCenter.
-        engine: the Engine that created this datapin.
+        element_id : ElementId
+            ID of the group this object represents in ModelCenter.
+        engine : Engine
+            ``Engine`` that created this datapin.
         """
         super(AbstractGRPCDatapinContainer, self).__init__(element_id=element_id, engine=engine)
 
