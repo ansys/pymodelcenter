@@ -69,6 +69,8 @@ jobs:
     needs: [smoke-tests]
     name: "Build and Testing"
     runs-on: ${{ matrix.os }}
+    env:
+      PYTEST_EXTRA_ARGS: "--cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html:.cov/html"
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
@@ -77,46 +79,21 @@ jobs:
     steps:
       - name: "Set up git credentials"
         run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys-internal/grpc-modelcenter.insteadOf https://github.com/ansys-internal/grpc-modelcenter
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
 
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
-
-      - name: "Setup Python"
-        uses: actions/setup-python@v2
+      - name: "Run pytest"
+        uses: ansys/actions/tests-pytest@v4.1
         with:
           python-version: ${{ matrix.python-version }}
+          pytest-extra-args: ${{ env.PYTEST_EXTRA_ARGS }}
 
-      - name: "Install dev dependencies"
-        run: pip install .[dev]
-
-      - name: "Create wheel"
-        run: |
-          pip install build
-          python -m build --wheel
-
-      - name: "Validate wheel"
-        run: |
-          pip install twine
-          twine check dist/*
-
-      - name: "Install library, with test extra"
-        run: pip install .[test]
-
-      - name: "Unit testing"
-        run: |
-          cd tests  # so we're testing the install, not local
-          pytest -vx --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html:.cov/html
-
-      - name: "Upload wheel"
+      - name: "Upload coverage results as artifacts"
         uses: actions/upload-artifact@v3
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION
         with:
-          name: ansys-modelcenter-workflow-wheel
-          path: dist/
+          name: HTML-Coverage
+          path: .cov/html
           retention-days: 7
 
   doc-build:
@@ -126,7 +103,6 @@ jobs:
     steps:
       - name: "Set up git credentials"
         run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys-internal/grpc-modelcenter.insteadOf https://github.com/ansys-internal/grpc-modelcenter
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
 
