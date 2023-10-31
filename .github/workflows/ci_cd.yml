@@ -96,6 +96,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           pytest-extra-args: ${{ env.PYTEST_EXTRA_ARGS }}
+          checkout: false
 
       - name: "Upload coverage results as artifacts"
         uses: actions/upload-artifact@v3
