@@ -75,12 +75,16 @@ jobs:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
         os: ['windows-latest']
-
     steps:
       - name: "Set up git credentials"
         run: |
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
           git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
+
+      - name: "Get dependencies"
+        run: |
+          pip install flit
+          flit install
 
       - name: "Run pytest"
         uses: ansys/actions/tests-pytest@v4.1
