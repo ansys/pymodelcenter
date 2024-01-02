@@ -398,5 +398,5 @@ def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
         workflow.run(validation_names={"Model.Optimizer.optimizationToolReturnStatus"})
 
         # Verify that optimization occurred
-        assert workflow.get_datapin(target.full_name + ".y").get_datapin_state().is_valid
-        assert workflow.get_datapin(target.full_name + ".y").get_datapin_state().value == 0.0
+        assert workflow.get_datapin(target.full_name + ".y").get_state().is_valid
+        assert workflow.get_datapin(target.full_name + ".y").get_state().value == 0.0
