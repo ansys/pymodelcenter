@@ -57,6 +57,9 @@ test-output.xml
 # PyCharm user config & storage
 .idea
 
+# Visual Studio Code user config & storage
+.vscode
+
 /phoenix-mocks/
 
 ## gRPC generated .py files
