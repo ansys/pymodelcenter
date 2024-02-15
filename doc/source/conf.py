@@ -2,11 +2,12 @@
 from datetime import datetime
 import os
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.abspath("../.."))
 
 from ansys.modelcenter.workflow import __version__
-from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
+from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black, get_autoapi_templates_dir_relative_path
 
 # Project information
 project = "ansys-modelcenter-workflow"
@@ -60,8 +61,7 @@ html_context = {
 
 # Sphinx extensions
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
+    "autoapi.extension",
     "sphinx.ext.autosectionlabel",
     "numpydoc",
     "sphinx.ext.intersphinx",
@@ -75,12 +75,6 @@ intersphinx_mapping = {
     "grpc": ("https://grpc.github.io/grpc/python/", None),
     "pypim": ("https://pypim.docs.pyansys.com/", None),
 }
-
-# options affecting autodoc generation
-autosummary_generate = True
-add_module_names = False
-
-autodoc_default_options = {"autodoc_typehints_format": "short", "autodoc_typehints": "description"}
 
 # numpydoc configuration
 numpydoc_show_class_members = False
@@ -120,6 +114,22 @@ source_suffix = ".rst"
 
 # The master toctree document.
 master_doc = "index"
+
+# Configuration for Sphinx autoapi
+autoapi_type = "python"
+autoapi_dirs = ["../../src/ansys"]
+autoapi_root = "api"
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "special-members",
+]
+autoapi_template_dir = get_autoapi_templates_dir_relative_path(Path(__file__))
+suppress_warnings = ["autoapi.python_import_resolution"]
+autoapi_python_use_implicit_namespaces = True
+autoapi_render_in_single_page = ["class", "enum", "exception"]
 
 # Generate section labels up to four levels deep
 autosectionlabel_maxdepth = 4

@@ -13,7 +13,6 @@ authors = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
 maintainers = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: Microsoft :: Windows :: Windows 7",
     "Operating System :: Microsoft :: Windows :: Windows Vista",
@@ -23,6 +22,10 @@ classifiers = [
     "Operating System :: Microsoft :: Windows :: Windows 11",
     "Operating System :: Microsoft :: Windows :: Windows Server 2003",
     "Operating System :: Microsoft :: Windows :: Windows Server 2008",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "ansys-platform-instancemanagement>=1.1.1",
@@ -44,6 +47,7 @@ doc=[
     "sphinx-copybutton==0.5.2",
     "sphinx-design==0.5.0",
     "sphinx-copybutton==0.5.2",
+    "sphinx-autoapi==3.0.0", # "sphinx-autoapi @ git+https://github.com/jorgepiloto/sphinx-autoapi@feat/single-page-option", ---> Installed directly in workflow
     "sphinx-gallery==0.15.0",
     "sphinx-notfound-page==1.0.0",
 ]
@@ -55,15 +59,15 @@ tests = [
     "pytest-cov==4.1.0",
 ]
 
+[tool.flit.module]
+name = "ansys.modelcenter.workflow"
+
 [project.urls]
 Source = "https://github.com/ansys/pymodelcenter"
 Issues = "https://github.com/ansys/pymodelcenter/issues"
 Discussions = "https://github.com/ansys/pymodelcenter/discussions"
 Documentation = "https://modelcenter.docs.pyansys.com"
 Releases = "https://github.com/ansys/pymodelcenter/releases"
-
-[tool.flit.module]
-name = "ansys.modelcenter.workflow"
 
 [tool.black]
 line-length = 100
@@ -75,6 +79,8 @@ line_length = 100
 default_section = "THIRDPARTY"
 src_paths = ["doc", "src", "tests", "integration"]
 
+[tool.coverage.run]
+source = ["ansys.modelcenter.workflow"]
 
 [tool.codespell]
 skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*'
