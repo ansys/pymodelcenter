@@ -62,3 +62,6 @@ test-output.xml
 ## gRPC generated .py files
 ansys/modelcenter/workflow/grpc_modelcenter/proto/*.py*
 !__init__.py
+
+# Documentation
+doc/_build/
