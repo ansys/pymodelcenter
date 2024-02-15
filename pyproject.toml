@@ -48,7 +48,7 @@ tests = [
     "pyansys-tools-variableinterop==0.1.1",
 ]
 dev = [
-    "ansys-engineeringworkflow-api@git+https://github.com/ansys/ansys-engineeringworkflow-api.git@94f0978718fc4a776e9e0d5fd5baec20cdf6064c", # not released yet
+    "ansys-engineeringworkflow-api@git+https://github.com/ansys/ansys-engineeringworkflow-api.git", # not released yet
 ]
 
 [project.urls]
