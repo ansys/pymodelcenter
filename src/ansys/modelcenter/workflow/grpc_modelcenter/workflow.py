@@ -9,10 +9,11 @@ import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_val_msg
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
 from ansys.api.modelcenter.v0.workflow_messages_pb2 import WorkflowInstanceState as WkflInstState
 import ansys.engineeringworkflow.api as engapi
-import ansys.modelcenter.workflow.api as wfapi
 import ansys.tools.variableinterop as atvi
 import grpc
 from overrides import overrides
+
+import ansys.modelcenter.workflow.api as wfapi
 
 from .assembly import Assembly
 from .component import Component

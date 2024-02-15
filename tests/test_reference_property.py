@@ -4,14 +4,15 @@ from unittest.mock import MagicMock
 
 import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msgs
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
+import ansys.tools.variableinterop as atvi
+import pytest
+
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter import ValueTypeNotSupportedError
 from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import (
     ReferenceArrayProperty,
     ReferenceProperty,
 )
-import ansys.tools.variableinterop as atvi
-import pytest
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue

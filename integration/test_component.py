@@ -2,10 +2,11 @@
 from typing import AbstractSet, Mapping
 
 from ansys.engineeringworkflow.api import Property
-import ansys.modelcenter.workflow.api as mc_api
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 import ansys.tools.variableinterop as atvi
 import pytest
+
+import ansys.modelcenter.workflow.api as mc_api
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 
 def test_can_get_component_properties(workflow) -> None:

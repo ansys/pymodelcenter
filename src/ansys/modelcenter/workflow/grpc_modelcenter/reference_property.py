@@ -28,8 +28,9 @@ from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     ReferencePropertyIdentifier,
 )
 import ansys.engineeringworkflow.api as aew_api
-from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 import ansys.tools.variableinterop as atvi
+
+from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 
 
 class ReferencePropertyBase(IReferencePropertyBase):

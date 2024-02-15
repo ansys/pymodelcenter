@@ -1,9 +1,10 @@
 """Implementation of Format."""
 from typing import TYPE_CHECKING
 
-from ansys.modelcenter.workflow.api import IFormat
 from numpy import float64, int64
 from overrides import overrides
+
+from ansys.modelcenter.workflow.api import IFormat
 
 if TYPE_CHECKING:
     from .engine import Engine

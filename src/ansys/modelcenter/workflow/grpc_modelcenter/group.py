@@ -1,8 +1,9 @@
 """Provides an object-oriented way to interact with ModelCenter datapin groups via gRPC."""
 from typing import TYPE_CHECKING
 
-import ansys.modelcenter.workflow.api as api
 from overrides import overrides
+
+import ansys.modelcenter.workflow.api as api
 
 from .. import api as mc_api
 from .abstract_datapin_container import AbstractGRPCDatapinContainer

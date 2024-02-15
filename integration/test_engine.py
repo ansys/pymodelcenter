@@ -3,6 +3,7 @@ import os
 from typing import Collection, Mapping
 
 import ansys.engineeringworkflow.api as ewapi
+
 import ansys.modelcenter.workflow.api as mcapi
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 

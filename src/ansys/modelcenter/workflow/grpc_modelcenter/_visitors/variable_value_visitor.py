@@ -7,10 +7,11 @@ from ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc import (
 )
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_val_msg
 import ansys.engineeringworkflow.api as aew_api
-from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueTypeNotSupportedError
 import ansys.tools.variableinterop as atvi
 import numpy as np
 from overrides import overrides
+
+from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueTypeNotSupportedError
 
 
 class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):

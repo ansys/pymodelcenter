@@ -8,11 +8,11 @@ from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId, ElementName
 from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableValue
 from ansys.api.modelcenter.v0.workflow_messages_pb2 import ElementInfo
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
+
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-import ansys.tools.variableinterop as atvi
-
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 
 

@@ -2,9 +2,10 @@
 from typing import List
 import unittest
 
-import ansys.modelcenter.workflow.api as mcapi
 import ansys.tools.variableinterop as atvi
 import pytest
+
+import ansys.modelcenter.workflow.api as mcapi
 
 
 @pytest.mark.workflow_name("linked_quadratics.pxcz")

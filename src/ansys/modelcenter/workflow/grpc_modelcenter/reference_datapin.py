@@ -8,9 +8,10 @@ from ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc import (
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkfl_msgs
 import ansys.engineeringworkflow.api as aew_api
-import ansys.modelcenter.workflow.api as mc_api
 import ansys.tools.variableinterop as atvi
 from overrides import overrides
+
+import ansys.modelcenter.workflow.api as mc_api
 
 from . import var_value_convert
 from ..api import IDatapinReferenceBase, IReferenceArrayProperty, IReferenceProperty

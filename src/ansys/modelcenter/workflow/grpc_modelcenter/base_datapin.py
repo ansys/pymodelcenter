@@ -3,9 +3,10 @@ from abc import ABC
 from typing import TYPE_CHECKING, Collection, Optional
 
 import ansys.engineeringworkflow.api as aew_api
-import ansys.modelcenter.workflow.api as mc_api
 import ansys.tools.variableinterop as atvi
 from overrides import overrides
+
+import ansys.modelcenter.workflow.api as mc_api
 
 from . import create_datapin
 from .abstract_workflow_element import AbstractWorkflowElement

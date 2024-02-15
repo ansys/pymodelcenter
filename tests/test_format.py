@@ -3,10 +3,11 @@ from typing import Dict
 
 import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages
 import ansys.api.modelcenter.v0.format_messages_pb2 as format_messages
-import ansys.modelcenter.workflow.grpc_modelcenter as mcapi
 import numpy
 from numpy import float64, int64
 import pytest
+
+import ansys.modelcenter.workflow.grpc_modelcenter as mcapi
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 

@@ -16,6 +16,9 @@ from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     VariableType,
     VariableValue,
 )
+import ansys.tools.variableinterop as atvi
+import pytest
+
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
@@ -26,8 +29,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin import (
 from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import (
     CustomMetadataValueNotSupportedError,
 )
-import ansys.tools.variableinterop as atvi
-import pytest
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .test_datapin import (

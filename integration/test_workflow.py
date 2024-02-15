@@ -7,10 +7,11 @@ import unittest
 
 import ansys.engineeringworkflow.api as eng_api
 import ansys.engineeringworkflow.api as ewapi
-import ansys.modelcenter.workflow.api as mcapi
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 import ansys.tools.variableinterop as atvi
 import pytest
+
+import ansys.modelcenter.workflow.api as mcapi
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 
 def test_getting_the_workflow_root(workflow) -> None:

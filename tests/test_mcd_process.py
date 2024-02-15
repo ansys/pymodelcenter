@@ -3,8 +3,9 @@ import subprocess
 import unittest
 from unittest.mock import patch
 
-from ansys.modelcenter.workflow.grpc_modelcenter import EngineLicensingFailedException, MCDProcess
 import pytest
+
+from ansys.modelcenter.workflow.grpc_modelcenter import EngineLicensingFailedException, MCDProcess
 
 
 class MockProcess:

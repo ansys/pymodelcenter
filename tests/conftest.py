@@ -6,9 +6,10 @@ from ansys.api.modelcenter.v0.engine_messages_pb2 import (
     ShutdownRequest,
     ShutdownResponse,
 )
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 import numpy
 import pytest
+
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 

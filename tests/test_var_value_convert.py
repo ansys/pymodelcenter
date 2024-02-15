@@ -4,10 +4,11 @@ import sys
 from typing import Optional
 
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as grpc_msg
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-import ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert as test_module
 import ansys.tools.variableinterop as atvi
 import pytest
+
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+import ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert as test_module
 
 from .grpc_server_test_utils.mock_file_value import MockFileValue
 

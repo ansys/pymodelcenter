@@ -1,11 +1,12 @@
 from typing import cast
 
 from ansys.engineeringworkflow.api import ValueOutOfRangeError
+import ansys.tools.variableinterop as atvi
+import pytest
+
 import ansys.modelcenter.workflow.api as mcapi
 from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
-import ansys.tools.variableinterop as atvi
-import pytest
 
 
 @pytest.mark.parametrize(

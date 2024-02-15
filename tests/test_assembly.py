@@ -35,6 +35,9 @@ from ansys.api.modelcenter.v0.workflow_messages_pb2 import (
     NamedElementWorkflow,
 )
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
+import pytest
+
 import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.grpc_modelcenter import Assembly, Component
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
@@ -44,9 +47,6 @@ from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
 from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import (
     UnsupportedTypeDatapin,
 )
-import ansys.tools.variableinterop as atvi
-import pytest
-
 from tests.grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 import tests.test_abstract_workflow_element as awe_tests
 import tests.test_datapin_container as base_tests

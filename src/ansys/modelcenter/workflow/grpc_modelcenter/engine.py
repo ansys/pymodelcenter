@@ -7,11 +7,12 @@ from typing import Collection, Dict, List, Mapping, Optional, Union
 import ansys.api.modelcenter.v0.engine_messages_pb2 as eng_msg
 from ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
-from ansys.modelcenter.workflow.api import IEngine, WorkflowType
 import ansys.platform.instancemanagement as pypim
 import grpc
 import numpy
 from overrides import overrides
+
+from ansys.modelcenter.workflow.api import IEngine, WorkflowType
 
 from .format import Format
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error

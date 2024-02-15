@@ -6,11 +6,12 @@ from typing import Any, Mapping
 import unittest
 
 import ansys.engineeringworkflow.api as ewapi
-import ansys.modelcenter.workflow.api as mcapi
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 import ansys.tools.variableinterop as atvi
 import numpy
 import pytest
+
+import ansys.modelcenter.workflow.api as mcapi
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 
 @pytest.mark.parametrize(

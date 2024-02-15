@@ -1,7 +1,8 @@
 import ansys.engineeringworkflow.api as aew_api
-import ansys.modelcenter.workflow.api as mc_api
 import ansys.tools.variableinterop as atvi
 import pytest
+
+import ansys.modelcenter.workflow.api as mc_api
 
 
 @pytest.mark.workflow_name("data_assembly_tests.pxcz")

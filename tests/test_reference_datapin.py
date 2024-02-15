@@ -5,14 +5,15 @@ import unittest.mock
 import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msgs
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkfl_msgs
+import ansys.tools.variableinterop as atvi
+import pytest
+
 from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferenceProperty
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.grpc_modelcenter import ReferenceArrayProperty, ReferenceProperty
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
 )
-import ansys.tools.variableinterop as atvi
-import pytest
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue

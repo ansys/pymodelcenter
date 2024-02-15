@@ -6,10 +6,11 @@ import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msgs  # noqa: 501
 import ansys.api.modelcenter.v0.variable_value_messages_pb2 as var_msgs  # noqa: 501
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as wkf_msgs  # noqa: 501
 import ansys.engineeringworkflow.api as ewapi
-import ansys.modelcenter.workflow.api as mcapi
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 import ansys.tools.variableinterop as atvi
 import pytest
+
+import ansys.modelcenter.workflow.api as mcapi
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 from .grpc_server_test_utils.client_creation_monkeypatch import monkeypatch_client_creation
 from .grpc_server_test_utils.mock_file_value import MockFileValue

@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING, AbstractSet, Mapping, Optional
 
 import ansys.engineeringworkflow.api as aew_api
 from ansys.engineeringworkflow.api import Property
-import ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper as elem_wrapper
 import ansys.tools.variableinterop as atvi
 import grpc
 from overrides import overrides
+
+import ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper as elem_wrapper
 
 if TYPE_CHECKING:
     from .engine import Engine

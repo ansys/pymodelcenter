@@ -4,9 +4,10 @@ from enum import Enum
 from typing import Optional, Tuple
 
 import ansys.engineeringworkflow.api as aew_api
+import ansys.tools.variableinterop as atvi
+
 import ansys.modelcenter.workflow.api.igroup as igroup
 import ansys.modelcenter.workflow.api.irenamable_elements as renamable_element
-import ansys.tools.variableinterop as atvi
 
 
 class AssemblyType(Enum):

@@ -11,6 +11,7 @@ from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
     VariableInfoCollection,
     VariableType,
 )
+
 import ansys.modelcenter.workflow.api as mc_api
 from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import (
     AbstractWorkflowElement,
