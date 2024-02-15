@@ -129,4 +129,3 @@ tests can be run with:
 License
 -------
 ``ansys-modelcenter-workflow`` is licensed under the MIT license.
-
