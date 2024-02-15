@@ -68,42 +68,40 @@ jobs:
 
   build-tests:
     needs: [smoke-tests]
-    name: "Build and Testing"
+    name: "Build and unit testing"
     runs-on: ${{ matrix.os }}
     env:
-      PYTEST_EXTRA_ARGS: "--cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html:.cov/html"
+      PYTEST_EXTRA_ARGS: "-v --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html:.cov/html"
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
         os: ['windows-latest']
     steps:
-      - name: "Set up git credentials"
-        run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
-
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+      - uses: actions/checkout@v4
 
       - name: "Setup Python"
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      
+      - name: "Create Python venv"
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\Activate.ps1
 
-      - name: "Get dependencies"
-        run: pip install .[dev]
+      - name: "Install package and testing dependencies"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          python -m pip install --upgrade pip
+          pip install .[tests]
 
-      - name: "Run pytest"
-        uses: ansys/actions/tests-pytest@v4.1
-        with:
-          python-version: ${{ matrix.python-version }}
-          pytest-extra-args: ${{ env.PYTEST_EXTRA_ARGS }}
-          checkout: false
+      - name: "Testing"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pytest ${{ env.PYTEST_EXTRA_ARGS }}
 
       - name: "Upload coverage results as artifacts"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: matrix.python-version == env.MAIN_PYTHON_VERSION
         with:
           name: HTML-Coverage
@@ -115,113 +113,104 @@ jobs:
     runs-on: windows-latest
     needs: [doc-style]
     steps:
-      - name: "Set up git credentials"
-        run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
+      - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v2
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-      - name: "Install library, with docs extra"
+      
+      - name: "Create Python venv"
         run: |
-          pip install .[docs]
+          python -m venv .venv
+          .\.venv\Scripts\Activate.ps1
+
+      - name: "Install package and doc dependencies"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pip install .[doc]
 
       - name: "Build HTML"
-        run: doc/make.bat html
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          doc/make.bat html
 
 #      - name: Build PDF Documentation
 #        run: |
+#          .\.venv\Scripts\Activate.ps1
 #          sudo apt update
 #          sudo apt-get install -y texlive-latex-extra latexmk
-#          poetry run make -C doc latexpdf
+#          doc/make.bat pdf
 
       - name: "Upload HTML Documentation"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Documentation-html
           path: doc/build/html
           retention-days: 7
 
 #      - name: "Upload PDF Documentation"
-#        uses: actions/upload-artifact@v2
+#        uses: actions/upload-artifact@v4
 #        with:
 #          name: Documentation-pdf
 #          path: doc/build/latex/*.pdf
 #          retention-days: 7
+
+
+  package:
+    name: Package library
+    needs: [build-tests, doc-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build library source and wheel artifacts
+        uses: ansys/actions/build-library@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
 
   doc-deploy-dev:
     name: "Deploy developers documentation"
     runs-on: ubuntu-latest
     # Deploy development only when merging to main
     if: github.ref == 'refs/heads/main'
-    needs: [doc-build]
+    needs: [package]
     steps:
       - name: "Deploy the latest documentation"
-        uses: ansys/actions/doc-deploy-dev@v4
+        uses: ansys/actions/doc-deploy-dev@v5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          doc-artifact-name: Documentation-html
+
 
   release:
-    if: contains(github.ref, 'refs/tags')
-    needs: [build-tests, doc-deploy-dev]
+    name: "Release project"
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [package]
     runs-on: windows-latest
     steps:
-      - name: "Set up Python"
-        uses: actions/setup-python@v2
+    - name: "Release to the public PyPI repository"
+      uses: ansys/actions/release-pypi-public@v4
+      with:
+        library-name: ${{ env.PACKAGE_NAME }}
+        twine-username: "__token__"
+        twine-token: ${{ secrets.PYPI_TOKEN }}
+
+    - name: "Release to GitHub"
+      uses: ansys/actions/release-github@v4
+      with:
+        library-name: ${{ env.PACKAGE_NAME }}
+
+
+  doc-deploy-stable:
+    name: "Deploy stable documentation"
+    # Deploy release documentation when creating a new tag
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    needs: [release]
+    steps:
+      - name: "Deploy the stable documentation"
+        uses: ansys/actions/doc-deploy-stable@v4
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: ansys-modelcenter-workflow-wheel
-
-#      - uses: actions/download-artifact@v2
-#        with:
-#          name: Documentation-pdf
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: Documentation-html
-          path: ~/html
-
-      # list current directory
-      - name: "List directory structure"
-        run: ls -R
-
-      - name: "Deploy"
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          BRANCH: gh-pages
-          FOLDER: ~/html
-          CLEAN: true
-
-      # note how we use the PyPI tokens
-      - name: "Upload to Azure PyPi (disabled)"
-        run: |
-          pip install twine
-          # twine upload --skip-existing ./**/*.whl
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-
-      - name: "Release"
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            ./**/*.whl
-            ./**/*.zip
-            ./**/*.pdf
+            cname: ${{ env.DOCUMENTATION_CNAME }}
+            token: ${{ secrets.GITHUB_TOKEN }}
