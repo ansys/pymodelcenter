@@ -25,9 +25,9 @@ class DriverComponent(
     of this class, but the method to get child elements will simply return an empty collection.
 
     .. note::
-    This class should not be directly instantiated by clients. Get a ``Workflow`` object
-    from an instantiated engine, and use it to get valid instances of Assembly,
-    Component or DriverComponent.
+        This class should not be directly instantiated by clients. Get a ``Workflow`` object
+        from an instantiated engine, and use it to get valid instances of Assembly,
+        Component or DriverComponent.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):

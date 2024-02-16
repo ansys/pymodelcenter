@@ -12,6 +12,7 @@ set BUILDDIR=_build
 
 if "%1" == "" goto help
 if "%1" == "clean" goto clean
+if "%1" == "pdf" goto pdf
 
 REM TODO: these lines of code should be removed once the feature branch is merged
 for /f %%i in ('pip freeze ^| findstr /c:"sphinx-autoapi @ git+https://github.com/ansys/sphinx-autoapi"') do set is_custom_sphinx_autoapi_installed=%%i
@@ -49,6 +50,18 @@ goto end
 
 :help
 %SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+
+:pdf
+%SPHINXBUILD% -M latex %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+cd "%BUILDDIR%\latex"
+for %%f in (*.tex) do (
+pdflatex "%%f" --interaction=nonstopmode)
+if NOT EXIST ansys-modelcenter-workflow-Documentation-*.pdf (
+	Echo "no pdf generated!"
+	exit /b 1)
+Echo "pdf generated!"
+goto end
+
 
 :end
 popd

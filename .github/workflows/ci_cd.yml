@@ -135,27 +135,25 @@ jobs:
           .\.venv\Scripts\Activate.ps1
           doc/make.bat html
 
-#      - name: Build PDF Documentation
-#        run: |
-#          .\.venv\Scripts\Activate.ps1
-#          sudo apt update
-#          sudo apt-get install -y texlive-latex-extra latexmk
-#          doc/make.bat pdf
+      - name: "Build PDF Documentation"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          doc/make.bat pdf
 
       - name: "Upload HTML Documentation"
         uses: actions/upload-artifact@v4
         with:
           name: Documentation-html
-          path: doc/build/html
+          path: doc/_build/html
           retention-days: 7
 
-#      - name: "Upload PDF Documentation"
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: Documentation-pdf
-#          path: doc/build/latex/*.pdf
-#          retention-days: 7
-
+      - name: "Upload PDF Documentation"
+        uses: actions/upload-artifact@v4
+        with:
+          name: Documentation-pdf
+          path: doc/_build/latex/ansys-modelcenter-workflow*.pdf
+          retention-days: 7
+ 
 
   package:
     name: Package library

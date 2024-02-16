@@ -8,9 +8,13 @@ sys.path.insert(0, os.path.abspath("../.."))
 
 from ansys_sphinx_theme import (
     ansys_favicon,
+    ansys_logo_white,
+    ansys_logo_white_cropped,
     get_autoapi_templates_dir_relative_path,
     get_version_match,
+    latex,
     pyansys_logo_black,
+    watermark,
 )
 
 from ansys.modelcenter.workflow import __version__
@@ -67,11 +71,14 @@ html_context = {
 
 # Sphinx extensions
 extensions = [
+    "notfound.extension",  # for the not found page.
+    "numpydoc",
     "autoapi.extension",
     "sphinx.ext.autosectionlabel",
-    "numpydoc",
+    "sphinx.ext.coverage",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
+    "sphinx_design",
 ]
 
 # Intersphinx mapping
@@ -79,12 +86,14 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/dev", None),
     "numpy": ("https://numpy.org/devdocs", None),
     "grpc": ("https://grpc.github.io/grpc/python/", None),
-    "pypim": ("https://pypim.docs.pyansys.com/", None),
+    "pypim": ("https://pypim.docs.pyansys.com/version/stable/", None),
 }
 
 # numpydoc configuration
 numpydoc_show_class_members = False
+numpydoc_class_members_toctree = False
 numpydoc_xref_param_type = True
+autosectionlabel_prefix_document = True
 
 # Consider enabling numpydoc validation. See:
 # https://numpydoc.readthedocs.io/en/latest/validation.html#
@@ -92,7 +101,7 @@ numpydoc_validate = True
 numpydoc_validation_checks = {
     "GL06",  # Found unknown section
     "GL07",  # Sections are in the wrong order.
-    "GL08",  # The object does not have a docstring
+    # "GL08",  # The object does not have a docstring
     "GL09",  # Deprecation warning should precede extended summary
     "GL10",  # reST directives {directives} must be followed by two colons
     "SS01",  # No summary found
@@ -164,3 +173,27 @@ with open("links.rst") as f:
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
+
+# -- Options for LaTeX output ------------------------------------------------
+latex_elements = {}
+
+# Grouping the document tree into LaTeX files. List of tuples
+# (source start file, target name, title,
+#  author, documentclass [howto, manual, or own class]).
+latex_documents = [
+    (
+        master_doc,
+        f"{project}-Documentation-{__version__}.tex",
+        f"{project} Documentation",
+        author,
+        "manual",
+    ),
+]
+
+# additional logos for the latex coverpage
+latex_additional_files = [watermark, ansys_logo_white, ansys_logo_white_cropped]
+
+# change the preamble of latex with customized title page
+# variables are the title of pdf, watermark
+latex_elements = {"preamble": latex.generate_preamble(html_title)}
+sd_fontawesome_latex = True

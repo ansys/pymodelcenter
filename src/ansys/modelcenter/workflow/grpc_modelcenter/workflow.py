@@ -117,6 +117,7 @@ class Workflow(wfapi.IWorkflow):
             If the last workflow run terminated due to a failure.
         - ``WorkflowInstanceState.SUCCESS``:
             If the workflow ran successfully and all requested datapins are valid.
+
         Note that ``WorkflowInstanceState.PAUSED`` is never returned.
         """
         request = workflow_msg.GetWorkflowStateRequest()
