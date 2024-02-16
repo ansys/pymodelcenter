@@ -93,7 +93,9 @@ run it, and save it:
         with mc.new_workflow("d:\\example.pxcz") as workflow:
             print("Creating quadratic...")
             workflow.create_component(
-                server_path="common:\\Functions\\Quadratic", name="NewQuadratic", parent="Model"
+                server_path="common:\\Functions\\Quadratic",
+                name="NewQuadratic",
+                parent="Model",
             )
 
             print("Running...")

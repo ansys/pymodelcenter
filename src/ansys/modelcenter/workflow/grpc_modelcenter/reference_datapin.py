@@ -1,3 +1,24 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Contains definition for ReferenceDatapin and ReferenceArrayDatapin."""
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Union, overload
@@ -34,8 +55,7 @@ from .grpc_error_interpretation import (
 
 
 class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
-    """
-    Represents a single element in a ReferenceArrayDatapin.
+    """Represents a single element in a ReferenceArrayDatapin.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
@@ -50,8 +70,7 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
         index: int,
         parent_engine: "Engine",
     ):
-        """
-        Initialize a new instance.
+        """Initialize a new instance.
 
         Parameters
         ----------
@@ -165,8 +184,7 @@ class ReferenceDatapinBase(BaseDatapin, ABC):
 
 
 class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
-    """
-    Represents a reference datapin.
+    """Represents a reference datapin.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
@@ -174,8 +192,7 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """
-        Initialize a new instance.
+        """Initialize a new instance.
 
         Parameters
         ----------
@@ -267,8 +284,7 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
 
 
 class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin):
-    """
-    Represents a reference array datapin.
+    """Represents a reference array datapin.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
@@ -277,8 +293,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @overrides
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """
-        Initialize a new instance.
+        """Initialize a new instance.
 
         Parameters
         ----------
@@ -296,8 +311,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @overload
     @abstractmethod
     def __getitem__(self, index: int) -> IDatapinReferenceBase:
-        """
-        Gets a ReferenceArrayDatapinElement at the index provided.
+        """Gets a ReferenceArrayDatapinElement at the index provided.
 
         Parameters
         ----------
@@ -313,8 +327,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @overload
     @abstractmethod
     def __getitem__(self, index: slice) -> Sequence[IDatapinReferenceBase]:
-        """
-        Gets a subsection of the ``ReferenceArrayDatapin``.
+        """Gets a subsection of the ``ReferenceArrayDatapin``.
 
         Parameters
         ----------
@@ -330,8 +343,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     def __getitem__(
         self, index: Union[int, slice]
     ) -> Union[IDatapinReferenceBase, Sequence[IDatapinReferenceBase]]:
-        """
-        Implementation of __getitem__ for ``ReferenceArrayDatapins``.
+        """Implementation of __getitem__ for ``ReferenceArrayDatapins``.
 
         Parameters
         ----------
@@ -362,8 +374,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     def __len__(self) -> int:
-        """
-        Get the length of this reference array.
+        """Get the length of this reference array.
 
         Returns
         -------

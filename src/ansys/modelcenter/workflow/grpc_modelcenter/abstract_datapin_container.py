@@ -1,4 +1,26 @@
-"""Defines an abstract base class for elements that return child variables and groups."""
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+"""Defines an abstract base class for elements that return child variables and
+groups."""
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Mapping
@@ -21,12 +43,12 @@ from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_erro
 
 
 class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, ABC):
-    """Abstract base class for elements that return child variables and groups."""
+    """Abstract base class for elements that return child variables and
+    groups."""
 
     @abstractmethod
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
-        """
-        Create an object to represent a child group.
+        """Create an object to represent a child group.
 
         Concrete implementations should implement this with a concrete
         ``mc_api.IGroup`` implementation.
@@ -43,8 +65,7 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
         """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """
-        Initialize a new instance.
+        """Initialize a new instance.
 
         Parameters
         ----------

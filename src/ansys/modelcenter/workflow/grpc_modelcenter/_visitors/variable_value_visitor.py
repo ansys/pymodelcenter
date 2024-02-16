@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from contextlib import ExitStack
 from typing import Callable, Type
 
@@ -23,8 +45,7 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         stub: ModelCenterWorkflowServiceStub,
         engine_is_local: bool,
     ):
-        """
-        Create a new VariableValueVisitor.
+        """Create a new VariableValueVisitor.
 
         Parameters
         ----------
@@ -154,8 +175,7 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
     def _scalar_request(
         self, value: atvi.IVariableValue, request_type: Type, value_type: Type, grpc_call: Callable
     ) -> bool:
-        """
-        Helper method to send a gRPC request for setting scalar values.
+        """Helper method to send a gRPC request for setting scalar values.
 
         Parameters
         ----------
@@ -186,8 +206,7 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         value_type: Type,
         grpc_call: Callable,
     ):
-        """
-        Helper method to send a gRPC request for setting array values.
+        """Helper method to send a gRPC request for setting array values.
 
         Parameters
         ----------

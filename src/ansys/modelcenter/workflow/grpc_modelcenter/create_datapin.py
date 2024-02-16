@@ -1,4 +1,26 @@
-"""Defines a function that's used to create a datapin object given a type and gRPC info."""
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+"""Defines a function that's used to create a datapin object given a type and
+gRPC info."""
 from typing import TYPE_CHECKING
 
 from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableType
@@ -65,9 +87,8 @@ class _DatapinCreationVisitor(atvi.IVariableTypePseudoVisitor[mc_api.IDatapin]):
 def create_datapin(
     var_value_type: VariableType, element_id: ElementId, engine: "Engine"
 ) -> mc_api.IDatapin:
-    """
-    Given a ``VariableType`` object and an ``ElementId`` and ``Engine``, create a \
-    ``mc_api.IDatapin`` object.
+    """Given a ``VariableType`` object and an ``ElementId`` and ``Engine``,
+    create a \ ``mc_api.IDatapin`` object.
 
     Parameters
     ----------

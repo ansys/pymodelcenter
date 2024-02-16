@@ -1,3 +1,24 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Implementation of Workflow."""
 from contextlib import ExitStack
 import os
@@ -39,8 +60,7 @@ class WorkflowRunFailedError(Exception):
 
 
 class Workflow(wfapi.IWorkflow):
-    """
-    Represents a workflow or model in ModelCenter.
+    """Represents a workflow or model in ModelCenter.
 
     .. note::
         This class should not be directly instantiated by clients. Create an ``Engine``, and use it
@@ -48,8 +68,7 @@ class Workflow(wfapi.IWorkflow):
     """
 
     def __init__(self, workflow_id: str, file_path: str, engine: "Engine"):
-        """
-        Initialize a new ``Workflow`` instance.
+        """Initialize a new ``Workflow`` instance.
 
         Parameters
         ----------
@@ -91,8 +110,7 @@ class Workflow(wfapi.IWorkflow):
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     def get_state(self) -> engapi.WorkflowInstanceState:
-        """
-        Get the state of the workflow instance.
+        """Get the state of the workflow instance.
 
         Returns
         -------
@@ -237,8 +255,7 @@ class Workflow(wfapi.IWorkflow):
 
     @property
     def workflow_directory(self) -> str:
-        """
-        Get the directory the workflow is in.
+        """Get the directory the workflow is in.
 
         Returns
         -------
@@ -563,8 +580,8 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
     ) -> None:
-        """
-        Query gRPC for metadata for a boolean datapin, and populate the given metadata object.
+        """Query gRPC for metadata for a boolean datapin, and populate the
+        given metadata object.
 
         Parameters
         ----------
@@ -583,8 +600,8 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
     ) -> None:
-        """
-        Query gRPC for metadata for a real datapin, and populate the given metadata object.
+        """Query gRPC for metadata for a real datapin, and populate the given
+        metadata object.
 
         Parameters
         ----------
@@ -607,8 +624,8 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
     ) -> None:
-        """
-        Query gRPC for metadata for an integer datapin, and populate the given metadata object.
+        """Query gRPC for metadata for an integer datapin, and populate the
+        given metadata object.
 
         Parameters
         ----------
@@ -633,8 +650,8 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
     ) -> None:
-        """
-        Query gRPC for metadata for a string datapin, and populate the given metadata object.
+        """Query gRPC for metadata for a string datapin, and populate the given
+        metadata object.
 
         Parameters
         ----------
@@ -653,8 +670,8 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.FileMetadata, atvi.FileArrayMetadata],
     ) -> None:
-        """
-        Query gRPC for metadata for a file datapin, and populate the given metadata object.
+        """Query gRPC for metadata for a file datapin, and populate the given
+        metadata object.
 
         Parameters
         ----------

@@ -337,9 +337,7 @@ def test_run_setting_file_vars(workflow) -> None:
     [mcapi.WorkflowType.DATA, mcapi.WorkflowType.PROCESS],
 )
 def test_create_and_run_optimizer_very_basic(engine, workflow_type) -> None:
-    """
-    Set up a very basic optimization problem from scratch.
-    """
+    """Set up a very basic optimization problem from scratch."""
     workflow_name = "optimizer_create_test.pxcz"
     workflow_path: str = os.path.join(os.getcwd(), workflow_name)
     if os.path.isfile(workflow_path):

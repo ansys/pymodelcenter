@@ -1,3 +1,24 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Contains definitions for assemblies."""
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -36,8 +57,7 @@ class IAssemblyChild(ABC):
     @property
     @abstractmethod
     def parent_assembly(self) -> Optional["IAssembly"]:
-        """
-        Get the parent assembly of this assembly.
+        """Get the parent assembly of this assembly.
 
         Returns
         -------
@@ -48,8 +68,7 @@ class IAssemblyChild(ABC):
 
     @abstractmethod
     def get_analysis_view_position(self) -> Tuple[int, int]:
-        """
-        Get the position of the assembly within the analysis view.
+        """Get the position of the assembly within the analysis view.
 
         Returns
         -------
@@ -66,14 +85,15 @@ class IAssembly(
     IAssemblyChild,
     ABC,
 ):
-    """
-    Represents a ModelCenter assembly.
+    """Represents a ModelCenter assembly.
 
     Assemblies organize components and other assemblies in a workflow.
     Additionally, assemblies can have datapins appended to themselves,
-    allowing them to act as a way to abstract subordinate parts of the model.
+    allowing them to act as a way to abstract subordinate parts of the
+    model.
 
-    Each ModelCenter workflow has an assembly as its root element, containing all other assemblies.
+    Each ModelCenter workflow has an assembly as its root element,
+    containing all other assemblies.
     """
 
     # ModelCenter specific
@@ -85,8 +105,8 @@ class IAssembly(
         av_pos: Optional[Tuple[int, int]] = None,
         assembly_type: Optional[AssemblyType] = None,
     ) -> "IAssembly":
-        """
-        Create a sub-Assembly in the current Assembly with a specific type and position.
+        """Create a sub-Assembly in the current Assembly with a specific type
+        and position.
 
         Parameters
         ----------
@@ -104,8 +124,7 @@ class IAssembly(
         """
 
     def add_datapin(self, name: str, mc_type: atvi.VariableType) -> aew_api.IDatapin:
-        """
-        Create a datapin on this assembly.
+        """Create a datapin on this assembly.
 
         Parameters
         ----------
@@ -123,8 +142,7 @@ class IAssembly(
 
     @abstractmethod
     def delete_datapin(self, name: str) -> bool:
-        """
-        Delete the specified datapin.
+        """Delete the specified datapin.
 
         Variable objects that represent the specified datapin will become invalid.
         If there is no datapin with the specified name, no error will be thrown.

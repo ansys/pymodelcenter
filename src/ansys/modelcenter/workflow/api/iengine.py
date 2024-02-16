@@ -1,3 +1,24 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Definition of Engine and associated classes."""
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -13,11 +34,11 @@ class WorkflowType(Enum):
     """Enumeration of the types of workflows that can be created."""
 
     DATA = ("dataModel",)
-    """Legacy style workflow where execution flow is determined from
-    links between components and an execution strategy."""
+    """Legacy style workflow where execution flow is determined from links
+    between components and an execution strategy."""
     PROCESS = "processModel"
-    """Modern style workflow where execution flow is explicitly designed
-    by the user using flow components."""
+    """Modern style workflow where execution flow is explicitly designed by the
+    user using flow components."""
 
 
 class IEngine(IFileBasedWorkflowEngine, ABC):
@@ -25,8 +46,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
-        """
-        Create a new workflow.
+        """Create a new workflow.
 
         Parameters
         ----------
@@ -43,8 +63,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def get_formatter(self, fmt: str) -> IFormat:
-        """
-        Create an instance of a formatter that can be used to format \
+        """Create an instance of a formatter that can be used to format \
         numbers to and from a particular string style.
 
         Parameters
@@ -60,8 +79,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def get_preference(self, pref: str) -> Union[bool, int, float, str]:
-        """
-        Get the value of a preference.
+        """Get the value of a preference.
 
         Preferences control how the engine behaves in various ways.
         The value returned may be ``bool``, ``int``, ``float``, or
@@ -80,8 +98,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def set_preference(self, pref: str, value: Union[bool, int, float, str]) -> None:
-        """
-        Set the value of a preference.
+        """Set the value of a preference.
 
         Preferences control how the engine behaves in various ways.
         The value may be ``bool`, ``int`, ``float``, or ``str`` typed.
@@ -96,8 +113,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def get_units(self) -> Mapping[str, Collection[str]]:
-        """
-        Get available units by category.
+        """Get available units by category.
 
         Returns
         -------
@@ -109,8 +125,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def get_run_only_mode(self) -> bool:
-        """
-        Get whether the engine is in Run-Only mode.
+        """Get whether the engine is in Run-Only mode.
 
         Run-Only mode has lower licensing requirements, but does not
         allow for the workflow to be edited.

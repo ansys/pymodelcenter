@@ -1,3 +1,24 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Definition of Format."""
 from abc import ABC, abstractmethod
 
@@ -5,13 +26,13 @@ from numpy import float64, int64
 
 
 class IFormat(ABC):
-    """Formats values in various string formats (percentage, currency, etc.)."""
+    """Formats values in various string formats (percentage, currency,
+    etc.)."""
 
     @property
     @abstractmethod
     def format(self) -> str:
-        """
-        Style to use for formatting.
+        """Style to use for formatting.
 
         Formats, with the exception of Dates, mimic the formatting style
         used in Microsoft Excel. They are not a one-to-one match though,
@@ -168,8 +189,7 @@ class IFormat(ABC):
 
     @abstractmethod
     def string_to_integer(self, string: str) -> int64:
-        """
-        Convert a formatted string to an integer.
+        """Convert a formatted string to an integer.
 
         The string must be in the correct format for the style being
         used.
@@ -187,8 +207,7 @@ class IFormat(ABC):
 
     @abstractmethod
     def string_to_real(self, string: str) -> float64:
-        """
-        Convert a formatted string to a real.
+        """Convert a formatted string to a real.
 
         The string must be in the correct format for the style being
         used.
@@ -206,8 +225,7 @@ class IFormat(ABC):
 
     @abstractmethod
     def integer_to_string(self, integer: int64) -> str:
-        """
-        Convert an integer to a formatted string.
+        """Convert an integer to a formatted string.
 
         Parameters
         ----------
@@ -222,8 +240,7 @@ class IFormat(ABC):
 
     @abstractmethod
     def real_to_string(self, real: float64) -> str:
-        """
-        Convert a real to a formatted string.
+        """Convert a real to a formatted string.
 
         Parameters
         ----------
@@ -238,8 +255,7 @@ class IFormat(ABC):
 
     @abstractmethod
     def string_to_string(self, string: str) -> str:
-        """
-        Convert an unformatted string into a formatted string.
+        """Convert an unformatted string into a formatted string.
 
         Parameters
         ----------
@@ -254,8 +270,7 @@ class IFormat(ABC):
 
     @abstractmethod
     def integer_to_editable_string(self, integer: int64) -> str:
-        """
-        Convert an integer to its formatted string representation, but \
+        """Convert an integer to its formatted string representation, but \
         with full precision for editing.
 
         Parameters
@@ -271,9 +286,8 @@ class IFormat(ABC):
 
     @abstractmethod
     def real_to_editable_string(self, real: float64) -> str:
-        """
-        Convert a real to its formatted string representation, but \
-        with full precision for editing.
+        """Convert a real to its formatted string representation, but \ with
+        full precision for editing.
 
         Parameters
         ----------

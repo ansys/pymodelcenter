@@ -1,4 +1,4 @@
-"""Integration tests around Group functionality"""
+"""Integration tests around Group functionality."""
 from typing import List
 import unittest
 

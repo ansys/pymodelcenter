@@ -1,4 +1,26 @@
-"""Methods to convert between gRPC messages and Ansys Common Variable Interop's IVariableValue."""
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+"""Methods to convert between gRPC messages and Ansys Common Variable Interop's
+IVariableValue."""
 
 from contextlib import ExitStack
 from typing import Optional
@@ -20,7 +42,8 @@ from overrides import overrides
 
 
 class ValueTypeNotSupportedError(ValueError):
-    """Indicates that an attempt was made to convert a value with a known but unsupported type."""
+    """Indicates that an attempt was made to convert a value with a known but
+    unsupported type."""
 
 
 class _ModelCenterTypeStringConverter(atvi.IVariableTypePseudoVisitor[str]):
@@ -59,7 +82,8 @@ class _ModelCenterTypeStringConverter(atvi.IVariableTypePseudoVisitor[str]):
 
 
 def interop_type_to_mc_type_string(original: atvi.VariableType) -> str:
-    """Given an ``atvi.VariableType``, create the corresponding ModelCenter type string."""
+    """Given an ``atvi.VariableType``, create the corresponding ModelCenter
+    type string."""
     return atvi.vartype_accept(_ModelCenterTypeStringConverter(), original)
 
 
@@ -78,7 +102,8 @@ __MCDSTR_TO_INTEROP_TYPE_MAP = {
 
 
 def mc_type_string_to_interop_type(original: str) -> atvi.VariableType:
-    """Given a ModelCenter type string, create the corresponding ``atvi.VariableType``."""
+    """Given a ModelCenter type string, create the corresponding
+    ``atvi.VariableType``."""
     return (
         __MCDSTR_TO_INTEROP_TYPE_MAP[original]
         if original in __MCDSTR_TO_INTEROP_TYPE_MAP
@@ -101,7 +126,8 @@ __GRPC_TO_INTEROP_TYPE_MAP = {
 
 
 def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
-    """Given a value of ``VariableType``, return the appropriate value of ``atvi.VariableType``."""
+    """Given a value of ``VariableType``, return the appropriate value of
+    ``atvi.VariableType``."""
     return (
         __GRPC_TO_INTEROP_TYPE_MAP[original]
         if original in __GRPC_TO_INTEROP_TYPE_MAP
@@ -110,8 +136,8 @@ def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
 
 
 def interop_type_to_grpc_type_enum(original: atvi.VariableType) -> VariableType:
-    """
-    Given a value of ``atvi.VaribleType`` object, return the appropriate ``VariableType``.
+    """Given a value of ``atvi.VaribleType`` object, return the appropriate
+    ``VariableType``.
 
     NOTE: This does not handle reference types, as they map to ``atvi.VariableType.UNKNOWN``, and
     are thus indistinguishable from actual unknown types.
@@ -125,8 +151,7 @@ def interop_type_to_grpc_type_enum(original: atvi.VariableType) -> VariableType:
 def convert_grpc_value_to_atvi(
     original: VariableValue, engine_is_local: bool = True
 ) -> atvi.IVariableValue:
-    """
-    Produce an ``atvi.IVariableValue`` object from a gRPC message.
+    """Produce an ``atvi.IVariableValue`` object from a gRPC message.
 
     Parameters
     ----------
@@ -199,13 +224,13 @@ def convert_grpc_value_to_atvi(
 
 
 class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
-    """Produces a gRPC ``VariableValue`` message for a given ``atvi.IVariableValue`` object."""
+    """Produces a gRPC ``VariableValue`` message for a given
+    ``atvi.IVariableValue`` object."""
 
     def __init__(
         self, local_file_context_stack: Optional[ExitStack] = None, engine_is_local: bool = True
     ):
-        """
-        Initialize a new instance.
+        """Initialize a new instance.
 
         Parameters
         ==========
@@ -313,5 +338,6 @@ def convert_interop_value_to_grpc(
     local_file_context_stack: Optional[ExitStack] = None,
     engine_is_local=False,
 ) -> VariableValue:
-    """Create an equivalent ``VariableValue`` message from a ``atvi.IVariableValue`` object."""
+    """Create an equivalent ``VariableValue`` message from a
+    ``atvi.IVariableValue`` object."""
     return original.accept(ToGRPCVisitor(local_file_context_stack, engine_is_local))

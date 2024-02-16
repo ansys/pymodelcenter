@@ -1,3 +1,24 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Implementation of Engine."""
 from os import PathLike
 from string import Template
@@ -21,7 +42,8 @@ from .workflow import Workflow
 
 
 def _heartbeat_loop(condition: Condition, address: str, engine, interval: numpy.uint) -> None:
-    """Runs a loop that sends heartbeat messages to the server at regular intervals."""
+    """Runs a loop that sends heartbeat messages to the server at regular
+    intervals."""
     # should use Condition to perform timing AND decide whether or not to bail,
     # allows immediate leaving while still joining the thread
     # should keep going if HeartbeatRequest fails for a reason besides UNAVAILABLE
@@ -38,8 +60,7 @@ def _heartbeat_loop(condition: Condition, address: str, engine, interval: numpy.
 
 
 class WorkflowAlreadyLoadedError(Exception):
-    """
-    Raised to indicate that a workflow is already loaded.
+    """Raised to indicate that a workflow is already loaded.
 
     This error may be raised if the underlying ModelCenter engine only
     supports a single workflow loaded at a time.
@@ -58,8 +79,7 @@ class Engine(IEngine):
         heartbeat_interval: numpy.uint = 30000,
         allowed_heartbeat_misses: numpy.uint = 3,
     ):
-        """
-        Initialize a new Engine instance.
+        """Initialize a new Engine instance.
 
         Parameters
         ----------
@@ -96,8 +116,7 @@ class Engine(IEngine):
         self.close()
 
     def _launch_modelcenter(self, force_local: bool = False) -> None:
-        """
-        Launch ModelCenter, using pypim if it is configured.
+        """Launch ModelCenter, using pypim if it is configured.
 
         Parameters
         ----------
@@ -172,8 +191,7 @@ class Engine(IEngine):
 
     @property
     def is_local(self) -> bool:
-        """
-        Get if MCD was started locally, or remotely.
+        """Get if MCD was started locally, or remotely.
 
         Returns
         -------
@@ -184,8 +202,7 @@ class Engine(IEngine):
 
     @property
     def channel(self) -> Optional[grpc.Channel]:
-        """
-        Get the gRPC channel used to communicate with MCD.
+        """Get the gRPC channel used to communicate with MCD.
 
         Returns
         -------
@@ -196,8 +213,7 @@ class Engine(IEngine):
 
     @property
     def process_id(self) -> int:
-        """
-        Get the ID of the connected process; useful for debugging.
+        """Get the ID of the connected process; useful for debugging.
 
         Returns
         -------

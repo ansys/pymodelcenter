@@ -1,3 +1,24 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Definition of workflow."""
 from abc import ABC, abstractmethod
 from typing import Collection, Optional, Tuple, Union
@@ -21,8 +42,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
-        """
-        Set the value of a datapin.
+        """Set the value of a datapin.
 
         Parameters
         ----------
@@ -39,8 +59,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_datapin_state(self, var_name: str) -> atvi.VariableState:
-        """
-        Get the state of a datapin.
+        """Get the state of a datapin.
 
         Parameters
         ----------
@@ -60,8 +79,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_datapin_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
-        """
-        Get metadata from a datapin.
+        """Get metadata from a datapin.
 
         Parameters
         ----------
@@ -81,8 +99,8 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def create_link(self, datapin: Union[IDatapin, str], equation: Union[str, IDatapin]) -> None:
-        """
-        Create a link to the specified datapin based on the specified equation.
+        """Create a link to the specified datapin based on the specified
+        equation.
 
         Parameters
         ----------
@@ -104,8 +122,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def save_workflow_as(self, file_name: str) -> None:
-        """
-        Save the current workflow to a specified file.
+        """Save the current workflow to a specified file.
 
         Parameters
         ----------
@@ -119,8 +136,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_datapin(self, name: str) -> IDatapin:
-        """
-        Get a datapin with a given name.
+        """Get a datapin with a given name.
 
         Parameters
         ----------
@@ -140,8 +156,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_component(self, name: str) -> IComponent:
-        """
-        Get a component from the workflow.
+        """Get a component from the workflow.
 
         Parameters
         ----------
@@ -161,8 +176,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def remove_component(self, name: str) -> None:
-        """
-        Remove the specified component from the workflow.
+        """Remove the specified component from the workflow.
 
         Parameters
         ----------
@@ -179,8 +193,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     def create_assembly(
         self, name: str, parent: Union[IAssembly, str], assembly_type: Optional[AssemblyType] = None
     ) -> IAssembly:
-        """
-        Create a new Assembly in the workflow.
+        """Create a new Assembly in the workflow.
 
         Parameters
         ----------
@@ -204,8 +217,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     def auto_link(
         self, src_comp: Union[IComponent, str], dest_comp: Union[IComponent, str]
     ) -> Collection[IDatapinLink]:
-        """
-        Automatically links two components.
+        """Automatically links two components.
 
         Parameters
         ----------
@@ -227,8 +239,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_links(self) -> Collection[IDatapinLink]:
-        """
-        Get a list of all links in the workflow.
+        """Get a list of all links in the workflow.
 
         Returns
         -------
@@ -251,8 +262,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         parent: Union[aew_api.IControlStatement, str],
         index: int = -1,
     ) -> None:
-        """
-        Move the component to the parent at the given index.
+        """Move the component to the parent at the given index.
 
         Parameters
         ----------
@@ -271,8 +281,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_assembly(self, name: Optional[str] = None) -> IAssembly:
-        """
-        Get the named assembly or the top level assembly.
+        """Get the named assembly or the top level assembly.
 
         Parameters
         ----------
@@ -298,8 +307,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         av_position: Optional[Tuple[int, int]] = None,
         insert_before: Optional[Union[IComponent, IAssembly, str]] = None,
     ) -> IComponent:
-        """
-        Create a new component.
+        """Create a new component.
 
         Parameters
         ----------

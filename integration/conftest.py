@@ -9,9 +9,8 @@ import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 @pytest.fixture(scope="session", name="engine")
 def create_engine() -> Generator[grpcmc.Engine, None, None]:
-    """
-    Setup called before each test function in this test session to create the SUT.
-    """
+    """Setup called before each test function in this test session to create
+    the SUT."""
     with grpcmc.Engine(is_run_only=False) as engine:
         yield engine
 
