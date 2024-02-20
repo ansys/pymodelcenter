@@ -24,7 +24,7 @@ project = "ansys-modelcenter-workflow"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "Ansys, Inc."
 release = version = __version__
-cname = os.getenv("DOCUMENTATION_CNAME", "nocname.com")
+cname = os.getenv("DOCUMENTATION_CNAME", "modelcenter.docs.pyansys.com")
 switcher_version = get_version_match(__version__)
 
 REPOSITORY_NAME = "pymodelcenter"

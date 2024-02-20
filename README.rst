@@ -21,59 +21,42 @@ Ansys ModelCenter Workflow
    :alt: Black
 
 
-Project Overview
-----------------
+Overview
+--------
 This library provides a Python API for using the ModelCenter suite of
 Ansys products. These products provide tools for creating and automating
 engineering workflows.
 
 
-Installation
-------------
-The ``ansys-modelcenter-workflow`` package currently supports Python
-3.9 through 3.12 on Windows.
+Documentation and issues
+------------------------
 
-You can install ``ansys-modelcenter-workflow`` with:
+Documentation for the latest stable release of the Ansys ModelCenter Workflow is hosted
+at `Ansys ModelCenter Workflow documentation <https://modelcenter.docs.pyansys.com/version/dev/>`_.
 
-.. code::
+The documentation has four sections:
 
-   pip install ansys-modelcenter-workflow
+- `Getting started <https://modelcenter.docs.pyansys.com/version/dev/getting_started/index.html>`_: Learn
+  how to install the Ansys ModelCenter Workflow.
+- `User guide <https://modelcenter.docs.pyansys.com/version/dev/user_guide/index.html>`_: Understand how to
+  use the Ansys ModelCenter Workflow.
+- `API reference <https://rocky.docs.pyansys.com/version/dev/api/index.html>`_: Understand Ansys Engineering Workflow
+  API endpoints, their capabilities, and how to interact with them programmatically.
+- `Contribute <https://modelcenter.docs.pyansys.com/version/dev/contributing/index.html>`_: Learn how to
+  contribute to the Ansys ModelCenter Workflow codebase or documentation.
 
-Alternatively, install the latest development version directly from
-the `pymodelcenter GitHub <https://github.com/ansys/pymodelcenter>`_ via:
+In the upper right corner of the documentation's title bar, there is an option
+for switching from viewing the documentation for the latest stable release
+to viewing the documentation for the development version or previously
+released versions.
 
-.. code::
+On the `Ansys ModelCenter Workflow Issues <https://github.com/ansys/pymodelcenter/issues>`_
+page, you can create issues to report bugs and request new features. On the
+`Ansys ModelCenter Workflow Discussions <https://github.com/ansys/pymodelcenter/discussions>`_
+page or the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
+you can post questions, share ideas, and get community feedback.
 
-   pip install git+https://github.com/ansys/pymodelcenter.git
-
-To install a local development version of the project,
-run these commands:
-
-.. code::
-
-   git clone https://github.com/ansys/pymodelcenter.git
-   cd pymodelcenter
-   pip install poetry
-   poetry install -E dev
-
-This creates a new virtual environment, which can be activated with:
-
-.. code::
-
-   poetry shell
-
-
-Documentation
--------------
-`API Documentation <api/index.html>`_
-
-Install the required dependencies for the documentation and build it
-with these commands:
-
-.. code::
-
-    poetry install -E docs
-    .\doc\make.bat html
+To reach the PyAnsys project support team, email `PyAnsys Core team <pyansys.core@ansys.com>`_.
 
 
 Usage
@@ -113,7 +96,7 @@ Dependencies required for testing can be installed via:
 
 .. code::
 
-    poetry install -E test
+    pip install -e .[tests]
 
 The tests can then be run via pytest. To test and generate a code coverage report run:
 
@@ -125,9 +108,20 @@ If a local copy of ModelCenter Desktop is installed, and a local copy of
 ModelCenter Remote Execution is installed and running, the integration
 tests can be run with:
 
-    pytest integration/
+.. code::
+
+    pytest integration
 
 
 License
 -------
-``ansys-modelcenter-workflow`` is licensed under the MIT license.
+
+The Ansys ModelCenter Workflow is licensed under the `MIT License <https://github.com/ansys/pymodelcenter/blob/main/LICENSE>`_.
+
+The Ansys ModelCenter Workflow makes no commercial claim over Ansys whatsoever. This library extends the
+functionality of interacting with ModelCenter, by adding a Python interface without changing the
+core behavior or license of the original software. The use of the Ansys ModelCenter requires a legally
+licensed Ansys ModelCenter.
+
+To get a copy of Ansys ModelCenter, see the `Ansys ModelCenter <https://www.ansys.com/products/connect/ansys-modelcenter>`_
+page on the Ansys website.
