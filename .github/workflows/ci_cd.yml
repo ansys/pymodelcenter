@@ -3,6 +3,7 @@ name: GitHub CI
 
 # run only on main branch.  This avoids duplicated actions on PRs
 on:
+  workflow_dispatch:
   pull_request:
   push:
     tags:
@@ -10,42 +11,40 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   MAIN_PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'ansys-modelcenter-workflow'
   PACKAGE_NAMESPACE: 'ansys.modelcenter.workflow'
   DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-
 jobs:
-
   code-style:
-    name: Code style
+    name: "Code style"
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys code style checks
-        uses: ansys/actions/code-style@v4
+        uses: ansys/actions/code-style@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
 
   doc-style:
-    name: Documentation Style Check
+    name: "Documentation Style Check"
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v4
+        uses: ansys/actions/doc-style@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          vale-version: "2.29.5"
+          vale-version: "3.1.0"
 
 
   smoke-tests:
-    name: Build and Smoke tests
+    name: "Build and Smoke tests"
     runs-on: ${{ matrix.os }}
     needs: [code-style]
     strategy:
@@ -63,7 +62,7 @@ jobs:
             os: windows-latest
     steps:
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v4
+        uses: ansys/actions/build-wheelhouse@v5
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -71,46 +70,37 @@ jobs:
 
 
   build-tests:
-    needs: [smoke-tests]
     name: "Build and unit testing"
+    needs: [smoke-tests]
     runs-on: ${{ matrix.os }}
-    env:
-      PYTEST_EXTRA_ARGS: "-v --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html:.cov/html"
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
         os: ['windows-latest']
+        should-release:
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+        exclude:
+          - should-release: false
+            os: macos-latest
+          - should-release: false
+            os: windows-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: "Setup Python"
-        uses: actions/setup-python@v5
+      - name: Run pytest
+        uses: ansys/actions/tests-pytest@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      
-      - name: "Create Python venv"
-        run: |
-          python -m venv .venv
-          .\.venv\Scripts\Activate.ps1
-
-      - name: "Install package and testing dependencies"
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          python -m pip install --upgrade pip
-          pip install .[tests]
-
-      - name: "Testing"
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pytest ${{ env.PYTEST_EXTRA_ARGS }}
-
-      - name: "Upload coverage results as artifacts"
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          pytest-extra-args: -v --durations=10 --maxfail=10 --cov=${{ env.PACKAGE_NAMESPACE }} --cov-report=xml:coverage.xml --cov-report=html --cov-report term
+  
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+  
+      - name: "Upload coverage artifacts"
         uses: actions/upload-artifact@v4
-        if: matrix.python-version == env.MAIN_PYTHON_VERSION
         with:
-          name: HTML-Coverage
-          path: .cov/html
-          retention-days: 7
+          name: coverage-html
+          path: htmlcov
 
 
   doc-build:
@@ -125,11 +115,11 @@ jobs:
 
 
   package:
-    name: Package library
+    name: "Package library"
     needs: [build-tests, doc-build]
     runs-on: ubuntu-latest
     steps:
-      - name: Build library source and wheel artifacts
+      - name: "Build library source and wheel artifacts"
         uses: ansys/actions/build-library@v5
         with:
           library-name: ${{ env.PACKAGE_NAME }}
@@ -151,20 +141,20 @@ jobs:
 
 
   release:
-    name: "Release project"
+    name: "Release project to public PyPI and GitHub"
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [package]
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - name: "Release to the public PyPI repository"
-      uses: ansys/actions/release-pypi-public@v4
+      uses: ansys/actions/release-pypi-public@v5
       with:
         library-name: ${{ env.PACKAGE_NAME }}
         twine-username: "__token__"
         twine-token: ${{ secrets.PYPI_TOKEN }}
 
     - name: "Release to GitHub"
-      uses: ansys/actions/release-github@v4
+      uses: ansys/actions/release-github@v5
       with:
         library-name: ${{ env.PACKAGE_NAME }}
 
@@ -177,7 +167,7 @@ jobs:
     needs: [release]
     steps:
       - name: "Deploy the stable documentation"
-        uses: ansys/actions/doc-deploy-stable@v4
+        uses: ansys/actions/doc-deploy-stable@v5
         with:
             cname: ${{ env.DOCUMENTATION_CNAME }}
             token: ${{ secrets.GITHUB_TOKEN }}
