@@ -72,18 +72,13 @@ jobs:
   build-tests:
     name: "Build and unit testing"
     needs: [smoke-tests]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
-        os: ['windows-latest']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
-        exclude:
-          - should-release: false
-            os: macos-latest
-          - should-release: false
-            os: windows-latest
+
     steps:
       - name: Run pytest
         uses: ansys/actions/tests-pytest@v5
