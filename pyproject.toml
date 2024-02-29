@@ -84,5 +84,5 @@ source = ["ansys.modelcenter.workflow"]
 
 [tool.codespell]
 skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*'
-ignore-words = "doc/styles/Vocab/ANSYS/accept.txt"
+ignore-words = "doc/styles/config/vocabularies/ANSYS/accept.txt"
 quiet-level = 3
