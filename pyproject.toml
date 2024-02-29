@@ -38,7 +38,7 @@ dependencies = [
 
 [project.optional-dependencies]
 doc=[
-    "ansys-engineeringworkflow-api@git+https://github.com/ansys/ansys-engineeringworkflow-api.git", # not released yet
+    "ansys-engineeringworkflow-api==0.1.0",
     "ansys-sphinx-theme==0.13.4",
     "numpydoc==1.6.0",
     "pyansys-tools-variableinterop==0.1.1",
@@ -52,7 +52,7 @@ doc=[
     "sphinx-notfound-page==1.0.0",
 ]
 tests = [
-    "ansys-engineeringworkflow-api@git+https://github.com/ansys/ansys-engineeringworkflow-api.git", # not released yet
+    "ansys-engineeringworkflow-api==0.1.0",
     "grpcio==1.59.0",
     "pyansys-tools-variableinterop==0.1.1",
     "pytest==8.0.0",
