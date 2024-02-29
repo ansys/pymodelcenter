@@ -165,6 +165,11 @@ exclude_patterns = [
     "links.rst",
 ]
 
+linkcheck_ignore = [
+    "https://github.com/ansys/pymodelcenter/*",  # this site is private
+    "https://modelcenter.docs.pyansys.com//*",  # this site is private
+]
+
 # make rst_epilog a variable, so you can add other epilog parts to it
 rst_epilog = ""
 # Read link all targets from file
