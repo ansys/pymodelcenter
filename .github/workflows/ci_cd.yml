@@ -114,50 +114,14 @@ jobs:
 
 
   doc-build:
-    name: "Build Documentation"
-    runs-on: windows-latest
+    name: "Documentation building"
+    runs-on: ubuntu-latest
     needs: [doc-style]
     steps:
-      - uses: actions/checkout@v4
-
-      - name: "Setup Python"
-        uses: actions/setup-python@v5
+      - name: "Run Ansys documentation building action"
+        uses: ansys/actions/doc-build@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-      
-      - name: "Create Python venv"
-        run: |
-          python -m venv .venv
-          .\.venv\Scripts\Activate.ps1
-
-      - name: "Install package and doc dependencies"
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pip install .[doc]
-
-      - name: "Build HTML"
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          doc/make.bat html
-
-      - name: "Build PDF Documentation"
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          doc/make.bat pdf
-
-      - name: "Upload HTML Documentation"
-        uses: actions/upload-artifact@v4
-        with:
-          name: Documentation-html
-          path: doc/_build/html
-          retention-days: 7
-
-      - name: "Upload PDF Documentation"
-        uses: actions/upload-artifact@v4
-        with:
-          name: Documentation-pdf
-          path: doc/_build/latex/ansys-modelcenter-workflow*.pdf
-          retention-days: 7
 
 
   package:
