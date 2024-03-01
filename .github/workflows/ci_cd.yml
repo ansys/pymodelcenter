@@ -75,27 +75,46 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
-
     steps:
-      - name: Run pytest
-        uses: ansys/actions/tests-pytest@v5
+      - name: "Install Git and checkout project"
+        uses: actions/checkout@v4
+
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          pytest-extra-args: -v --durations=10 --maxfail=10 --cov=${{ env.PACKAGE_NAMESPACE }} --cov-report=xml:coverage.xml --cov-report=html --cov-report term
-  
-      - name: "Upload coverage to Codecov"
-        uses: codecov/codecov-action@v4
-        with:
-          files: coverage.xml
+
+      - name: "Create Python venv and activate it"
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\Activate.ps1
+
+      - name: "Install packages for testing"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pip install --upgrade pip
+          pip install .[tests]
+
+      - name: "Testing"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pytest -v
   
       - name: "Upload coverage artifacts"
         uses: actions/upload-artifact@v4
         with:
           name: coverage-html
           path: htmlcov
+          retention-days: 7
+
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
 
 
   doc-build:
@@ -121,31 +140,33 @@ jobs:
           .\.venv\Scripts\Activate.ps1
           pip install --upgrade pip
           pip install .[doc]
-          - name: Build the documentation (HTML)
-          run: |
-            .\.venv\Scripts\Activate.ps1
-            cd doc
-            .\make.bat html
+
+      - name: "Build the documentation (HTML)"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          cd doc
+          .\make.bat html
   
-      - name: Build the documentation (PDF)
+      - name: "Build the documentation (PDF)"
         run: |
           .\.venv\Scripts\Activate.ps1
           cd doc
           .\make.bat pdf
   
-      - name: Upload HTML documentation
+      - name: "Upload HTML documentation"
         uses: actions/upload-artifact@v4
         with:
           name: documentation-html
           path: doc/_build/html
           retention-days: 7
   
-      - name: Upload PDF documentation
+      - name: "Upload PDF documentation"
         uses: actions/upload-artifact@v4
         with:
           name: documentation-pdf
           path: doc/_build/latex/ansys-modelcenter-workflow*.pdf
           retention-days: 7
+
 
   package:
     name: "Package library"
