@@ -318,8 +318,8 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         index : int
             Index in the ``ReferenceArrayDatapin``.
 
-        Return
-        ------
+        Returns
+        -------
         The ``ReferenceArrayDatapinElement`` at the given index.
         """
         return self.__getitem__(index)
@@ -334,8 +334,8 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         index : slice
             Slice to take from the array.
 
-        Return
-        ------
+        Returns
+        -------
         ``Sequence`` of ``ReferenceArrayDatapinElements``.
         """
         return self.__getitem__(index)
@@ -351,8 +351,8 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
             Index in the ``ReferenceArrayDatapin`` or a slice of the
             ``ReferenceArrayDatapin`` to return.
 
-        Return
-        ------
+        Returns
+        -------
         ``ReferenceArrayDatapinElement`` at the given index or a slice
         of the ``ReferenceArrayDatapin``.
         """

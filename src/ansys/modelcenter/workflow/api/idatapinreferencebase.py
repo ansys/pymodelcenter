@@ -67,8 +67,8 @@ class IDatapinReferenceBase(ABC):
         are just the name of one other datapin. Only direct-reference datapins that refer
         to a datapin that can be set directly can use set_state to set the referenced datapin.
 
-        Return
-        ------
+        Returns
+        -------
         bool
             ``True`` if the datapin is a direct reference.
         """
