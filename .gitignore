@@ -65,3 +65,4 @@ ansys/modelcenter/workflow/grpc_modelcenter/proto/*.py*
 
 # Documentation
 doc/_build/
+doc/source/api/

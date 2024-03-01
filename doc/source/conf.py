@@ -87,6 +87,8 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/devdocs", None),
     "grpc": ("https://grpc.github.io/grpc/python/", None),
     "pypim": ("https://pypim.docs.pyansys.com/version/stable/", None),
+    "ansys.engineeringworkflow.api": ("https://engineeringworkflow.docs.pyansys.com/version/stable/", None),
+    "ansys.tools.varaibleinterop": ("https://variableinterop.docs.pyansys.com/version/stable/", None),
 }
 
 # numpydoc configuration
@@ -146,6 +148,8 @@ suppress_warnings = ["autoapi.python_import_resolution"]
 autoapi_python_use_implicit_namespaces = True
 autoapi_render_in_single_page = ["class", "enum", "exception"]
 autoapi_own_page_level = "class"
+autoapi_ignore = ["*_visitors*"]
+autoapi_keep_files = True
 
 # Generate section labels up to four levels deep
 autosectionlabel_maxdepth = 4
