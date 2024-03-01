@@ -88,7 +88,7 @@ def create_datapin(
     var_value_type: VariableType, element_id: ElementId, engine: "Engine"
 ) -> mc_api.IDatapin:
     """Given a ``VariableType`` object and an ``ElementId`` and ``Engine``,
-    create a \ ``mc_api.IDatapin`` object.
+    create a ``mc_api.IDatapin`` object.
 
     Parameters
     ----------
