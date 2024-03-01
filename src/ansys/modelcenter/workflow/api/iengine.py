@@ -63,8 +63,8 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def get_formatter(self, fmt: str) -> IFormat:
-        """Create an instance of a formatter that can be used to format
-        numbers to and from a particular string style.
+        """Create an instance of a formatter that can be used to format numbers
+        to and from a particular string style.
 
         Parameters
         ----------

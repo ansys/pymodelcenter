@@ -270,8 +270,8 @@ class IFormat(ABC):
 
     @abstractmethod
     def integer_to_editable_string(self, integer: int64) -> str:
-        """Convert an integer to its formatted string representation, but
-        with full precision for editing.
+        """Convert an integer to its formatted string representation, but with
+        full precision for editing.
 
         Parameters
         ----------
@@ -286,8 +286,8 @@ class IFormat(ABC):
 
     @abstractmethod
     def real_to_editable_string(self, real: float64) -> str:
-        """Convert a real to its formatted string representation, but with
-        full precision for editing.
+        """Convert a real to its formatted string representation, but with full
+        precision for editing.
 
         Parameters
         ----------
