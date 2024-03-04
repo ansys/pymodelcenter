@@ -63,6 +63,10 @@ test-output.xml
 ansys/modelcenter/workflow/grpc_modelcenter/proto/*.py*
 !__init__.py
 
+# Pytests
+__pycache__/
+.cov/
+
 # Documentation
 doc/_build/
 doc/source/api/
