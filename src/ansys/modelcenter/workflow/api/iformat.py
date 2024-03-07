@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of Format."""
+"""Contains the definition of the format."""
 from abc import ABC, abstractmethod
 
 from numpy import float64, int64
@@ -34,98 +34,118 @@ class IFormat(ABC):
     def format(self) -> str:
         """Style to use for formatting.
 
-        Formats, with the exception of Dates, mimic the formatting style
-        used in Microsoft Excel. They are not a one-to-one match though,
+        Formats, with the exception of dates, mimic the formatting style
+        used in Microsoft Excel. However, they are not a one-to-one match,
         there are some differences.
-        There are 6 broad categories of formats:
 
-        1. No specific format:
-        Specified by 'General', or an empty string, this is the default
-        format intended to cover most non-specific cases. It shows a
-        limited number of significant figures, and auto-switches between
-        number and scientific formats based on the number's scale.
+        There are six broad categories of formats:
 
-        2. Number:
-        Number formats are used for specifying how numeric values will
-        be displayed. See Currency for specialized handling of monetary
-        values.
+        - **No specific format**
 
-        Specification:
-        * Zero decimal places indicated by '0'.
-        * 1 to 30 decimal places indicated by '0.0' with an extra
-        trailing zero for each decimal place.
-        * Use of 1000's separator indicated by leading '#,##'.
-        * Negative sign can be switched to surrounding braces by
-        surrounding entire expression with braces.
+          Specified by ``General`` or an empty string, this is the default
+          format intended to cover most non-specific cases. It shows a
+          limited number of significant figures, and automatically switches
+          between number and scientific formats based on the number's scale.
 
-        Examples:
-        * 0.00 : 2 decimal places
-        * (#,##0.00000) : Negative braces, 1000's separator, 5 decimal places
+        - **Number**
 
-        3. Currency:
-        Currency formats are for general monetary values.
+          Number formats are used for specifying how numeric values are
+          displayed. For specialized handling of monetary values, see the
+          Monetary format.
 
-        Specification:
-        * Follows Number format for specifying digits, but starts with a
-        '$' symbol. If negative braces are specified, the symbol should
-        be within them.
-        * The 1000's separator mark notation is required. If missing will
-        be added automatically.
+          Specification:
 
-        Examples:
-        * $#,##0.00 : 2 decimal places
-        * ($#,##0.00000) : Negative braces, 5 decimal places
+          * Zero decimal places are indicated by '0'.
+          * 1 to 30 decimal places are indicated by '`0.0'` with an extra
+            trailing zero for each decimal place.
+          * Use of a 1000's separator is indicated by leading '#,##'.
+          * Negative sign can be switched to surrounding braces by
+            surrounding the entire expression with braces.
 
-        3. Percentage:
-        Percentage formats multiply the datapin value by 100 and
-        display the result with a percent sign.
+          Examples:
 
-        Specification:
-        * Follows Number format for specifying number of digits, but ends
-        with a '%' symbol.
-        * No 1000 Separator or Negative braces allowed.
+          * 0.00 : 2 decimal places
+          * (#,##0.00000) : Negative braces, 1000's separator, 5 decimal places
 
-        Examples:
-        * 0.00% : 2 decimal places
-        * 0.00000% : 5 decimal places
+        - **Currency**
 
-        4. Fraction:
-        Fraction formats show the value as a fraction.
+          Currency formats are for general monetary values.
 
-        Specification:
-        * Only certain arbitrary combinations are allowed. See examples.
+          Specification:
+          * Follows the Number format for specifying digits, but starts with a
+            '$' symbol. If negative braces are specified, the symbol should
+            be within them.
+          * The 1000's separator is required. If it is missing, it is added
+            automatically.
 
-        Examples:
-        * # ?/? : Up to one digit
-        * # ??/?? : Up to two digits
-        * # ???/??? : Up to three digits
-        * # ?/2 : As halves
-        * # ?/4 : As quarters
-        * # ?/8 : As eighths
-        * # ??/16 : As sixteenths
-        * # ?/10 : As tenths
-        * # ??/100 : As hundredths
+          Examples:
 
-        5. Scientific:
-        Scientific formats show the value in scientific notation.
+          * $#,##0.00 : Two decimal places.
+          * ($#,##0.00000) : Negative braces, five decimal places.
 
-        Specification:
-        * Follows Number format for specifying digits, but ends with the
-        string: 'E+00'.
+        - **Percentage**
 
-        Examples:
-        * 0.00E+00 : 2 decimal places
-        * 0.00000E+00 : 5 decimal places
+          Percentage formats multiply the datapin value by 100 and
+          display the result with a percent sign.
 
-        6. Date:
-        Date formats show the value as a date.
+          Specification:
 
-        Specification:
-        * Specified by certain strings, see Examples.
+          * Follows the Number format for specifying number of digits,
+            but ends with a '%' symbol.
+          * No 1000's separator or negative braces are allowed.
 
-        Examples:
-        This list shows each Date format and their example output.
-        * Epoch formats:
+          Examples:
+
+          * 0.00% : Two decimal places.
+          * 0.00000% : Five decimal places.
+
+        - **Fraction**
+
+          Fraction formats show the value as a fraction.
+
+          Specification:
+
+          * Only certain arbitrary combinations are allowed. See the examples.
+
+          Examples:
+
+          * # ?/? : Up to one digit.
+          * # ??/?? : Up to two digits.
+          * # ???/??? : Up to three digits.
+          * # ?/2 : As halves.
+          * # ?/4 : As quarters.
+          * # ?/8 : As eighths.
+          * # ??/16 : As sixteenths.
+          * # ?/10 : As tenths.
+          * # ??/100 : As hundredths.
+
+        - **Scientific**
+
+          Scientific formats show the value in scientific notation.
+
+          Specification:
+
+          * Follows the Number format for specifying digits, but ends with the
+          string: '`E+00'`.
+
+          Examples:
+
+          * 0.00E+00 : Two decimal places.
+          * 0.00000E+00 : Five decimal places.
+
+        - **Date**
+
+          Date formats show the value as a date.
+
+          Specification:
+
+          * Specified by certain strings, see the examples.
+
+          Examples:
+
+          This list shows each Date format and their example output.
+
+          * Epoch formats:
 
             * EpSec : 0
             * EpMin : 0.00000
@@ -133,7 +153,7 @@ class IFormat(ABC):
             * EpDay : 0.00000000
             * EpYr : 0.00000000000
 
-        * Standard display formats:
+          * Standard display formats:
 
             * DD/MM/YYY : 31/21/1971 00:00:00.000
             * YYDDD : 71365.00000000
@@ -142,7 +162,7 @@ class IFormat(ABC):
             * YYYY/MM/DD : 1971/12/31 00:00:00.000
             * YYYY:MM:DD : 1971:12:31:00:00:00.000
 
-        * Gregorian formats:
+          * Gregorian formats:
 
             * GPSG : 30 Dec 1971 23:59:51.000
             * LCLG : 30 Dec 1971 20:00:00.000
@@ -151,7 +171,7 @@ class IFormat(ABC):
             * TDTG : 31 Dec 1971 00:00:42.184
             * UTCG : 31 Dec 1971 00:00:00.000
 
-        * Julian formats:
+          * Julian formats:
 
             * JDate : 2441316.50000000
             * JDTDB : 2441316.50048824
@@ -162,12 +182,12 @@ class IFormat(ABC):
             * UTCJ : 365/71 00:00:00.000
             * UTCJFOUR : 365/1971 00:00:00.000
 
-        * ISO8601 UTC formats:
+          * ISO8601 UTC formats:
 
             * ISO-YD : 1971-365T00:00:00.000
             * ISO-YMD : 1971-12-31T00:00:00.000
 
-        * Other formats:
+          * Other formats:
 
             * (Earth Canonical Time) EarthEpTU : 0.000
             * (GMT System) GMT : 365/00000 1971
@@ -197,7 +217,7 @@ class IFormat(ABC):
         Parameters
         ----------
         string: str
-            Formatted string to convert.
+            Formatted string.
 
         Returns
         -------
@@ -207,7 +227,7 @@ class IFormat(ABC):
 
     @abstractmethod
     def string_to_real(self, string: str) -> float64:
-        """Convert a formatted string to a real.
+        """Convert a formatted string to a real value.
 
         The string must be in the correct format for the style being
         used.
@@ -215,7 +235,7 @@ class IFormat(ABC):
         Parameters
         ----------
         string: str
-            Formatted string to convert.
+            Formatted string.
 
         Returns
         -------
@@ -230,7 +250,7 @@ class IFormat(ABC):
         Parameters
         ----------
         integer: int64
-            Value to format.
+            Value.
 
         Returns
         -------
@@ -240,12 +260,12 @@ class IFormat(ABC):
 
     @abstractmethod
     def real_to_string(self, real: float64) -> str:
-        """Convert a real to a formatted string.
+        """Convert a real value to a formatted string.
 
         Parameters
         ----------
         real: float64
-            Value to format.
+            Value.
 
         Returns
         -------
@@ -260,7 +280,7 @@ class IFormat(ABC):
         Parameters
         ----------
         string: str
-            Unformatted string to format.
+            Unformatted string.
 
         Returns
         -------
@@ -276,7 +296,7 @@ class IFormat(ABC):
         Parameters
         ----------
         integer: int64
-            Value to format.
+            Value.
 
         Returns
         -------
@@ -286,13 +306,13 @@ class IFormat(ABC):
 
     @abstractmethod
     def real_to_editable_string(self, real: float64) -> str:
-        """Convert a real to its formatted string representation, but with full
-        precision for editing.
+        """Convert a real value to its formatted string representation, but
+        with full precision for editing.
 
         Parameters
         ----------
         real: float64
-            Value to format.
+            Value.
 
         Returns
         -------

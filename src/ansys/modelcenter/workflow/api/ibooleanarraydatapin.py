@@ -29,7 +29,7 @@ from .idatapin import IDatapin
 
 
 class IBooleanArrayDatapin(IDatapin, ABC):
-    """Represents a boolean array datapin on the workflow."""
+    """Represents a Boolean array datapin on the workflow."""
 
     @overrides
     @abstractmethod

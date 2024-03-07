@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for array file datapin."""
+"""Contains the definition for the array file datapin."""
 from abc import ABC, abstractmethod
 
 import ansys.tools.variableinterop as atvi

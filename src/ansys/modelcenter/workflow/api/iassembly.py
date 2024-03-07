@@ -52,12 +52,12 @@ class IAssemblyChild(ABC):
     @property
     @abstractmethod
     def index_in_parent(self) -> int:
-        """Get the index of the assembly within its parent assembly."""
+        """Index of the assembly within its parent assembly."""
 
     @property
     @abstractmethod
     def parent_assembly(self) -> Optional["IAssembly"]:
-        """Get the parent assembly of this assembly.
+        """Parent assembly of the assembly.
 
         Returns
         -------
@@ -73,8 +73,8 @@ class IAssemblyChild(ABC):
         Returns
         -------
         Tuple[int, int]
-            2-tuple where the first element is the x-coordinate and the second element is the
-            y-coordinate.
+            2-element tuple where the first element is the x coordinate and the
+            second element is the y coordinate.
         """
 
 
@@ -105,18 +105,21 @@ class IAssembly(
         av_pos: Optional[Tuple[int, int]] = None,
         assembly_type: Optional[AssemblyType] = None,
     ) -> "IAssembly":
-        """Create a sub-Assembly in the current Assembly with a specific type
+        """Create a subassembly in the current assembly with a specific type
         and position.
 
         Parameters
         ----------
         name : str
-            Name of the sub-assembly.
+            Name of the subassembly.
         av_pos : Tuple[int,int], optional
-            Position of the sub-assembly in the parent assembly's analysis view.
+            Position of the subassembly in the parent assembly's analysis view.
+            The default is ``None``.
         assembly_type : AssemblyType, optional
-            Type of assembly to create. If ``None`` is passed, a regular data-dependency assembly
-            is created (same as passing ``AssemblyType.ASSEMBLY``).
+            Type of assembly to create. The default is ``None``, in which case a
+            regular data-dependency assembly is created. (This is the same
+            as passing ``AssemblyType.ASSEMBLY``.)
+
         Returns
         -------
         IAssembly
@@ -124,33 +127,32 @@ class IAssembly(
         """
 
     def add_datapin(self, name: str, mc_type: atvi.VariableType) -> aew_api.IDatapin:
-        """Create a datapin on this assembly.
+        """Create a datapin on the assembly.
 
         Parameters
         ----------
         name : str
-            Name of the new datapin to create.
-
+            Name of the datapin.
         mc_type: atvi.VariableType
-            Type for the new datapin.
+            Type for the datapin.
 
         Returns
         -------
         IDatapin
-            An object representing the created datapin.
+            Object representing the created datapin.
         """
 
     @abstractmethod
     def delete_datapin(self, name: str) -> bool:
         """Delete the specified datapin.
 
-        Variable objects that represent the specified datapin will become invalid.
-        If there is no datapin with the specified name, no error will be thrown.
+        Variable objects that represent the specified datapin become invalid.
+        If there is no datapin with the specified name, no error is raised.
 
         Parameters
         ----------
         name : str
-            Name of the datapin to be deleted.
+            Name of the datapin.
 
         Returns
         -------

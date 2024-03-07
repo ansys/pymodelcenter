@@ -5,37 +5,26 @@ Contribute
 
 Overall guidance on contributing to a PyAnsys library appears in the
 `Contributing <dev_guide_contributing_>`_ topic
-in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar
+in the *PyAnsys developer's guide*. Ensure that you are thoroughly familiar
 with this guide before attempting to contribute to Ansys ModelCenter Workflow.
 
 The following contribution information is specific to Ansys ModelCenter Workflow.
 
-Installation
-------------
+Developer installation
+-----------------------
+Installing Ansys ModelCenter Workflow in developer mode allows you to modify the
+source and enhance it. This package supports Python 3.9 through 3.12 on Windows,
+MacOS, and Linux.
 
-The ``ansys-modelcenter-workflow`` package currently supports Python
-3.9 through 3.12 on Windows, MacOS, and Linux.
-
-You can install the ``ansys-modelcenter-workflow`` package with this command:
-
-.. code::
-
-   pip install ansys-modelcenter-workflow
-
-Alternatively, install the latest version from `ansys-modelcenter-workflow GitHub
-<pymodelcenter_repo_>`_ with this command:
-
-.. code::
-
-   pip install git+https://github.com/ansys/pymodelcenter
-
-For a local development version, you can create a new virtual environment with this command:
+For a local development version, you can create a new virtual environment with
+this command:
 
 .. code:: bash
 
     python -m venv .venv
 
-You can then activate the virtual environment with the command appropriate for your operating system:
+You can then activate the virtual environment with the command appropriate for
+your operating system:
 
 .. tab-set::
 
@@ -60,8 +49,8 @@ You can then activate the virtual environment with the command appropriate for y
 
           .\.venv\Scripts\activate
 
-
-Next, install the development version of the project with these commands:
+Next, install the development version of Ansys ModelCenter Workflow with
+these commands:
 
 .. code::
 
@@ -69,18 +58,47 @@ Next, install the development version of the project with these commands:
    cd pymodelcenter
    pip install -e .
 
+Testing
+-------
+Once Ansys ModelCenter Workflow is installed in developer mode, install
+the required dependencies for testing with this command:
+
+.. code:: bash
+
+    pip install -e .[tests]
+
+To run the tests via ``pytest``, run this command:
+
+.. code:: bash
+
+    pytest -v
+
+To test and generate a code coverage report, run this command:
+
+.. code::
+
+    pytest tests/ --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html tests/
+
+If a local copy of ModelCenter Desktop is installed and a local copy of
+ModelCenter Remote Execution is installed and running, you can run the integration
+tests with this command:
+
+.. code::
+
+    pytest integration
 
 Documentation
 -------------
 
-Install the required dependencies for the documentation with this command:
+To install the required dependencies for the documentation, run this command:
 
 .. code::
 
     pip install .[doc]
 
-
-For building documentation, you run the usual rules provided in the Sphinx Makefile for your operating system:
+To build documentation, run the usual rules provided in the
+`Sphinx <https://www.sphinx-doc.org/en/master/>`_ Makefile
+for your operating system:
 
 .. tab-set::
 
@@ -106,44 +124,26 @@ For building documentation, you run the usual rules provided in the Sphinx Makef
         .\doc\make.bat html
         .\doc\build\html\index.html
 
-
 Post issues
 -----------
 
-Use the `Ansys ModelCenter Workflow Issues <pymodelcenter_issues_>`_ page to submit questions,
-report bugs, and request new features. When possible, use these issue
-templates:
+Use the `Ansys ModelCenter Workflow Issues <pymodelcenter_issues_>`_ page to
+report bugs and request new features. When possible, use the provided
+templates. If your issue does not fit into one of these templates, click
+the link for opening a blank issue.
 
-* Bug report template
-* Feature request template
-* Documentation issue template
-* Example request template
-
-If your issue does not fit into one of these categories, create your own issue.
-
-To reach the PyAnsys support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
-
-
-Testing
--------
-You can install the dependencies required for testing with this command:
-
-.. code:: bash
-
-    pip install .[tests]
-
-You can then run the tests via ``pytest`` with this command:
-
-.. code:: bash
-
-    pytest -v
+If you have general questions about the PyAnsys ecosystem, email
+`pyansys.core@ansys.com <pyansys.core@ansys.com>`_. If your
+question is specific to Ansys ModelCenter Workflow, ask your
+question in an issue as described in the previous paragraph.
 
 
 Adhere to code style
 --------------------
 
-Ansys ModelCenter Workflow follows the PEP8 standard as indicated in the 
-`PyAnsys Developer's Guide <dev_guide_pyansys_pep8_>`_ and implements style checking using
+Ansys ModelCenter Workflow follows the PEP8 standard as indicated in
+`PEP 8 <https://dev.docs.pyansys.com/coding-style/pep8.html>`_ in the 
+*PyAnsys developer's guide* and implements style checking using
 `pre-commit <pre-commit_>`_.
 
 To ensure your code meets minimum code styling standards, run these commands:
@@ -158,7 +158,6 @@ You can also install this as a pre-commit hook by running this command:
 .. code:: console
 
   pre-commit install
-
 
 This way, it's not possible for you to push code that fails the style checks:
 

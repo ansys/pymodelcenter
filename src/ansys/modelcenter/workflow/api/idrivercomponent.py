@@ -31,9 +31,9 @@ class IDriverComponent(
 ):
     """Represents a driver component within a workflow.
 
-    For process-mode workflows, driver components will have children.
-    Driver components will still be represented by instances of this
-    interface even if the workflow is a data-dependency workflow and the
-    component in question has no children (get_elements will return an
-    empty collection).
+    For process-mode workflows, driver components have children.
+    Driver components are still represented by instances of this
+    interface, even if the workflow is a data-dependency workflow and the
+    component in question has no children. (In this case, the ``get_elements()``
+    method returns an empty collection).
     """
