@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of workflow."""
+"""Definition of the workflow."""
 from abc import ABC, abstractmethod
 from typing import Collection, Optional, Tuple, Union
 
@@ -38,7 +38,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @property
     @abstractmethod
     def workflow_file_name(self) -> str:
-        """Full path of the current Workflow."""
+        """Full path of the current workflow."""
 
     @abstractmethod
     def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
@@ -79,7 +79,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_datapin_meta_data(self, name: str) -> atvi.CommonVariableMetadata:
-        """Get metadata from a datapin.
+        """Get the metadata from a datapin.
 
         Parameters
         ----------
@@ -105,10 +105,10 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         datapin : Union[IDatapin, str]
-            The datapin that the link should target, or its full name.
+            Datapin that the link should target or its full name.
         equation : Union[str, IDatapin]
-            Equation of the link. You may also pass an ``IDatapin``
-            object here, and its name will become the equation.
+            Equation of the link. You can also pass an ``IDatapin``
+            object here, and its name becomes the equation.
 
         Raises
         ------
@@ -127,12 +127,12 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         file_name : str
-            Path to save the workflow in.
+            Path and filename for saving the workflow.
         """
 
     @abstractmethod
     def close_workflow(self) -> None:
-        """Close the current workflow."""
+        """Close the workflow."""
 
     @abstractmethod
     def get_datapin(self, name: str) -> IDatapin:
@@ -141,7 +141,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         name : str
-            Full ModelCenter path of the datapin.
+            Full ModelCenter path and filename of the datapin.
 
         Returns
         -------
@@ -161,7 +161,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         name : str
-            The full path to the component.
+            Full path and file name to the component.
 
         Returns
         -------
@@ -181,7 +181,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         name : str
-            Full ModelCenter path of the component to remove.
+            Full ModelCenter path and filename of the component to remove.
 
         Raises
         ------
@@ -193,19 +193,19 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     def create_assembly(
         self, name: str, parent: Union[IAssembly, str], assembly_type: Optional[AssemblyType] = None
     ) -> IAssembly:
-        """Create a new Assembly in the workflow.
+        """Create an assembly in the workflow.
 
         Parameters
         ----------
         name : str
-            Desired name of the new Assembly.
+            Name of the new assembly.
         parent : Union[IAssembly, str]
-            Full ModelCenter path of the parent ``IAssembly``, or an
-            ``IAssembly`` that represents it.
+            Full ModelCenter path and filename of the parent ``IAssembly`` object or an
+            ``IAssembly`` object that represents it.
         assembly_type : AssemblyType, optional
             Type of the assembly to create. Pass ``None`` to create a
-            regular data-dependency assembly (equivalent to passing
-            ``AssemblyType.ASSEMBLY``).
+            regular data-dependency assembly. (This is equivalent to passing
+            ``AssemblyType.ASSEMBLY``.)
 
         Returns
         -------
@@ -217,14 +217,14 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     def auto_link(
         self, src_comp: Union[IComponent, str], dest_comp: Union[IComponent, str]
     ) -> Collection[IDatapinLink]:
-        """Automatically links two components.
+        """Automatically link two components.
 
         Parameters
         ----------
         src_comp : str
-            Source component, or the full name of the component desired.
+            Source component or the full name of the component desired.
         dest_comp : str
-            Destination component, or the full name of the component desired.
+            Destination component or the full name of the component desired.
 
         Returns
         -------
@@ -249,7 +249,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_workflow_uuid(self) -> str:
-        """Get the unique ID string for the current workflow."""
+        """Get the unique ID for the current workflow."""
 
     @abstractmethod
     def halt(self) -> None:
@@ -262,7 +262,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         parent: Union[aew_api.IControlStatement, str],
         index: int = -1,
     ) -> None:
-        """Move the component to the parent at the given index.
+        """Move a component to the parent at the given index.
 
         Parameters
         ----------
@@ -281,12 +281,12 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_assembly(self, name: Optional[str] = None) -> IAssembly:
-        """Get the named assembly or the top level assembly.
+        """Get the named assembly or the top-level assembly.
 
         Parameters
         ----------
         name : str, optional
-            The full name of the desired assembly.
+            Full name of the desired assembly.
             If ``None`` is passed, the root assembly of the workflow is
             returned.
 
@@ -307,12 +307,12 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         av_position: Optional[Tuple[int, int]] = None,
         insert_before: Optional[Union[IComponent, IAssembly, str]] = None,
     ) -> IComponent:
-        """Create a new component.
+        """Create a component.
 
         Parameters
         ----------
         server_path : str
-            Source path of the new component, such as the url to the
+            Source path of the new component, such as the URL to the
             component in ModelCenter Remote Execution.
         name : str
             Name of the new component.
@@ -321,9 +321,9 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         init_string: str, optional
             Initialization string.
         av_position: Tuple[int, int], optional
-            Position in the analysis view at which to insert the component.
+            Position in the analysis view to insert the component at.
         insert_before: Union[IComponent, IAssembly, str], optional
-            Component before which this component should be inserted.
+            Component before where this component is to be inserted.
         Returns
         -------
         IComponent

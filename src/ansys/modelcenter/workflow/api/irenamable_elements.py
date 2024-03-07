@@ -30,7 +30,7 @@ class IRenamableElement(aew_api.IElement, ABC):
 
     @abstractmethod
     def rename(self, new_name: str) -> None:
-        """Rename this item.
+        """Rename the item.
 
         Parameters
         ----------

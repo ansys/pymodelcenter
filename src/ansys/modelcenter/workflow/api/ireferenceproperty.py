@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definitions for reference properties and datapins which own
+"""Contains definitions for reference properties and the datapins that own
 them."""
 
 from abc import ABC, abstractmethod
@@ -29,8 +29,8 @@ import ansys.tools.variableinterop as atvi
 
 
 class IReferencePropertyBase(ABC):
-    """Defines common methods for IReferenceProperty and
-    IReferenceArrayProperty."""
+    """Defines common methods for the ``IReferenceProperty`` and
+    ``IReferenceArrayProperty`` classes."""
 
     @abstractmethod
     def get_value_type(self) -> atvi.VariableType:
@@ -45,7 +45,7 @@ class IReferencePropertyBase(ABC):
 
     @abstractmethod
     def get_metadata(self) -> atvi.CommonVariableMetadata:
-        """Get the metadata for this property.
+        """Get the metadata for the property.
 
         Returns
         -------
@@ -56,7 +56,7 @@ class IReferencePropertyBase(ABC):
 
     @abstractmethod
     def set_metadata(self, new_value: atvi.CommonVariableMetadata) -> None:
-        """Set the metadata for this property.
+        """Set the metadata for the property.
 
         Note that this method only has an effect for reference properties where the datatype
         is numeric, in which case the display format passed in is set.
@@ -71,7 +71,7 @@ class IReferencePropertyBase(ABC):
     @property
     @abstractmethod
     def is_input(self) -> bool:
-        """Check whether this property is an input or output.
+        """Flag indicating if the property is an input or output.
 
         Returns
         -------
@@ -83,7 +83,7 @@ class IReferencePropertyBase(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
-        """Get the name of this property.
+        """Name of the property.
 
         Returns
         -------
@@ -99,8 +99,8 @@ class IReferenceProperty(IReferencePropertyBase, ABC):
     def get_state(self) -> atvi.VariableState:
         """Get the state of the property.
 
-        The returned state may be invalid. The engine will not attempt
-        to run the workflow to validate this property.
+        The returned state may be invalid. The engine does not attempt
+        to run the workflow to validate the property.
 
         Returns
         -------
@@ -131,7 +131,7 @@ class IReferenceArrayProperty(IReferencePropertyBase, ABC):
         Parameters
         ----------
         index : int
-            Index at which to set the state.
+            Index to set the state at.
         new_state: atvi.VariableState
             New state of the property.
         """
@@ -143,7 +143,7 @@ class IReferenceArrayProperty(IReferencePropertyBase, ABC):
         Parameters
         ----------
         index : int
-            Index at which to get the state.
+            Index to get the state at.
 
         Returns
         -------
@@ -158,7 +158,7 @@ class IReferencePropertyManager(ABC):
 
     @abstractmethod
     def get_reference_properties(self) -> Mapping[str, IReferencePropertyBase]:
-        """Get the reference properties on this reference datapin.
+        """Get the reference properties on the reference datapin.
 
         Returns
         -------

@@ -72,6 +72,7 @@ class IFormat(ABC):
           Currency formats are for general monetary values.
 
           Specification:
+
           * Follows the Number format for specifying digits, but starts with a
             '$' symbol. If negative braces are specified, the symbol should
             be within them.
@@ -125,8 +126,8 @@ class IFormat(ABC):
 
           Specification:
 
-          * Follows the Number format for specifying digits, but ends with the
-          string: '`E+00'`.
+          * Follows the Number format for specifying digits but ends with the
+            string: '`E+00'`.
 
           Examples:
 
@@ -139,11 +140,11 @@ class IFormat(ABC):
 
           Specification:
 
-          * Specified by certain strings, see the examples.
+          * Specified by certain strings. See the examples.
 
           Examples:
 
-          This list shows each Date format and their example output.
+          This list shows each Date format and example output.
 
           * Epoch formats:
 
