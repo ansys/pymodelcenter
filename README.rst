@@ -6,11 +6,21 @@ Ansys ModelCenter Workflow
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/badge/Python-%3E%3D3.8-blue
+.. |python| image:: https://img.shields.io/badge/Python-%3E%3D3.9-blue
    :target: https://pypi.org/project/py-cam-client/
    :alt: Python
 
-.. TODO: pypi and GH-CI badges
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-modelcenter-workflow.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/ansys-modelcenter-workflow/
+   :alt: PyPI
+
+.. |codecov| image:: https://codecov.io/gh/ansys/pymodelcenter/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/ansys/pymodelcenter
+   :alt: CodeCov
+
+.. |GH-CI| image:: https://github.com/ansys/pymodelcenter/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/ansys/pymodelcenter/actions/workflows/ci_cd.yml
+   :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
    :target: https://opensource.org/licenses/MIT
@@ -20,9 +30,15 @@ Ansys ModelCenter Workflow
    :target: https://github.com/psf/black
    :alt: Black
 
+.. |pre-commit| image:: https://results.pre-commit.ci/badge/github/ansys/pymodelcenter/main.svg
+   :target: https://results.pre-commit.ci/latest/github/ansys/pymodelcenter/main
+   :alt: pre-commit
+
+.. index_start
 
 Overview
 --------
+
 This library provides a Python API for using the ModelCenter suite of
 Ansys products. These products provide tools for creating and automating
 engineering workflows.
