@@ -290,7 +290,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``instance  and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance  and use it to get a valid instance of this object.
     """
 
     @overrides

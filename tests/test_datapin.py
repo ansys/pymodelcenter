@@ -189,7 +189,7 @@ def test_get_state_conversion_failure(monkeypatch, engine) -> None:
             result: atvi.VariableState = sut.get_state(None)
 
         # Verification
-        assert err.value.args[0] == "Unexpected failure converting gRPC value response"
+        assert err.value.args[0] == "Unexpected failure occurred converting gRPC value response."
         mock_grpc_method.assert_called_once_with(ElementIdOrName(target_id=sut_element_id))
 
 
