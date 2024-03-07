@@ -29,7 +29,7 @@ from ansys.engineeringworkflow.api import IDatapinContainer
 
 
 class IGroupOwner(IDatapinContainer, ABC):
-    """Represents a workflow element which has groups in ModelCenter."""
+    """Represents a workflow element that has groups in ModelCenter."""
 
     @abstractmethod
     def get_groups(self) -> Mapping[str, IGroup]:
