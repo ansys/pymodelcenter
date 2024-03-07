@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of Component."""
+"""Definition of a component."""
 from typing import TYPE_CHECKING, Optional
 
 from grpc import StatusCode
@@ -62,18 +62,18 @@ class Component(
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the component.
         engine : Engine
-            ``Engine`` that created this component.
+            Engine to use to create the component.
         """
         super(Component, self).__init__(element_id=element_id, engine=engine)
 

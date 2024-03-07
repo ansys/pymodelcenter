@@ -43,17 +43,16 @@ from .grpc_error_interpretation import (
 
 
 class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRenamableElement, ABC):
-    """Inheritable implementation of renaming with a gRPC client."""
+    """Defines an inheritable implementation of renaming with a gRPC client."""
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
-            ID of the group this object represents in ModelCenter.
-        engine: Engine
-            ``Engine`` that created this element.
+            ID of the group that the object represents in ModelCenter.
+        engine: Engine that is to create the element.
         """
         super(AbstractRenamableElement, self).__init__(element_id=element_id, engine=engine)
 

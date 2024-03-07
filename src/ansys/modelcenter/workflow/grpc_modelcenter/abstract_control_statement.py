@@ -49,24 +49,24 @@ class AbstractControlStatement(
     aew_api.IControlStatement,
     ABC,
 ):
-    """An abstract base for control statements (driver components and
+    """Defines an abstract base for control statements (driver components and
     assemblies).
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object
-        from an instantiated engine, and use it to get valid instances of Assembly,
-        Component or DriverComponent.
+        from an instantiated engine and use it to get valid ``Assembly``,
+        ``Component``, or ``DriverComponent`` instances.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the control statement.
         engine : Engine
-            ``Engine`` that created this control statement.
+            Engine to create the control statement.
         """
         super(AbstractControlStatement, self).__init__(element_id=element_id, engine=engine)
 

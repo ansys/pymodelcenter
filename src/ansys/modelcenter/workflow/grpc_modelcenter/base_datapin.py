@@ -48,14 +48,14 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
     """Represents a datapin in the workflow."""
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the element.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(BaseDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -91,7 +91,7 @@ class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
             interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
         except ValueError as convert_failure:
             raise aew_api.EngineInternalError(
-                "Unexpected failure converting gRPC value response"
+                "Unexpected failure occurred converting gRPC value response."
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 

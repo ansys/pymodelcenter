@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Implementation of Format."""
+"""Implementation of the ``Format`` class."""
 from typing import TYPE_CHECKING
 
 from numpy import float64, int64
@@ -44,20 +44,20 @@ from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 
 
 class Format(IFormat):
-    """Formatter for converting between strings and values.
+    """Provides the formatter for converting between strings and values.
 
     .. note::
         This class should not be directly instantiated by clients. Create
-        an ``Engine`` instance, and use it to get a valid instance of this object.
+        an ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, fmt: str, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         fmt : str
-            Format string that the formatter is to use.
+            Format string for the formatter to use.
         engine : Engine
             Engine to use to create the formatter.
         """

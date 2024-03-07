@@ -86,7 +86,7 @@ def convert_grpc_reference_metadata(source: ReferenceVariableMetadata) -> Refere
 
 
 def convert_grpc_boolean_metadata(source: BooleanVariableMetadata) -> atvi.BooleanMetadata:
-    """Given a gRPC boolean datapin metadata message, produce an equivalent \
+    """Given a gRPC Boolean datapin metadata message, produce an equivalent \
     ``atvi.BooleanMetadata`` object."""
     target = atvi.BooleanMetadata()
     _extract_base_metadata(source.base_metadata, target)
@@ -96,7 +96,7 @@ def convert_grpc_boolean_metadata(source: BooleanVariableMetadata) -> atvi.Boole
 def convert_grpc_boolean_array_metadata(
     source: BooleanVariableMetadata,
 ) -> atvi.BooleanArrayMetadata:
-    """Given a gRPC boolean array datapin metadata message, produce an
+    """Given a gRPC Boolean array datapin metadata message, produce an
     equivalent ``atvi.BooleanArrayMetadata`` object."""
     target = atvi.BooleanArrayMetadata()
     _extract_base_metadata(source.base_metadata, target)
@@ -104,7 +104,8 @@ def convert_grpc_boolean_array_metadata(
 
 
 def _fill_base_metadata(source: atvi.CommonVariableMetadata, target: BaseVariableMetadata):
-    """Fill out a gRPC message representing ``atvi.CommonVariableMetadata``."""
+    """Fill out a gRPC message representing an ``atvi.CommonVariableMetadata``
+    object."""
     target.description = source.description
     # Can't use a dict comprehension here because you can't assign the dict directly.
     for source_key, source_value in source.custom_metadata.items():
@@ -121,7 +122,7 @@ def fill_reference_metadata_message(
 def fill_boolean_metadata_message(
     source: atvi.BooleanMetadata, target: BooleanVariableMetadata
 ) -> None:
-    """Fill out a gRPC message representing a ``atvi.BooleanMetadata`` object.
+    """Fill out a gRPC message representing an ``atvi.BooleanMetadata`` object.
 
     The subordinate metadata types are also filled out.
     """
@@ -129,7 +130,8 @@ def fill_boolean_metadata_message(
 
 
 def _extract_real_metadata(source: DoubleVariableMetadata, target: atvi.RealMetadata) -> None:
-    """Extract information for an ``atvi.RealMetadata`` from a gRPC message."""
+    """Extract information for an ``atvi.RealMetadata`` object from a gRPC
+    message."""
     _extract_base_metadata(source.base_metadata, target)
     _extract_numeric_metadata(source.numeric_metadata, target)
     target.lower_bound = source.lower_bound if source.HasField("lower_bound") else None
@@ -141,10 +143,10 @@ def _extract_real_metadata(source: DoubleVariableMetadata, target: atvi.RealMeta
 
 
 def _fill_numeric_metadata(source: atvi.NumericMetadata, target: NumericVariableMetadata) -> None:
-    """Fill out a gRPC message representing a numeric metadata.
+    """Fill out a gRPC message representing numeric metadata.
 
     Note that base metadata is not filled out by this helper. Invoke the
-    _fill_base_metadata helper directly instead.
+    ``_fill_base_metadata`` helper directly instead.
     """
     target.units = source.units
     target.display_format = source.display_format
@@ -169,7 +171,7 @@ def fill_real_metadata_message(source: atvi.RealMetadata, target: DoubleVariable
 
 
 def convert_grpc_real_metadata(source: DoubleVariableMetadata) -> atvi.RealMetadata:
-    """Create a ``atvi.RealMetadata`` object for a real datapin from a gRPC
+    """Create an ``atvi.RealMetadata`` object for a real datapin from a gRPC
     message."""
     target = atvi.RealMetadata()
     _extract_real_metadata(source, target)
@@ -263,15 +265,15 @@ def fill_string_metadata_message(
 
 
 def convert_grpc_string_metadata(source: StringVariableMetadata) -> atvi.StringMetadata:
-    """Create a ``atvi.StringMetadata`` object for a string datapin from a gRPC
-    message."""
+    """Create an ``atvi.StringMetadata`` object for a string datapin from a
+    gRPC message."""
     target = atvi.StringMetadata()
     _extract_string_metadata(source, target)
     return target
 
 
 def convert_grpc_string_array_metadata(source: StringVariableMetadata) -> atvi.StringArrayMetadata:
-    """Create a ``atvi.StringArrayMetadata`` object for a string array datapin
+    """Create an ``atvi.StringArrayMetadata`` object for a string array datapin
     from a gRPC message."""
     target = atvi.StringArrayMetadata()
     _extract_string_metadata(source, target)
@@ -280,7 +282,7 @@ def convert_grpc_string_array_metadata(source: StringVariableMetadata) -> atvi.S
 
 def convert_grpc_file_metadata(source: FileVariableMetadata) -> atvi.FileMetadata:
     """Given a gRPC file datapin metadata message, produce an equivalent
-    ``atvi.FileMetadata`` object ."""
+    ``atvi.FileMetadata`` object."""
     target = atvi.FileMetadata()
     _extract_base_metadata(source.base_metadata, target)
     return target
@@ -295,7 +297,7 @@ def convert_grpc_file_array_metadata(source: FileVariableMetadata) -> atvi.FileA
 
 
 def fill_file_metadata_message(source: atvi.FileMetadata, target: FileVariableMetadata) -> None:
-    """Fill out a gRPC message representing a ``atvi.FileMetadata`` object.
+    """Fill out a gRPC message representing an ``atvi.FileMetadata`` object.
 
     The subordinate metadata types are also filled out.
     """
@@ -312,7 +314,7 @@ def convert_grpc_metadata(
     ],
     is_array: bool = False,
 ) -> atvi.CommonVariableMetadata:
-    """Generic method to convert any type of VariableMetadata.
+    """Use a generic method to convert any type of variable m.Metadata.
 
     Parameters
     ----------
@@ -321,7 +323,7 @@ def convert_grpc_metadata(
         gRPC representation of a datapin metadata.
 
     is_array : bool, optional
-        Flag for if the metadata should be for an array datapin.
+        Whether the metadata i for an array datapin.
 
     Returns
     -------

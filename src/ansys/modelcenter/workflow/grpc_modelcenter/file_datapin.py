@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for FileDatapin and FileArrayDatapin."""
+"""Contains definition for the ``FileDatapin`` and ``FileArrayDatapin``
+classes."""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
@@ -53,18 +54,18 @@ class FileDatapin(BaseDatapin, mc_api.IFileDatapin):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine: Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(FileDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -107,19 +108,19 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     @overrides
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(FileArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -139,8 +140,8 @@ class FileArrayDatapin(BaseDatapin, mc_api.IFileArrayDatapin):
         if not isinstance(new_metadata, atvi.FileArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.FileArrayMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.FileArrayMetadata}, "
+                f"but received {new_metadata.__class__}."
             )
         request = SetFileVariableMetadataRequest(target=self._element_id)
         fill_file_metadata_message(new_metadata, request.new_metadata)

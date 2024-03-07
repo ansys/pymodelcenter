@@ -39,10 +39,10 @@ from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_erro
 
 
 class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemblyChild, ABC):
-    """Abstract base class for children of assemblies."""
+    """Defines an abstract base class for children of assemblies."""
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance."""
+        """Initialize an instance."""
         super(AbstractAssemblyChild, self).__init__(element_id=element_id, engine=engine)
 
     @property
@@ -60,7 +60,7 @@ class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemb
         if not (result is None or isinstance(result, mc_api.IAssembly)):
             raise aew_api.EngineInternalError(
                 f"The parent of an assembly or component should only ever be an assembly, "
-                f"but found a {result.__class__} instead"
+                f"but a {result.__class__} was found instead."
             )
         else:
             return result
@@ -68,12 +68,12 @@ class AbstractAssemblyChild(abstract_wfe.AbstractWorkflowElement, mc_api.IAssemb
     @property
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     def control_type(self) -> str:
-        """Get the control type of this item.
+        """Control type of the item.
 
         Returns
         -------
         str
-            Control type of this item.
+            Control type of the item.
         """
         result = self._client.RegistryGetControlType(self._element_id)
         return result.type

@@ -30,7 +30,7 @@ T = TypeVar("T")
 
 
 class ReferenceDatapinMetadata(atvi.CommonVariableMetadata):
-    """Metadata for a reference datapin."""
+    """Provides metadata for a reference datapin."""
 
     @overrides
     def accept(self, visitor: atvi.IVariableMetadataVisitor[T]) -> T:  # type: ignore

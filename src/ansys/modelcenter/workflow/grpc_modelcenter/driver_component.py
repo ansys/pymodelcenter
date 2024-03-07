@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains a gRPC-backed implementation of IDriverComponent."""
+"""Contains a gRPC-backed implementation of the IDriverComponent."""
 from typing import TYPE_CHECKING
 
 from .abstract_control_statement import AbstractControlStatement
@@ -42,22 +42,22 @@ class DriverComponent(
 
     In process-mode workflows, driver components can contain children.
     In data-mode workflows, driver components should still be instantiated with an instance
-    of this class, but the method to get child elements will simply return an empty collection.
+    of this class, but the method to get child elements simply returns an empty collection.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object
-        from an instantiated engine, and use it to get valid instances of Assembly,
-        Component or DriverComponent.
+        from an instantiated ``Engine`` instance and use it to get valid ``Assembly``,
+        ``Component``, or ``DriverComponent`` instances.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the component.
         engine : Engine
-            ``Engine`` that created this component.
+            Engine to use to create the component.
         """
         super(DriverComponent, self).__init__(element_id=element_id, engine=engine)

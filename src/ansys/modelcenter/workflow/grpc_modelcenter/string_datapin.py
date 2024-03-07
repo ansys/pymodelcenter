@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for StringDatapin and StringArrayDatapin."""
+"""Contains definition for the ``StringDatapin`` and ``StringArrayDatapin``
+classes."""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
@@ -53,18 +54,18 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine: Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(StringDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -84,8 +85,8 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
         if not isinstance(new_metadata, atvi.StringMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.StringArrayMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.StringArrayMetadata}, "
+                f"but received {new_metadata.__class__}."
             )
         request = SetStringVariableMetadataRequest(target=self._element_id)
         fill_string_metadata_message(new_metadata, request.new_metadata)
@@ -102,22 +103,22 @@ class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
 
 
 class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
-    """Represents a gRPC double / real array datapin on the workflow.
+    """Represents a gRPC double/real array datapin on the workflow.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(StringArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -137,8 +138,8 @@ class StringArrayDatapin(BaseDatapin, mc_api.IStringArrayDatapin):
         if not isinstance(new_metadata, atvi.StringArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.StringArrayMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.StringArrayMetadata}. "
+                f"but received {new_metadata.__class__}."
             )
         request = SetStringVariableMetadataRequest(target=self._element_id)
         fill_string_metadata_message(new_metadata, request.new_metadata)

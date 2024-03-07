@@ -136,10 +136,10 @@ def grpc_type_enum_to_interop_type(original: VariableType) -> atvi.VariableType:
 
 
 def interop_type_to_grpc_type_enum(original: atvi.VariableType) -> VariableType:
-    """Given a value of ``atvi.VaribleType`` object, return the appropriate
+    """Given a value of ``atvi.VaribleType``, return the appropriate value of
     ``VariableType``.
 
-    NOTE: This does not handle reference types, as they map to ``atvi.VariableType.UNKNOWN``, and
+    NOTE: This does not handle reference types as they map to ``atvi.VariableType.UNKNOWN`` and
     are thus indistinguishable from actual unknown types.
     """
     for key, value in __GRPC_TO_INTEROP_TYPE_MAP.items():
@@ -158,8 +158,9 @@ def convert_grpc_value_to_atvi(
     original : VariableValue
         Original gRPC message.
     engine_is_local : bool
-        ``True`` if the ``Engine`` that created the file is running on the local machine, ``False``
-        if it is remote.
+        Whether the engine that created the file is running on the local machine.
+        The default is ``True``. If ``False``, the engine is running on a remote
+        machine
 
     Returns
     -------
@@ -196,7 +197,7 @@ def convert_grpc_value_to_atvi(
     elif original.HasField("file_value"):
         if not engine_is_local:
             raise ValueTypeNotSupportedError(
-                "Requesting file values from a remote Engine is currently not supported."
+                "Requesting file values from a remote engine is currently not supported."
             )
         scope = atvi.NonManagingFileScope()
         value: atvi.FileValue = scope.read_from_file(
@@ -206,7 +207,7 @@ def convert_grpc_value_to_atvi(
     elif original.HasField("file_array_value"):
         if not engine_is_local:
             raise ValueTypeNotSupportedError(
-                "Requesting file values from a remote Engine is currently not supported."
+                "Requesting file values from a remote engine is currently not supported."
             )
         scope = atvi.NonManagingFileScope()
         values = [
@@ -219,7 +220,7 @@ def convert_grpc_value_to_atvi(
         )
     else:
         raise ValueTypeNotSupportedError(
-            "The provided gRPC value could not be converted to a common variable interop value."
+            "The provided gRPC value could not be converted to a Common Variable Interop value."
         )
 
 
@@ -230,17 +231,18 @@ class ToGRPCVisitor(atvi.IVariableValueVisitor[VariableValue]):
     def __init__(
         self, local_file_context_stack: Optional[ExitStack] = None, engine_is_local: bool = True
     ):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ==========
         local_file_context_stack : ExitStack, optional
-            Exit stack into which local file content contexts will be opened.
-            It is the caller's responsibility to close / exit this object.
-            If ``None`` is passed, any attempt to convert a file value
-            raises a ``ValueTypeNotSupportedError``.
+            Exit stack to open the local file content contexts in.
+            The default is ``None``, in which case any attempt to convert
+            a file value raises a ``ValueTypeNotSupportedError``.
+            It is the caller's responsibility to close or exit this object.
+
         engine_is_local : bool, optional
-            Flag indicating whether the ModelCenter engine is local.
+            Whether the ModelCenter engine is local. The default is ``True``.
             This may impact how or whether file value conversion is supported.
         """
         self._local_file_context_stack = local_file_context_stack

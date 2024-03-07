@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines a function that creates a wrapper from a gRPC element info."""
+"""Defines a function that creates a wrapper from a gRPC element
+information."""
 from typing import TYPE_CHECKING
 
 import ansys.engineeringworkflow.api as aew_api
@@ -31,14 +32,14 @@ from ansys.api.modelcenter.v0.workflow_messages_pb2 import ElementInfo
 
 
 def create_element(info: ElementInfo, engine: "Engine") -> aew_api.IElement:
-    """Create an appropriately-typed wrapper given a gRPC element info.
+    """Create an appropriately-typed wrapper given gRPC element information.
 
     Parameters
     ----------
     info : ElementInfo
         Element information from gRPC.
     engine : Engine
-        ``Engine`` used to create the element.
+        Engine to use to create the element.
 
     Returns
     -------
