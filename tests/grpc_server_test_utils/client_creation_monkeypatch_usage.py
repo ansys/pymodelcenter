@@ -1,10 +1,28 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Demonstrates the use of monkeypatch_client_creation."""
 import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages
 import ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc as engine_grpc
 import grpc
-
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.engine_messages_pb2 as engine_messages  # noqa: 501
-import ansys.modelcenter.workflow.grpc_modelcenter.proto.grpc_modelcenter_pb2_grpc as engine_grpc  # noqa: 501
 
 from .client_creation_monkeypatch import monkeypatch_client_creation
 from .mock_engine_server import MockEngineServer
@@ -14,19 +32,17 @@ class ExamplePyModelCenterImplementationObject:
     """A stand-in for an actual implementation type from grpc_modelcenter."""
 
     def _create_client(self, grpc_channel) -> engine_grpc.GRPCModelCenterServiceStub:
-        """
-        Create a client from a gRPC channel.
+        """Create a client from a gRPC channel.
 
-        If this test approach is to be used, each implementation class will need a method
-        like this that can be patched out. As a suggested convention, it should be an instance
-        method that takes a channel and returns a client.
+        If this test approach is to be used, each implementation class
+        will need a method like this that can be patched out. As a
+        suggested convention, it should be an instance method that takes
+        a channel and returns a client.
         """
         return engine_grpc.GRPCModelCenterServiceStub(grpc_channel)
 
     def __init__(self, object_id, grpc_channel):
-        """
-        The stand-in's constructor.
-        """
+        """The stand-in's constructor."""
 
         # Typical implementation objects will store an ID to what ModelCenter object
         # they're referencing.
@@ -36,9 +52,8 @@ class ExamplePyModelCenterImplementationObject:
         self._client = self._create_client(grpc_channel)
 
     def get_version_major(self):
-        """
-        A stand-in for some API method that this hypothetical class is implementing.
-        """
+        """A stand-in for some API method that this hypothetical class is
+        implementing."""
 
         # Note that under this testing approach, the actual business logic methods are untouched.
         result = self._client.GetEngineInfo(engine_messages.GetServerInfoRequest())
@@ -46,28 +61,27 @@ class ExamplePyModelCenterImplementationObject:
 
 
 class ExampleMockEngineStub:
-    """
-    A stand-in for a mock gRPC client.
+    """A stand-in for a mock gRPC client.
 
-    Under this testing approach, when writing tests for a class, you could create a mock
-    class like this to replace the gRPC client in the tested class.
+    Under this testing approach, when writing tests for a class, you
+    could create a mock class like this to replace the gRPC client in
+    the tested class.
     """
 
     def __init__(self, mock_info_response):
         self._mock_info_response = mock_info_response
 
     def GetEngineInfo(self, request):
-        """
-        A replacement for the actual client's GetEngineInfo method.
-        """
+        """A replacement for the actual client's GetEngineInfo method."""
         return self._mock_info_response
 
 
 def test_example_impl_object_real():
-    """
-    Show that the example object can be tested using a real gRPC server with a mock servicer.
+    """Show that the example object can be tested using a real gRPC server with
+    a mock servicer.
 
-    The test will run slowly, but this requires absolutely no modification to the tested type.
+    The test will run slowly, but this requires absolutely no
+    modification to the tested type.
     """
     with MockEngineServer() as server:
         with server.get_channel() as channel:
@@ -76,9 +90,8 @@ def test_example_impl_object_real():
 
 
 def test_example_impl_object_fake(monkeypatch):
-    """
-    Demonstrate that the example object can be tested quickly by monkeypatching client creation.
-    """
+    """Demonstrate that the example object can be tested quickly by
+    monkeypatching client creation."""
     # Set up the mock client object:
     mock_response = engine_messages.GetServerInfoResponse()
     mock_response.version.major = 47
@@ -93,8 +106,8 @@ def test_example_impl_object_fake(monkeypatch):
 
 
 def test_zzz_example_impl_object_real():
-    """
-    A test with a name to cause pytest to run it AFTER the monkeypatch version.
+    """A test with a name to cause pytest to run it AFTER the monkeypatch
+    version.
 
     This shows that the monkeypatch version is not impacted.
     """

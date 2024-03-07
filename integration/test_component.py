@@ -1,4 +1,4 @@
-"""Integration tests around Component functionality"""
+"""Integration tests around Component functionality."""
 from typing import AbstractSet, Mapping
 
 from ansys.engineeringworkflow.api import Property
@@ -80,8 +80,8 @@ def test_handle_invoke_unknown_method(workflow) -> None:
 
 @pytest.mark.workflow_name("mcre.pxcz")
 def test_handle_invoke_method(workflow) -> None:
-    """
-    Verify properly handling invoke of existing method.
+    """Verify properly handling invoke of existing method.
+
     Test requires running MCRE server.
     """
     # Arrange
@@ -116,8 +116,8 @@ def test_handle_downloading_values_from_local_component(workflow) -> None:
 
 @pytest.mark.workflow_name("mcre.pxcz")
 def test_can_download_variables(workflow) -> None:
-    """
-    Verify downloading variables from MCRE component.
+    """Verify downloading variables from MCRE component.
+
     Test requires running MCRE server.
     """
     # Arrange

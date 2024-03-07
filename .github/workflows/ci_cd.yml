@@ -3,6 +3,7 @@ name: GitHub CI
 
 # run only on main branch.  This avoids duplicated actions on PRs
 on:
+  workflow_dispatch:
   pull_request:
   push:
     tags:
@@ -10,240 +11,229 @@ on:
     branches:
       - main
 
-env:
-  MAIN_PYTHON_VERSION: '3.10'
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  MAIN_PYTHON_VERSION: '3.10'
+  PACKAGE_NAME: 'ansys-modelcenter-workflow'
+  PACKAGE_NAMESPACE: 'ansys.modelcenter.workflow'
+  DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
+
 jobs:
-
   code-style:
-    name: "Running code style checks"
-    runs-on: windows-latest
-
+    name: "Code style"
+    runs-on: ubuntu-latest
     steps:
-      - name: "Set up git Credentials"
-        run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys-internal/grpc-modelcenter.insteadOf https://github.com/ansys-internal/grpc-modelcenter
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
-
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v2
+      - name: PyAnsys code style checks
+        uses: ansys/actions/code-style@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: "Install pre-commit"
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip pre-commit
-          pre-commit install
 
-      - name: "Run pre-commit"
-        shell: bash
-        run: pre-commit run --all-files --show-diff-on-failure
+  doc-style:
+    name: "Documentation Style Check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: PyAnsys documentation style checks
+        uses: ansys/actions/doc-style@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          vale-version: "3.1.0"
 
-#  doc-style:
-#    name: "Running doc style checks"
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: "Set up git Credentials"
-#        run: |
-#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys-internal/grpc-modelcenter.insteadOf https://github.com/ansys-internal/grpc-modelcenter
-#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
-#          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
-#
-#      - name: "Install Git and clone project"
-#        uses: actions/checkout@v3
-#        with:
-#          submodules: recursive
-#          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
-#
-#      - name: "Run Vale"
-#        uses: errata-ai/vale-action@reviewdog
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          files: doc
-#          reporter: github-pr-check
-#          level: error
-#          filter_mode: nofilter
-#          fail_on_error: true
-#          vale_flags: "--config=${{ doc/.vale.ini }}"
 
-  main:
-    name: "Build and Testing"
+  smoke-tests:
+    name: "Build and Smoke tests"
     runs-on: ${{ matrix.os }}
+    needs: [code-style]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        # Only perform wheelhouse builds for Windows and macOS when releasing
+        should-release:
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+        exclude:
+          - should-release: false
+            os: macos-latest
+          - should-release: false
+            os: windows-latest
+    steps:
+      - name: Build wheelhouse and perform smoke test
+        uses: ansys/actions/build-wheelhouse@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
+
+
+  build-tests:
+    name: "Build and unit testing"
+    needs: [smoke-tests]
+    runs-on: windows-latest
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12']
-        os: ['windows-latest']
-
+        should-release:
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     steps:
-      - name: "Set up git credentials"
-        run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys-internal/grpc-modelcenter.insteadOf https://github.com/ansys-internal/grpc-modelcenter
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
-
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
+      - name: "Install Git and checkout project"
+        uses: actions/checkout@v4
 
       - name: "Setup Python"
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: "Install dev dependencies"
-        run: pip install .[dev]
-
-      - name: "Create wheel"
-        run: |
-          pip install build
-          python -m build --wheel
-
-      - name: "Validate wheel"
-        run: |
-          pip install twine
-          twine check dist/*
-
-      - name: "Install library, with test extra"
-        run: pip install .[test]
-
-      - name: "Unit testing"
-        run: |
-          cd tests  # so we're testing the install, not local
-          pytest -vx --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html:.cov/html
-
-      - name: "Upload wheel"
-        uses: actions/upload-artifact@v3
-        with:
-          name: ansys-modelcenter-workflow-wheel
-          path: dist/
-          retention-days: 7
-
-  docs:
-    name: "Build Documentation"
-    runs-on: windows-latest
-
-    steps:
-      - name: "Set up git credentials"
-        run: |
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys-internal/grpc-modelcenter.insteadOf https://github.com/ansys-internal/grpc-modelcenter
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/pyansys-tools-variableinterop.insteadOf https://github.com/ansys/pyansys-tools-variableinterop
-          git config --global url.https://${{ secrets.PHX_NIGHTLY_SECRET }}@github.com/ansys/ansys-engineeringworkflow-api.insteadOf https://github.com/ansys/ansys-engineeringworkflow-api
-
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.PHX_NIGHTLY_SECRET }}
-          
-      - name: "Set up Python"
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: "Install library, with docs extra"
+      - name: "Create Python venv and activate it"
         run: |
-          pip install .[docs]
+          python -m venv .venv
+          .\.venv\Scripts\Activate.ps1
 
-      - name: "Build HTML"
-        run: doc/make.bat html
+      - name: "Install packages for testing"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pip install --upgrade pip
+          pip install .[tests]
 
-#      - name: Build PDF Documentation
-#        run: |
-#          sudo apt update
-#          sudo apt-get install -y texlive-latex-extra latexmk
-#          poetry run make -C doc latexpdf
-
-      - name: "Upload HTML Documentation"
-        uses: actions/upload-artifact@v3
+      - name: "Testing"
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pytest -v
+  
+      - name: "Upload coverage artifacts"
+        uses: actions/upload-artifact@v4
         with:
-          name: Documentation-html
-          path: doc/build/html
+          name: coverage-html
+          path: htmlcov
           retention-days: 7
 
-#      - name: "Upload PDF Documentation"
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: Documentation-pdf
-#          path: doc/build/latex/*.pdf
-#          retention-days: 7
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+
+
+  doc-build:
+    name: "Documentation building"
+    runs-on: ubuntu-latest
+    needs: [doc-style]
+    steps:
+      - name: "Run Ansys documentation building action"
+        uses: ansys/actions/doc-build@v5
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          dependencies: "texlive-fonts-extra "
+
+  
+  # doc-build:
+  #   name: "Documentation building"
+  #   runs-on: windows-latest
+  #   needs: [doc-style]
+  #   steps:
+  #     - name: "Install Git and checkout project"
+  #       uses: actions/checkout@v4
+
+  #     - name: "Setup Python"
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+  #     - name: "Create Python venv and activate it"
+  #       run: |
+  #         python -m venv .venv
+  #         .\.venv\Scripts\Activate.ps1
+
+  #     - name: "Install packages for documentation build"
+  #       run: |
+  #         .\.venv\Scripts\Activate.ps1
+  #         pip install --upgrade pip
+  #         pip install .[doc]
+
+  #     - name: "Build the documentation (HTML)"
+  #       run: |
+  #         .\.venv\Scripts\Activate.ps1
+  #         cd doc
+  #         .\make.bat html
+  
+  #     - name: "Build the documentation (PDF)"
+  #       run: |
+  #         .\.venv\Scripts\Activate.ps1
+  #         cd doc
+  #         .\make.bat pdf
+  
+  #     - name: "Upload HTML documentation"
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: documentation-html
+  #         path: doc/_build/html
+  #         retention-days: 7
+  
+  #     - name: "Upload PDF documentation"
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: documentation-pdf
+  #         path: doc/_build/latex/ansys-modelcenter-workflow*.pdf
+  #         retention-days: 7
+
+
+  package:
+    name: "Package library"
+    needs: [build-tests, doc-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Build library source and wheel artifacts"
+        uses: ansys/actions/build-library@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
 
   doc-deploy-dev:
     name: "Deploy developers documentation"
     runs-on: ubuntu-latest
-    needs: docs
-    if: github.event_name == 'push'
+    # Deploy development only when merging to main
+    if: github.ref == 'refs/heads/main'
+    needs: [package]
     steps:
       - name: "Deploy the latest documentation"
-        uses: ansys/actions/doc-deploy-dev@v4
+        uses: ansys/actions/doc-deploy-dev@v5
         with:
-          cname: "modelcenter.docs.pyansys.com"
+          cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          doc-artifact-name: Documentation-html
 
-  Release:
-    if: contains(github.ref, 'refs/tags')
-    needs: [main, code-style, docs]
-    runs-on: windows-latest
+
+  release:
+    name: "Release project to public PyPI and GitHub"
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [package]
+    runs-on: ubuntu-latest
     steps:
-      - name: "Set up Python"
-        uses: actions/setup-python@v2
+    - name: "Release to the public PyPI repository"
+      uses: ansys/actions/release-pypi-public@v5
+      with:
+        library-name: ${{ env.PACKAGE_NAME }}
+        twine-username: "__token__"
+        twine-token: ${{ secrets.PYPI_TOKEN }}
+
+    - name: "Release to GitHub"
+      uses: ansys/actions/release-github@v5
+      with:
+        library-name: ${{ env.PACKAGE_NAME }}
+
+
+  doc-deploy-stable:
+    name: "Deploy stable documentation"
+    # Deploy release documentation when creating a new tag
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    needs: [release]
+    steps:
+      - name: "Deploy the stable documentation"
+        uses: ansys/actions/doc-deploy-stable@v5
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: ansys-modelcenter-workflow-wheel
-
-#      - uses: actions/download-artifact@v2
-#        with:
-#          name: Documentation-pdf
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: Documentation-html
-          path: ~/html
-
-      # list current directory
-      - name: "List directory structure"
-        run: ls -R
-
-      - name: "Deploy"
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          BRANCH: gh-pages
-          FOLDER: ~/html
-          CLEAN: true
-
-      # note how we use the PyPI tokens
-      - name: "Upload to Azure PyPi (disabled)"
-        run: |
-          pip install twine
-          # twine upload --skip-existing ./**/*.whl
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-
-      - name: "Release"
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            ./**/*.whl
-            ./**/*.zip
-            ./**/*.pdf
+            cname: ${{ env.DOCUMENTATION_CNAME }}
+            token: ${{ secrets.GITHUB_TOKEN }}

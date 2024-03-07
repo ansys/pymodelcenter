@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import time
 from typing import Any, Collection, Mapping, Optional, Union, cast
 import unittest
@@ -140,9 +162,7 @@ mock_client: MockEngineClientForEngineTest
 
 @pytest.fixture
 def setup_function(monkeypatch):
-    """
-    Setup called before each test function in this module.
-    """
+    """Setup called before each test function in this module."""
 
     def mock_start(
         self,
@@ -193,8 +213,7 @@ def test_get_run_only_mode(setup_function) -> None:
 
 @pytest.mark.parametrize("workflow_type", [mcapi.WorkflowType.DATA, mcapi.WorkflowType.PROCESS])
 def test_new_workflow(setup_function, workflow_type: mcapi.WorkflowType) -> None:
-    """
-    Verify that new_workflow works as expected.
+    """Verify that new_workflow works as expected.
 
     Parameters
     ----------
@@ -224,9 +243,7 @@ def test_new_workflow_already_loaded(setup_function) -> None:
 
 
 def test_load_workflow(setup_function) -> None:
-    """
-    Verify that load_workflow works as expected.
-    """
+    """Verify that load_workflow works as expected."""
 
     # Setup
     engine = grpcapi.Engine()
@@ -254,8 +271,7 @@ def test_load_workflow_already_loaded(setup_function) -> None:
     "fmt", ["General", "0.00", "$#,##0.00", "0.00%", "# ?/?", "0.00E+00", "EpSec"]
 )
 def test_get_formatter(setup_function, fmt: str) -> None:
-    """
-    Verify that get_formatter works as expected.
+    """Verify that get_formatter works as expected.
 
     Parameters
     ----------
@@ -274,8 +290,7 @@ def test_get_formatter(setup_function, fmt: str) -> None:
 
 @pytest.mark.parametrize("key, value", [("a", True), ("b", 1), ("c", 2.3), ("d", "e")])
 def test_get_preference(setup_function, key: str, value: object) -> None:
-    """
-    Verify that preferences of different value types can be retrieved.
+    """Verify that preferences of different value types can be retrieved.
 
     Parameters
     ----------
@@ -318,9 +333,7 @@ def test_set_preference(setup_function, value: Union[bool, int, float, str]) -> 
 
 
 def test_get_engine_info(setup_function) -> None:
-    """
-    Verify that get_engine_info returns the correct information.
-    """
+    """Verify that get_engine_info returns the correct information."""
 
     # Setup
     engine = grpcapi.Engine()
@@ -341,7 +354,6 @@ def test_get_engine_info(setup_function) -> None:
 
 
 def test_get_engine_info_simulated_crash(setup_function) -> None:
-
     # Setup
     engine = grpcapi.Engine()
     mock_client.raise_error_on_info = grpc.StatusCode.UNAVAILABLE
@@ -352,9 +364,7 @@ def test_get_engine_info_simulated_crash(setup_function) -> None:
 
 
 def test_close(setup_function) -> None:
-    """
-    Verify that close calls Shutdown.
-    """
+    """Verify that close calls Shutdown."""
 
     # Setup
     with unittest.mock.patch.object(

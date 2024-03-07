@@ -1,3 +1,24 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 """Tests for Workflow."""
 from typing import Iterable, List, Mapping, Type
 import unittest
@@ -327,16 +348,12 @@ class MockWorkflowClientForWorkflowTest:
 mock_client: MockWorkflowClientForWorkflowTest
 
 workflow: grpcmc.Workflow
-"""
-Workflow object under test.
-"""
+"""Workflow object under test."""
 
 
 @pytest.fixture
 def setup_function(monkeypatch, engine) -> None:
-    """
-    Setup called before each test function in this module.
-    """
+    """Setup called before each test function in this module."""
 
     global mock_client
     mock_client = MockWorkflowClientForWorkflowTest()
@@ -407,9 +424,7 @@ def test_workflow_auto_close(setup_function, engine) -> None:
 
 
 def test_workflow_directory(setup_function) -> None:
-    """
-    Testing of workflow_directory method.
-    """
+    """Testing of workflow_directory method."""
     # SUT
     result = workflow.workflow_directory
 
@@ -419,9 +434,7 @@ def test_workflow_directory(setup_function) -> None:
 
 
 def test_workflow_file_name(setup_function):
-    """
-    Testing of workflow_file_name method.
-    """
+    """Testing of workflow_file_name method."""
     # SUT
     result = workflow.workflow_file_name
 
@@ -743,9 +756,7 @@ def test_get_variable_meta_data_on_unknown_type(setup_function) -> None:
     ],
 )
 def test_get_links(setup_function, workflow_id: str, link_lhs_values: Iterable[str]) -> None:
-    """
-    Verify that get_links works when there are no links.
-    """
+    """Verify that get_links works when there are no links."""
     # Setup
     workflow._id = workflow_id
 
@@ -1118,7 +1129,6 @@ def test_create_component_after_comp_by_component(setup_function, engine) -> Non
         with unittest.mock.patch.object(
             mock_client, "AssemblyGetAssembliesAndComponents", return_value=parent_get_response
         ) as mock_get_elements:
-
             # Execute
             component: grpcmc.Component = workflow.create_component(
                 server_path="common:\\Functions\\Quadratic",
