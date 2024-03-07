@@ -601,7 +601,7 @@ def test_get_value_unknown(setup_function) -> None:
     # Verify
     assert (
         err.value.args[0]
-        == "The provided gRPC value could not be converted to a Common Variable Interop value.."
+        == "The provided gRPC value could not be converted to a Common Variable Interop value."
     )
 
 
@@ -745,7 +745,7 @@ def test_get_variable_meta_data_on_unknown_type(setup_function) -> None:
     # SUT
     with pytest.raises(ValueError) as err:
         metadata = workflow.get_datapin_meta_data("model.unknown")
-    assert err.value.args[0] == "Datapin type is unknown.."
+    assert err.value.args[0] == "Datapin type is unknown."
 
 
 @pytest.mark.parametrize(

@@ -456,7 +456,7 @@ def test_assembly_create_variable_unknown_type(monkeypatch, engine) -> None:
         monkeypatch_client_creation(monkeypatch, AbstractWorkflowElement, mock_client)
         sut = Assembly(ElementId(id_string="ADD_VAR_TARGET"), engine=engine)
         with pytest.raises(
-            ValueError, match="Cannot determine a ModelCenter type for an Datapin type is unknown.."
+            ValueError, match="Cannot determine a ModelCenter type for an unknown datapin type."
         ):
             sut.add_datapin("created_variable_name", atvi.VariableType.UNKNOWN)
         mock_add_var_method.assert_not_called()
