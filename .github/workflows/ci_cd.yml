@@ -21,6 +21,7 @@ env:
   PACKAGE_NAMESPACE: 'ansys.modelcenter.workflow'
   DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
 
+  
 jobs:
   code-style:
     name: "Code style"
