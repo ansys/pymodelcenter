@@ -6,4 +6,5 @@ endif
 endfor
 fullname
 Makefile
+pytest
 strin
