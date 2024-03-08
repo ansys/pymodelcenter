@@ -31,7 +31,7 @@ engineering workflows.
         :link-type: doc
       
 
-        Understand Ansys Engineering Workflow API endpoints and how to use them
+        Understand Ansys ModelCenter Workflow endpoints and how to use them
         to interact programmatically.
 
 
