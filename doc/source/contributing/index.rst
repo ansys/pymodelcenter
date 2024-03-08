@@ -67,7 +67,7 @@ the required dependencies for testing with this command:
 
     pip install -e .[tests]
 
-To run the tests via `pytest <https://docs.pytest.org/en/8.0.x/>`_, run
+To run the tests via `pytest <pytest_>`_, run
 this command:
 
 .. code:: bash
