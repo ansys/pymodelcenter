@@ -1,8 +1,8 @@
 Ansys ModelCenter Workflow documentation |version|
 ==================================================
 
-Ansys ModelCenter Workflow provides a Python API for using Ansys ModelCenter.
-This suite of products delivers tools for creating and automating
+Ansys ModelCenter Workflow is a Python client library for Ansys ModelCenter,
+which is a suite of products delivering tools for creating and automating
 engineering workflows.
 
 .. grid:: 1 2 2 2
@@ -13,7 +13,7 @@ engineering workflows.
         :link: getting_started/index
         :link-type: doc
 
-        Learn how to install and start using Ansys ModelCenter Workflow.
+        Learn how to install Ansys ModelCenter Workflow.
 
 
     .. grid-item-card:: User guide :fa:`book-open-reader`
@@ -22,7 +22,7 @@ engineering workflows.
         :link-type: doc
       
 
-        Understand key concepts and learn how to use the Ansys ModelCenter Workflow.
+        Understand how to use Ansys ModelCenter Workflow to create and run workflows.
 
 
     .. grid-item-card:: API reference :fa:`book-bookmark`
@@ -31,7 +31,7 @@ engineering workflows.
         :link-type: doc
       
 
-        Understand Ansys ModelCenter Workflow endpoints and how to use them
+        Understand Ansys ModelCenter Workflow API endpoints and how to use them
         to interact programmatically.
 
 
