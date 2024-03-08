@@ -40,8 +40,7 @@ Overview
 --------
 
 Ansys ModelCenter Workflow is a Python client library for Ansys ModelCenter,
-which is a suite of products delivering tools for creating and automating
-engineering workflows.
+a suite of products delivering tools for creating and automating engineering workflows.
 
 Documentation and issues
 ------------------------

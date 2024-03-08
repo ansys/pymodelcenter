@@ -13,8 +13,8 @@ The following contribution information is specific to Ansys ModelCenter Workflow
 Developer installation
 -----------------------
 Installing Ansys ModelCenter Workflow in developer mode allows you to modify the
-source and enhance it. This package supports Python 3.9 through 3.12 on Windows,
-MacOS, and Linux.
+source and enhance it. This package supports Python 3.9 through 3.12 on
+Linux, macOS, and Windows.
 
 For a local development version, you can create a clean virtual environment with
 this command:
