@@ -122,7 +122,7 @@ class Workflow(wfapi.IWorkflow):
         Possible states are:
 
         - ``WorkflowInstanceState.UNKNOWN``:
-            If any datapin validated by the last run no longer exists, or some other error occurs
+            If any datapin validated by the last run no longer exists or some other error occurs
             getting the state.
         - ``WorkflowInstanceState.INVALID``:
             If any datapin validated by the last run is not valid, or the workflow has never been

@@ -73,7 +73,7 @@ class IAssemblyChild(ABC):
         Returns
         -------
         Tuple[int, int]
-            2-element tuple where the first element is the x coordinate and the
+            Two-element tuple where the first element is the x coordinate and the
             second element is the y coordinate.
         """
 
@@ -87,7 +87,7 @@ class IAssembly(
 ):
     """Represents a ModelCenter assembly.
 
-    Assemblies organize components and other assemblies in a workflow.
+    Assemblies organize components and other assemblies in the workflow.
     Additionally, assemblies can have datapins appended to themselves,
     allowing them to act as a way to abstract subordinate parts of the
     model.
@@ -144,7 +144,7 @@ class IAssembly(
 
     @abstractmethod
     def delete_datapin(self, name: str) -> bool:
-        """Delete the specified datapin.
+        """Delete a specified datapin.
 
         Variable objects that represent the specified datapin become invalid.
         If there is no datapin with the specified name, no error is raised.

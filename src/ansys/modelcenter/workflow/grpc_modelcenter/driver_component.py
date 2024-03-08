@@ -38,7 +38,7 @@ class DriverComponent(
     AbstractControlStatement,
     mc_api.IDriverComponent,
 ):
-    """Defines a driver component in a workflow.
+    """Defines a driver component in the workflow.
 
     In process-mode workflows, driver components can contain children.
     In data-mode workflows, driver components should still be instantiated with an instance

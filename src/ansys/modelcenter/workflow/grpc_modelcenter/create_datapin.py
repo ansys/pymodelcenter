@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines a function for creating a datapin object given a type and gRPC
+"""Defines the function for creating a datapin object given a type and gRPC
 information."""
 from typing import TYPE_CHECKING
 
@@ -92,7 +92,7 @@ def create_datapin(
     Parameters
     ----------
     var_value_type : VariableType
-        ``VariableType`` object for the datapin.
+        Variable type for the datapin.
     element_id : ElementId
         ID of the particular datapin.
     engine : Engine

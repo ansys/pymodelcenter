@@ -44,7 +44,7 @@ from .var_value_convert import (
 
 
 class CustomMetadataValueNotSupportedError(ValueTypeNotSupportedError):
-    """Indicates that a custom metadata item included an unsupported value
+    """Raised when a custom metadata item included an unsupported value
     type."""
 
 

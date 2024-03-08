@@ -32,7 +32,7 @@ class IDatapin(aew_api.IDatapin, ABC):
 
     @abstractmethod
     def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:
-        """Get the standard metadata for the datapin."""
+        """Set the standard metadata for the datapin."""
 
     @abstractmethod
     def get_dependents(

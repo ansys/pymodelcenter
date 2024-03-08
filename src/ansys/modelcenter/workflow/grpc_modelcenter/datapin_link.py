@@ -31,7 +31,7 @@ from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_erro
 
 
 class DatapinLink(wfapi.IDatapinLink):
-    """Defines a link between the datapins in a workflow.
+    """Defines a link between the datapins in the workflow.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from

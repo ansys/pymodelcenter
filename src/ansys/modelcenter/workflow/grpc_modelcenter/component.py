@@ -41,13 +41,13 @@ from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, 
 
 
 class ComponentReconnectionFailedError(Exception):
-    """Raised when a component reconnection failed."""
+    """Raised when a component reconnection fails."""
 
     ...
 
 
 class ComponentDownloadValuesFailedError(Exception):
-    """Raised when downloading a component's values failed."""
+    """Raised when downloading a component's values fails."""
 
     ...
 
@@ -58,7 +58,7 @@ class Component(
     aachild.AbstractAssemblyChild,
     mc_api.IComponent,
 ):
-    """Defines a component in a workflow.
+    """Defines the component in the workflow.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from

@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines a reusable implementation of renaming an element with a gRPC
+"""Defines a reusable implementation for renaming an element with a gRPC
 client."""
 from abc import ABC
 from typing import TYPE_CHECKING
@@ -43,7 +43,7 @@ from .grpc_error_interpretation import (
 
 
 class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRenamableElement, ABC):
-    """Defines the inheritable implementation of renaming with a gRPC
+    """Defines the inheritable implementation for renaming with a gRPC
     client."""
 
     def __init__(self, element_id: ElementId, engine: "Engine"):

@@ -34,13 +34,13 @@ class UnexpectedEngineError(Exception):
     call that was made.
 
     Note that this does not necessarily mean that the gRPC client raised
-    an error with code UNKNOWN or INTERNAL, just that the code raised
-    isn't well defined for the call that was made. For example, some
-    gRPC methods take only a target element as an argument. The client
-    is expected to raise an error with code NOT_FOUND if that element is
-    invalid, so a FAILED_PRECONDITION or INVALID_ARGUMENT code would be
-    unexpected and could indicate an issue within the Python API or the
-    gRPC servicing code.
+    an error with the code UNKNOWN or INTERNAL, just that the code
+    raised isn't well defined for the call that was made. For example,
+    some gRPC methods take only a target element as an argument. The
+    client is expected to raise an error with code NOT_FOUND if that
+    element is invalid, so a FAILED_PRECONDITION or INVALID_ARGUMENT
+    code would be unexpected and could indicate an issue within the
+    Python API or the gRPC servicing code.
     """
 
     def __init__(self, message: str, code: grpc.StatusCode):
@@ -115,7 +115,7 @@ Do not attempt to modify this map at runtime.
 
 
 def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exception]] = {}):
-    r"""Decorate a function so that ``grpc.RpcErrors`` that it raises are
+    r"""Decorate a function so that the ``grpc.RpcErrors`` that it raises are
     wrapped in a more meaningful way.
 
     By default, the status codes UNAVAILABLE and INTERNAL are mapped to ``EngineDisconnectedError``
@@ -130,7 +130,8 @@ def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exceptio
     types. These are not universally applicable, but they can be passed to the decorator when
     appropriate for the gRPC call in question. Remember that you can create a merged dictionary
     on the fly with the following syntax:
-    {\**DICT_ONE, \**DICT_TWO, additional_key: additional_value}
+
+    ``{\**DICT_ONE, \**DICT_TWO, additional_key: additional_value}``
 
     If a code is not specified (or is one of the default codes), it is wrapped as
     an ``UnexpectedEngineError``.

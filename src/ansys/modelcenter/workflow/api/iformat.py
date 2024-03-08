@@ -36,36 +36,36 @@ class IFormat(ABC):
 
         Formats, with the exception of dates, mimic the formatting style
         used in Microsoft Excel. However, they are not a one-to-one match,
-        there are some differences.
+        so there are some differences.
 
-        There are six broad categories of formats:
+        There are several broad categories of formats:
 
         - **No specific format**
 
           Specified by ``General`` or an empty string, this is the default
           format intended to cover most non-specific cases. It shows a
-          limited number of significant figures, and automatically switches
+          limited number of significant figures and automatically switches
           between number and scientific formats based on the number's scale.
 
         - **Number**
 
           Number formats are used for specifying how numeric values are
           displayed. For specialized handling of monetary values, see the
-          Monetary format.
+          **Monetary** format.
 
           Specification:
 
-          * Zero decimal places are indicated by '0'.
-          * 1 to 30 decimal places are indicated by '`0.0'` with an extra
+          * Zero decimal places are indicated by ``0``.
+          * 1 to 30 decimal places are indicated by ``0.0`` with an extra
             trailing zero for each decimal place.
-          * Use of a 1000's separator is indicated by leading '#,##'.
+          * Use of a 1000's separator is indicated by leading ``#,##``.
           * Negative sign can be switched to surrounding braces by
             surrounding the entire expression with braces.
 
           Examples:
 
-          * 0.00 : 2 decimal places
-          * (#,##0.00000) : Negative braces, 1000's separator, 5 decimal places
+          * ``0.00``: Two decimal places
+          * ``(#,##0.00000)``: Negative braces, 1000's separator, five decimal places
 
         - **Currency**
 
@@ -73,16 +73,16 @@ class IFormat(ABC):
 
           Specification:
 
-          * Follows the Number format for specifying digits, but starts with a
-            '$' symbol. If negative braces are specified, the symbol should
+          * Follows the **Number** format for specifying digits, but starts with a
+            ``$`` symbol. If negative braces are specified, the symbol should
             be within them.
           * The 1000's separator is required. If it is missing, it is added
             automatically.
 
           Examples:
 
-          * $#,##0.00 : Two decimal places.
-          * ($#,##0.00000) : Negative braces, five decimal places.
+          * ``$#,##0.00``: Two decimal places.
+          * ``($#,##0.00000)``: Negative braces, five decimal places.
 
         - **Percentage**
 
@@ -91,14 +91,14 @@ class IFormat(ABC):
 
           Specification:
 
-          * Follows the Number format for specifying number of digits,
-            but ends with a '%' symbol.
+          * Follows the **Number** format for specifying number of digits,
+            but ends with a ``%`` symbol.
           * No 1000's separator or negative braces are allowed.
 
           Examples:
 
-          * 0.00% : Two decimal places.
-          * 0.00000% : Five decimal places.
+          * ``0.00%``: Two decimal places.
+          * ``0.00000%``: Five decimal places.
 
         - **Fraction**
 
@@ -110,15 +110,15 @@ class IFormat(ABC):
 
           Examples:
 
-          * # ?/? : Up to one digit.
-          * # ??/?? : Up to two digits.
-          * # ???/??? : Up to three digits.
-          * # ?/2 : As halves.
-          * # ?/4 : As quarters.
-          * # ?/8 : As eighths.
-          * # ??/16 : As sixteenths.
-          * # ?/10 : As tenths.
-          * # ??/100 : As hundredths.
+          * ``# ?/?``: Up to one digit.
+          * ``# ??/??``: Up to two digits.
+          * ``# ???/???``: Up to three digits.
+          * ``# ?/2``: As halves.
+          * ``# ?/4``: As quarters.
+          * ``# ?/8``: As eighths.
+          * ``# ??/16``: As sixteenths.
+          * ``# ?/10``: As tenths.
+          * ``# ??/100``: As hundredths.
 
         - **Scientific**
 
@@ -126,13 +126,13 @@ class IFormat(ABC):
 
           Specification:
 
-          * Follows the Number format for specifying digits but ends with the
-            string: '`E+00'`.
+          * Follows the **Number** format for specifying digits but ends with the
+            string '`E+00'`.
 
           Examples:
 
-          * 0.00E+00 : Two decimal places.
-          * 0.00000E+00 : Five decimal places.
+          * ``0.00E+00``: Two decimal places.
+          * ``0.00000E+00``: Five decimal places.
 
         - **Date**
 
@@ -144,58 +144,58 @@ class IFormat(ABC):
 
           Examples:
 
-          This list shows each Date format and example output.
+          Date formats follow with example outputs.
 
           * Epoch formats:
 
-            * EpSec : 0
-            * EpMin : 0.00000
-            * EpHr : 0.0000000
-            * EpDay : 0.00000000
-            * EpYr : 0.00000000000
+            * ``EpSec``: 0
+            * ``EpMin``: 0.00000
+            * ``EpHr``: 0.0000000
+            * ``EpDay``: 0.00000000
+            * ``EpYr``: 0.00000000000
 
           * Standard display formats:
 
-            * DD/MM/YYY : 31/21/1971 00:00:00.000
-            * YYDDD : 71365.00000000
-            * YYYYDDD : 1971365.000000
-            * YYYYMMDD : 19711231.00000000
-            * YYYY/MM/DD : 1971/12/31 00:00:00.000
-            * YYYY:MM:DD : 1971:12:31:00:00:00.000
+            * ``DD/MM/YYY``: 31/21/1971 00:00:00.000
+            * ``YYDDD``: 71365.00000000
+            * ``YYYYDDD``: 1971365.000000
+            * ``YYYYMMDD``: 19711231.00000000
+            * ``YYYY/MM/DD``: 1971/12/31 00:00:00.000
+            * ``YYYY:MM:DD``: 1971:12:31:00:00:00.000
 
           * Gregorian formats:
 
-            * GPSG : 30 Dec 1971 23:59:51.000
-            * LCLG : 30 Dec 1971 20:00:00.000
-            * TAIG : 31 Dec 1971 00:00:10.000
-            * TDBG : 31 Dec 1971 00:00:42.184
-            * TDTG : 31 Dec 1971 00:00:42.184
-            * UTCG : 31 Dec 1971 00:00:00.000
+            * ``GPSG``: 30 Dec 1971 23:59:51.000
+            * ``LCLG``: 30 Dec 1971 20:00:00.000
+            * ``TAIG``: 31 Dec 1971 00:00:10.000
+            * ``TDBG``: 31 Dec 1971 00:00:42.184
+            * ``TDTG``: 31 Dec 1971 00:00:42.184
+            * ``UTCG``: 31 Dec 1971 00:00:00.000
 
           * Julian formats:
 
-            * JDate : 2441316.50000000
-            * JDTDB : 2441316.50048824
-            * (Ephemeris Date) JED : 2441316.50048824
-            * LCLJ : 364/71 20:00:00.000
-            * ModJDate : 41316.00000000
-            * TAIJ : 365/71 00:00:10.000
-            * UTCJ : 365/71 00:00:00.000
-            * UTCJFOUR : 365/1971 00:00:00.000
+            * ``JDate``: 2441316.50000000
+            * ``JDTDB``: 2441316.50048824
+            * ``JED`` (Ephemeris date): 2441316.50048824
+            * ``LCLJ``: 364/71 20:00:00.000
+            * ``ModJDate``: 41316.00000000
+            * ``TAIJ``: 365/71 00:00:10.000
+            * ``UTCJ``: 365/71 00:00:00.000
+            * ``UTCJFOUR``: 365/1971 00:00:00.000
 
           * ISO8601 UTC formats:
 
-            * ISO-YD : 1971-365T00:00:00.000
-            * ISO-YMD : 1971-12-31T00:00:00.000
+            * ``ISO-YD``: 1971-365T00:00:00.000
+            * ``ISO-YMD``: 1971-12-31T00:00:00.000
 
           * Other formats:
 
-            * (Earth Canonical Time) EarthEpTU : 0.000
-            * (GMT System) GMT : 365/00000 1971
-            * (GPS Time) GPS : -0418:172809.000
-            * (GPS Z Count) GPSZ : -168652806.000
-            * (Mission Elapsed) : MisElap : 0/00:00:00.000
-            * (Sun Canonical Time) SunEpTU : 0.000
+            * ``EarthEpTU`` (Earth Canonical Time): 0.000
+            * ``GMT`` (GMT System): 365/00000 1971
+            * ``GPS`` (GPS Time): -0418:172809.000
+            * ``GPSZ`` (GPS Z Count): -168652806.000
+            * ``MisElap`` (Mission Elapsed): 0/00:00:00.000
+            * ``SunEpTU`` (Sun Canonical Time): 0.000
 
         Returns
         -------
@@ -276,7 +276,7 @@ class IFormat(ABC):
 
     @abstractmethod
     def string_to_string(self, string: str) -> str:
-        """Convert an unformatted string into a formatted string.
+        """Convert an unformatted string to a formatted string.
 
         Parameters
         ----------

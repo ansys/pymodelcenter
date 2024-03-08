@@ -49,12 +49,12 @@ class AbstractControlStatement(
     aew_api.IControlStatement,
     ABC,
 ):
-    """Defines an abstract base for control statements (driver components and
-    assemblies).
+    """Defines an abstract base class for control statements (driver components
+    and assemblies).
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object
-        from an instantiated engine and use it to get valid ``Assembly``,
+        from an instantiated ``Engine`` instance and use it to get valid ``Assembly``,
         ``Component``, or ``DriverComponent`` instances.
     """
 

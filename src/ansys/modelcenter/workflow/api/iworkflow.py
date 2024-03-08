@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definition of the workflow."""
+"""Contains the definition for the workflow."""
 from abc import ABC, abstractmethod
 from typing import Collection, Optional, Tuple, Union
 
@@ -38,7 +38,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
     @property
     @abstractmethod
     def workflow_file_name(self) -> str:
-        """Full path of the current workflow."""
+        """Full path of the workflow."""
 
     @abstractmethod
     def set_value(self, var_name: str, value: atvi.IVariableValue) -> None:
@@ -99,8 +99,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def create_link(self, datapin: Union[IDatapin, str], equation: Union[str, IDatapin]) -> None:
-        """Create a link to the specified datapin based on the specified
-        equation.
+        """Create a link to a specified datapin based on a specified equation.
 
         Parameters
         ----------
@@ -118,11 +117,11 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def save_workflow(self) -> None:
-        """Save the current workflow."""
+        """Save the workflow."""
 
     @abstractmethod
     def save_workflow_as(self, file_name: str) -> None:
-        """Save the current workflow to a specified file.
+        """Save the workflow to a file.
 
         Parameters
         ----------
@@ -176,12 +175,12 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def remove_component(self, name: str) -> None:
-        """Remove the specified component from the workflow.
+        """Remove a component from the workflow.
 
         Parameters
         ----------
         name : str
-            Full ModelCenter path and filename of the component to remove.
+            Full ModelCenter path and filename of the component.
 
         Raises
         ------
@@ -249,11 +248,11 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def get_workflow_uuid(self) -> str:
-        """Get the unique ID for the current workflow."""
+        """Get the unique ID for the workflow."""
 
     @abstractmethod
     def halt(self) -> None:
-        """Stop execution of the workflow currently running in ModelCenter."""
+        """Stop execution of the workflow in ModelCenter."""
 
     @abstractmethod
     def move_component(

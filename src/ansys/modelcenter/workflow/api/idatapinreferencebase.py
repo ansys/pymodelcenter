@@ -64,7 +64,7 @@ class IDatapinReferenceBase(ABC):
     def is_direct(self) -> bool:
         """Flag indicating if the datapin is a direct reference.
 
-        Direct reference datapins refer to one specific other datapin exactly. Their equations
+        Direct reference datapins refer to one specific datapin only. Their equations
         are just the name of one other datapin. Only direct-reference datapins that refer
         to a datapin that can be set directly can use the ``set_state()`` method to set the
         referenced datapin.
@@ -87,7 +87,7 @@ class IDatapinReferenceBase(ABC):
         This method works only if this is a direct reference.
         Specifically, it applies if the equation is just the name of a
         single other datapin with no modification. If it is not a direct
-        reference, a ValueError is raised. A ValueError is also raised
+        reference, a ``ValueError`` is raised. A ``ValueError`` is also raised
         if the referenced datapin is not allowed to be set directly in
         the first place. For example, if it is an output or linked
         input.

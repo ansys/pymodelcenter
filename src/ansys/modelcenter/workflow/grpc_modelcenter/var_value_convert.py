@@ -42,7 +42,7 @@ from overrides import overrides
 
 
 class ValueTypeNotSupportedError(ValueError):
-    """Indicates that an attempt was made to convert a value with a known but
+    """Raised when an attempt is made to convert a value with a known but
     unsupported type."""
 
 
@@ -139,8 +139,9 @@ def interop_type_to_grpc_type_enum(original: atvi.VariableType) -> VariableType:
     """Given a value of ``atvi.VaribleType``, return the appropriate value of
     ``VariableType``.
 
-    NOTE: This does not handle reference types as they map to ``atvi.VariableType.UNKNOWN`` and
-    are thus indistinguishable from actual unknown types.
+    .. note::
+        This method does not handle reference types as they map to ``atvi.VariableType.UNKNOWN``
+        and are thus indistinguishable from actual unknown types.
     """
     for key, value in __GRPC_TO_INTEROP_TYPE_MAP.items():
         if value == original:

@@ -46,7 +46,7 @@ def _find_exe_location() -> str:  # pragma: no cover
 
 
 class EngineLicensingFailedException(Exception):
-    """Indicates that engine licensing has failed."""
+    """Raised when engine licensing has failed."""
 
     ...
 
@@ -82,7 +82,8 @@ class MCDProcess:
 
         Returns
         -------
-        Port number that the gRPC server was started on.
+        int
+            Port number that the gRPC server was started on.
         """
         args = [
             self._exe_path,

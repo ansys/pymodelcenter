@@ -50,8 +50,8 @@ class UnsupportedTypeDatapin(BaseDatapin):
 
     Generally speaking, it is possible to perform interactions that
     don't require retrieving or otherwise interacting with the datapin's
-    state or metadata. Attempts to set or get the state or metadata
-    raise a ``DatapinWithUnsupportedTypeException```.
+    state or metadata. Attempts to get or set the state or metadata
+    raise a ``DatapinWithUnsupportedTypeException``.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):

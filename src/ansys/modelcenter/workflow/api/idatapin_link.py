@@ -33,7 +33,7 @@ class IDatapinLink(ABC):
         """Break the link.
 
         Breaking the link removes the dependencies between the left-hand
-        and right-hand side of the link.This object becomes invalid and
+        and right-hand side of the link. The object becomes invalid and
         cannot be used after calling this method.
         """
 

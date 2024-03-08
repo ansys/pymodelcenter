@@ -56,7 +56,7 @@ from .grpc_error_interpretation import (
 
 
 class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
-    """Represents a single element in an array reference datapin.
+    """Represents a single element in an reference array datapin.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
@@ -313,12 +313,12 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @overload
     @abstractmethod
     def __getitem__(self, index: int) -> IDatapinReferenceBase:
-        """Get an array reference datapin element at a given index.
+        """Get an reference array datapin element at a given index.
 
         Parameters
         ----------
         index : int
-            Index in the array reference datapin.
+            Index in the reference array datapin.
 
         Returns
         -------
@@ -329,7 +329,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @overload
     @abstractmethod
     def __getitem__(self, index: slice) -> Sequence[IDatapinReferenceBase]:
-        """Get a subsection of the array reference datapins.
+        """Get a subsection of the reference array datapins.
 
         Parameters
         ----------
@@ -350,13 +350,13 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         Parameters
         ----------
         index: int | slice
-            Index in the array reference datapin or a slice of the
-            array reference datapin to return.
+            Index in the reference array datapin or a slice of the
+            reference array datapin to return.
 
         Returns
         -------
         ``ReferenceArrayDatapinElement`` at the given index or a slice
-        of the array reference datapin.
+        of the reference array datapin.
         """
         if isinstance(index, slice):
             raise NotImplementedError()

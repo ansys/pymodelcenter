@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definition for the array reference datapin."""
+"""Contains the definition for the reference array datapin."""
 from abc import ABC, abstractmethod
 from typing import Mapping, Sequence
 
@@ -45,8 +45,8 @@ class IReferenceArrayDatapin(
     implement ``IDatapin.get_state()`` and ``set_state`` methods in a manner that
     is intended mostly for convenience and feature parity with legacy
     ModelCenter APIs, but if you are attempting to work with reference
-    arrays in particular, consider using get_reference_value and
-    set_refererence_value to query and manipulate the values of
+    arrays in particular, consider using the ``get_reference_value()`` and
+    ``set_refererence_value()`` methods to query and manipulate the values of
     individual referenced datapins.
     """
 
@@ -59,8 +59,8 @@ class IReferenceArrayDatapin(
     def set_length(self, new_size: int) -> None:
         """Resize the array.
 
-        If smaller than the current size, elements at the end of the array will be dropped.
-        If larger than the current size, new empty elements will be added to the end of the array.
+        If smaller than the current size, elements at the end of the array are dropped.
+        If larger than the current size, new empty elements are added to the end of the array.
 
         Parameters
         ----------
