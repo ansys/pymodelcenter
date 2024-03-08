@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Ansys ModelCenter Workflow is a Python client library for Ansys ModelCenter,
-a suite of products delivering tools for creating and automating
-engineering workflows."""
+a suite of products delivering tools for creating and automating engineering
+workflows."""
 
 try:
     import importlib.metadata as importlib_metadata
