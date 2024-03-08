@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of the engine and associated classes."""
+"""Contains the definition for the engine and associated classes."""
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Collection, Mapping, Union

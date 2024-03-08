@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definitions for array reference datapins."""
+"""Contains the definition for the array reference datapin."""
 from abc import ABC, abstractmethod
 from typing import Mapping, Sequence
 

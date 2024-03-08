@@ -43,7 +43,8 @@ from .grpc_error_interpretation import (
 
 
 class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRenamableElement, ABC):
-    """Defines an inheritable implementation of renaming with a gRPC client."""
+    """Defines the inheritable implementation of renaming with a gRPC
+    client."""
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
         """Initialize an instance.

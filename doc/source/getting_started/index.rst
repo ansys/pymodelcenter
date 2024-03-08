@@ -15,7 +15,7 @@ To install Ansys ModelCenter Workflow in user mode, run this command:
 
    pip install ansys-modelcenter-workflow
 
-Alternatively, to install the latest version from the Ansys ModelCenter Workflow
+Alternatively, to install the latest version from this library's
 `GitHub repository <https://github.com/ansys/pymodelcenter>`_, run this command:
 
 .. code::

@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines an abstract base class for elements that return child variables and
+"""Defines the abstract base class for elements that return child variables and
 groups."""
 
 from abc import ABC, abstractmethod

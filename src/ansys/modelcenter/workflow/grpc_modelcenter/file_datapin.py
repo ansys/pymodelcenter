@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for the ``FileDatapin`` and ``FileArrayDatapin``
+"""Contains the definitions for the ``FileDatapin`` and ``FileArrayDatapin``
 classes."""
 from typing import TYPE_CHECKING
 

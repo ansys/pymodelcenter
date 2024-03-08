@@ -3,8 +3,8 @@
 User guide
 ==========
 
-The main classes used to create and run workflows are the ``Engine``
-and ``Workflow`` classes.
+To create and run workflows, you use Ansys ModelCenter Workflow's 
+main ``Engine`` and ``Workflow`` classes.
 
 This code shows how to create a workflow, add a component to it,
 run it, and then save it:

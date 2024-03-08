@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Utilities for finding and starting a ModelCenter Desktop process."""
+"""Contains utilities for finding and starting a ModelCenter Desktop
+process."""
 from io import TextIOWrapper
 from pathlib import Path
 import subprocess

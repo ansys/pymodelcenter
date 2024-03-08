@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for the ``RealDatapin`` and ``RealArrayDatapin``
+"""Contains the definitions for the ``RealDatapin`` and ``RealArrayDatapin``
 classes."""
 from typing import TYPE_CHECKING
 

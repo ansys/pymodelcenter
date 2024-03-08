@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Methods to convert between gRPC messages and Ansys Common Variable Interop's
-IVariableValue."""
+"""Contains methods for converting between gRPC messages and Ansys Common
+Variable Interop's IVariableValue."""
 
 from contextlib import ExitStack
 from typing import Optional

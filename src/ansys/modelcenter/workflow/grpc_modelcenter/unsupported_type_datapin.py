@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Classes for representing variables that exist in ModelCenter with
+"""Contains classes for representing variables that exist in ModelCenter with
 unsupported state types."""
 from typing import TYPE_CHECKING
 
