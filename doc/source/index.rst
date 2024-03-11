@@ -31,8 +31,8 @@ engineering workflows.
         :link-type: doc
       
 
-        Understand Ansys ModelCenter Workflow API endpoints and how to use them
-        to interact programmatically.
+        Understand how to use Python to interact programmatically with
+        Ansys ModelCenter.
 
 
     .. grid-item-card:: Contribute :fa:`people-group`

@@ -96,7 +96,7 @@ def create_datapin(
     element_id : ElementId
         ID of the particular datapin.
     engine : Engine
-        Engine that is to create the datapin.
+        Engine that created the datapin
     """
     if var_value_type == VariableType.VARIABLE_TYPE_REFERENCE:
         return ref_pin_impl.ReferenceDatapin(element_id=element_id, engine=engine)

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Provides an object-oriented way to interact with ModelCenter datapin groups
-via gRPC."""
+with gRPC."""
 from typing import TYPE_CHECKING
 
 from overrides import overrides

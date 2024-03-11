@@ -23,7 +23,7 @@
 package.
 
 This implementation finds a local installation of ModelCenter, launches
-it, and attempts to communicate with it via gRPC.
+it, and attempts to communicate with it with gRPC.
 """
 
 from .abstract_workflow_element import UnsupportedWorkflowElement

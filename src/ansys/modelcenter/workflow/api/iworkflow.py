@@ -126,7 +126,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         file_name : str
-            Path and filename for saving the workflow.
+            Path to save the workflow in.
         """
 
     @abstractmethod
@@ -140,7 +140,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         name : str
-            Full ModelCenter path and filename of the datapin.
+            Full ModelCenter path of the datapin.
 
         Returns
         -------
@@ -180,7 +180,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         Parameters
         ----------
         name : str
-            Full ModelCenter path and filename of the component.
+            Full ModelCenter path of the component.
 
         Raises
         ------
@@ -199,7 +199,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
         name : str
             Name of the new assembly.
         parent : Union[IAssembly, str]
-            Full ModelCenter path and filename of the parent ``IAssembly`` object or an
+            Full ModelCenter path of the parent ``IAssembly`` object or an
             ``IAssembly`` object that represents it.
         assembly_type : AssemblyType, optional
             Type of the assembly to create. Pass ``None`` to create a

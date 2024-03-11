@@ -51,7 +51,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         Parameters
         ----------
         name : str
-            Filename or path for creating the workflow.
+            Filename or path where the workflow is to be created.
         workflow_type : WorkflowType, optional
             Type of workflow. The default is a data workflow.
 
@@ -88,7 +88,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         Parameters
         ----------
         pref : str
-            Name of the preference for the data type to return the value in.
+            Name of the preference to return the value for.
 
         Returns
         -------

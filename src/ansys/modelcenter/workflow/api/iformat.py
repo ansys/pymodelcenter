@@ -51,7 +51,7 @@ class IFormat(ABC):
 
           Number formats are used for specifying how numeric values are
           displayed. For specialized handling of monetary values, see the
-          **Monetary** format.
+          **Currency** format.
 
           Specification:
 

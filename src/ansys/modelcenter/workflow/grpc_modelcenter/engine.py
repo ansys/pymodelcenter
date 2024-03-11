@@ -86,7 +86,7 @@ class Engine(IEngine):
         is_run_only : bool
             Whether to start ModelCenter in run-only mode. The default is ``False``.
         force_local : bool
-            Whether forcce ModelCenter to start on the local machine, even if
+            Whether to force ModelCenter to start on the local machine, even if
             `PyPIM <https://github.com/ansys/pypim>`_ is configured. The default
             is ``False``.
         heartbeat_interval : numpy.uint
@@ -122,7 +122,7 @@ class Engine(IEngine):
         Parameters
         ----------
         force_local : bool
-            Whether force ModelCenter to start on the local machine, even if
+            Whether to force ModelCenter to start on the local machine, even if
             `PyPIM <https://github.com/ansys/pypim>`_ is configured. The default
             is ``False``.
         """
@@ -226,7 +226,7 @@ class Engine(IEngine):
         if self._process is not None:
             return self._process.get_process_id()  # pragma: no cover
         else:
-            # Can get this via gRPC if we want; just useful for debugging, so leaving out for now.
+            # Can get this with gRPC; just useful for debugging, so leaving out for now.
             return -1
 
     @interpret_rpc_error(

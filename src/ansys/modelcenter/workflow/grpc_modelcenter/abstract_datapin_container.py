@@ -72,7 +72,7 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
         element_id : ElementId
             ID of the group that the object represents in ModelCenter.
         engine : Engine
-            Engine that is to create the datapin.
+            Engine that created the datapin
         """
         super(AbstractGRPCDatapinContainer, self).__init__(element_id=element_id, engine=engine)
 
