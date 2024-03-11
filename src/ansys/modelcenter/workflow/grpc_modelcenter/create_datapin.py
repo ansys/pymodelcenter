@@ -21,7 +21,7 @@
 # SOFTWARE.
 """Defines the function for creating a datapin object.
 
-Creation requres a given datapin type and gRPC information.
+Creation requires a given datapin type and gRPC information.
 """
 from typing import TYPE_CHECKING
 

@@ -50,7 +50,7 @@ class AbstractControlStatement(
     ABC,
 ):
     """Defines an abstract base class for control statements.
-    
+
     Control statements include driver components and assemblies.
 
     .. note::

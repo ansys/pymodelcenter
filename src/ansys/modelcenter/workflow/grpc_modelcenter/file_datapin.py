@@ -21,8 +21,8 @@
 # SOFTWARE.
 """Contains the definitions for file datapin classes.
 
- These classes include ``FileDatapin`` and ``FileArrayDatapin``.
- """
+These classes include ``FileDatapin`` and ``FileArrayDatapin``.
+"""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi

@@ -27,7 +27,7 @@ from numpy import float64, int64
 
 class IFormat(ABC):
     """Formats values in various string formats.
-    
+
     String formats include percentages and currency.
     """
 
@@ -294,7 +294,7 @@ class IFormat(ABC):
     @abstractmethod
     def integer_to_editable_string(self, integer: int64) -> str:
         """Convert an integer to an editable formatted string representation.
-        
+
         The formatted string representation can be edited with full precision.
 
         Parameters
@@ -311,7 +311,7 @@ class IFormat(ABC):
     @abstractmethod
     def real_to_editable_string(self, real: float64) -> str:
         """Convert a real value to an editable formatted string representation.
-        
+
         The formatted string representation can be edited with full precision.
 
         Parameters

@@ -21,7 +21,8 @@
 # SOFTWARE.
 """Defines the decorator and standard exception types.
 
-The decorator and exceptons types interpret errors from the gRPC client."""
+The decorator and exceptons types interpret errors from the gRPC client.
+"""
 
 import functools
 from typing import Any, Mapping, Type

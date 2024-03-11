@@ -21,8 +21,8 @@
 # SOFTWARE.
 """Defines methods for converting between a gRPC message and an IVariableValue.
 
-For more information, see `IVariableValue <https://variableinterop.docs.pyansys.com/version/stable/api/ansys/tools/variableinterop/variable_value/IVariableValue.html#ivariablevalue>`_
-in the *PyAnsys Tools Variable Interop documentation*.
+For more information, see
+`IVariableValue`_ in the *PyAnsys Tools Variable Interop documentation*.
 """
 
 from contextlib import ExitStack

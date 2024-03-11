@@ -180,6 +180,7 @@ linkcheck_ignore = [
     "https://github.com/ansys/pymodelcenter/*",  # this site is private
     "https://modelcenter.docs.pyansys.com//*",  # this site is private
     "https://www.ansys.com/*",
+    "https://variableinterop.docs.pyansys.com/version/stable/api/ansys/tools/variableinterop/variable_value/IVariableValue.html#ivariablevalue",  # noqa: 501
 ]
 
 # make rst_epilog a variable, so you can add other epilog parts to it
