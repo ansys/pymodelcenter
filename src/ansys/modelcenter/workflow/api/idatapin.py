@@ -28,7 +28,7 @@ import ansys.tools.variableinterop as atvi
 
 
 class IDatapin(aew_api.IDatapin, ABC):
-    """Represents a datapin in the workflow."""
+    """Represents a datapin on the workflow."""
 
     @abstractmethod
     def set_metadata(self, new_metadata: atvi.CommonVariableMetadata) -> None:

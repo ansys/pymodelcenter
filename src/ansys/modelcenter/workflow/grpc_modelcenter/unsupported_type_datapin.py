@@ -33,7 +33,7 @@ from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
 
 
 class DatapinWithUnsupportedTypeException(BaseException):
-    """Raised when attempting to interact with a datapin of an unsupported
+    """Raised if attempting to interact with a datapin of an unsupported
     type."""
 
     def __init__(self):

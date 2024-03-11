@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains utilities for finding and starting a ModelCenter Desktop
-process."""
+"""Contains utilities for a ModelCenter Desktop process.
+
+Methods provide for finding and starting a ModelCenter Desktop process.
+"""
 from io import TextIOWrapper
 from pathlib import Path
 import subprocess
@@ -46,7 +48,7 @@ def _find_exe_location() -> str:  # pragma: no cover
 
 
 class EngineLicensingFailedException(Exception):
-    """Raised when engine licensing has failed."""
+    """Raised if engine licensing has failed."""
 
     ...
 

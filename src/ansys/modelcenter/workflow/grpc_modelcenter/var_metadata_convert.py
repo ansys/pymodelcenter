@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines functions for converting between ACVI metadata and a gRPC
-message."""
+"""Defines functions for converting between ACVI metadata and gRPC messages."""
 from typing import Union
 
 from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (
@@ -45,8 +44,7 @@ from .var_value_convert import (
 
 
 class CustomMetadataValueNotSupportedError(ValueTypeNotSupportedError):
-    """Raised when a custom metadata item included an unsupported value
-    type."""
+    """Raised if a custom metadata item includes an unsupported value type."""
 
 
 def _extract_base_metadata(

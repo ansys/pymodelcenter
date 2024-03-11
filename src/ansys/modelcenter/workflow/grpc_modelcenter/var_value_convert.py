@@ -21,8 +21,8 @@
 # SOFTWARE.
 """Defines methods for converting between a gRPC message and an IVariableValue.
 
-For more information, see
-`IVariableValue`_ in the *PyAnsys Tools Variable Interop documentation*.
+For more information, see `IVariableValue`_ in the
+*PyAnsys Tools Variable Interop* documentation.
 """
 
 from contextlib import ExitStack
@@ -45,7 +45,7 @@ from overrides import overrides
 
 
 class ValueTypeNotSupportedError(ValueError):
-    """Raised when an attempt is made to convert a value with a known but
+    """Raised if an attempt is made to convert a value with a known but
     unsupported type."""
 
 

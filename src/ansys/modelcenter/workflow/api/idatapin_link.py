@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines the interface for working with variable links in the workflow.
+"""Contains the interface for working with variable links in the workflow.
 
 This interface defines classes and functions for working with links
 between variables in the workflow.

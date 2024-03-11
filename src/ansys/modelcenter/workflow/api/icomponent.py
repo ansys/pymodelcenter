@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definition for the component."""
+"""Defines the component."""
 from abc import ABC, abstractmethod
 
 import ansys.engineeringworkflow.api as aew_api
@@ -36,7 +36,7 @@ class IComponent(
     assembly.IAssemblyChild,
     ABC,
 ):
-    """Represents a component in a workflow."""
+    """Represents a component in the workflow."""
 
     # ModelCenter
 

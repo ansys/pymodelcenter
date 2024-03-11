@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definition for the reference array datapin."""
+"""Defines the reference array datapin."""
 from abc import ABC, abstractmethod
 from typing import Mapping, Sequence
 
@@ -33,7 +33,7 @@ from .ireferenceproperty import IReferenceArrayProperty, IReferencePropertyManag
 class IReferenceArrayDatapin(
     IDatapin, Sequence[IDatapinReferenceBase], IReferencePropertyManager, ABC
 ):
-    """Represents a reference array datapin in the workflow.
+    """Represents a reference array datapin on the workflow.
 
     Reference array datapins are different than other array datapin types.
     Reference arrays are only allowed to be one-dimensional, and their

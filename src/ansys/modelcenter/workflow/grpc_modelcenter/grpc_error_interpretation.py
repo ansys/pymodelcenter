@@ -32,7 +32,7 @@ import grpc
 
 
 class UnexpectedEngineError(Exception):
-    """Raised when an error that is unexpected for the call is made.
+    """Raised if an error that is unexpected for the call is made.
 
     Note that this does not necessarily mean that the gRPC client raised
     an error with the code UNKNOWN or INTERNAL, just that the code
@@ -62,7 +62,7 @@ class UnexpectedEngineError(Exception):
 
 
 class EngineDisconnectedError(Exception):
-    """Raised when the ModelCenter service is not available."""
+    """Raised if the ModelCenter service is not available."""
 
     def __init__(self, message: str):
         """Initialize an instance.
@@ -79,7 +79,7 @@ class EngineDisconnectedError(Exception):
 
 
 class InvalidInstanceError(Exception):
-    """Raised when the target element ID is no longer valid."""
+    """Raised if the target element ID is no longer valid."""
 
     def __init__(self, message: str):
         """Initialize an instance.
@@ -96,7 +96,7 @@ class InvalidInstanceError(Exception):
 
 
 class ValueOutOfRangeError(ValueError):
-    """Raised when an argument value is out of range."""
+    """Raised if an argument value is out of range."""
 
     ...
 

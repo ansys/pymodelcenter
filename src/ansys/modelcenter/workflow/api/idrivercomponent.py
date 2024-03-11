@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines the interface for driver components."""
+"""Contains the interface for driver components."""
 import ansys.engineeringworkflow.api as aew_api
 
 import ansys.modelcenter.workflow.api.icomponent as component
@@ -29,7 +29,7 @@ class IDriverComponent(
     component.IComponent,
     aew_api.IControlStatement,
 ):
-    """Represents a driver component within a workflow.
+    """Represents a driver component in a workflow.
 
     For process-mode workflows, driver components have children.
     Driver components are still represented by instances of this

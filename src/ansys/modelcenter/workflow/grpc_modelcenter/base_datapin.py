@@ -47,7 +47,7 @@ from .var_value_convert import convert_grpc_value_to_atvi, grpc_type_enum_to_int
 
 
 class BaseDatapin(AbstractWorkflowElement, mc_api.IDatapin, ABC):
-    """Represents a datapin in the workflow."""
+    """Represents a datapin on the workflow."""
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
         """Initialize an instance.

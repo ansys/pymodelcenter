@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definition for the scalar reference datapin."""
+"""Defines the scalar reference datapin."""
 from abc import ABC, abstractmethod
 from typing import Mapping
 
@@ -31,7 +31,7 @@ from .ireferenceproperty import IReferenceProperty, IReferencePropertyManager
 
 
 class IReferenceDatapin(IDatapin, IDatapinReferenceBase, IReferencePropertyManager, ABC):
-    """Represents a reference datapin in the workflow.
+    """Represents a reference datapin on the workflow.
 
     Reference datapins allow components to have configurable connections
     to other datapins without creating a full link relationship.

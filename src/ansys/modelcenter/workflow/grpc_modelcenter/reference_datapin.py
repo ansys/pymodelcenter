@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definitions for reference datapin claseses.
+"""Defines the reference datapin classes.
 
 These classes include ``ReferenceDatapin`` and ``ReferenceArrayDatapin``.
 """
@@ -164,8 +164,11 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
 
 
 class ReferenceDatapinBase(BaseDatapin, ABC):
-    """Provides the implementation common between scalar and array reference
-    datapins."""
+    """Defines the base class for reference datapins.
+
+    This class is for implementing what is common between scalar and
+    array reference datapins.
+    """
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides

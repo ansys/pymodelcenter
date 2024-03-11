@@ -30,7 +30,7 @@ import ansys.tools.variableinterop as atvi
 class IReferencePropertyBase(ABC):
     """Defines common methods for IReference property classes.
 
-    ``IReference`` property classes include ``IReferenceProperty`` and
+    IReference property classes include ``IReferenceProperty`` and
     ``IReferenceArrayProperty``.
     """
 

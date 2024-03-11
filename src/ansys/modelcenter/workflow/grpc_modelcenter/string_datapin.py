@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definitions for string datapin classes.
+"""Defines the string datapin classes.
 
 These classes include ``StringDatapin`` and ``StringArrayDatapin``.
 """
@@ -52,7 +52,7 @@ from .var_metadata_convert import (
 
 
 class StringDatapin(BaseDatapin, mc_api.IStringDatapin):
-    """Represents a gRPC string datapin in the workflow.
+    """Represents a gRPC string datapin on the workflow.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from

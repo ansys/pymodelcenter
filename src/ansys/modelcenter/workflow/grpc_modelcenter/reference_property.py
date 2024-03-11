@@ -55,7 +55,7 @@ from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferencePr
 
 
 class ReferencePropertyBase(IReferencePropertyBase):
-    """Provides the base class for reference properties that define common
+    """Defines the base class for reference properties that define common
     methods.
 
     .. note::

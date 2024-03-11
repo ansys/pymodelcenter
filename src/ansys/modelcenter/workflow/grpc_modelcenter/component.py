@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definition for the component."""
+"""Defines the component."""
 from typing import TYPE_CHECKING, Optional
 
 from grpc import StatusCode
@@ -41,13 +41,13 @@ from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, 
 
 
 class ComponentReconnectionFailedError(Exception):
-    """Raised when a component reconnection fails."""
+    """Raised if a component reconnection fails."""
 
     ...
 
 
 class ComponentDownloadValuesFailedError(Exception):
-    """Raised when downloading a component's values fails."""
+    """Raised if downloading a component's values fails."""
 
     ...
 
