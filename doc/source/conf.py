@@ -179,6 +179,7 @@ exclude_patterns = [
 linkcheck_ignore = [
     "https://github.com/ansys/pymodelcenter/*",  # this site is private
     "https://modelcenter.docs.pyansys.com//*",  # this site is private
+    "https://www.ansys.com/*"
 ]
 
 # make rst_epilog a variable, so you can add other epilog parts to it
