@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Implementation of Assembly."""
+"""Defines the assembly."""
 
 from typing import TYPE_CHECKING, Optional, Tuple
 
@@ -65,18 +65,18 @@ class Assembly(
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the assembly.
         engine: Engine
-            ``Engine`` that created this assembly.
+            Engine to use to create the assembly.
         """
         super(Assembly, self).__init__(element_id=element_id, engine=engine)
 

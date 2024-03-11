@@ -19,7 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Utilities for finding and starting a ModelCenter Desktop process."""
+"""Contains utilities for a ModelCenter Desktop process.
+
+Methods provide for finding, tracking, and starting a ModelCenter
+Desktop process.
+"""
 from io import TextIOWrapper
 from pathlib import Path
 import subprocess
@@ -31,7 +35,7 @@ import numpy
 
 
 def _find_exe_location() -> str:  # pragma: no cover
-    """Attempts to find ModelCenter.exe."""
+    """Attempts to find the ModelCenter EXE file."""
     key: winreg.HKEYType = winreg.OpenKey(
         winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Phoenix Integration\ModelCenter"
     )
@@ -45,16 +49,16 @@ def _find_exe_location() -> str:  # pragma: no cover
 
 
 class EngineLicensingFailedException(Exception):
-    """Indicates that engine licensing has failed."""
+    """Raised if engine licensing has failed."""
 
     ...
 
 
 class MCDProcess:
-    """Responsible for launching and keeping track of a MCD process."""
+    """Launches and keeps track of a ModelCenter Desktop process."""
 
     def __init__(self) -> None:
-        """Initialize a new MCDProcess instance."""
+        """Initialize an instance."""
         self._exe_path: str = _find_exe_location()
         self._process: Optional[subprocess.Popen] = None
         self._debug: bool = True if self._exe_path.endswith("ModelCenterD.exe") else False
@@ -66,20 +70,23 @@ class MCDProcess:
         heartbeat_interval: numpy.uint = 30000,
         allowed_heartbeat_misses: numpy.uint = 3,
     ) -> int:
-        """Start the MCD process.
+        """Start the ModelCenter Desktop process.
 
         Parameters
         ----------
-        run_only : bool
-            Flag for if ModelCenter should be started as run only
-        heartbeat_interval : numpy.uint
-            Interval between heartbeat messages.
-        allowed_heartbeat_misses : numpy.uint
+        run_only : bool, optional
+            Whether to start ModelCenter in run-only mode. The default
+            is ``False``.
+        heartbeat_interval : numpy.uint, optional
+            Interval between heartbeat messages. The default is ``30000``.
+        allowed_heartbeat_misses : numpy.uint, optional
             Number of allowed missed heartbeats before the server terminates.
+            The default is ``3``.
 
         Returns
         -------
-        Port number the gRPC server was started on.
+        int
+            Port number that the gRPC server was started on.
         """
         args = [
             self._exe_path,
@@ -112,7 +119,7 @@ class MCDProcess:
         raise Exception("Timed out waiting for ModelCenter to start.")
 
     def get_process_id(self) -> int:
-        """Get the process id of the MCD process."""
+        """Get the process ID of the ModelCenter Desktop process."""
         if self._process is None:
             return -1
         return self._process.pid

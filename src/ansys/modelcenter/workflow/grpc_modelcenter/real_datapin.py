@@ -19,7 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for RealDatapin and RealArrayDatapin."""
+"""Defines the real datapin classes.
+
+These classes include ``RealDatapin`` and ``RealArrayDatapin``.
+"""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
@@ -53,18 +56,18 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(RealDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -84,8 +87,8 @@ class RealDatapin(BaseDatapin, mc_api.IRealDatapin):
         if not isinstance(new_metadata, atvi.RealMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.RealMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.RealMetadata}, "
+                f"but received {new_metadata.__class__}."
             )
         request = SetDoubleVariableMetadataRequest(target=self._element_id)
         fill_real_metadata_message(new_metadata, request.new_metadata)
@@ -106,18 +109,18 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine: Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(RealArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -137,8 +140,8 @@ class RealArrayDatapin(BaseDatapin, mc_api.IRealArrayDatapin):
         if not isinstance(new_metadata, atvi.RealArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.RealArrayMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.RealArrayMetadata}, "
+                f"but received {new_metadata.__class__}."
             )
         request = SetDoubleVariableMetadataRequest(target=self._element_id)
         fill_real_metadata_message(new_metadata, request.new_metadata)

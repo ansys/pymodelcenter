@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines an abstract base class for gRPC-backed workflow elements."""
+"""Defines the abstract base class for gRPC-backed workflow elements."""
 
 from abc import ABC
 from typing import TYPE_CHECKING, AbstractSet, Mapping, Optional
@@ -50,20 +50,20 @@ from .var_value_convert import convert_grpc_value_to_atvi, convert_interop_value
 
 
 class AbstractWorkflowElement(aew_api.IElement, ABC):
-    """Defines an abstract base class for gRPC-backed workflow elements."""
+    """Defines the abstract base class for gRPC-backed workflow elements."""
 
     def _create_client(self, channel: grpc.Channel) -> ModelCenterWorkflowServiceStub:
         return ModelCenterWorkflowServiceStub(channel)  # pragma: no cover
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
-            ID of the group this object represents in ModelCenter.
+            ID of the group that the object represents in ModelCenter.
         engine : Engine
-            ``Engine`` that created this element.
+            Engine that created the element.
         """
         self._engine = engine
         self._client: ModelCenterWorkflowServiceStub = self._create_client(engine.channel)
@@ -143,17 +143,16 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
 
 
 class UnsupportedWorkflowElement(AbstractWorkflowElement):
-    """Represents a workflow element that is known to exists but whose type is
-    not supported."""
+    """Represents a known workflow element whose type is not supported."""
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
-            ID of the element this object represents in ModelCenter.
+            ID of the element that the object represents in ModelCenter.
         engine : Engine
-            ``Engine`` that created this element.
+            Engine that created the element.
         """
         super(UnsupportedWorkflowElement, self).__init__(element_id=element_id, engine=engine)

@@ -19,8 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines classes and functions for working with links between variables in
-the workflow."""
+"""Contains the interface for working with variable links in the workflow.
+
+This interface defines classes and functions for working with links
+between variables in the workflow.
+"""
 
 from abc import ABC, abstractmethod
 
@@ -33,7 +36,7 @@ class IDatapinLink(ABC):
         """Break the link.
 
         Breaking the link removes the dependencies between the left-hand
-        and right-hand side of the link. This object becomes invalid and
+        and right-hand side of the link. The object becomes invalid and
         cannot be used after calling this method.
         """
 
@@ -42,16 +45,16 @@ class IDatapinLink(ABC):
         """Suspend the link.
 
         Suspending the link causes the engine to behave as if it is not
-        present. This method is idempotent; it is safe to call suspend
-        multiple times even if the link is already suspended.
+        present. This method is idempotent. It is safe to call this
+        method multiple times, even if the link is already suspended.
         """
 
     @abstractmethod
     def resume(self) -> None:
         """Resume the link if it is suspended.
 
-        This method is idempotent; it is safe to call resume multiple
-        times even if the link is already suspended.
+        This method is idempotent. it is safe to call this method
+        multiple times, even if the link is already suspended.
         """
 
     @abstractmethod
@@ -70,10 +73,10 @@ class IDatapinLink(ABC):
         """Left-hand side of the link.
 
         The left-hand side receives a value from the right-hand side
-        (analogous to a variable assignment in most languages). This
-        will always be a simple datapin name, except in cases where the
-        link targets a single array index, in which case it will be the
-        name of the datapin plus an array index.
+        (analogous to a variable assignment in most languages). This is
+        always a simple datapin name, except in cases where the link
+        target is a single array index, in which case it is the name of
+        the datapin plus an array index.
         """
 
     @property
@@ -82,7 +85,7 @@ class IDatapinLink(ABC):
         """Right-hand side (source) of the link equation.
 
         This is a simple equation containing the names of the other
-        datapins on which this link depends.
+        datapins that this link depends on.
         """
 
     @rhs.setter

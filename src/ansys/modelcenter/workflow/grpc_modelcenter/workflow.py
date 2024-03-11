@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Implementation of Workflow."""
+"""Defines the workflow."""
 from contextlib import ExitStack
 import os
 from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
@@ -63,12 +63,12 @@ class Workflow(wfapi.IWorkflow):
     """Represents a workflow or model in ModelCenter.
 
     .. note::
-        This class should not be directly instantiated by clients. Create an ``Engine``, and use it
-        to get a valid instance of this object.
+        This class should not be directly instantiated by clients. Create an ``Engine`` instance
+        and use it to get a valid instance of this object.
     """
 
     def __init__(self, workflow_id: str, file_path: str, engine: "Engine"):
-        """Initialize a new ``Workflow`` instance.
+        """Initialize an instance.
 
         Parameters
         ----------
@@ -77,7 +77,7 @@ class Workflow(wfapi.IWorkflow):
         file_path : str
             Path to the workflow file.
         engine : Engine
-            ``Engine`` creating this ``Workflow``.
+            Engine to use to create the workflow.
         """
         self._id = workflow_id
         self._file_name = os.path.basename(file_path)
@@ -122,12 +122,12 @@ class Workflow(wfapi.IWorkflow):
         Possible states are:
 
         - ``WorkflowInstanceState.UNKNOWN``:
-            If any datapin validated by the last run no longer exists, or some other error occurs
+            If any datapin validated by the last run no longer exists or some other error occurs
             getting the state.
         - ``WorkflowInstanceState.INVALID``:
             If any datapin validated by the last run is not valid, or the workflow has never been
             run and the root assembly is invalid. Note that this can be returned by requesting a
-            datapin that will not be validated even if the workflow runs successfully, such as
+            datapin that is not validated even if the workflow runs successfully, such as
             a datapin in an inactive branch of an if-component.
         - ``WorkflowInstanceState.RUNNING``:
             If the workflow is currently running.
@@ -210,7 +210,7 @@ class Workflow(wfapi.IWorkflow):
         # be doing.
         raise engapi.EngineInternalError(
             "Reached an unexpected state. A local file content context may be suppressing an "
-            "exception? Report this error to the pyModelCenter maintainers."
+            "exception. Report this error on the PyModelCenter repository's Issues page."
         )
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_INVALID_ARG, **WRAP_OUT_OF_BOUNDS})
@@ -232,7 +232,7 @@ class Workflow(wfapi.IWorkflow):
         # be doing.
         raise engapi.EngineInternalError(
             "Reached an unexpected state. A local file content context may be suppressing an "
-            "exception? Report this error to the pyModelCenter maintainers."
+            "exception. Report this error on the PyModelCenter repository's Issues page."
         )
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
@@ -572,7 +572,7 @@ class Workflow(wfapi.IWorkflow):
             metadata = atvi.FileArrayMetadata()
             self._set_file_metadata(elem_id, metadata)
         else:
-            raise ValueError("Unknown datapin type.")
+            raise ValueError("Datapin type is unknown.")
         return metadata
 
     def _set_bool_metadata(
@@ -580,8 +580,8 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.BooleanMetadata, atvi.BooleanArrayMetadata],
     ) -> None:
-        """Query gRPC for metadata for a boolean datapin, and populate the
-        given metadata object.
+        """Query gRPC for metadata for a Boolean datapin and populate the given
+        metadata object.
 
         Parameters
         ----------
@@ -600,7 +600,7 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.RealMetadata, atvi.RealArrayMetadata],
     ) -> None:
-        """Query gRPC for metadata for a real datapin, and populate the given
+        """Query gRPC for metadata for a real datapin and populate the given
         metadata object.
 
         Parameters
@@ -624,7 +624,7 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.IntegerMetadata, atvi.IntegerArrayMetadata],
     ) -> None:
-        """Query gRPC for metadata for an integer datapin, and populate the
+        """Query gRPC for metadata for an integer datapin and populate the
         given metadata object.
 
         Parameters
@@ -650,7 +650,7 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.StringMetadata, atvi.StringArrayMetadata],
     ) -> None:
-        """Query gRPC for metadata for a string datapin, and populate the given
+        """Query gRPC for metadata for a string datapin and populate the given
         metadata object.
 
         Parameters
@@ -670,7 +670,7 @@ class Workflow(wfapi.IWorkflow):
         var_id: element_msg.ElementId,
         metadata: Union[atvi.FileMetadata, atvi.FileArrayMetadata],
     ) -> None:
-        """Query gRPC for metadata for a file datapin, and populate the given
+        """Query gRPC for metadata for a file datapin and populate the given
         metadata object.
 
         Parameters

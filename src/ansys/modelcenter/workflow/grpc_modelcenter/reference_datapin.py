@@ -19,7 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for ReferenceDatapin and ReferenceArrayDatapin."""
+"""Defines the reference datapin classes.
+
+These classes include ``ReferenceDatapin`` and ``ReferenceArrayDatapin``.
+"""
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Union, overload
 
@@ -55,12 +58,12 @@ from .grpc_error_interpretation import (
 
 
 class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
-    """Represents a single element in a ReferenceArrayDatapin.
+    """Represents a single element in an reference array datapin.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of a ReferenceArrayDatapin,
-        which can then be indexed to get an object of this type.
+        an instantiated ``Engine`` instance and use it to get a valid ``ReferenceArrayDatapin``
+        instance, which can then be indexed to get an object of this type.
     """
 
     def __init__(
@@ -70,7 +73,7 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
         index: int,
         parent_engine: "Engine",
     ):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
@@ -79,9 +82,9 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
         parent_element_id : ElementId
             ID of the parent array.
         index : int
-            This reference datapin's index in the parent array.
+            Index of the reference datapin in the parent array.
         parent_engine : Engine
-            ``Engine`` that created the parent array datapin.
+            Engine to use to create the parent array datapin.
         """
         self._client = parent_client
         self._parent_element_id = parent_element_id
@@ -135,7 +138,7 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
             interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
         except ValueError as convert_failure:
             raise aew_api.EngineInternalError(
-                "Unexpected failure converting gRPC value response"
+                "Unexpected failure occurred converting gRPC value response."
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 
@@ -161,7 +164,11 @@ class ReferenceArrayDatapinElement(mc_api.IDatapinReferenceBase):
 
 
 class ReferenceDatapinBase(BaseDatapin, ABC):
-    """Implementation common between scalar and array reference datapins."""
+    """Defines the base class for reference datapins.
+
+    This class is for implementing what is common between scalar and
+    array reference datapins.
+    """
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     @overrides
@@ -175,8 +182,8 @@ class ReferenceDatapinBase(BaseDatapin, ABC):
         if not isinstance(new_metadata, ReferenceDatapinMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {ReferenceDatapinMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {ReferenceDatapinMetadata}, "
+                f"but received {new_metadata.__class__}."
             )
         request = var_msgs.SetReferenceVariableMetadataRequest(target=self._element_id)
         fill_reference_metadata_message(new_metadata, request.new_metadata)
@@ -188,18 +195,18 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine: Engine
-            ``Engine`` that created this datapin.
+            `Engine to use to create the datapin.
         """
         super(ReferenceDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -264,7 +271,7 @@ class ReferenceDatapin(ReferenceDatapinBase, mc_api.IReferenceDatapin):
             interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
         except ValueError as convert_failure:
             raise aew_api.EngineInternalError(
-                "Unexpected failure converting gRPC value response"
+                "Unexpected failure occurred converting gRPC value response."
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)
 
@@ -288,19 +295,19 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance  and use it to get a valid instance of this object.
     """
 
     @overrides
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(ReferenceArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -311,23 +318,23 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
     @overload
     @abstractmethod
     def __getitem__(self, index: int) -> IDatapinReferenceBase:
-        """Gets a ReferenceArrayDatapinElement at the index provided.
+        """Get an reference array datapin element at a given index.
 
         Parameters
         ----------
         index : int
-            Index in the ``ReferenceArrayDatapin``.
+            Index in the reference array datapin.
 
         Returns
         -------
-        The ``ReferenceArrayDatapinElement`` at the given index.
+        ``ReferenceArrayDatapinElement`` at the given index.
         """
         return self.__getitem__(index)
 
     @overload
     @abstractmethod
     def __getitem__(self, index: slice) -> Sequence[IDatapinReferenceBase]:
-        """Gets a subsection of the ``ReferenceArrayDatapin``.
+        """Get a subsection of the reference array datapins.
 
         Parameters
         ----------
@@ -348,13 +355,13 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         Parameters
         ----------
         index: int | slice
-            Index in the ``ReferenceArrayDatapin`` or a slice of the
-            ``ReferenceArrayDatapin`` to return.
+            Index in the reference array datapin or a slice of the
+            reference array datapin to return.
 
         Returns
         -------
         ``ReferenceArrayDatapinElement`` at the given index or a slice
-        of the ``ReferenceArrayDatapin``.
+        of the reference array datapin.
         """
         if isinstance(index, slice):
             raise NotImplementedError()
@@ -374,7 +381,7 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
 
     @interpret_rpc_error(WRAP_TARGET_NOT_FOUND)
     def __len__(self) -> int:
-        """Get the length of this reference array.
+        """Get the length of the reference array.
 
         Returns
         -------

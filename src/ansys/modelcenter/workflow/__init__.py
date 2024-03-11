@@ -19,15 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""
-Ansys ModelCenter Workflow.
-
---------------------------
-
-This library provides a Python API for using the ModelCenter suite of
-Ansys products. These products provide tools for creating and automating
-engineering workflows.
-"""
+"""Ansys ModelCenter Workflow is a Python client library for Ansys ModelCenter,
+a suite of products delivering tools for creating and automating engineering
+workflows."""
 
 try:
     import importlib.metadata as importlib_metadata

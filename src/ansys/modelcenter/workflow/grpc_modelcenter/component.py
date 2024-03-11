@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of Component."""
+"""Defines the component."""
 from typing import TYPE_CHECKING, Optional
 
 from grpc import StatusCode
@@ -41,13 +41,13 @@ from .grpc_error_interpretation import WRAP_INVALID_ARG, WRAP_TARGET_NOT_FOUND, 
 
 
 class ComponentReconnectionFailedError(Exception):
-    """Raised when a component reconnection failed."""
+    """Raised if a component reconnection fails."""
 
     ...
 
 
 class ComponentDownloadValuesFailedError(Exception):
-    """Raised when downloading a component's values failed."""
+    """Raised if downloading a component's values fails."""
 
     ...
 
@@ -58,22 +58,22 @@ class Component(
     aachild.AbstractAssemblyChild,
     mc_api.IComponent,
 ):
-    """Defines a component in a workflow.
+    """Defines the component in the workflow.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the component.
         engine : Engine
-            ``Engine`` that created this component.
+            Engine to use to create the component.
         """
         super(Component, self).__init__(element_id=element_id, engine=engine)
 

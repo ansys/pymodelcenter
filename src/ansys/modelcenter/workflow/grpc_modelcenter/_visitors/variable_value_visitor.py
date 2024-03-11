@@ -37,7 +37,8 @@ from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueT
 
 
 class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
-    """Visitor for setting datapin values via ModelCenter gRPC API."""
+    """Provides the visitor for setting datapin values with the ModelCenter
+    gRPC API."""
 
     def __init__(
         self,
@@ -45,7 +46,7 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         stub: ModelCenterWorkflowServiceStub,
         engine_is_local: bool,
     ):
-        """Create a new VariableValueVisitor.
+        """Create a VariableValueVisitor.
 
         Parameters
         ----------
@@ -54,7 +55,7 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         stub : ModelCenterWorkflowServiceStub
             gRPC stub to use.
         engine_is_local : bool
-            Whether the engine running locally or on a remote machine.
+            Whether the engine is running locally or on a remote machine.
         """
         self._var_id = var_id
         self._stub = stub
@@ -165,7 +166,7 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
             # be doing.
             raise aew_api.EngineInternalError(
                 "Reached an unexpected state. A local file content context may be suppressing an "
-                "exception? Report this error to the pyModelCenter maintainers."
+                "exception. Report this error on the PyModelCenter repository's Issues page."
             )
         else:
             raise ValueTypeNotSupportedError(
@@ -175,20 +176,21 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
     def _scalar_request(
         self, value: atvi.IVariableValue, request_type: Type, value_type: Type, grpc_call: Callable
     ) -> bool:
-        """Helper method to send a gRPC request for setting scalar values.
+        """Use this helper method to send a gRPC request for setting scalar
+        values.
 
         Parameters
         ----------
         value : acvi.IVariableValue
             New value to set.
         request_type : Type
-            Type of the request (e.g. ``SetIntegerValueRequest``)
+            Type of the request. For example, ``SetIntegerValueRequest``.
         value_type : Type
-            Type of the value to set, from protobuf (e.g. ``int``,
-            ``float``, etc.)
+            Type of the value to set, from protobuf. For example, ``int`` or
+            ``float``.
         grpc_call : Callable
-            Method used to make the gRPC call (e.g.
-            ``IntegerVariableSetValue``)
+            Method to use to make the gRPC call. For example,
+            ``IntegerVariableSetValue``.
 
         Returns
         -------
@@ -206,20 +208,21 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
         value_type: Type,
         grpc_call: Callable,
     ):
-        """Helper method to send a gRPC request for setting array values.
+        """Use this helper method to send a gRPC request for setting array
+        values.
 
         Parameters
         ----------
         value: acvi.CommonArrayValue
             New value to set.
         request_type: Type
-            Type of the request (e.g. ``SetIntegerArrayValueRequest``)
+            Type of the request. For example, ``SetIntegerArrayValueRequest``.
         value_type: Type
-            Type of the value to set, from protobuf (e.g.
-            ``IntegerArrayValue``, ``DoubleArrayValue``, etc.)
+            Type of the value to set, from protobuf. For example,
+            ``IntegerArrayValue`` or ``DoubleArrayValue``.
         grpc_call: Callable
-            The method used to make the gRPC call (e.g.
-            ``IntegerArraySetValue``)
+            Method to use to make the gRPC call. For example,
+            ``IntegerArraySetValue``.
 
         Returns
         -------
@@ -233,5 +236,5 @@ class VariableValueVisitor(atvi.IVariableValueVisitor[bool]):
 
     @staticmethod
     def _dims(array: atvi.CommonArrayValue) -> var_val_msg.ArrayDimensions:
-        """Helper method to get array dimensions (protobuf)."""
+        """Use this helper method to get array dimensions (protobuf)."""
         return var_val_msg.ArrayDimensions(dims=np.array(array.get_lengths()).flatten())

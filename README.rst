@@ -1,6 +1,6 @@
 Ansys ModelCenter Workflow
 ==========================
-|pyansys| |python| |MIT| |black|
+|pyansys| |python| |pypi| |codecov| |GH-CI| |MIT| |black| |pre-commit|
 
 .. |pyansys| image:: https://img.shields.io/badge/Py-Ansys-ffc107.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABDklEQVQ4jWNgoDfg5mD8vE7q/3bpVyskbW0sMRUwofHD7Dh5OBkZGBgW7/3W2tZpa2tLQEOyOzeEsfumlK2tbVpaGj4N6jIs1lpsDAwMJ278sveMY2BgCA0NFRISwqkhyQ1q/Nyd3zg4OBgYGNjZ2ePi4rB5loGBhZnhxTLJ/9ulv26Q4uVk1NXV/f///////69du4Zdg78lx//t0v+3S88rFISInD59GqIH2esIJ8G9O2/XVwhjzpw5EAam1xkkBJn/bJX+v1365hxxuCAfH9+3b9/+////48cPuNehNsS7cDEzMTAwMMzb+Q2u4dOnT2vWrMHu9ZtzxP9vl/69RVpCkBlZ3N7enoDXBwEAAA+YYitOilMVAAAAAElFTkSuQmCC
    :target: https://docs.pyansys.com/
@@ -39,25 +39,24 @@ Ansys ModelCenter Workflow
 Overview
 --------
 
-This library provides a Python API for using the ModelCenter suite of
-Ansys products. These products provide tools for creating and automating
-engineering workflows.
-
+Ansys ModelCenter Workflow is a Python client library for Ansys ModelCenter,
+a suite of products delivering tools for creating and automating engineering workflows.
 
 Documentation and issues
 ------------------------
 
-Documentation for the latest stable release of the Ansys ModelCenter Workflow is hosted
+Documentation for the latest stable release of Ansys ModelCenter Workflow is hosted
 at `Ansys ModelCenter Workflow documentation <https://modelcenter.docs.pyansys.com/version/dev/>`_.
 
 The documentation has four sections:
 
 - `Getting started <https://modelcenter.docs.pyansys.com/version/dev/getting_started/index.html>`_: Learn
-  how to install the Ansys ModelCenter Workflow.
+  how to install Ansys ModelCenter Workflow.
 - `User guide <https://modelcenter.docs.pyansys.com/version/dev/user_guide/index.html>`_: Understand how to
-  use the Ansys ModelCenter Workflow.
-- `API reference <https://rocky.docs.pyansys.com/version/dev/api/index.html>`_: Understand Ansys Engineering Workflow
-  API endpoints, their capabilities, and how to interact with them programmatically.
+  use Ansys ModelCenter Workflow to create and run workflows.
+- `API reference <https://rocky.docs.pyansys.com/version/dev/api/index.html>`_: Understand how to use Python
+  to interact programmatically with Ansys ModelCenter.
+  Workflow API endpoints and how to use them to interact programmatically.
 - `Contribute <https://modelcenter.docs.pyansys.com/version/dev/contributing/index.html>`_: Learn how to
   contribute to the Ansys ModelCenter Workflow codebase or documentation.
 
@@ -68,76 +67,23 @@ released versions.
 
 On the `Ansys ModelCenter Workflow Issues <https://github.com/ansys/pymodelcenter/issues>`_
 page, you can create issues to report bugs and request new features. On the
-`Ansys ModelCenter Workflow Discussions <https://github.com/ansys/pymodelcenter/discussions>`_
-page or the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
+`Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 
-To reach the PyAnsys project support team, email `PyAnsys Core team <pyansys.core@ansys.com>`_.
-
-
-Usage
------
-The main classes used to create and run workflows are the ``Engine``
-class and the ``Workflow`` class.
-
-This is an example of how create a new workflow, add a component to it,
-run it, and save it:
-
-.. code:: python
-
-    import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
-
-    with grpcmc.Engine() as mc:
-        print("Creating new workflow...")
-        with mc.new_workflow("d:\\example.pxcz") as workflow:
-            print("Creating quadratic...")
-            workflow.create_component(
-                server_path="common:\\Functions\\Quadratic",
-                name="NewQuadratic",
-                parent="Model",
-            )
-
-            print("Running...")
-            workflow.run(validation_names=["Model.NewQuadratic.y"])
-
-            print("Saving...")
-            workflow.save_workflow()
-
-            print("Done.")
-
-
-Testing
--------
-Dependencies required for testing can be installed via:
-
-.. code::
-
-    pip install -e .[tests]
-
-The tests can then be run via pytest. To test and generate a code coverage report run:
-
-.. code::
-
-    pytest tests/ --cov=ansys.modelcenter.workflow --cov-report=term --cov-report=html tests/
-
-If a local copy of ModelCenter Desktop is installed, and a local copy of
-ModelCenter Remote Execution is installed and running, the integration
-tests can be run with:
-
-.. code::
-
-    pytest integration
-
+If you have general questions about the PyAnsys ecosystem, email
+`pyansys.core@ansys.com <pyansys.core@ansys.com>`_. If your
+question is specific to Ansys ModelCenter Workflow, ask your
+question in an issue as described in the previous paragraph.
 
 License
 -------
 
-The Ansys ModelCenter Workflow is licensed under the `MIT License <https://github.com/ansys/pymodelcenter/blob/main/LICENSE>`_.
+Ansys ModelCenter Workflow is licensed under the `MIT License <https://github.com/ansys/pymodelcenter/blob/main/LICENSE>`_.
 
-The Ansys ModelCenter Workflow makes no commercial claim over Ansys whatsoever. This library extends the
-functionality of interacting with ModelCenter, by adding a Python interface without changing the
-core behavior or license of the original software. The use of the Ansys ModelCenter requires a legally
-licensed Ansys ModelCenter.
+Ansys ModelCenter Workflow makes no commercial claim over Ansys whatsoever. This library extends the
+functionality of interacting with Ansys ModelCenter by adding a Python interface without changing the
+core behavior or license of the original software. The use of Ansys ModelCenter requires a legally
+licensed copy of Ansys ModelCenter.
 
 To get a copy of Ansys ModelCenter, see the `Ansys ModelCenter <https://www.ansys.com/products/connect/ansys-modelcenter>`_
 page on the Ansys website.

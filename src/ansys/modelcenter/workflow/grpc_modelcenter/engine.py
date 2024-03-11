@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Implementation of Engine."""
+"""Defines the engine."""
 from os import PathLike
 from string import Template
 from threading import Condition, Thread
@@ -70,7 +70,7 @@ class WorkflowAlreadyLoadedError(Exception):
 
 
 class Engine(IEngine):
-    """GRPC implementation of IEngine."""
+    """Provides the gRPC implementation of IEngine."""
 
     def __init__(
         self,
@@ -79,20 +79,21 @@ class Engine(IEngine):
         heartbeat_interval: numpy.uint = 30000,
         allowed_heartbeat_misses: numpy.uint = 3,
     ):
-        """Initialize a new Engine instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         is_run_only : bool
-            ``True`` if ModelCenter should be started in run-only mode, otherwise ``False``.
+            Whether to start ModelCenter in run-only mode. The default is ``False``.
         force_local : bool
-            ``True`` if ModelCenter should be started on the local machine even if pypim is
-            configured, otherwise ``False``.
+            Whether to force ModelCenter to start on the local machine, even if
+            `PyPIM <https://github.com/ansys/pypim>`_ is configured. The default
+            is ``False``.
         heartbeat_interval : numpy.uint
             Number of milliseconds within which a heartbeat call must be made before the server
             considers a heartbeat signal to have been missed.
         allowed_heartbeat_misses : numpy.uint
-            Number of heartbeat misses allowed before the server will terminate.
+            Number of heartbeat misses allowed before the server terminates.
         """
         self._is_closed = False
         self._is_run_only: bool = is_run_only
@@ -116,17 +117,18 @@ class Engine(IEngine):
         self.close()
 
     def _launch_modelcenter(self, force_local: bool = False) -> None:
-        """Launch ModelCenter, using pypim if it is configured.
+        """Launch ModelCenter, using PyPIM if it is configured.
 
         Parameters
         ----------
         force_local : bool
-            ``True`` if ModelCenter should be started on the local machine even if pypim is
-            configured, otherwise ``False``.
+            Whether to force ModelCenter to start on the local machine, even if
+            `PyPIM <https://github.com/ansys/pypim>`_ is configured. The default
+            is ``False``.
         """
         if pypim.is_configured() and not force_local:
             if self._is_run_only:
-                raise Exception("pypim does not support running ModelCenter in run-only mode.")
+                raise Exception("PyPim does not support running ModelCenter in run-only mode.")
             else:
                 pim = pypim.connect()
                 self._instance = pim.create_instance(product_name="modelcenter")
@@ -155,7 +157,7 @@ class Engine(IEngine):
 
     @property
     def is_closed(self) -> bool:
-        """Get whether this instance has been closed."""
+        """Flag indicating if this instance has been closed."""
         return self._is_closed
 
     @interpret_rpc_error()
@@ -191,39 +193,40 @@ class Engine(IEngine):
 
     @property
     def is_local(self) -> bool:
-        """Get if MCD was started locally, or remotely.
+        """Flag indicating if ModelCenter Desktop was started locally or
+        remotely.
 
         Returns
         -------
         bool
-            ``True`` if MCD was started locally, otherwise ``False``.
+            ``True`` if ModelCenter Desktop was started locally, ``False`` otherwise.
         """
         return self._process is not None
 
     @property
     def channel(self) -> Optional[grpc.Channel]:
-        """Get the gRPC channel used to communicate with MCD.
+        """Get the gRPC channel used to communicate with ModelCenter Desktop.
 
         Returns
         -------
         grpc.Channel
-            The ``grpc.Channel`` object, or ``None`` if it has not been created.
+            ``grpc.Channel`` object or ``None`` if it has not been created.
         """
         return self._channel
 
     @property
     def process_id(self) -> int:
-        """Get the ID of the connected process; useful for debugging.
+        """ID of the connected process, which is useful for debugging.
 
         Returns
         -------
         int
-            Process ID of the connected MCD.
+            Process ID of the connected ModelCenter Desktop.
         """
         if self._process is not None:
             return self._process.get_process_id()  # pragma: no cover
         else:
-            # Can get this via grpc if we want; just useful for debugging, so leaving out for now.
+            # Can get this with gRPC; just useful for debugging, so leaving out for now.
             return -1
 
     @interpret_rpc_error(

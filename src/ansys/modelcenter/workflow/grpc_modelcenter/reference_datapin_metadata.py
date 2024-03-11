@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains a definition for reference datapin metadata."""
+"""Defines the reference datapin metadata."""
 
 from typing import TypeVar
 
@@ -30,7 +30,7 @@ T = TypeVar("T")
 
 
 class ReferenceDatapinMetadata(atvi.CommonVariableMetadata):
-    """Metadata for a reference datapin."""
+    """Provides metadata for a reference datapin."""
 
     @overrides
     def accept(self, visitor: atvi.IVariableMetadataVisitor[T]) -> T:  # type: ignore

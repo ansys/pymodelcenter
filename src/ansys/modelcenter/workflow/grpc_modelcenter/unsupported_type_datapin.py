@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Classes for representing variables that exist in ModelCenter with
-unsupported state types."""
+"""Contains classes for representing variables with unsupported state types."""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
@@ -34,13 +33,13 @@ from ansys.api.modelcenter.v0.element_messages_pb2 import ElementId
 
 
 class DatapinWithUnsupportedTypeException(BaseException):
-    """This exception is raised when attempting to interact with a datapin of
-    unsupported type."""
+    """Raised if attempting to interact with a datapin of an unsupported
+    type."""
 
     def __init__(self):
-        """Create a new instance."""
+        """Initialize an instance."""
         super(DatapinWithUnsupportedTypeException, self).__init__(
-            "The pyModelCenter API does not currently support this interaction on datapins of "
+            "The PyModelCenter API does not currently support this interaction on datapins of "
             "this type."
         )
 
@@ -48,14 +47,14 @@ class DatapinWithUnsupportedTypeException(BaseException):
 class UnsupportedTypeDatapin(BaseDatapin):
     """Represents a datapin with an unsupported datatype.
 
-    Generally speaking, it will be possible to perform interactions that
+    Generally speaking, it is possible to perform interactions that
     don't require retrieving or otherwise interacting with the datapin's
-    state or metadata. Attempts to set or get the state or metadata will
-    raise a DatapinWithUnsupportedTypeException.
+    state or metadata. Attempts to get or set the state or metadata
+    raise a ``DatapinWithUnsupportedTypeException``.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Construct a new instance."""
+        """Initialize an instance."""
         super(BaseDatapin, self).__init__(element_id=element_id, engine=engine)
 
     @overrides

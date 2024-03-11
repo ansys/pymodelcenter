@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definitions for a base class for reference datapins."""
+"""Defines the base class for reference datapins."""
 from abc import ABC, abstractmethod
 from typing import Optional
 
@@ -30,25 +30,26 @@ class IDatapinReferenceBase(ABC):
     """Defines methods common to an individual reference to another datapin.
 
     This could be a single reference datapin or an element in a
-    reference array datapin, etc.
+    reference array datapin.
     """
 
     @property
     @abstractmethod
     def equation(self) -> str:
-        """Reference equation describing what values this datapin references.
+        """Reference equation describing the values that the datapin
+        references.
 
         Returns
         -------
         str
-            The reference equation.
+            Reference equation.
         """
         ...
 
     @equation.setter
     @abstractmethod
     def equation(self, equation: str):
-        """Setter for the reference equation that describes what this datapin
+        """Setter for the reference equation that describes what the datapin
         references.
 
         Parameters
@@ -61,16 +62,17 @@ class IDatapinReferenceBase(ABC):
     @property
     @abstractmethod
     def is_direct(self) -> bool:
-        """Check whether this datapin is a direct reference.
+        """Flag indicating if the datapin is a direct reference.
 
-        Direct reference datapins refer to one specific other datapin exactly; their equations
+        Direct reference datapins refer to one specific datapin only. Their equations
         are just the name of one other datapin. Only direct-reference datapins that refer
-        to a datapin that can be set directly can use set_state to set the referenced datapin.
+        to a datapin that can be set directly can use the ``set_state()`` method to set the
+        referenced datapin.
 
         Returns
         -------
         bool
-            ``True`` if the datapin is a direct reference.
+            ``True`` if the datapin is a direct reference, ``False`` otherwise.
         """
         ...
 
@@ -82,11 +84,11 @@ class IDatapinReferenceBase(ABC):
     def set_state(self, state: atvi.VariableState) -> None:
         """Set the state of the referenced datapin.
 
-        This method only works if this is a direct reference; that is,
-        if the equation is just the name of a single other datapin with
-        no modification. If this is not a direct reference, a ValueError
-        is raised. A ValueError will additionally be raised if the
-        referenced datapin would not be allowed to be set directly in
-        the first place (for example, if it is an output or linked
-        input).
+        This method works only if this is a direct reference.
+        Specifically, it applies if the equation is just the name of a
+        single other datapin with no modification. If it is not a direct
+        reference, a ``ValueError`` is raised. A ``ValueError`` is also raised
+        if the referenced datapin is not allowed to be set directly in
+        the first place. For example, if it is an output or linked
+        input.
         """

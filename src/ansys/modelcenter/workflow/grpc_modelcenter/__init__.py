@@ -19,11 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""This package provides a gRPC-based implementation of the ModelCenter Python
-API.
+"""Implements a gRPC-based version of the Ansys ModelCenter Workflow API.
 
-This implementation will find a local installation of ModelCenter,
-launch it, and attempt to communicate with it via gRPC.
+This implementation finds a local installation of ModelCenter, launches
+it, and attempts to communicate with it with gRPC.
 """
 
 from .abstract_workflow_element import UnsupportedWorkflowElement

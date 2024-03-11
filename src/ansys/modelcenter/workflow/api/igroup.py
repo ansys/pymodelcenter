@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of group of variables."""
+"""Defines a group of variables."""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -29,11 +29,11 @@ from ansys.engineeringworkflow.api import IDatapinContainer
 
 
 class IGroupOwner(IDatapinContainer, ABC):
-    """Represents a workflow element which has groups in ModelCenter."""
+    """Represents a workflow element that has groups in ModelCenter."""
 
     @abstractmethod
     def get_groups(self) -> Mapping[str, IGroup]:
-        """Get the groups that this item contains."""
+        """Get the groups that the item contains."""
 
 
 class IGroup(IGroupOwner, ABC):

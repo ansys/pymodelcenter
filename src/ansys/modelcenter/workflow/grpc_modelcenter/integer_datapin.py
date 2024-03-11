@@ -19,7 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for IntegerDatapin and IntegerArray."""
+"""Defines the integer datapin classes.
+
+These classes include ``IntegerDatapin`` and ``IntegerArray``.
+"""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
@@ -53,18 +56,18 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(IntegerDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -84,8 +87,8 @@ class IntegerDatapin(BaseDatapin, mc_api.IIntegerDatapin):
         if not isinstance(new_metadata, atvi.IntegerMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.IntegerMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.IntegerMetadata}. "
+                f"but received {new_metadata.__class__}."
             )
         request = SetIntegerVariableMetadataRequest(target=self._element_id)
         fill_integer_metadata_message(new_metadata, request.new_metadata)
@@ -106,18 +109,18 @@ class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(IntegerArrayDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -135,8 +138,8 @@ class IntegerArrayDatapin(BaseDatapin, mc_api.IIntegerArrayDatapin):
         if not isinstance(new_metadata, atvi.IntegerArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.IntegerArrayMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.IntegerArrayMetadata}, "
+                f"but received {new_metadata.__class__}."
             )
         request = SetIntegerVariableMetadataRequest(target=self._element_id)
         fill_integer_metadata_message(new_metadata, request.new_metadata)

@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of Engine and associated classes."""
+"""Defines the engine and associated classes."""
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Collection, Mapping, Union
@@ -34,11 +34,16 @@ class WorkflowType(Enum):
     """Enumeration of the types of workflows that can be created."""
 
     DATA = ("dataModel",)
-    """Legacy style workflow where execution flow is determined from links
-    between components and an execution strategy."""
+    """Legacy style workflow where execution flow is determined from links.
+
+    The links between components and an execution strategy determine the
+    workflow.
+    """
     PROCESS = "processModel"
-    """Modern style workflow where execution flow is explicitly designed by the
-    user using flow components."""
+    """Modern style workflow where execution flow is explicitly designed.
+
+    You deinfe the execution flow using flow components.
+    """
 
 
 class IEngine(IFileBasedWorkflowEngine, ABC):
@@ -46,14 +51,14 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> IWorkflow:
-        """Create a new workflow.
+        """Create a workflow.
 
         Parameters
         ----------
         name : str
-            Filename or path where the new workflow will be made.
+            Filename or path where the workflow is to be created.
         workflow_type : WorkflowType, optional
-            Type of workflow to create. Defaults to a data workflow.
+            Type of workflow. The default is a data workflow.
 
         Returns
         -------
@@ -69,7 +74,7 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         Parameters
         ----------
         fmt : str
-            Specified string format for the IFormat object.
+            Specified string format for the ``IFormat`` object.
 
         Returns
         -------
@@ -82,13 +87,13 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         """Get the value of a preference.
 
         Preferences control how the engine behaves in various ways.
-        The value returned may be ``bool``, ``int``, ``float``, or
-        ``str`` typed.
+        The data type of the value may be ``bool``, ``float``,
+        ``int``, or ``str``.
 
         Parameters
         ----------
         pref : str
-            Name of the preference for which to return the value.
+            Name of the preference to return the value for.
 
         Returns
         -------
@@ -101,7 +106,8 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
         """Set the value of a preference.
 
         Preferences control how the engine behaves in various ways.
-        The value may be ``bool`, ``int`, ``float``, or ``str`` typed.
+        The data type of the value may be ``bool``, ``float``,
+        ``int``, or ``str``.
 
         Parameters
         ----------
@@ -125,13 +131,13 @@ class IEngine(IFileBasedWorkflowEngine, ABC):
 
     @abstractmethod
     def get_run_only_mode(self) -> bool:
-        """Get whether the engine is in Run-Only mode.
+        """Get whether the engine is in run-only mode.
 
-        Run-Only mode has lower licensing requirements, but does not
+        Run-only mode has lower licensing requirements, but it does not
         allow for the workflow to be edited.
 
         Returns
         -------
         bool
-            ``True`` if in Run-Only mode; otherwise, ``False``.
+            ``True`` if in run-only mode, ``False`` otherwise.
         """

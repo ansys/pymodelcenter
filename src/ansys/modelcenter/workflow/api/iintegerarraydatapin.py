@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of integer array datapin."""
+"""Defines the integer array variable."""
 from abc import ABC, abstractmethod
 
 import ansys.tools.variableinterop as atvi

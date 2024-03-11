@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains implementations of reference property related classes."""
+"""Contains implementations of reference property-related classes."""
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
@@ -55,16 +55,17 @@ from ansys.modelcenter.workflow.api import IReferenceArrayProperty, IReferencePr
 
 
 class ReferencePropertyBase(IReferencePropertyBase):
-    """Base class for reference properties that defines common methods.
+    """Defines the base class for reference properties that define common
+    methods.
 
     .. note::
-        This base class should not be used directly. Instead, use ReferenceProperty or
-        ReferenceArrayProperty as required.
+        This base class should not be used directly. Instead, use the ``ReferenceProperty`` or
+        ``ReferenceArrayProperty`` class as required.
     """
 
     @abstractmethod
     def __init__(self, element_id: ElementId, name: str, engine: "Engine") -> None:
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
@@ -73,7 +74,7 @@ class ReferencePropertyBase(IReferencePropertyBase):
         name : str
             Name of the property.
         engine : Engine
-            ``Engine`` that created this property.
+            Engine to use to create the property.
         """
         self._element_id: ElementId = element_id
         self._name = name
@@ -198,6 +199,6 @@ class ReferenceArrayProperty(ReferencePropertyBase, IReferenceArrayProperty):
             interop_value = convert_grpc_value_to_atvi(response.value, self._engine.is_local)
         except ValueError as convert_failure:
             raise aew_api.EngineInternalError(
-                "Unexpected failure converting gRPC value response"
+                "Unexpected failure occurred converting gRPC value response."
             ) from convert_failure
         return atvi.VariableState(value=interop_value, is_valid=response.is_valid)

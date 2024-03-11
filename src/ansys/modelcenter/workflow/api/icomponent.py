@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Definition of IComponent."""
+"""Defines the component."""
 from abc import ABC, abstractmethod
 
 import ansys.engineeringworkflow.api as aew_api
@@ -36,7 +36,7 @@ class IComponent(
     assembly.IAssemblyChild,
     ABC,
 ):
-    """Represents a component in a Workflow."""
+    """Represents a component in the workflow."""
 
     # ModelCenter
 
@@ -53,16 +53,17 @@ class IComponent(
     @property
     @abstractmethod
     def control_type(self) -> str:
-        """Get the type of the component.
+        """Type of the component.
 
-        Valid values include:
-        * Component
+        Options include:
+
         * Assembly
-        * Sequence
-        * If
-        * Parallel
+        * Component
         * Empty
         * ForEach
+        * If
+        * Parallel
+        * Sequence
 
         Returns
         -------
@@ -77,7 +78,7 @@ class IComponent(
         Parameters
         ----------
         method : str
-            Name of the method to invoke.
+            Name of the method.
         """
 
     @abstractmethod
@@ -87,11 +88,11 @@ class IComponent(
     @property
     @abstractmethod
     def is_connected(self) -> bool:
-        """Is this component connected to its source."""
+        """Flag indicating if the component is connected to its source."""
 
     @abstractmethod
     def reconnect(self) -> None:
-        """Reload this component from its source."""
+        """Reload the component from its source."""
 
     @abstractmethod
     def download_values(self) -> None:

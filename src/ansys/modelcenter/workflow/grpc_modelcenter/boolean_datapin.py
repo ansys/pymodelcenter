@@ -19,7 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definition for BooleanDatapin and BooleanArrayDatapin."""
+"""Defines the Boolean datapin classes.
+
+These classes include ``BooleanDatapin`` and ``BooleanArrayDatapin``.
+"""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi
@@ -49,22 +52,22 @@ from .var_metadata_convert import (
 
 
 class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
-    """Represents a boolean datapin.
+    """Represents a Boolean datapin.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the datapin.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(BooleanDatapin, self).__init__(element_id=element_id, engine=engine)
 
@@ -84,8 +87,8 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
         if not isinstance(new_metadata, atvi.BooleanMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.BooleanMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.BooleanMetadata} ",
+                f"but received {new_metadata.__class__}.",
             )
         request = SetBooleanVariableMetadataRequest(target=self._element_id)
         fill_boolean_metadata_message(new_metadata, request.new_metadata)
@@ -105,11 +108,11 @@ class BooleanDatapin(BaseDatapin, mc_api.IBooleanDatapin):
 
 
 class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
-    """Represents a boolean array datapin.
+    """Represents a Boolean array datapin.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     @overrides
@@ -128,8 +131,8 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
         if not isinstance(new_metadata, atvi.BooleanArrayMetadata):
             raise TypeError(
                 f"The provided metadata object is not the correct type."
-                f"Expected {atvi.BooleanArrayMetadata} "
-                f"but received {new_metadata.__class__}"
+                f"Expected {atvi.BooleanArrayMetadata}, "
+                f"but received {new_metadata.__class__}."
             )
         request = SetBooleanVariableMetadataRequest(target=self._element_id)
         fill_boolean_metadata_message(new_metadata, request.new_metadata)
@@ -149,13 +152,13 @@ class BooleanArrayDatapin(BaseDatapin, mc_api.IBooleanArrayDatapin):
 
     @overrides
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id: ElementId
             ID of the datapin.
         engine: Engine
-            ``Engine`` that created this datapin.
+            Engine to use to create the datapin.
         """
         super(BooleanArrayDatapin, self).__init__(element_id=element_id, engine=engine)

@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines a decorator and standard exception types for interpreting errors
-from the gRPC client."""
+"""Defines the decorator and standard exception types.
+
+The decorator and exceptons types interpret errors from the gRPC client.
+"""
 
 import functools
 from typing import Any, Mapping, Type
@@ -30,21 +32,20 @@ import grpc
 
 
 class UnexpectedEngineError(Exception):
-    """Raised when the gRPC client raises an error that's unexpected for the
-    call that was made.
+    """Raised if an error that is unexpected for the call is made.
 
     Note that this does not necessarily mean that the gRPC client raised
-    an error with code UNKNOWN or INTERNAL, just that the code raised
-    isn't well-defined for the call that was made. For example, some
-    gRPC methods take only a target element as an argument; we would
-    expect the client to raise NOT_FOUND if that element is invalid, so
-    a FAILED_PRECONDITION or INVALID_ARGUMENT would be unexpected and
-    could indicate an issue within the Python API or the gRPC servicing
-    code.
+    an error with the code UNKNOWN or INTERNAL, just that the code
+    raised isn't well defined for the call that was made. For example,
+    some gRPC methods take only a target element as an argument. The
+    client is expected to raise an error with code NOT_FOUND if that
+    element is invalid, so a FAILED_PRECONDITION or INVALID_ARGUMENT
+    code would be unexpected and could indicate an issue within the
+    Python API or the gRPC servicing code.
     """
 
     def __init__(self, message: str, code: grpc.StatusCode):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
@@ -61,11 +62,10 @@ class UnexpectedEngineError(Exception):
 
 
 class EngineDisconnectedError(Exception):
-    """Raised when the gRPC client indicates that the ModelCenter service is
-    not available."""
+    """Raised if the ModelCenter service is not available."""
 
     def __init__(self, message: str):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
@@ -79,11 +79,10 @@ class EngineDisconnectedError(Exception):
 
 
 class InvalidInstanceError(Exception):
-    """Raised when a gRPC error indicates that the target element ID is not
-    valid anymore."""
+    """Raised if the target element ID is no longer valid."""
 
     def __init__(self, message: str):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
@@ -97,8 +96,7 @@ class InvalidInstanceError(Exception):
 
 
 class ValueOutOfRangeError(ValueError):
-    """Raised when a gRPC error indicates that an argument value is out of
-    range."""
+    """Raised if an argument value is out of range."""
 
     ...
 
@@ -115,11 +113,11 @@ Do not attempt to modify this map at runtime.
 
 
 def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exception]] = {}):
-    r"""Decorate a function so that grpc.RpcErrors it raises are wrapped in a
-    more meaningful way.
+    r"""Decorate a function so that the ``grpc.RpcErrors`` that it raises are
+    wrapped in a more meaningful way.
 
-    By default, the status codes UNAVAILABLE and INTERNAL are mapped to EngineDisconnectedError
-    and EngineInternalError. Callers can specify additional mappings in the additional_codes
+    By default, the status codes UNAVAILABLE and INTERNAL are mapped to ``EngineDisconnectedError``
+    and ``EngineInternalError``. Callers can specify additional mappings in the ``additional_codes``
     parameter. The key should be the status code, and the value should be the exception type.
     The type should take a single parameter in its constructor that is the message from the
     gRPC error.
@@ -127,13 +125,14 @@ def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exceptio
     Take care when specifying additional codes to ensure that the wrapped gRPC call is supposed
     to raise the code in question for a particular reason. This module also supplies some
     predefined maps that represent commonplace mappings between gRPC error codes and exception
-    types. These are not universally applicable, but can be passed to the decorator when
+    types. These are not universally applicable, but they can be passed to the decorator when
     appropriate for the gRPC call in question. Remember that you can create a merged dictionary
     on the fly with the following syntax:
-    {\**DICT_ONE, \**DICT_TWO, additional_key: additional_value}
 
-    If a code is not specified (or one of the default codes) it will be wrapped as
-    UnexpectedEngineError.
+    ``{\**DICT_ONE, \**DICT_TWO, additional_key: additional_value}``
+
+    If a code is not specified (or is one of the default codes), it is wrapped as
+    an ``UnexpectedEngineError``.
 
     Parameters
     ----------
@@ -167,7 +166,8 @@ def interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exceptio
 WRAP_NAME_COLLISION: Mapping[grpc.StatusCode, Type[Exception]] = {
     grpc.StatusCode.ALREADY_EXISTS: aew_api.NameCollisionError
 }
-"""Pass this to wrap_rpcerror to wrap ALREADY_EXISTS as a NameCollisionError.
+"""Pass this to ``wrap_rpcerror`` to wrap ALREADY_EXISTS as a
+``NameCollisionError``.
 
 Do not attempt to modify this map.
 """
@@ -176,7 +176,7 @@ Do not attempt to modify this map.
 WRAP_TARGET_NOT_FOUND: Mapping[grpc.StatusCode, Type[Exception]] = {
     grpc.StatusCode.NOT_FOUND: InvalidInstanceError
 }
-"""Pass this to wrap_rpcerror when NOT_FOUND indicates that the calling
+"""Pass this to ``wrap_rpcerror`` when NOT_FOUND indicates that the calling
 instance is invalid.
 
 Do not attempt to modify this map.
@@ -186,13 +186,13 @@ Do not attempt to modify this map.
 WRAP_INVALID_ARG: Mapping[grpc.StatusCode, Type[Exception]] = {
     grpc.StatusCode.INVALID_ARGUMENT: ValueError
 }
-"""Pass this to wrap_rpcerror when responsibility for invalid arguments is the
-caller's.
+"""Pass this to ``wrap_rpcerror`` when responsibility for invalid arguments is
+the caller's.
 
 Note that this is not always the case. For example, sometimes the
 arguments passed to the gRPC method are entirely calculated by the API,
 and there is no way for the user to cause it to produce invalid
-arguments; in this case you should wrap this code as an internal error.
+arguments. In this case, you should wrap this code as an internal error.
 
 Do not attempt to modify this map.
 """
@@ -200,13 +200,13 @@ Do not attempt to modify this map.
 WRAP_OUT_OF_BOUNDS: Mapping[grpc.StatusCode, Type[Exception]] = {
     grpc.StatusCode.OUT_OF_RANGE: aew_api.ValueOutOfRangeError
 }
-"""Pass this to wrap_rpcerror when the responsibility for out-of-range
+"""Pass this to the ``wrap_rpcerror`` when the responsibility for out-of-range
 arguments is the caller's.
 
 Note that this is not always the case. For example, sometimes the
 arguments passed to the gRPC method are entirely calculated by the API,
 and there is no way for the user to cause it to produce invalid
-arguments; in this case you should wrap this code as an internal error.
+arguments. In this case, you should wrap this code as an internal error.
 
 Do not attempt to modify this map.
 """

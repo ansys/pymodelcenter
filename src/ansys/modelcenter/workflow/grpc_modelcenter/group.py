@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Provides an object-oriented way to interact with ModelCenter datapin groups
-via gRPC."""
+"""Provides for interacting with ModelCenter datapin groups with gRPC.
+
+This interaction is handled in an object-oriented way.
+"""
 from typing import TYPE_CHECKING
 
 from overrides import overrides
@@ -41,21 +43,21 @@ class Group(AbstractGRPCDatapinContainer, api.IGroup):
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
         return Group(element_id, self._engine)
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
             ID of the group.
         engine : Engine
-            ``Engine`` that created this group.
+            Engine to use to create the group.
         """
         super(Group, self).__init__(element_id=element_id, engine=engine)
 

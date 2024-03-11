@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Implementation of DatapinLink."""
+"""Defines the datapin link."""
 import ansys.api.modelcenter.v0.element_messages_pb2 as elem_msg
 import ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc as grpc_mcd_workflow
 import ansys.api.modelcenter.v0.workflow_messages_pb2 as workflow_msg
@@ -31,17 +31,17 @@ from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_erro
 
 
 class DatapinLink(wfapi.IDatapinLink):
-    """A link between datapins in a workflow.
+    """Defines a link between the datapins in the workflow.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object from
-        an instantiated ``Engine``, and use it to get a valid instance of this object.
+        an instantiated ``Engine`` instance and use it to get a valid instance of this object.
     """
 
     def __init__(
         self, stub: grpc_mcd_workflow.ModelCenterWorkflowServiceStub, lhs_id: str, rhs: str
     ):
-        """Construct a new instance.
+        """Construct an instance.
 
         Parameters
         ----------
@@ -69,7 +69,7 @@ class DatapinLink(wfapi.IDatapinLink):
         request.target_var.id_string = self._lhs_id
         response: workflow_msg.WorkflowBreakLinkResponse = self._stub.WorkflowBreakLink(request)
         if not response.existed:
-            raise ValueError("Target id does not exist.")
+            raise ValueError("Target ID does not exist.")
 
     @interpret_rpc_error()
     def _do_suspend_or_resume(self, suspend: bool) -> None:

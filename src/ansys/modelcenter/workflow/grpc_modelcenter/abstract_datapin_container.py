@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines an abstract base class for elements that return child variables and
-groups."""
+"""Defines the abstract base class for the datapin container."""
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Mapping
@@ -43,8 +42,10 @@ from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_erro
 
 
 class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, ABC):
-    """Abstract base class for elements that return child variables and
-    groups."""
+    """Defines the abstract base class for the datapin container.
+
+    A datapin container returns child variables and groups.
+    """
 
     @abstractmethod
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
@@ -65,14 +66,14 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
         """
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
-        """Initialize a new instance.
+        """Initialize an instance.
 
         Parameters
         ----------
         element_id : ElementId
-            ID of the group this object represents in ModelCenter.
+            ID of the group that the object represents in ModelCenter.
         engine : Engine
-            ``Engine`` that created this datapin.
+            Engine that created the datapin
         """
         super(AbstractGRPCDatapinContainer, self).__init__(element_id=element_id, engine=engine)
 
@@ -80,7 +81,7 @@ class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, 
     @overrides
     def get_groups(self) -> Mapping[str, mc_api.IGroup]:
         # LTTODO: alter gRPC response so that short names are included in the first place.
-        """Get the child groups of this element."""
+        """Get the child groups of the element."""
         result = self._client.RegistryGetGroups(self._element_id)
         one_element_id: ElementId
         groups = [self._create_group(one_element_id) for one_element_id in result.ids]
