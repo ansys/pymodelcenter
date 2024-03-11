@@ -21,8 +21,8 @@
 # SOFTWARE.
 """Contains utilities for a ModelCenter Desktop process.
 
-Methods provide for finding, tracking, and starting a ModelCenter Desktop
-process.
+Methods provide for finding, tracking, and starting a ModelCenter
+Desktop process.
 """
 from io import TextIOWrapper
 from pathlib import Path
