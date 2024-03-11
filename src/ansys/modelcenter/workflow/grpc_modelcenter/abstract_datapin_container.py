@@ -44,8 +44,9 @@ from .grpc_error_interpretation import WRAP_TARGET_NOT_FOUND, interpret_rpc_erro
 
 class AbstractGRPCDatapinContainer(AbstractWorkflowElement, mc_api.IGroupOwner, ABC):
     """Defines the abstract base class for the datapin container.
-    
-    A datapin container returns child variables and groups."""
+
+    A datapin container returns child variables and groups.
+    """
 
     @abstractmethod
     def _create_group(self, element_id: ElementId) -> mc_api.IGroup:
