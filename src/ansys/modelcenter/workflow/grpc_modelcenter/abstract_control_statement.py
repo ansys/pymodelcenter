@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains an abstract base class for control statement implementations."""
+"""Defines the abstract base class for control statement implementations."""
 
 from abc import ABC
 from typing import TYPE_CHECKING, Mapping
@@ -49,8 +49,9 @@ class AbstractControlStatement(
     aew_api.IControlStatement,
     ABC,
 ):
-    """Defines an abstract base class for control statements (driver components
-    and assemblies).
+    """Defines an abstract base class for control statements.
+    
+    Control statements include driver components and assemblies.
 
     .. note::
         This class should not be directly instantiated by clients. Get a ``Workflow`` object

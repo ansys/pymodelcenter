@@ -63,7 +63,7 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
         element_id : ElementId
             ID of the group that the object represents in ModelCenter.
         engine : Engine
-            Engine that is to create the element.
+            Engine that created the element.
         """
         self._engine = engine
         self._client: ModelCenterWorkflowServiceStub = self._create_client(engine.channel)
@@ -143,8 +143,7 @@ class AbstractWorkflowElement(aew_api.IElement, ABC):
 
 
 class UnsupportedWorkflowElement(AbstractWorkflowElement):
-    """Represents a workflow element that is known to exist but whose type is
-    not supported."""
+    """Represents a known workflow element whose type is not supported."""
 
     def __init__(self, element_id: ElementId, engine: "Engine"):
         """Initialize an instance.
@@ -154,6 +153,6 @@ class UnsupportedWorkflowElement(AbstractWorkflowElement):
         element_id : ElementId
             ID of the element that the object represents in ModelCenter.
         engine : Engine
-            Engine that is to create the element.
+            Engine that created the element.
         """
         super(UnsupportedWorkflowElement, self).__init__(element_id=element_id, engine=engine)

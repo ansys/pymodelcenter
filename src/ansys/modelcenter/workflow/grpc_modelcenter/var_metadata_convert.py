@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines functions for converting between ACVI metadata and gRPC messages."""
+"""Defines functions for converting between ACVI metadata and a gRPC message."""
 from typing import Union
 
 from ansys.api.modelcenter.v0.variable_value_messages_pb2 import (

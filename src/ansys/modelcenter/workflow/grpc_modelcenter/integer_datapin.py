@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definitions for the ``IntegerDatapin`` and ``IntegerArray``
-classes."""
+"""Contains the definitions for integer datapin classes.
+
+These classes include ``IntegerDatapin`` and ``IntegerArray``.
+"""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi

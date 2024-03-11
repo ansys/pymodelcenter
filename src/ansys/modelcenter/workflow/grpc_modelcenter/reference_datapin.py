@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definitions for the ``ReferenceDatapin`` and
-``ReferenceArrayDatapin`` classes."""
+"""Contains the definitions for referene datapin claseses.
+
+These classes include ``ReferenceDatapin`` and ``ReferenceArrayDatapin``.
+"""
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Union, overload
 

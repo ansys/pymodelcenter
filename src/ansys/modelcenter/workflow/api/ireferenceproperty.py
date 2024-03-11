@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains definitions for reference properties and the datapins that own
-them."""
+"""Contains definitions for reference properties and the owning datapins."""
 
 from abc import ABC, abstractmethod
 from typing import Mapping
@@ -29,8 +28,11 @@ import ansys.tools.variableinterop as atvi
 
 
 class IReferencePropertyBase(ABC):
-    """Defines common methods for the ``IReferenceProperty`` and
-    ``IReferenceArrayProperty`` classes."""
+    """Defines common methods for IReference property classes.
+    
+    ``IReference`` property classes include ``IReferenceProperty`` and
+    ``IReferenceArrayProperty``.
+    """
 
     @abstractmethod
     def get_value_type(self) -> atvi.VariableType:
@@ -153,8 +155,7 @@ class IReferenceArrayProperty(IReferencePropertyBase, ABC):
 
 
 class IReferencePropertyManager(ABC):
-    """Defines utility methods for getting reference properties from reference
-    datapins."""
+    """Defines utility methods for getting reference properties."""
 
     @abstractmethod
     def get_reference_properties(self) -> Mapping[str, IReferencePropertyBase]:

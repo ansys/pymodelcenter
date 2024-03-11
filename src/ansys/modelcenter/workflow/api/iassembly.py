@@ -105,8 +105,7 @@ class IAssembly(
         av_pos: Optional[Tuple[int, int]] = None,
         assembly_type: Optional[AssemblyType] = None,
     ) -> "IAssembly":
-        """Create a subassembly in the current assembly with a specific type
-        and position.
+        """Create a subassembly with a specific type and position.
 
         Parameters
         ----------
@@ -144,10 +143,10 @@ class IAssembly(
 
     @abstractmethod
     def delete_datapin(self, name: str) -> bool:
-        """Delete a specified datapin.
+        """Delete a given datapin.
 
-        Variable objects that represent the specified datapin become invalid.
-        If there is no datapin with the specified name, no error is raised.
+        Variable objects that represent the given datapin become invalid.
+        If there is no datapin with the given name, no error is raised.
 
         Parameters
         ----------
@@ -157,6 +156,6 @@ class IAssembly(
         Returns
         -------
         bool
-            ``True`` if the specified datapin was located and deleted,
+            ``True`` if the given datapin was located and deleted,
             ``False`` if it was not and no action was taken.
         """

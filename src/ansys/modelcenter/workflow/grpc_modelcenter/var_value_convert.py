@@ -19,8 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains methods for converting between gRPC messages and Ansys Common
-Variable Interop's IVariableValue."""
+"""Defines methods for converting between a gRPC message and an IVariableValue.
+
+For more information, see `IVariableValue <https://variableinterop.docs.pyansys.com/version/stable/api/ansys/tools/variableinterop/variable_value/IVariableValue.html#ivariablevalue>`_
+in the *PyAnsys Tools Variable Interop documentation*.
+"""
 
 from contextlib import ExitStack
 from typing import Optional

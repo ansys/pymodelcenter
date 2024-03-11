@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definitions for the ``BooleanDatapin`` and
-``BooleanArrayDatapin`` classes."""
+"""Contains the definitions for Boolean datapin classes.
+
+These classes include ``BooleanDatapin`` and ``BooleanArrayDatapin``.
+"""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi

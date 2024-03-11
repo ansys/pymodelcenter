@@ -19,8 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines a decorator and standard exception types for interpreting errors
-from the gRPC client."""
+"""Defines the decorator and standard exception types.
+
+The decorator and exceptons types interpret errors from the gRPC client."""
 
 import functools
 from typing import Any, Mapping, Type
@@ -30,8 +31,7 @@ import grpc
 
 
 class UnexpectedEngineError(Exception):
-    """Raised when the gRPC client raises an error that is unexpected for the
-    call that was made.
+    """Raised when an error that is unexpected for the call is made.
 
     Note that this does not necessarily mean that the gRPC client raised
     an error with the code UNKNOWN or INTERNAL, just that the code
@@ -61,8 +61,7 @@ class UnexpectedEngineError(Exception):
 
 
 class EngineDisconnectedError(Exception):
-    """Raised when the gRPC client indicates that the ModelCenter service is
-    not available."""
+    """Raised when the ModelCenter service is not available."""
 
     def __init__(self, message: str):
         """Initialize an instance.
@@ -79,8 +78,7 @@ class EngineDisconnectedError(Exception):
 
 
 class InvalidInstanceError(Exception):
-    """Raised when a gRPC error indicates that the target element ID is no
-    longer valid."""
+    """Raised when the target element ID is no longer valid."""
 
     def __init__(self, message: str):
         """Initialize an instance.
@@ -97,8 +95,7 @@ class InvalidInstanceError(Exception):
 
 
 class ValueOutOfRangeError(ValueError):
-    """Raised when a gRPC error indicates that an argument value is out of
-    range."""
+    """Raised when an argument value is out of range."""
 
     ...
 

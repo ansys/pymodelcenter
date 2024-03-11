@@ -99,7 +99,7 @@ class IWorkflow(aew_api.IWorkflowInstance, ABC):
 
     @abstractmethod
     def create_link(self, datapin: Union[IDatapin, str], equation: Union[str, IDatapin]) -> None:
-        """Create a link to a specified datapin based on a specified equation.
+        """Create a link to a given datapin based on a given equation.
 
         Parameters
         ----------

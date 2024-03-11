@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains the definitions for the ``StringDatapin`` and
-``StringArrayDatapin`` classes."""
+"""Contains the definitions for string datapin classes.
+
+These classes include ``StringDatapin`` and ``StringArrayDatapin``.
+"""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi

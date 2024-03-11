@@ -33,7 +33,7 @@ class IGroupOwner(IDatapinContainer, ABC):
 
     @abstractmethod
     def get_groups(self) -> Mapping[str, IGroup]:
-        """Get the groups that this item contains."""
+        """Get the groups that the item contains."""
 
 
 class IGroup(IGroupOwner, ABC):

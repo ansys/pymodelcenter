@@ -34,11 +34,16 @@ class WorkflowType(Enum):
     """Enumeration of the types of workflows that can be created."""
 
     DATA = ("dataModel",)
-    """Legacy style workflow where execution flow is determined from links
-    between components and an execution strategy."""
+    """Legacy style workflow where execution flow is determined from links.
+
+    The links between components and an execution strategy determine the
+    workflow.
+    """
     PROCESS = "processModel"
-    """Modern style workflow where execution flow is explicitly designed by the
-    user using flow components."""
+    """Modern style workflow where execution flow is explicitly designed.
+
+    You deinfe the execution flow using flow components.
+    """
 
 
 class IEngine(IFileBasedWorkflowEngine, ABC):

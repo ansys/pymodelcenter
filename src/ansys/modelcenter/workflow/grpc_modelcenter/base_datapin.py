@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Provides an object-oriented way to interact with ModelCenter variables with
-gRPC."""
+"""Provides for interacting with ModelCenter variables with gRPC.
+
+This interaction is handled in an object-oriented way.
+"""
 from abc import ABC
 from typing import TYPE_CHECKING, Collection, Optional
 

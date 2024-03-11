@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines the function for creating a datapin object given a type and gRPC
-information."""
+"""Defines the function for creating a datapin object.
+
+Creation requres a given datapin type and gRPC information.
+"""
 from typing import TYPE_CHECKING
 
 from ansys.api.modelcenter.v0.variable_value_messages_pb2 import VariableType

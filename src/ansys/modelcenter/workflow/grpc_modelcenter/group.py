@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Provides an object-oriented way to interact with ModelCenter datapin groups
-with gRPC."""
+"""Provides for interacting with ModelCenter datapin groups with gRPC.
+
+This interaction is handled in an object-oriented way.
+"""
 from typing import TYPE_CHECKING
 
 from overrides import overrides

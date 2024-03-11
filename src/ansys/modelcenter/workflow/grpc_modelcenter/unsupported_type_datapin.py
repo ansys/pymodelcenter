@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Contains classes for representing variables that exist in ModelCenter with
-unsupported state types."""
+"""Contains classes for representing variables with unsupported state types."""
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi

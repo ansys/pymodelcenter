@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Defines a reusable implementation for renaming an element with a gRPC
-client."""
+"""Defines the implementation for renaming an element with a gRPC client.
+
+This implementation is reusable.
+"""
 from abc import ABC
 from typing import TYPE_CHECKING
 
@@ -53,7 +55,7 @@ class AbstractRenamableElement(abstract_wfe.AbstractWorkflowElement, mc_api.IRen
         ----------
         element_id : ElementId
             ID of the group that the object represents in ModelCenter.
-        engine: Engine that is to create the element.
+        engine: Engine that created the element.
         """
         super(AbstractRenamableElement, self).__init__(element_id=element_id, engine=engine)
 

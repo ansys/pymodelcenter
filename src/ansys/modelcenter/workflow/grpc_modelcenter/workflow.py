@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Implements the ``Workflow`` class."""
+"""Defines the workflow."""
 from contextlib import ExitStack
 import os
 from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
