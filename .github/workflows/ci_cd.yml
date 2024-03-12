@@ -22,16 +22,6 @@ env:
   DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
   
 jobs:
-  code-style:
-    name: "Code style"
-    runs-on: ubuntu-latest
-    steps:
-      - name: PyAnsys code style checks
-        uses: ansys/actions/code-style@v5
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-
   doc-style:
     name: "Documentation Style Check"
     runs-on: ubuntu-latest
@@ -46,7 +36,6 @@ jobs:
   smoke-tests:
     name: "Build and Smoke tests"
     runs-on: ${{ matrix.os }}
-    needs: [code-style]
     strategy:
       fail-fast: false
       matrix:
@@ -87,34 +76,28 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: "Create Python venv and activate it"
-        run: |
-          python -m venv .venv
-          .\.venv\Scripts\Activate.ps1
-
       - name: "Install packages for testing"
         run: |
-          .\.venv\Scripts\Activate.ps1
           pip install --upgrade pip
           pip install .[tests]
 
       - name: "Testing"
-        run: |
-          .\.venv\Scripts\Activate.ps1
-          pytest -v
+        run: pytest -v
   
       - name: "Upload coverage artifacts"
         uses: actions/upload-artifact@v4
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION
         with:
           name: coverage-html
-          path: htmlcov
+          path: .cov/html
           retention-days: 7
 
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v4
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          files: .cov/xml
 
 
   doc-build:
@@ -127,58 +110,6 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           dependencies: "texlive-fonts-extra "
-
-  
-  # doc-build:
-  #   name: "Documentation building"
-  #   runs-on: windows-latest
-  #   needs: [doc-style]
-  #   steps:
-  #     - name: "Install Git and checkout project"
-  #       uses: actions/checkout@v4
-
-  #     - name: "Setup Python"
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-  #     - name: "Create Python venv and activate it"
-  #       run: |
-  #         python -m venv .venv
-  #         .\.venv\Scripts\Activate.ps1
-
-  #     - name: "Install packages for documentation build"
-  #       run: |
-  #         .\.venv\Scripts\Activate.ps1
-  #         pip install --upgrade pip
-  #         pip install .[doc]
-
-  #     - name: "Build the documentation (HTML)"
-  #       run: |
-  #         .\.venv\Scripts\Activate.ps1
-  #         cd doc
-  #         .\make.bat html
-  
-  #     - name: "Build the documentation (PDF)"
-  #       run: |
-  #         .\.venv\Scripts\Activate.ps1
-  #         cd doc
-  #         .\make.bat pdf
-  
-  #     - name: "Upload HTML documentation"
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: documentation-html
-  #         path: doc/_build/html
-  #         retention-days: 7
-  
-  #     - name: "Upload PDF documentation"
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: documentation-pdf
-  #         path: doc/_build/latex/ansys-modelcenter-workflow*.pdf
-  #         retention-days: 7
-
 
   package:
     name: "Package library"
