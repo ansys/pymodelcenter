@@ -97,6 +97,7 @@ jobs:
   
       - name: "Upload coverage artifacts"
         uses: actions/upload-artifact@v4
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION
         with:
           name: coverage-html
           path: .cov/html
@@ -104,6 +105,7 @@ jobs:
 
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v4
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: .cov/xml
