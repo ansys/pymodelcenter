@@ -46,18 +46,18 @@ Documentation and issues
 ------------------------
 
 Documentation for the latest stable release of Ansys ModelCenter Workflow is hosted
-at `Ansys ModelCenter Workflow documentation <https://modelcenter.docs.pyansys.com/version/dev/>`_.
+at `Ansys ModelCenter Workflow documentation <https://modelcenter.docs.pyansys.com/version/stable/>`_.
 
 The documentation has four sections:
 
-- `Getting started <https://modelcenter.docs.pyansys.com/version/dev/getting_started/index.html>`_: Learn
+- `Getting started <https://modelcenter.docs.pyansys.com/version/stable/getting_started/index.html>`_: Learn
   how to install Ansys ModelCenter Workflow.
-- `User guide <https://modelcenter.docs.pyansys.com/version/dev/user_guide/index.html>`_: Understand how to
+- `User guide <https://modelcenter.docs.pyansys.com/version/stable/user_guide/index.html>`_: Understand how to
   use Ansys ModelCenter Workflow to create and run workflows.
-- `API reference <https://rocky.docs.pyansys.com/version/dev/api/index.html>`_: Understand how to use Python
+- `API reference <https://rocky.docs.pyansys.com/version/stable/api/index.html>`_: Understand how to use Python
   to interact programmatically with Ansys ModelCenter.
   Workflow API endpoints and how to use them to interact programmatically.
-- `Contribute <https://modelcenter.docs.pyansys.com/version/dev/contributing/index.html>`_: Learn how to
+- `Contribute <https://modelcenter.docs.pyansys.com/version/stable/contributing/index.html>`_: Learn how to
   contribute to the Ansys ModelCenter Workflow codebase or documentation.
 
 In the upper right corner of the documentation's title bar, there is an option
