@@ -6,8 +6,8 @@ Ansys ModelCenter Workflow
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/badge/Python-%3E%3D3.9-blue
-   :target: https://pypi.org/project/py-cam-client/
+.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-modelcenter-workflow?logo=pypi
+   :target: https://pypi.org/project/ansys-modelcenter-workflow/
    :alt: Python
 
 .. |pypi| image:: https://img.shields.io/pypi/v/ansys-modelcenter-workflow.svg?logo=python&logoColor=white
