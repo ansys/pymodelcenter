@@ -39,5 +39,4 @@ class IReferenceDatapin(IDatapin, IDatapinReferenceBase, IReferencePropertyManag
 
     @abstractmethod
     @overrides
-    def get_reference_properties(self) -> Mapping[str, IReferenceProperty]:
-        ...
+    def get_reference_properties(self) -> Mapping[str, IReferenceProperty]: ...

@@ -33,5 +33,4 @@ class IRealArrayDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> atvi.RealArrayMetadata:
-        ...  # pragma: no cover
+    def get_metadata(self) -> atvi.RealArrayMetadata: ...  # pragma: no cover

@@ -134,9 +134,11 @@ class Assembly(
         request = AddAssemblyRequest(
             name=ElementName(name=name),
             parent=self._element_id,
-            assembly_type=assembly_type.value
-            if assembly_type is not None
-            else mc_api.AssemblyType.ASSEMBLY.value,
+            assembly_type=(
+                assembly_type.value
+                if assembly_type is not None
+                else mc_api.AssemblyType.ASSEMBLY.value
+            ),
         )
         if av_pos is not None:
             (x_pos, y_pos) = av_pos

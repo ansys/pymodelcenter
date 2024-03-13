@@ -33,5 +33,4 @@ class IFileArrayDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> atvi.FileArrayMetadata:
-        ...  # pragma: no cover
+    def get_metadata(self) -> atvi.FileArrayMetadata: ...  # pragma: no cover

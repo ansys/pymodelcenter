@@ -1,4 +1,5 @@
 """Integration tests around Component functionality."""
+
 from typing import AbstractSet, Mapping
 
 from ansys.engineeringworkflow.api import Property
