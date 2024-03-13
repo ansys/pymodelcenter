@@ -1,4 +1,5 @@
 """Shared test fixtures for the integration tests."""
+
 import os
 from typing import Generator
 

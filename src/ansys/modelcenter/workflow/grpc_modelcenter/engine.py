@@ -236,9 +236,11 @@ class Engine(IEngine):
     def new_workflow(self, name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> Workflow:
         request = eng_msg.NewWorkflowRequest(
             path=name,
-            workflow_type=eng_msg.WORKFLOW_TYPE_DATA_DEPENDENCY
-            if workflow_type is WorkflowType.DATA
-            else eng_msg.WORKFLOW_TYPE_PROCESS,
+            workflow_type=(
+                eng_msg.WORKFLOW_TYPE_DATA_DEPENDENCY
+                if workflow_type is WorkflowType.DATA
+                else eng_msg.WORKFLOW_TYPE_PROCESS
+            ),
         )
         response: eng_msg.NewWorkflowResponse = self._stub.EngineCreateWorkflow(request)
         return Workflow(response.workflow_id, name, self)
@@ -256,9 +258,11 @@ class Engine(IEngine):
     ) -> Workflow:
         request = eng_msg.LoadWorkflowRequest(
             path=str(file_name),
-            connect_err_mode=eng_msg.OnConnectionErrorMode.ON_CONNECTION_ERROR_MODE_IGNORE
-            if ignore_connection_errors
-            else eng_msg.ON_CONNECTION_ERROR_MODE_RAISE_ERROR,
+            connect_err_mode=(
+                eng_msg.OnConnectionErrorMode.ON_CONNECTION_ERROR_MODE_IGNORE
+                if ignore_connection_errors
+                else eng_msg.ON_CONNECTION_ERROR_MODE_RAISE_ERROR
+            ),
         )
         response: eng_msg.LoadWorkflowResponse = self._stub.EngineLoadWorkflow(request)
         return Workflow(response.workflow_id, request.path, self)
