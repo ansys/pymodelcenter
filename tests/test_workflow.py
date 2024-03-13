@@ -866,9 +866,11 @@ def test_create_component(setup_function, should_be_driver: bool) -> None:
             ),
             wkf_msgs.ElementInfo(
                 id=elem_msgs.ElementId(id_string="zxcv"),
-                type=elem_msgs.ELEMENT_TYPE_DRIVERCOMPONENT
-                if should_be_driver
-                else elem_msgs.ELEMENT_TYPE_COMPONENT,
+                type=(
+                    elem_msgs.ELEMENT_TYPE_DRIVERCOMPONENT
+                    if should_be_driver
+                    else elem_msgs.ELEMENT_TYPE_COMPONENT
+                ),
             ),
             wkf_msgs.ElementInfo(
                 id=elem_msgs.ElementId(id_string="also_not_just_created"),

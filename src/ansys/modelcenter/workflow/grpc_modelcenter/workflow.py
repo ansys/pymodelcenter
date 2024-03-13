@@ -382,9 +382,11 @@ class Workflow(wfapi.IWorkflow):
         request = element_msg.AddAssemblyRequest(
             name=element_msg.ElementName(name=name),
             av_pos=None,
-            assembly_type=assembly_type.value
-            if assembly_type is not None
-            else wfapi.AssemblyType.ASSEMBLY.value,
+            assembly_type=(
+                assembly_type.value
+                if assembly_type is not None
+                else wfapi.AssemblyType.ASSEMBLY.value
+            ),
         )
         if parent is not None:
             if isinstance(parent, str):

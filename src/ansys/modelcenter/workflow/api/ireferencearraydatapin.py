@@ -52,8 +52,7 @@ class IReferenceArrayDatapin(
 
     @abstractmethod
     @overrides
-    def get_reference_properties(self) -> Mapping[str, IReferenceArrayProperty]:
-        ...
+    def get_reference_properties(self) -> Mapping[str, IReferenceArrayProperty]: ...
 
     @abstractmethod
     def set_length(self, new_size: int) -> None:

@@ -33,5 +33,4 @@ class IBooleanArrayDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> atvi.BooleanMetadata:
-        ...  # pragma: no cover
+    def get_metadata(self) -> atvi.BooleanMetadata: ...  # pragma: no cover

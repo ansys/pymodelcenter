@@ -1,4 +1,5 @@
 """Integration tests around Format functionality."""
+
 from numpy import float64
 
 import ansys.modelcenter.workflow.api as mcapi

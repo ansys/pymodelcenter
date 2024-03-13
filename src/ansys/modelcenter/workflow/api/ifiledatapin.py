@@ -33,5 +33,4 @@ class IFileDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> atvi.FileMetadata:
-        ...  # pragma: no cover
+    def get_metadata(self) -> atvi.FileMetadata: ...  # pragma: no cover

@@ -33,5 +33,4 @@ class IIntegerDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> atvi.IntegerMetadata:
-        ...  # pragma: no cover
+    def get_metadata(self) -> atvi.IntegerMetadata: ...  # pragma: no cover

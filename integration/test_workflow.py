@@ -1,4 +1,5 @@
 """Integration tests around Workflow functionality."""
+
 import os
 import tempfile
 import time
@@ -103,7 +104,9 @@ def test_getting_and_setting_a_datapin_value(workflow) -> None:
 
 def test_getting_a_datapin_and_its_metadata(workflow) -> None:
     # Act
-    datapin: mcapi.IDatapin = workflow.get_datapin(name="ワークフロー.all_types_コンポーネント.realIn")
+    datapin: mcapi.IDatapin = workflow.get_datapin(
+        name="ワークフロー.all_types_コンポーネント.realIn"
+    )
     metadata: atvi.CommonVariableMetadata = workflow.get_datapin_meta_data(
         name="ワークフロー.all_types_コンポーネント.realIn"
     )
@@ -116,7 +119,8 @@ def test_getting_a_datapin_and_its_metadata(workflow) -> None:
 def test_creating_and_getting_links(workflow) -> None:
     # Act
     workflow.create_link(
-        datapin="ワークフロー.all_types_コンポーネント.realIn", equation="ワークフロー.all_types_コンポーネント.intIn"
+        datapin="ワークフロー.all_types_コンポーネント.realIn",
+        equation="ワークフロー.all_types_コンポーネント.intIn",
     )
     links: List[mcapi.IDatapinLink] = list(workflow.get_links())
 

@@ -33,5 +33,4 @@ class IStringDatapin(IDatapin, ABC):
 
     @overrides
     @abstractmethod
-    def get_metadata(self) -> atvi.StringMetadata:
-        ...  # pragma: no cover
+    def get_metadata(self) -> atvi.StringMetadata: ...  # pragma: no cover
