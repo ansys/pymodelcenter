@@ -41,7 +41,6 @@ html_short_title = html_title = "PyAnsys ModelCenter Workflow"
 # specify the location of your github repo
 html_theme_options = {
     "github_url": f"https://github.com/ansys/{REPOSITORY_NAME}",
-    "check_switcher": False,
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "collapse_navigation": True,
