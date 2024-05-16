@@ -54,7 +54,7 @@ The documentation has four sections:
   how to install Ansys ModelCenter Workflow.
 - `User guide <https://modelcenter.docs.pyansys.com/version/stable/user_guide/index.html>`_: Understand how to
   use Ansys ModelCenter Workflow to create and run workflows.
-- `API reference <https://rocky.docs.pyansys.com/version/stable/api/index.html>`_: Understand how to use Python
+- `API reference <https://modelcenter.docs.pyansys.com/version/stable/api/index.html>`_: Understand how to use Python
   to interact programmatically with Ansys ModelCenter.
   Workflow API endpoints and how to use them to interact programmatically.
 - `Contribute <https://modelcenter.docs.pyansys.com/version/stable/contributing/index.html>`_: Learn how to
