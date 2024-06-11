@@ -1,0 +1,97 @@
+
+
+
+
+
+The ``unsupported_type_datapin.py`` module
+==========================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: unsupported_type_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~UnsupportedTypeDatapin`
+            - Represents a datapin with an unsupported datatype.
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~DatapinWithUnsupportedTypeException`
+            - Raised if attempting to interact with a datapin of an unsupported
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 UnsupportedTypeDatapin<UnsupportedTypeDatapin>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🗲 DatapinWithUnsupportedTypeException<DatapinWithUnsupportedTypeException>
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains classes for representing variables with unsupported state types.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

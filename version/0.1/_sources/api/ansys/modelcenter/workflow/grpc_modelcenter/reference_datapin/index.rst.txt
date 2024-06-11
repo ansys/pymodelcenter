@@ -1,0 +1,102 @@
+
+
+
+
+
+The ``reference_datapin.py`` module
+===================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: reference_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~ReferenceArrayDatapinElement`
+            - Represents a single element in an reference array datapin.
+
+
+          * - :py:attr:`~ReferenceDatapinBase`
+            - Defines the base class for reference datapins.
+
+
+          * - :py:attr:`~ReferenceDatapin`
+            - Represents a reference datapin.
+
+
+          * - :py:attr:`~ReferenceArrayDatapin`
+            - Represents a reference array datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 ReferenceArrayDatapinElement<ReferenceArrayDatapinElement>
+    🝆 ReferenceDatapinBase<ReferenceDatapinBase>
+    🝆 ReferenceDatapin<ReferenceDatapin>
+    🝆 ReferenceArrayDatapin<ReferenceArrayDatapin>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the reference datapin classes.
+
+These classes include ``ReferenceDatapin`` and ``ReferenceArrayDatapin``.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

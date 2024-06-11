@@ -1,0 +1,79 @@
+
+
+
+
+
+The ``idrivercomponent.py`` module
+==================================
+
+.. py:module:: ansys.modelcenter.workflow.api.idrivercomponent
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: idrivercomponent
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IDriverComponent`
+            - Represents a driver component in a workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IDriverComponent<IDriverComponent>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains the interface for driver components.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+
