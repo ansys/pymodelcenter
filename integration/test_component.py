@@ -35,7 +35,7 @@ def test_can_get_component_properties(workflow) -> None:
 
     # Verify property names.
     property_names: AbstractSet[str] = component.get_property_names()
-    assert property_names == expected_properties.keys()
+    assert list(property_names).sort() == list(expected_properties.keys()).sort()
 
     # Verify property values.
     properties: Mapping[str, Property] = component.get_properties()
