@@ -777,7 +777,7 @@ def test_getting_non_double_reference_array_values_gets_nan(workflow) -> None:
     # Assert
     assert numpy.array_equal(
         state_result.value,
-        atvi.RealArrayValue(values=[numpy.NAN, numpy.NAN, numpy.NAN, numpy.NAN]),
+        atvi.RealArrayValue(values=[numpy.nan, numpy.nan, numpy.nan, numpy.nan]),
         equal_nan=True,
     )
 
