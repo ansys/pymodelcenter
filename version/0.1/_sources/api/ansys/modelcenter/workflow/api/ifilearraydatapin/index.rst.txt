@@ -1,0 +1,79 @@
+
+
+
+
+
+The ``ifilearraydatapin.py`` module
+===================================
+
+.. py:module:: ansys.modelcenter.workflow.api.ifilearraydatapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ifilearraydatapin
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IFileArrayDatapin`
+            - Represents a file datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IFileArrayDatapin<IFileArrayDatapin>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the array file datapin.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

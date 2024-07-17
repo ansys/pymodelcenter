@@ -1,0 +1,206 @@
+
+
+
+
+
+The ``api`` package 
+=======================
+
+.. py:module:: ansys.modelcenter.workflow.api
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: api
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.iassembly`
+            - Contains definitions for assemblies.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.ibooleanarraydatapin`
+            - Defines the Boolean array datapin.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.ibooleandatapin`
+            - Defines the Boolean datapin.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.icomponent`
+            - Defines the component.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.idatapin`
+            - Contains the common base class for all variables.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.idatapin_link`
+            - Contains the interface for working with variable links in the workflow.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.idatapinreferencebase`
+            - Defines the base class for reference datapins.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.idrivercomponent`
+            - Contains the interface for driver components.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.iengine`
+            - Defines the engine and associated classes.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.ifilearraydatapin`
+            - Defines the array file datapin.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.ifiledatapin`
+            - Defines the scalar file datapin.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.iformat`
+            - Defines the format.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.igroup`
+            - Defines a group of variables.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.iintegerarraydatapin`
+            - Defines the integer array variable.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.iintegerdatapin`
+            - Defines the integer variable.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.irealarraydatapin`
+            - Defines the array of doubles variables.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.irealdatapin`
+            - Defines the doubles variable.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.ireferencearraydatapin`
+            - Defines the reference array datapin.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.ireferencedatapin`
+            - Defines the scalar reference datapin.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.ireferenceproperty`
+            - Contains definitions for reference properties and the owning datapins.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.irenamable_elements`
+            - Contains the interface for workflow elements that can be renamed.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.istringarraydatapin`
+            - Defines the string array variable.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.istringdatapin`
+            - Defines the string variable.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api.iworkflow`
+            - Defines the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🗎 iassembly<iassembly/index.rst>
+    🗎 ibooleanarraydatapin<ibooleanarraydatapin/index.rst>
+    🗎 ibooleandatapin<ibooleandatapin/index.rst>
+    🗎 icomponent<icomponent/index.rst>
+    🗎 idatapin<idatapin/index.rst>
+    🗎 idatapin_link<idatapin_link/index.rst>
+    🗎 idatapinreferencebase<idatapinreferencebase/index.rst>
+    🗎 idrivercomponent<idrivercomponent/index.rst>
+    🗎 iengine<iengine/index.rst>
+    🗎 ifilearraydatapin<ifilearraydatapin/index.rst>
+    🗎 ifiledatapin<ifiledatapin/index.rst>
+    🗎 iformat<iformat/index.rst>
+    🗎 igroup<igroup/index.rst>
+    🗎 iintegerarraydatapin<iintegerarraydatapin/index.rst>
+    🗎 iintegerdatapin<iintegerdatapin/index.rst>
+    🗎 irealarraydatapin<irealarraydatapin/index.rst>
+    🗎 irealdatapin<irealdatapin/index.rst>
+    🗎 ireferencearraydatapin<ireferencearraydatapin/index.rst>
+    🗎 ireferencedatapin<ireferencedatapin/index.rst>
+    🗎 ireferenceproperty<ireferenceproperty/index.rst>
+    🗎 irenamable_elements<irenamable_elements/index.rst>
+    🗎 istringarraydatapin<istringarraydatapin/index.rst>
+    🗎 istringdatapin<istringdatapin/index.rst>
+    🗎 iworkflow<iworkflow/index.rst>
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+Initializes the Ansys ModelCenter Workflow API package.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+

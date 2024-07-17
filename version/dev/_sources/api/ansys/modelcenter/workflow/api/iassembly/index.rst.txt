@@ -1,0 +1,106 @@
+
+
+
+
+
+The ``iassembly.py`` module
+===========================
+
+.. py:module:: ansys.modelcenter.workflow.api.iassembly
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: iassembly
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IAssemblyChild`
+            - Defines methods related to being the child element of an assembly.
+
+
+          * - :py:attr:`~IAssembly`
+            - Represents a ModelCenter assembly.
+
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~AssemblyType`
+            - Represents an allowed assembly type in ModelCenter.
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IAssemblyChild<IAssemblyChild>
+    🝆 IAssembly<IAssembly>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    ≔ AssemblyType<AssemblyType>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains definitions for assemblies.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+
