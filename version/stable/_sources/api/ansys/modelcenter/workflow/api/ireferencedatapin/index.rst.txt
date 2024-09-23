@@ -1,0 +1,79 @@
+
+
+
+
+
+The ``ireferencedatapin.py`` module
+===================================
+
+.. py:module:: ansys.modelcenter.workflow.api.ireferencedatapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ireferencedatapin
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IReferenceDatapin`
+            - Represents a reference datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IReferenceDatapin<IReferenceDatapin>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the scalar reference datapin.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

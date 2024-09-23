@@ -1,0 +1,79 @@
+
+
+
+
+
+The ``istringdatapin.py`` module
+================================
+
+.. py:module:: ansys.modelcenter.workflow.api.istringdatapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: istringdatapin
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IStringDatapin`
+            - Represents a string datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IStringDatapin<IStringDatapin>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the string variable.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

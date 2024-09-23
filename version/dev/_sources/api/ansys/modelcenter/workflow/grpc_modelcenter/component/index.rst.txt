@@ -1,0 +1,102 @@
+
+
+
+
+
+The ``component.py`` module
+===========================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.component
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: component
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~Component`
+            - Defines the component in the workflow.
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~ComponentReconnectionFailedError`
+            - Raised if a component reconnection fails.
+
+
+          * - :py:attr:`~ComponentDownloadValuesFailedError`
+            - Raised if downloading a component's values fails.
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 Component<Component>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🗲 ComponentReconnectionFailedError<ComponentReconnectionFailedError>
+    🗲 ComponentDownloadValuesFailedError<ComponentDownloadValuesFailedError>
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the component.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

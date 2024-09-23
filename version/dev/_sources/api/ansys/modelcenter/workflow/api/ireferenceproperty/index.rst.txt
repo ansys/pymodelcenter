@@ -1,0 +1,100 @@
+
+
+
+
+
+The ``ireferenceproperty.py`` module
+====================================
+
+.. py:module:: ansys.modelcenter.workflow.api.ireferenceproperty
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ireferenceproperty
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IReferencePropertyBase`
+            - Defines common methods for IReference property classes.
+
+
+          * - :py:attr:`~IReferenceProperty`
+            - Defines methods for reference properties.
+
+
+          * - :py:attr:`~IReferenceArrayProperty`
+            - Defines methods for reference array properties.
+
+
+          * - :py:attr:`~IReferencePropertyManager`
+            - Defines utility methods for getting reference properties.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IReferencePropertyBase<IReferencePropertyBase>
+    🝆 IReferenceProperty<IReferenceProperty>
+    🝆 IReferenceArrayProperty<IReferenceArrayProperty>
+    🝆 IReferencePropertyManager<IReferencePropertyManager>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains definitions for reference properties and the owning datapins.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+
