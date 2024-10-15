@@ -1,15 +1,37 @@
+# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 ############################################
 # Example of how to create new sequences and arrays
 ############################################
 import os
 
-import numpy as np
 from ansys.tools.variableinterop.variable_state import VariableState
 from ansys.tools.variableinterop.variable_type import VariableType
+import numpy as np
 
 import ansys.modelcenter.workflow.api as mcapi
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 from ansys.modelcenter.workflow.api.iassembly import AssemblyType
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 cwd = os.getcwd()
 workflow_filename = "ExampleSequence.pxcz"
@@ -24,14 +46,12 @@ with grpcmc.Engine() as mc:
         print("Creating sequences...")
         root: grpcmc.Assembly = workflow.get_root()
         pAssembly = workflow.create_assembly(
-            name="NewSequence",
-            parent=root,
-            assembly_type=AssemblyType.SEQUENCE)
+            name="NewSequence", parent=root, assembly_type=AssemblyType.SEQUENCE
+        )
 
         rAssembly = workflow.create_assembly(
-            name="ResultSequence",
-            parent=root,
-            assembly_type=AssemblyType.SEQUENCE)
+            name="ResultSequence", parent=root, assembly_type=AssemblyType.SEQUENCE
+        )
 
         aValue = np.float64([1.0, 2.0, 3.0])
         bValue = np.float64([4.0, 5.0, 6.0])
