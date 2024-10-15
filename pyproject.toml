@@ -38,7 +38,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pre-commit<4"]
 doc=[
     "ansys-engineeringworkflow-api==0.1.0",
     "ansys-sphinx-theme==0.14.0",
