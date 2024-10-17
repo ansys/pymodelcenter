@@ -1,0 +1,93 @@
+
+
+
+
+
+The ``reference_property.py`` module
+====================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.reference_property
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: reference_property
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~ReferencePropertyBase`
+            - Defines the base class for reference properties that define common
+
+
+          * - :py:attr:`~ReferenceProperty`
+            - Represents a reference property.
+
+
+          * - :py:attr:`~ReferenceArrayProperty`
+            - Represents a reference array property.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 ReferencePropertyBase<ReferencePropertyBase>
+    🝆 ReferenceProperty<ReferenceProperty>
+    🝆 ReferenceArrayProperty<ReferenceArrayProperty>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains implementations of reference property-related classes.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

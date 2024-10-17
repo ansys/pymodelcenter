@@ -1,0 +1,81 @@
+
+
+
+
+
+The ``abstract_renamable.py`` module
+====================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: abstract_renamable
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~AbstractRenamableElement`
+            - Defines the implementation for renaming with gRPC.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 AbstractRenamableElement<AbstractRenamableElement>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the implementation for renaming an element with gRPC.
+
+This implementation is reusable.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

@@ -1,0 +1,79 @@
+
+
+
+
+
+The ``irealdatapin.py`` module
+==============================
+
+.. py:module:: ansys.modelcenter.workflow.api.irealdatapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: irealdatapin
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IRealDatapin`
+            - Represents a datapin storing a real on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IRealDatapin<IRealDatapin>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the doubles variable.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

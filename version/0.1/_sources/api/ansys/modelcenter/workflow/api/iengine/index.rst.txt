@@ -1,0 +1,99 @@
+
+
+
+
+
+The ``iengine.py`` module
+=========================
+
+.. py:module:: ansys.modelcenter.workflow.api.iengine
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: iengine
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IEngine`
+            - Manages creating and running engineering workflows.
+
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~WorkflowType`
+            - Enumeration of the types of workflows that can be created.
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IEngine<IEngine>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    ≔ WorkflowType<WorkflowType>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the engine and associated classes.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+
