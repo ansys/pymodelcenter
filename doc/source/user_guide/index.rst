@@ -6,8 +6,8 @@ User guide
 To create and run workflows, you use Ansys ModelCenter Workflow's 
 main ``Engine`` and ``Workflow`` classes.
 
-This code shows how to create a workflow, add a component to it,
-run it, and then save it:
+This code shows a simple example of how to create a workflow, add a
+component to it, run it, and then save it:
 
 .. code:: python
 
@@ -30,3 +30,5 @@ run it, and then save it:
             workflow.save_workflow()
 
             print("Done.")
+
+For more detailed user cases check the files in the /examples folder.
