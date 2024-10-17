@@ -8,12 +8,12 @@ repos:
     - --start_year=2022
 
 - repo: https://github.com/psf/black
-  rev: 24.8.0  # IF VERSION CHANGES --> MODIFY "blacken-docs" MANUALLY AS WELL!!
+  rev: 24.10.0  # IF VERSION CHANGES --> MODIFY "blacken-docs" MANUALLY AS WELL!!
   hooks:
   - id: black
 
 - repo: https://github.com/adamchainz/blacken-docs
-  rev: 1.18.0
+  rev: 1.19.0
   hooks:
   - id: blacken-docs
     additional_dependencies: [black==24.4.2]
@@ -29,7 +29,7 @@ repos:
   - id: flake8
 
 - repo: https://github.com/PyCQA/docformatter
-  rev: v1.7.5
+  rev: eb1df34
   hooks:
   - id: docformatter
     additional_dependencies: [tomli]
@@ -50,6 +50,6 @@ repos:
 
 # this validates our github workflow files
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.29.2
+  rev: 0.29.4
   hooks:
     - id: check-github-workflows
