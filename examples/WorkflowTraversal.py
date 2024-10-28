@@ -31,17 +31,8 @@ cwd = os.getcwd()
 workflow_filename = "TraversalExample.pxcz"
 workflow_path = os.path.join(cwd, workflow_filename)
 
-elementCache = {}
-
 
 def process_element(element):
-    #
-    # Make sure that we only process each element once. This will
-    # short-circuit a bug which causes groups to recurse infinitely.
-    #
-    if element.element_id in elementCache:
-        return
-    elementCache[element.element_id] = element
     name = element.full_name
     is_component = isinstance(element, grpcmc.component.Component)
     is_control = isinstance(element, grpcmc.abstract_control_statement.AbstractControlStatement)
