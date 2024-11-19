@@ -1,14 +1,14 @@
 version: 2
 updates:
 - package-ecosystem: "pip" # See documentation for possible values
-  directory: "pyproject.toml" # Location of package manifests
-  schedule:
-    interval: "weekly"
-  labels:
-    - "maintenance"
-    - "dependencies"
+    directory: "pyproject.toml" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    labels:
+      - "maintenance"
+      - "dependencies"
 
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
-    interval: "weekly"
+    interval: "weekly"ç
