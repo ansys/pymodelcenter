@@ -29,8 +29,7 @@ jobs:
       - name: PyAnsys documentation style checks
         uses: ansys/actions/doc-style@v8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          vale-version: "3.1.0"
+         token: ${{ secrets.GITHUB_TOKEN }}
 
 
   smoke-tests:
