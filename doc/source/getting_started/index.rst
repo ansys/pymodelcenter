@@ -3,7 +3,7 @@
 Getting started
 ===============
 
-Ansys ModelCenter Workflow supports Python 3.9 through 3.12 on Linux, macOS, and Windows.
+Ansys ModelCenter Workflow supports Python 10 through 3.13 on Linux, macOS, and Windows.
 This library has two installation modes: user and developer. The following instructions
 assume that you want to install Ansys ModelCenter Workflow in user mode. If you want to
 contribute to the development of Ansys ModelCenter Workflow, you must install it in developer
