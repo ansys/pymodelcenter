@@ -1,12 +1,14 @@
 version: 2
 updates:
 - package-ecosystem: "pip" # See documentation for possible values
-  directory: "pyproject.toml" # Location of package manifests
+  directory: "/"
   schedule:
     interval: "weekly"
   labels:
     - "maintenance"
     - "dependencies"
+  commit-message:
+      prefix: "build"
 
 - package-ecosystem: "github-actions"
   directory: "/"
