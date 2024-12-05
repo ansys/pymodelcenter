@@ -1,0 +1,117 @@
+
+
+
+
+
+The ``ansys.modelcenter.workflow`` library
+==========================================
+
+.. py:module:: ansys.modelcenter.workflow
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: workflow
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.api`
+            - Initializes the Ansys ModelCenter Workflow API package.
+
+
+          * - :py:attr:`~ansys.modelcenter.workflow.grpc_modelcenter`
+            - Implements a gRPC-based version of the Ansys ModelCenter Workflow API.
+
+
+
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~__version__`
+            - 
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🖿 api<api/index.rst>
+    🖿 grpc_modelcenter<grpc_modelcenter/index.rst>
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+Ansys ModelCenter Workflow is a Python client library for Ansys ModelCenter,
+a suite of products delivering tools for creating and automating engineering
+workflows.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: __version__
+
+
+
