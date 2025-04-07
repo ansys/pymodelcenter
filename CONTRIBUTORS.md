@@ -7,12 +7,13 @@
 ## Individual Contributors
 
 * [Brandon Fairburn](https://github.com/bfairburn-phx)
-* [Gabriel Garcia](https://github.com/ansggarcia)
-* [Mateusz Jasiak](https://github.com/mobigliani)
-* [Camille Latapie](https://github.com/clatapie)
+* [Camille](https://github.com/clatapie)
 * [Cody Leftwich](https://github.com/cleftwich)
-* [Michel Pascale](https://github.com/phx-mpascale)
-* [Roberto Pastor Muela](https://github.com/RobPasMue)
+* [Gabriel Garcia](https://github.com/ansggarcia)
 * [Kathy Pippert](https://github.com/PipKat)
 * [Mark Potter](https://github.com/potterphx)
+* [Mateusz Jasiak](https://github.com/mobigliani)
+* [Michel Pascale](https://github.com/phx-mpascale)
+* [Mike Belcher](https://github.com/mike-belcher)
 * [Nathan Sharp](https://github.com/phxnsharp)
+* [Roberto Pastor Muela](https://github.com/RobPasMue)
