@@ -67,6 +67,7 @@ html_context = {
     "github_repo": REPOSITORY_NAME,
     "github_version": BRANCH,
     "doc_path": DOC_PATH,
+    "pyansys_tags": ['Connect'],
 }
 
 # Sphinx extensions
