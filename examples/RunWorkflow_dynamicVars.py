@@ -1,0 +1,110 @@
+# © 2025 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited
+
+# Description: script loads workflow from specified path (workflowPath), traverses the workflow for all variables and presents to the user, allows user to specify variables and values for modification, run workflow, see result for all variables, save workflow, and close workflow
+
+import sys
+import pprint
+from ansys.tools.variableinterop.scalar_values import RealValue
+from ansys.tools.variableinterop.variable_state import VariableState
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+
+#full path to ModelCenter workflow PXCZ, can modify to desired workflow
+workflowPath = "C:\\Users\\joedward\\Documents\\MC\\brake\\brake.pxcz"
+
+workflowElementsDict = {}
+
+# function to traverse workflow for elements and their properties and values
+def process_element(element, weDict):    
+    name = element.full_name
+    is_component = isinstance(element, grpcmc.component.Component)
+    is_control = isinstance(element, grpcmc.abstract_control_statement.AbstractControlStatement)
+    is_group = isinstance(element, grpcmc.group.Group)
+    if is_control:
+        element_type = element.control_type
+    elif is_group:
+        element_type = "Group"
+    elif is_component:
+        element_type = "Component"
+    else:
+        element_type = "Unknown"
+
+    if is_control:
+        elements = element.get_elements()
+        for key in elements.keys():
+            process_element(elements[key], weDict)
+
+    gr_map = element.get_groups()
+    for key in gr_map.keys():
+        process_element(gr_map[key], weDict)
+
+    dp_map = element.get_datapins()
+    for key in dp_map.keys():
+        dp_name = dp_map[key].full_name
+        is_input = dp_map[key].is_input_to_component
+        dp_type = dp_map[key].value_type.to_display_string()
+        dp_value = dp_map[key].get_state().value
+        
+        weDict[dp_name] = [is_input, dp_type, dp_value, key, name]
+    return weDict         
+
+with grpcmc.Engine() as mc:
+    print(f'\nLoading "{workflowPath}"..')
+    
+    # load existing workflow
+    with mc.load_workflow(workflowPath) as workflow:              
+        # get root and state of workflow
+        workflowRoot = workflow.get_root()
+        workflowState = workflow.get_state()
+        print(f'- workflow loaded') 
+        print(f'- workflow state: {workflowState}\n')
+        
+        # get initial workflow elements and their properties and values
+        workflowElementsDict = process_element(workflowRoot, workflowElementsDict)
+        print("Workflow elements:")
+        print(workflowElementsDict)
+        
+        # prompt user for input variable and value that should be modified, then set in workflow
+        # loop until user inputs "run" to execute the workflow
+        while True:
+            inVarInput = input(f'\nWhich input variable\'s value should be changed (format: model.component.variable, enter "run" to execute the workflow)? ')    
+                        
+            if inVarInput in workflowElementsDict:   
+                inDatapin = workflow.get_datapin(inVarInput)
+                existingInVarVal = inDatapin.get_state().value
+                print(f'- the existing value for "{inVarInput}" is: {existingInVarVal}')                
+                
+                inVarValInput = RealValue(input(f'\nWhat new value should "{inVarInput}" have? ')) 
+                inDatapin.set_state(VariableState(inVarValInput, True))
+                
+                workflowState = workflow.get_state()
+                print(f'- workflow state: {workflowState}')
+            elif inVarInput == "run":
+                print("\nRunning workflow..")
+                break
+            else:
+                print(f'- "{inVarInput}" does not match the required format or is not a workflow variable, please try again..')         
+        
+        # run workflow
+        workflow.run(collect_names=[])
+        workflowState = workflow.get_state()
+        print("- workflow ran")
+        print(f'- workflow state: {workflowState}\n')
+        
+        # get executed workflow elements and their properties and values
+        workflowElementsDict = process_element(workflowRoot, workflowElementsDict)
+        print("Workflow elements:")
+        print(workflowElementsDict)
+        
+        # prompt user if workflow should be saved
+        saveInput = input('\nSave workflow (y/n)? ')        
+        if saveInput in ['yes', 'y']:
+            workflow.save_workflow()
+            print("- workflow saved\n")
+        elif saveInput in ['no', 'n']:
+            print("- workflow not saved\n")
+        else:
+            print("- please enter 'y' or 'n'")        
+        
+        # pause until user presses any key, then close workflow
+        exitInput = input("Press any key to close the workflow and exit..")
+        workflow.close_workflow()
