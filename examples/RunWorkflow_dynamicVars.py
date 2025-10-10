@@ -22,7 +22,6 @@
 
 # Description: script loads workflow from specified path (workflowPath), traverses the workflow for all variables and presents to the user, allows user to specify variables and values for modification, run workflow, see result for all variables, save workflow, and close workflow
 
-import pprint
 import sys
 
 from ansys.tools.variableinterop.scalar_values import RealValue
