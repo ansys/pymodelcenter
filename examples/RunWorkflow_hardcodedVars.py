@@ -28,7 +28,8 @@ from ansys.tools.variableinterop.variable_state import VariableState
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 # initial variables
-workflowPath = "C:\\Users\\joedward\\Documents\\MC\\brake\\brake.pxcz"
+# specify the ModelCenter workflow PXCZ path and workflow variables paths.
+workflowPath = "C:\\Users\\<username>\\Documents\\MC\\brake\\brake.pxcz"
 inputVar = "brake.caliper.pistonDiam"
 outputVar = "brake.vehicle.stopDistance"
 
@@ -89,3 +90,4 @@ with grpcmc.Engine() as mc:
         # pause until user presses any key, then close workflow
         exitInput = input("Done. Press any key to close the workflow and exit..")
         workflow.close_workflow()
+
