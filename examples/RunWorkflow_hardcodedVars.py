@@ -90,4 +90,3 @@ with grpcmc.Engine() as mc:
         # pause until user presses any key, then close workflow
         exitInput = input("Done. Press any key to close the workflow and exit..")
         workflow.close_workflow()
-
