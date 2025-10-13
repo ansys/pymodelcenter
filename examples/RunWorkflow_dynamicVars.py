@@ -29,8 +29,11 @@ from ansys.tools.variableinterop.variable_state import VariableState
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 # prompt user for full path to ModelCenter workflow PXCZ
-workflowPath = input("Enter the path to the ModelCenter workflow file (e.g., C:\\Users\\<username>\\Documents\\MC\\brake\\brake.pxcz): ")
+workflowPath = input(
+    "Enter the path to the ModelCenter workflow file (e.g., C:\\Users\\<username>\\Documents\\MC\\brake\\brake.pxcz): "
+)
 workflowElementsDict = {}
+
 
 # function to traverse workflow for elements and their properties and values
 def process_element(element, weDict):
@@ -132,4 +135,3 @@ with grpcmc.Engine() as mc:
         # pause until user presses any key, then close workflow
         exitInput = input("Press any key to close the workflow and exit..")
         workflow.close_workflow()
-
