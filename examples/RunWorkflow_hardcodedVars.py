@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Description: script loads workflow from specified path (workflowPath), allows user to set value for specified input variable (inputVar), run workflow, see result for specified output variable (outputVar), save workflow, and close workflow
+# Description: script loads workflow from specified path (workflowPath), 
+# allows user to set value for specified input variable (inputVar), run workflow, 
+# see result for specified output variable (outputVar), save workflow, and close workflow
 
 from ansys.tools.variableinterop.scalar_values import RealValue
 from ansys.tools.variableinterop.variable_state import VariableState
@@ -90,3 +92,4 @@ with grpcmc.Engine() as mc:
         # pause until user presses any key, then close workflow
         exitInput = input("Done. Press any key to close the workflow and exit..")
         workflow.close_workflow()
+
