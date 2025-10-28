@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Description: script loads workflow from specified path (workflowPath), 
-# traverses the workflow for all variables and presents to the user, 
-# allows user to specify variables and values for modification, run workflow, 
+# Description: script loads workflow from specified path (workflowPath),
+# traverses the workflow for all variables and presents to the user,
+# allows user to specify variables and values for modification, run workflow,
 # see result for all variables, save workflow, and close workflow
 
 
@@ -141,4 +141,3 @@ with grpcmc.Engine() as mc:
         # pause until user presses any key, then close workflow
         exitInput = input("Press any key to close the workflow and exit..")
         workflow.close_workflow()
-
