@@ -20,7 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Description: script loads workflow from specified path (workflowPath), traverses the workflow for all variables and presents to the user, allows user to specify variables and values for modification, run workflow, see result for all variables, save workflow, and close workflow
+# Description: script loads workflow from specified path (workflowPath), 
+# traverses the workflow for all variables and presents to the user, 
+# allows user to specify variables and values for modification, run workflow, 
+# see result for all variables, save workflow, and close workflow
 
 
 from ansys.tools.variableinterop.scalar_values import RealValue
@@ -30,7 +33,8 @@ import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 # prompt user for full path to ModelCenter workflow PXCZ
 workflowPath = input(
-    "Enter the path to the ModelCenter workflow file (e.g., C:\\Users\\<username>\\Documents\\MC\\brake\\brake.pxcz): "
+    "Enter the path to the ModelCenter workflow file \
+    (e.g., C:\\Users\\<username>\\Documents\\MC\\brake\\brake.pxcz): "
 )
 workflowElementsDict = {}
 
@@ -90,7 +94,8 @@ with grpcmc.Engine() as mc:
         # loop until user inputs "run" to execute the workflow
         while True:
             inVarInput = input(
-                f'\nWhich input variable\'s value should be changed (format: model.component.variable, enter "run" to execute the workflow)? '
+                f'\nWhich input variable\'s value should be changed \
+                (format: model.component.variable, enter "run" to execute the workflow)? '
             )
 
             if inVarInput in workflowElementsDict:
@@ -108,7 +113,8 @@ with grpcmc.Engine() as mc:
                 break
             else:
                 print(
-                    f'- "{inVarInput}" does not match the required format or is not a workflow variable, please try again..'
+                    f'- "{inVarInput}" does not match the required format or is not a workflow variable, \
+                    please try again..'
                 )
 
         # run workflow
@@ -135,3 +141,4 @@ with grpcmc.Engine() as mc:
         # pause until user presses any key, then close workflow
         exitInput = input("Press any key to close the workflow and exit..")
         workflow.close_workflow()
+
