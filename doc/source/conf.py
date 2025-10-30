@@ -17,9 +17,9 @@ from ansys_sphinx_theme import (
     pyansys_logo_black,
     watermark,
 )
+from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.modelcenter.workflow import __version__
-from sphinx_gallery.sorting import FileNameSortKey
 
 # Project information
 project = "ansys-modelcenter-workflow"
@@ -63,7 +63,6 @@ html_theme_options = {
 }
 
 
-
 html_context = {
     "display_github": True,  # Integrate GitHub
     "github_user": USERNAME,
@@ -89,30 +88,30 @@ if BUILD_EXAMPLES is True:
     # Necessary for pyvista when building the sphinx gallery
     extensions.append("sphinx_gallery.gen_gallery")
     sphinx_gallery_conf = {
-                # convert rst to md for ipynb
-                "pypandoc": True,
-                # path to your examples scripts
-                "examples_dirs": ["../../examples/"],
-                # path where to save gallery generated examples
-                "gallery_dirs": ["examples"],
-                # Patter to search for examples files
-                "filename_pattern": r"\.py",
-                # Patter to omit some files
-                "ignore_pattern": r"/*_data.py",
-                # Remove the "Download all examples" button from the top level gallery
-                "download_all_examples": False,
-                # Sort gallery examples by file name instead of number of lines (default)
-                "within_subsection_order": FileNameSortKey,
-                # directory where function granular galleries are stored
-                "backreferences_dir": None,
-                # Modules for which function level galleries are created.  In
-                "doc_module": "ansys-modelcenter-workflow",
-                "thumbnail_size": (600, 300),
-                # 'first_notebook_cell': ("%matplotlib inline\n"
-                #                         "from pyvista import set_plot_theme\n"
-                #                         "set_plot_theme('document')"),
-                'remove_config_comments': True,
-            }
+        # convert rst to md for ipynb
+        "pypandoc": True,
+        # path to your examples scripts
+        "examples_dirs": ["../../examples/"],
+        # path where to save gallery generated examples
+        "gallery_dirs": ["examples"],
+        # Pattern to search for examples files
+        "filename_pattern": r"\.py",
+        # Pattern to omit some files
+        "ignore_pattern": r"/*_data.py",
+        # Remove the "Download all examples" button from the top level gallery
+        "download_all_examples": False,
+        # Sort gallery examples by file name instead of number of lines (default)
+        "within_subsection_order": FileNameSortKey,
+        # directory where function granular galleries are stored
+        "backreferences_dir": None,
+        # Modules for which function level galleries are created.  In
+        "doc_module": "ansys-modelcenter-workflow",
+        "thumbnail_size": (600, 300),
+        # 'first_notebook_cell': ("%matplotlib inline\n"
+        #                         "from pyvista import set_plot_theme\n"
+        #                         "set_plot_theme('document')"),
+        "remove_config_comments": True,
+    }
 
 # Intersphinx mapping
 intersphinx_mapping = {
