@@ -101,7 +101,7 @@ jobs:
 
   doc-build:
     name: "Documentation building"
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows, pymodelcenter-ci-0]
     needs: [doc-style]
     steps:
       - name: "Run Ansys documentation building action"
