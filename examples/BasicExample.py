@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Basic example of using the Ansys ModelCenter Workflow API."""
+
 import os
 
 from ansys.tools.variableinterop.scalar_values import RealValue

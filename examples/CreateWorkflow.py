@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Create a new workflow in Ansys ModelCenter Workflow."""
+
 import os
 
 import ansys.modelcenter.workflow.api as mcapi

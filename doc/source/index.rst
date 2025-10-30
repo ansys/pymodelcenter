@@ -53,3 +53,4 @@ engineering workflows.
    user_guide/index
    api/index
    contributing/index
+   examples/index
