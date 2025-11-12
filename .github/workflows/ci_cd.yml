@@ -104,11 +104,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: [doc-style]
     steps:
+      - name: Temporary handle broken package dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get --fix-broken install -y
+          sudo apt-get install -y texlive-latex-extra latexmk texlive-fonts-extra
+
       - name: "Run Ansys documentation building action"
-        uses: ansys/actions/doc-build@v10
+        uses: ansys/actions/doc-build@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          dependencies: "texlive-fonts-extra"
+          #dependencies: "texlive-fonts-extra"
 
   package:
     name: "Package library"
