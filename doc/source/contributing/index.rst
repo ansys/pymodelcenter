@@ -123,7 +123,7 @@ for your operating system:
       ::
 
         .\doc\make.bat html
-        .\doc\build\html\index.html
+        .\doc\_build\html\index.html
 
 Post issues
 -----------
