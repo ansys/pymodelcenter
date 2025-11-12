@@ -108,14 +108,14 @@ for your operating system:
 
       ::
 
-        make -C doc/ html && your_browser_name doc/build/html/index.html
+        make -C doc/ html && your_browser_name doc/_build/html/index.html
 
     .. tab-item:: macOS
       :sync: macos
 
       ::
 
-        make -C doc/ html && your_browser_name doc/build/html/index.html
+        make -C doc/ html && your_browser_name doc/_build/html/index.html
 
     .. tab-item:: Windows
       :sync: windows
