@@ -108,6 +108,7 @@ jobs:
         uses: ansys/actions/doc-build@v10
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          dependencies: "texlive-fonts-extra"
 
   package:
     name: "Package library"
