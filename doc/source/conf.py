@@ -2,7 +2,6 @@
 
 from datetime import datetime
 import os
-from pathlib import Path
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
@@ -61,13 +60,13 @@ html_theme_options = {
     "ansys_sphinx_theme_autoapi": {
         "project": project,
         "ignore": ["*_visitors*"],
-        "options" : [
-    "members",
-    "undoc-members",
-    "show-inheritance",
-    "show-module-summary",
-    "special-members",
-]
+        "options": [
+            "members",
+            "undoc-members",
+            "show-inheritance",
+            "show-module-summary",
+            "special-members",
+        ],
     },
 }
 
