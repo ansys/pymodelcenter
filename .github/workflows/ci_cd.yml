@@ -109,7 +109,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           # dependencies: "texlive-fonts-extra "
-
+          
   package:
     name: "Package library"
     needs: [build-tests, doc-build]
