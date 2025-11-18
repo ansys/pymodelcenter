@@ -61,13 +61,13 @@ html_theme_options = {
     "ansys_sphinx_theme_autoapi": {
         "project": project,
         "ignore": ["*_visitors*"],
-        "options" : [
-    "members",
-    "undoc-members",
-    "show-inheritance",
-    "show-module-summary",
-    "special-members",
-]
+        "options": [
+            "members",
+            "undoc-members",
+            "show-inheritance",
+            "show-module-summary",
+            "special-members",
+        ],
     },
 }
 
