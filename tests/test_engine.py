@@ -434,7 +434,7 @@ def test_get_channel(setup_function) -> None:
     channel = engine.channel
 
     # Assert
-    assert cast(Any, channel)._channel.target() == b"localhost:12345"
+    assert cast(Any, channel)._channel.target() == b"dns:///localhost:12345"
 
 
 def test_heartbeat_method_sends_grpc_calls_until_released(monkeypatch, setup_function) -> None:
