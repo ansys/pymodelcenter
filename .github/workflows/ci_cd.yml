@@ -20,7 +20,7 @@ env:
   PACKAGE_NAME: 'ansys-modelcenter-workflow'
   PACKAGE_NAMESPACE: 'ansys.modelcenter.workflow'
   DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
-  ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
+  # ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   
 jobs:
   doc-style:
