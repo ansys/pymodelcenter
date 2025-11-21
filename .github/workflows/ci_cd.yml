@@ -105,18 +105,18 @@ jobs:
     runs-on: [self-hosted, Windows, pymodelcenter]
     needs: [doc-style]
     steps:
-      - name: Temporary handle broken package dependencies
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get --fix-broken install -y
-          sudo apt-get install -y texlive-latex-extra latexmk texlive-fonts-extra
+      # - name: Temporary handle broken package dependencies
+      #   shell: bash
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get --fix-broken install -y
+      #     sudo apt-get install -y texlive-latex-extra latexmk texlive-fonts-extra
 
       - name: "Run Ansys documentation building action"
         uses: ansys/actions/doc-build@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          skip-install: true
+          # skip-install: true
           #dependencies: "texlive-fonts-extra"
 
   package:
