@@ -17,6 +17,7 @@ from ansys_sphinx_theme import (
     pyansys_logo_black,
     watermark,
 )
+from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.modelcenter.workflow import __version__
 
@@ -61,6 +62,7 @@ html_theme_options = {
     ],
 }
 
+
 html_context = {
     "display_github": True,  # Integrate GitHub
     "github_user": USERNAME,
@@ -81,6 +83,27 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
 ]
+
+BUILD_EXAMPLES = True if os.environ.get("BUILD_EXAMPLES", "true") == "true" else False
+if BUILD_EXAMPLES is True:
+    # Necessary for pyvista when building the sphinx gallery
+    extensions.append("sphinx_gallery.gen_gallery")
+    sphinx_gallery_conf = {
+        # convert rst to md for ipynb
+        "pypandoc": True,
+        # path to your examples scripts
+        "examples_dirs": ["../../examples/"],
+        # path where to save gallery generated examples
+        "gallery_dirs": ["examples"],
+        # Pattern to search for examples files
+        "filename_pattern": r"\.py",
+        # Sort gallery examples by file name instead of number of lines (default)
+        "within_subsection_order": FileNameSortKey,
+        # Modules for which function level galleries are created.  In
+        "doc_module": "ansys-modelcenter-workflow",
+        "thumbnail_size": (600, 300),
+        "remove_config_comments": True,
+    }
 
 # Intersphinx mapping
 intersphinx_mapping = {
