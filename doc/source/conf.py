@@ -141,7 +141,7 @@ master_doc = "index"
 
 # Configuration for Sphinx autoapi
 autoapi_type = "python"
-autoapi_dirs = ["../../src/ansys/"]
+autoapi_dirs = ["../../src/ansys/modelcenter/workflow"]
 autoapi_root = "api"
 autoapi_options = [
     "members",
@@ -151,7 +151,7 @@ autoapi_options = [
     "special-members",
 ]
 autoapi_template_dir = get_autoapi_templates_dir_relative_path(Path(__file__))
-suppress_warnings = ["autoapi.python_import_resolution"]
+suppress_warnings = ["autoapi.python_import_resolution", "design.fa-build"]
 autoapi_python_use_implicit_namespaces = True
 autoapi_render_in_single_page = ["class", "enum", "exception"]
 autoapi_own_page_level = "class"
@@ -215,4 +215,4 @@ latex_additional_files = [watermark, ansys_logo_white, ansys_logo_white_cropped]
 # change the preamble of latex with customized title page
 # variables are the title of pdf, watermark
 latex_elements = {"preamble": latex.generate_preamble(html_title)}
-sd_fontawesome_latex = True
+# sd_fontawesome_latex = True
