@@ -39,7 +39,7 @@ workflow_filename = "BasicExample.pxcz"
 workflow_path = os.path.join(cwd, workflow_filename)
 
 print("Initializing workflow engine...")
-with Engine(heartbeat_interval=60*1_000) as mc:
+with Engine(heartbeat_interval=60 * 1_000) as mc:
     print("Loading workflow: " + workflow_path)
     with mc.load_workflow(workflow_path) as workflow:
         print("Loaded: " + workflow_filename)

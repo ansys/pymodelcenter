@@ -48,8 +48,11 @@ jobs:
           uv pip install ansys-modelcenter-workflow
 
       - name: "Run basic example"
+        env:
+          AWP_ROOT: 'C:\Program Files\ANSYS Inc'
         run: |
           .venv\Scripts\activate
+          python -c "import sys; print(sys.executable)"
           python examples/BasicExample.py
           
   # doc-style:
