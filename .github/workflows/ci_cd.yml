@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAIN_PYTHON_VERSION: '3.13'
+  MAIN_PYTHON_VERSION: '3.10'
   PACKAGE_NAME: 'ansys-modelcenter-workflow'
   PACKAGE_NAMESPACE: 'ansys.modelcenter.workflow'
   DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
@@ -108,7 +108,7 @@ jobs:
       - name: "Run Ansys documentation building action"
         uses: ansys/actions/doc-build@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: 3.13
 
   package:
     name: "Package library"
