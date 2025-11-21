@@ -96,20 +96,11 @@ if BUILD_EXAMPLES is True:
         "gallery_dirs": ["examples"],
         # Pattern to search for examples files
         "filename_pattern": r"\.py",
-        # Pattern to omit some files
-        "ignore_pattern": r"/*_data.py",
-        # Remove the "Download all examples" button from the top level gallery
-        "download_all_examples": False,
         # Sort gallery examples by file name instead of number of lines (default)
         "within_subsection_order": FileNameSortKey,
-        # directory where function granular galleries are stored
-        "backreferences_dir": None,
         # Modules for which function level galleries are created.  In
         "doc_module": "ansys-modelcenter-workflow",
         "thumbnail_size": (600, 300),
-        # 'first_notebook_cell': ("%matplotlib inline\n"
-        #                         "from pyvista import set_plot_theme\n"
-        #                         "set_plot_theme('document')"),
         "remove_config_comments": True,
     }
 
