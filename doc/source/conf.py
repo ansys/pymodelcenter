@@ -60,14 +60,15 @@ html_theme_options = {
     "ansys_sphinx_theme_autoapi": {
         "project": project,
         "ignore": ["*_visitors*"],
-        "options": [
-            "members",
-            "undoc-members",
-            "show-inheritance",
-            "show-module-summary",
-            "special-members",
-        ],
     },
+}
+
+numpydoc_validation_exclude = {
+    "add_note",
+    "count",
+    "validate",
+    "__cause__",
+    "__context__",
 }
 
 html_context = {
@@ -122,8 +123,8 @@ numpydoc_validation_checks = {
     "GL09",  # Deprecation warning should precede extended summary
     "GL10",  # reST directives {directives} must be followed by two colons
     "SS01",  # No summary found
-    # "SS02",  # Summary does not start with a capital letter
-    # "SS03",  # Summary does not end with a period
+    "SS02",  # Summary does not start with a capital letter
+    "SS03",  # Summary does not end with a period
     "SS04",  # Summary contains heading whitespaces
     "SS05",  # Summary must start with infinitive verb, not third person
     "RT02",  # The first line of the Returns section should contain only the
