@@ -20,163 +20,192 @@ env:
   PACKAGE_NAME: 'ansys-modelcenter-workflow'
   PACKAGE_NAMESPACE: 'ansys.modelcenter.workflow'
   DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
-  # ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
+  #ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   
 jobs:
-  doc-style:
-    name: "Documentation Style Check"
-    runs-on: ubuntu-latest
+
+  debugging:
+    name: "Debugging"
+    runs-on: [self-hosted, pymodelcenter]
+    defaults:
+      run:
+        shell: powershell
     steps:
-      - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v8
-        with:
-         token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: "Checkout project"
+        uses: actions/checkout@v5
 
-  smoke-tests:
-    name: "Build and Smoke tests"
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.10', '3.11', '3.12', '3.13']
-        # Only perform wheelhouse builds for Windows and macOS when releasing
-        should-release:
-          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
-        exclude:
-          - should-release: false
-            os: macos-latest
-          - should-release: false
-            os: windows-latest
-    steps:
-      - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v8
-        with:
-          library-name: ${{ env.PACKAGE_NAME }}
-          operating-system: ${{ matrix.os }}
-          python-version: ${{ matrix.python-version }}
-
-
-  build-tests:
-    name: "Build and unit testing"
-    needs: [smoke-tests]
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
-        should-release:
-          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
-    steps:
-      - name: "Install Git and checkout project"
-        uses: actions/checkout@v4
-
-      - name: "Setup Python"
-        uses: actions/setup-python@v5
+      - name: "Setup Python via UV"
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: "Install packages for testing"
+      - name: "Install project"
         run: |
-          pip install --upgrade pip
-          pip install .[tests]
+          uv venv --seed --python ${{ env.MAIN_PYTHON_VERSION }}
+          .venv\Scripts\activate
+          #uv pip install --editable .
+          uv pip install ansys-modelcenter-workflow
 
-      - name: "Testing"
-        run: pytest -v
-  
-      - name: "Upload coverage artifacts"
-        uses: actions/upload-artifact@v4
-        if: matrix.python-version == env.MAIN_PYTHON_VERSION
-        with:
-          name: coverage-html
-          path: .cov/html
-          retention-days: 7
-
-      - name: "Upload coverage to Codecov"
-        uses: codecov/codecov-action@v5
-        if: matrix.python-version == env.MAIN_PYTHON_VERSION
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: .cov/xml
-
-
-  doc-build:
-    name: "Documentation building"
-    runs-on: [self-hosted, Windows, pymodelcenter]
-    needs: [doc-style]
-    steps:
-      # - name: Temporary handle broken package dependencies
-      #   shell: bash
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get --fix-broken install -y
-      #     sudo apt-get install -y texlive-latex-extra latexmk texlive-fonts-extra
-
-      - name: "Run Ansys documentation building action"
-        uses: ansys/actions/doc-build@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          # skip-install: true
-          #dependencies: "texlive-fonts-extra"
-
-  package:
-    name: "Package library"
-    needs: [build-tests, doc-build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Build library source and wheel artifacts"
-        uses: ansys/actions/build-library@v8
-        with:
-          library-name: ${{ env.PACKAGE_NAME }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-
-  doc-deploy-dev:
-    name: "Deploy developers documentation"
-    runs-on: ubuntu-latest
-    # Deploy development only when merging to main
-    if: github.ref == 'refs/heads/main'
-    needs: [package]
-    steps:
-      - name: "Deploy the latest documentation"
-        uses: ansys/actions/doc-deploy-dev@v8
-        with:
-          cname: ${{ env.DOCUMENTATION_CNAME }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
-          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
-
-
-  release:
-    name: "Release project to public PyPI and GitHub"
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [package]
-    runs-on: ubuntu-latest
-    steps:
-    - name: "Release to the public PyPI repository"
-      uses: ansys/actions/release-pypi-public@v8
-      with:
-        library-name: ${{ env.PACKAGE_NAME }}
-        twine-username: "__token__"
-        twine-token: ${{ secrets.PYPI_TOKEN }}
-
-    - name: "Release to GitHub"
-      uses: ansys/actions/release-github@v8
-      with:
-        library-name: ${{ env.PACKAGE_NAME }}
-
-
-  doc-deploy-stable:
-    name: "Deploy stable documentation"
-    # Deploy release documentation when creating a new tag
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    runs-on: ubuntu-latest
-    needs: [release]
-    steps:
-      - name: "Deploy the stable documentation"
-        uses: ansys/actions/doc-deploy-stable@v8
-        with:
-          cname: ${{ env.DOCUMENTATION_CNAME }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
-          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
+      - name: "Run basic example"
+        run: |
+          .venv\Scripts\activate
+          python examples/BasicExample.py
+          
+  # doc-style:
+  #   name: "Documentation Style Check"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: PyAnsys documentation style checks
+  #       uses: ansys/actions/doc-style@v8
+  #       with:
+  #        token: ${{ secrets.GITHUB_TOKEN }}
+  #
+  #
+  # smoke-tests:
+  #   name: "Build and Smoke tests"
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, windows-latest, macos-latest]
+  #       python-version: ['3.10', '3.11', '3.12', '3.13']
+  #       # Only perform wheelhouse builds for Windows and macOS when releasing
+  #       should-release:
+  #         - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+  #       exclude:
+  #         - should-release: false
+  #           os: macos-latest
+  #         - should-release: false
+  #           os: windows-latest
+  #   steps:
+  #     - name: Build wheelhouse and perform smoke test
+  #       uses: ansys/actions/build-wheelhouse@v8
+  #       with:
+  #         library-name: ${{ env.PACKAGE_NAME }}
+  #         operating-system: ${{ matrix.os }}
+  #         python-version: ${{ matrix.python-version }}
+  #
+  #
+  # build-tests:
+  #   name: "Build and unit testing"
+  #   needs: [smoke-tests]
+  #   runs-on: windows-latest
+  #   strategy:
+  #     matrix:
+  #       python-version: ['3.10', '3.11', '3.12', '3.13']
+  #       should-release:
+  #         - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+  #   steps:
+  #     - name: "Install Git and checkout project"
+  #       uses: actions/checkout@v4
+  #
+  #     - name: "Setup Python"
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
+  #
+  #     - name: "Install packages for testing"
+  #       run: |
+  #         pip install --upgrade pip
+  #         pip install .[tests]
+  #
+  #     - name: "Testing"
+  #       run: pytest -v
+  #
+  #     - name: "Upload coverage artifacts"
+  #       uses: actions/upload-artifact@v4
+  #       if: matrix.python-version == env.MAIN_PYTHON_VERSION
+  #       with:
+  #         name: coverage-html
+  #         path: .cov/html
+  #         retention-days: 7
+  #
+  #     - name: "Upload coverage to Codecov"
+  #       uses: codecov/codecov-action@v5
+  #       if: matrix.python-version == env.MAIN_PYTHON_VERSION
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         files: .cov/xml
+  #
+  #
+  # doc-build:
+  #   name: "Documentation building"
+  #   runs-on: [self-hosted, Windows, pymodelcenter]
+  #   needs: [doc-style]
+  #   steps:
+  #     # - name: Temporary handle broken package dependencies
+  #     #   shell: bash
+  #     #   run: |
+  #     #     sudo apt-get update
+  #     #     sudo apt-get --fix-broken install -y
+  #     #     sudo apt-get install -y texlive-latex-extra latexmk texlive-fonts-extra
+  #
+  #     - name: "Run Ansys documentation building action"
+  #       uses: ansys/actions/doc-build@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
+  #       with:
+  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
+  #         # skip-install: true
+  #         #dependencies: "texlive-fonts-extra"
+  #
+  # package:
+  #   name: "Package library"
+  #   needs: [build-tests, doc-build]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: "Build library source and wheel artifacts"
+  #       uses: ansys/actions/build-library@v8
+  #       with:
+  #         library-name: ${{ env.PACKAGE_NAME }}
+  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
+  #
+  #
+  # doc-deploy-dev:
+  #   name: "Deploy developers documentation"
+  #   runs-on: ubuntu-latest
+  #   # Deploy development only when merging to main
+  #   if: github.ref == 'refs/heads/main'
+  #   needs: [package]
+  #   steps:
+  #     - name: "Deploy the latest documentation"
+  #       uses: ansys/actions/doc-deploy-dev@v8
+  #       with:
+  #         cname: ${{ env.DOCUMENTATION_CNAME }}
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+  #         bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
+  #
+  #
+  # release:
+  #   name: "Release project to public PyPI and GitHub"
+  #   if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+  #   needs: [package]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: "Release to the public PyPI repository"
+  #     uses: ansys/actions/release-pypi-public@v8
+  #     with:
+  #       library-name: ${{ env.PACKAGE_NAME }}
+  #       twine-username: "__token__"
+  #       twine-token: ${{ secrets.PYPI_TOKEN }}
+  #
+  #   - name: "Release to GitHub"
+  #     uses: ansys/actions/release-github@v8
+  #     with:
+  #       library-name: ${{ env.PACKAGE_NAME }}
+  #
+  #
+  # doc-deploy-stable:
+  #   name: "Deploy stable documentation"
+  #   # Deploy release documentation when creating a new tag
+  #   if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+  #   runs-on: ubuntu-latest
+  #   needs: [release]
+  #   steps:
+  #     - name: "Deploy the stable documentation"
+  #       uses: ansys/actions/doc-deploy-stable@v8
+  #       with:
+  #         cname: ${{ env.DOCUMENTATION_CNAME }}
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+  #         bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
