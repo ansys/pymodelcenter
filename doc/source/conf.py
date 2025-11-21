@@ -148,11 +148,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # Configuration for Sphinx autoapi
-suppress_warnings = ["autoapi.python_import_resolution"]
-# autoapi_python_use_implicit_namespaces = True
-# autoapi_render_in_single_page = ["class", "enum", "exception"]
-# autoapi_own_page_level = "class"
-# autoapi_keep_files = True
+suppress_warnings = ["autoapi.python_import_resolution", "design.fa-build"]
 
 # Generate section labels up to four levels deep
 autosectionlabel_maxdepth = 4
