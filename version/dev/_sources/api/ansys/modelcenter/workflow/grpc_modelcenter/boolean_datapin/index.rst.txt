@@ -1,0 +1,89 @@
+
+
+
+
+
+
+The ``boolean_datapin.py`` module
+=================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: boolean_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin.BooleanDatapin`
+            - Represents a Boolean datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin.BooleanArrayDatapin`
+            - Represents a Boolean array datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> BooleanDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/boolean_datapin/BooleanDatapin>
+    <span class="nf nf-cod-symbol_class"></span> BooleanArrayDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/boolean_datapin/BooleanArrayDatapin>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the Boolean datapin classes.
+
+These classes include ``BooleanDatapin`` and ``BooleanArrayDatapin``.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

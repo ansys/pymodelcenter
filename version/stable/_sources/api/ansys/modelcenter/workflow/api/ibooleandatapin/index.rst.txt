@@ -1,0 +1,79 @@
+
+
+
+
+
+The ``ibooleandatapin.py`` module
+=================================
+
+.. py:module:: ansys.modelcenter.workflow.api.ibooleandatapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ibooleandatapin
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IBooleanDatapin`
+            - Represents a Boolean datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IBooleanDatapin<IBooleanDatapin>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the Boolean datapin.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

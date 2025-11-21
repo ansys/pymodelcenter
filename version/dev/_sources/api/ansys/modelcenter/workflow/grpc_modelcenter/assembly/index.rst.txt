@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``assembly.py`` module
+==========================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.assembly
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: assembly
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.assembly.Assembly`
+            - Represents an assembly in ModelCenter.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Assembly</api/ansys/modelcenter/workflow/grpc_modelcenter/assembly/Assembly>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the assembly.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

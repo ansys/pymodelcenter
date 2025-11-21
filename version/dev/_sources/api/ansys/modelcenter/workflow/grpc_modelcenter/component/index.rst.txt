@@ -1,0 +1,103 @@
+
+
+
+
+
+
+The ``component.py`` module
+===========================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.component
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: component
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.component.Component`
+            - Defines the component in the workflow.
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.component.ComponentReconnectionFailedError`
+            - Raised if a component reconnection fails.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.component.ComponentDownloadValuesFailedError`
+            - Raised if downloading a component's values fails.
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Component</api/ansys/modelcenter/workflow/grpc_modelcenter/component/Component>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-lightning_bolt"></span> ComponentReconnectionFailedError</api/ansys/modelcenter/workflow/grpc_modelcenter/component/ComponentReconnectionFailedError>
+    <span class="nf nf-md-lightning_bolt"></span> ComponentDownloadValuesFailedError</api/ansys/modelcenter/workflow/grpc_modelcenter/component/ComponentDownloadValuesFailedError>
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the component.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

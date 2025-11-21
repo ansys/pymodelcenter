@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``iintegerarraydatapin.py`` module
+======================================
+
+.. py:module:: ansys.modelcenter.workflow.api.iintegerarraydatapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: iintegerarraydatapin
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iintegerarraydatapin.IIntegerArrayDatapin`
+            - Represents an integer array datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IIntegerArrayDatapin</api/ansys/modelcenter/workflow/api/iintegerarraydatapin/IIntegerArrayDatapin>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the integer array variable.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

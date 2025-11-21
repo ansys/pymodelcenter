@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`ComponentReconnectionFailedError`
+=========================================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.component.ComponentReconnectionFailedError
+
+   Bases: :py:obj:`Exception`
+
+
+   
+   Raised if a component reconnection fails.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.component import ComponentReconnectionFailedError
+
+
+
+
+
