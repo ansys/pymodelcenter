@@ -34,8 +34,8 @@ import numpy
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import IEngine, WorkflowType
-from .channel_factory import ChannelFactory
 
+from .channel_factory import ChannelFactory
 from .format import Format
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .mcd_process import MCDProcess
