@@ -1,0 +1,79 @@
+
+
+
+
+
+The ``iformat.py`` module
+=========================
+
+.. py:module:: ansys.modelcenter.workflow.api.iformat
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: iformat
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:attr:`~IFormat`
+            - Formats values in various string formats.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    🝆 IFormat<IFormat>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the format.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

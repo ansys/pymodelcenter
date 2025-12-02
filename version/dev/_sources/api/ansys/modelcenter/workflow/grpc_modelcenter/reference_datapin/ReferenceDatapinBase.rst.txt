@@ -1,0 +1,127 @@
+
+
+
+
+
+
+:class:`ReferenceDatapinBase`
+=============================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin.ReferenceDatapinBase(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.base_datapin.BaseDatapin`, :py:obj:`abc.ABC`
+
+
+   
+   Defines the base class for reference datapins.
+
+   This class is for implementing what is common between scalar and
+   array reference datapins.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ReferenceDatapinBase
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_metadata`
+            - Get the metadata for the datapin.
+          * - :py:attr:`~set_metadata`
+            - Set the standard metadata for the datapin.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin import ReferenceDatapinBase
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_metadata() -> ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin_metadata.ReferenceDatapinMetadata
+
+   
+   Get the metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_metadata(new_metadata: ansys.tools.variableinterop.CommonVariableMetadata) -> None
+
+   
+   Set the standard metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
