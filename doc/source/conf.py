@@ -2,7 +2,6 @@
 
 from datetime import datetime
 import os
-from pathlib import Path
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
@@ -11,7 +10,6 @@ from ansys_sphinx_theme import (
     ansys_favicon,
     ansys_logo_white,
     ansys_logo_white_cropped,
-    get_autoapi_templates_dir_relative_path,
     get_version_match,
     latex,
     pyansys_logo_black,
@@ -59,6 +57,18 @@ html_theme_options = {
             "icon": "fa fa-comment fa-fw",
         },
     ],
+    "ansys_sphinx_theme_autoapi": {
+        "project": project,
+        "ignore": ["*_visitors*"],
+    },
+}
+
+numpydoc_validation_exclude = {
+    "add_note",
+    "count",
+    "validate",
+    "__cause__",
+    "__context__",
 }
 
 html_context = {
@@ -67,18 +77,19 @@ html_context = {
     "github_repo": REPOSITORY_NAME,
     "github_version": BRANCH,
     "doc_path": DOC_PATH,
+    "pyansys_tags": ["Connect"],
 }
 
 # Sphinx extensions
 extensions = [
     "notfound.extension",  # for the not found page.
     "numpydoc",
-    "autoapi.extension",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.coverage",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "sphinx_design",
+    "ansys_sphinx_theme.extension.autoapi",
 ]
 
 # Intersphinx mapping
@@ -139,23 +150,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # Configuration for Sphinx autoapi
-autoapi_type = "python"
-autoapi_dirs = ["../../src/ansys/"]
-autoapi_root = "api"
-autoapi_options = [
-    "members",
-    "undoc-members",
-    "show-inheritance",
-    "show-module-summary",
-    "special-members",
-]
-autoapi_template_dir = get_autoapi_templates_dir_relative_path(Path(__file__))
-suppress_warnings = ["autoapi.python_import_resolution"]
-autoapi_python_use_implicit_namespaces = True
-autoapi_render_in_single_page = ["class", "enum", "exception"]
-autoapi_own_page_level = "class"
-autoapi_ignore = ["*_visitors*"]
-autoapi_keep_files = True
+suppress_warnings = ["autoapi.python_import_resolution", "design.fa-build"]
 
 # Generate section labels up to four levels deep
 autosectionlabel_maxdepth = 4
@@ -214,4 +209,4 @@ latex_additional_files = [watermark, ansys_logo_white, ansys_logo_white_cropped]
 # change the preamble of latex with customized title page
 # variables are the title of pdf, watermark
 latex_elements = {"preamble": latex.generate_preamble(html_title)}
-sd_fontawesome_latex = True
+# sd_fontawesome_latex = True
