@@ -41,20 +41,20 @@ dependencies = [
 doc=[
     "ansys-engineeringworkflow-api==0.1.0",
     "ansys-sphinx-theme[autoapi]==1.6.3",
-    "numpydoc==1.8.0",
+    "numpydoc==1.10.0",
     "pyansys-tools-variableinterop==0.1.1",
     "pytest-sphinx==0.6.3",
     "sphinx==8.2.3",
     "sphinx-copybutton==0.5.2",
-    "sphinx-gallery==0.19.0",
+    "sphinx-gallery==0.20.0",
     "sphinx-notfound-page==1.1.0",
 ]
 tests = [
     "ansys-engineeringworkflow-api==0.1.0",
-    "grpcio==1.71.2",
+    "grpcio==1.76.0",
     "pyansys-tools-variableinterop==0.1.1",
     "pytest==8.0.0",
-    "pytest-cov==6.0.0",
+    "pytest-cov==7.0.0",
 ]
 
 [tool.flit.module]
