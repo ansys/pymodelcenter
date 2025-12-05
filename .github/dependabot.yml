@@ -9,8 +9,20 @@ updates:
     - "dependencies"
   commit-message:
       prefix: "build"
+  cooldown:
+    default-days: 10
+    include:
+      - "*"  # Include all dependencies in cooldown
+    exclude:
+      - "ansys/actions"
 
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
     interval: "weekly"
+  cooldown:
+    default-days: 10
+    include:
+      - "*"  # Include all dependencies in cooldown
+    exclude:
+      - "ansys/actions"
