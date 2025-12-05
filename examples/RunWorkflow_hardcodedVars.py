@@ -20,15 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Description: script loads workflow from specified file (workflow_filename) in current working directory,
+# Description: 
+# loads workflow from specified file (workflow_filename) in current working directory,
 # allows user to set value for specified input variable (inputVar), run workflow,
 # see result for specified output variable (outputVar), save workflow, and close workflow
 
 import os
-
 from ansys.tools.variableinterop.scalar_values import RealValue
 from ansys.tools.variableinterop.variable_state import VariableState
-
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 # initial variables
