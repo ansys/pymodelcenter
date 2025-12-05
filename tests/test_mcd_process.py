@@ -63,6 +63,22 @@ def test_start(monkeypatch) -> None:
     "ansys.modelcenter.workflow.grpc_modelcenter.mcd_process._find_exe_location",
     mock_find_exe_location,
 )
+def test_start_fails_to_get_stdout(monkeypatch) -> None:
+    # Setup
+    sut = MCDProcess()
+    mock_process = MockProcess()
+    mock_process.stdout = None
+    with unittest.mock.patch.object(subprocess, "Popen", return_value=mock_process) as mock_popen:
+        with pytest.raises(Exception) as err:
+            result: int = sut.start()
+
+        assert err.value.args[0] == "Failed to connect to ModelCenter stdout."
+
+
+@patch(
+    "ansys.modelcenter.workflow.grpc_modelcenter.mcd_process._find_exe_location",
+    mock_find_exe_location,
+)
 def test_start_license_failure(monkeypatch) -> None:
     # Setup
     sut = MCDProcess()

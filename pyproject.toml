@@ -33,7 +33,7 @@ dependencies = [
     "numpy>=1.22.3",
     "overrides>=6.1",
     "pyansys-tools-variableinterop>=0.1.1",
-    "protobuf>=3.12.2",
+    "protobuf>=5.29.2",
     "ansys-engineeringworkflow-api>=0.1.0",
 ]
 
