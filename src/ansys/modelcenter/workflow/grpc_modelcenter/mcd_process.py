@@ -26,6 +26,7 @@ Desktop process.
 """
 from io import TextIOWrapper
 from pathlib import Path
+
 # Subprocess is used safely to start a local exe without user input.
 import subprocess  # nosec B404
 import time
