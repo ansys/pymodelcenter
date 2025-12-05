@@ -388,8 +388,8 @@ class ReferenceArrayDatapin(ReferenceDatapinBase, mc_api.IReferenceArrayDatapin)
         Length of the reference array.
         """
         response: var_msgs.IntegerValue = self._client.ReferenceArrayGetLength(self._element_id)
-        if not response.value >= 0:
-            raise AssertionError
+        # There is no issue if this check does not run in optimized byte code
+        assert response.value >= 0  # nosec B101
         return response.value
 
     @interpret_rpc_error({**WRAP_TARGET_NOT_FOUND, **WRAP_OUT_OF_BOUNDS})
