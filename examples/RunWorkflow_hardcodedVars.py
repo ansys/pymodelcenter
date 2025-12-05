@@ -25,8 +25,10 @@
 # see result for specified output variable (outputVar), save workflow, and close workflow
 
 import os
+
 from ansys.tools.variableinterop.scalar_values import RealValue
 from ansys.tools.variableinterop.variable_state import VariableState
+
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 # initial variables

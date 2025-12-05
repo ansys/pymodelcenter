@@ -27,6 +27,7 @@
 
 from ansys.tools.variableinterop.scalar_values import RealValue
 from ansys.tools.variableinterop.variable_state import VariableState
+
 import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 # prompt user for full path to ModelCenter workflow PXCZ
@@ -35,6 +36,7 @@ workflowPath = input(
     "(e.g., C:\\Users\\<username>\\Documents\\MC\\brake\\brake.pxcz): "
 )
 workflowElementsDict = {}
+
 
 # function to traverse workflow for elements and their properties and values
 def process_element(element, weDict):
@@ -91,7 +93,7 @@ with grpcmc.Engine() as mc:
         # loop until user inputs "run" to execute the workflow
         while True:
             inVarInput = input(
-                f'\nWhich input variable\'s value should be changed '
+                f"\nWhich input variable's value should be changed "
                 f'(format: model.component.variable, enter "run" to execute the workflow)? '
             )
 
