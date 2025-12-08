@@ -84,7 +84,7 @@ jobs:
         run: pytest -v
   
       - name: "Upload coverage artifacts"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: matrix.python-version == env.MAIN_PYTHON_VERSION
         with:
           name: coverage-html
