@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@010ddbe522e0a9aed3cbd850b4e226dcfae4ecda # v8.2.30
+        uses: ansys/actions/doc-style@eb7d0fc873deeee6d4740774675ce1741cb6f154 # v10.2.2
         with:
          token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -77,7 +77,7 @@ jobs:
             os: windows-latest
     steps:
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@010ddbe522e0a9aed3cbd850b4e226dcfae4ecda # v8.2.30
+        uses: ansys/actions/build-wheelhouse@eb7d0fc873deeee6d4740774675ce1741cb6f154 # v10.2.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -135,7 +135,7 @@ jobs:
     steps:
 
       - name: "Run Ansys documentation building action"
-        uses: ansys/actions/doc-build@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
+        uses: ansys/actions/doc-build@eb7d0fc873deeee6d4740774675ce1741cb6f154 # v10.2.2
         with:
           python-version: 3.13
 
@@ -145,7 +145,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Build library source and wheel artifacts"
-        uses: ansys/actions/build-library@010ddbe522e0a9aed3cbd850b4e226dcfae4ecda # v8.2.30
+        uses: ansys/actions/build-library@eb7d0fc873deeee6d4740774675ce1741cb6f154 # v10.2.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -159,7 +159,7 @@ jobs:
     needs: [package]
     steps:
       - name: "Deploy the latest documentation"
-        uses: ansys/actions/doc-deploy-dev@010ddbe522e0a9aed3cbd850b4e226dcfae4ecda # v8.2.30
+        uses: ansys/actions/doc-deploy-dev@eb7d0fc873deeee6d4740774675ce1741cb6f154 # v10.2.2
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -194,7 +194,7 @@ jobs:
           skip-existing: false
 
       - name: "Release to GitHub"
-        uses: ansys/actions/release-github@010ddbe522e0a9aed3cbd850b4e226dcfae4ecda # v8.2.30
+        uses: ansys/actions/release-github@eb7d0fc873deeee6d4740774675ce1741cb6f154 # v10.2.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
 
@@ -209,7 +209,7 @@ jobs:
       contents: write # Write permissions to deploy the documentation
     steps:
       - name: "Deploy the stable documentation"
-        uses: ansys/actions/doc-deploy-stable@010ddbe522e0a9aed3cbd850b4e226dcfae4ecda # v8.2.30
+        uses: ansys/actions/doc-deploy-stable@eb7d0fc873deeee6d4740774675ce1741cb6f154 # v10.2.2
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
