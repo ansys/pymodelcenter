@@ -26,7 +26,9 @@ Desktop process.
 """
 from io import TextIOWrapper
 from pathlib import Path
-import subprocess
+
+# Subprocess is used safely to start a local exe without user input.
+import subprocess  # nosec B404
 import time
 from typing import Optional
 import winreg
@@ -96,11 +98,13 @@ class MCDProcess:
         ]
         if run_only:
             args.append("/runonly")
-        self._process = subprocess.Popen(args, stdout=subprocess.PIPE)
+        # Subproccess call is safe here; exe and arguments are completely controlled by us.
+        self._process = subprocess.Popen(args, stdout=subprocess.PIPE)  # nosec B603
 
         # Wait until we read the grpc server start message from stdout.
         start: float = time.time()
-        assert self._process.stdout is not None
+        if self._process.stdout is None:
+            raise Exception("Failed to connect to ModelCenter stdout.")
         for line in TextIOWrapper(self._process.stdout, encoding="utf-8"):
             # if self._debug:
             #     print(line)
