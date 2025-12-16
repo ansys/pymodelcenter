@@ -157,6 +157,8 @@ jobs:
     # Deploy development only when merging to main
     if: github.ref == 'refs/heads/main'
     needs: [package]
+    permissions:
+      contents: write # Needed to push built docs to gh-pages during dev deploy
     steps:
       - name: "Deploy the latest documentation"
         uses: ansys/actions/doc-deploy-dev@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
