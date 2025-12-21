@@ -10,6 +10,7 @@
 * [Camille](https://github.com/clatapie)
 * [Cody Leftwich](https://github.com/cleftwich)
 * [Gabriel Garcia](https://github.com/ansggarcia)
+* [John Howard (JHH)](https://github.com/TheZaphod-Beeblebrox)
 * [Joshua Edwards](https://github.com/ejdubu11)
 * [Kathy Pippert](https://github.com/PipKat)
 * [Mark Potter](https://github.com/potterphx)
