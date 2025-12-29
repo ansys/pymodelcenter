@@ -34,8 +34,8 @@ import numpy
 from overrides import overrides
 
 from ansys.modelcenter.workflow.api import IEngine, WorkflowType
+from ansys.tools.common import cyberchannel
 
-from .channel_factory import ChannelFactory
 from .format import Format
 from .grpc_error_interpretation import WRAP_INVALID_ARG, interpret_rpc_error
 from .mcd_process import MCDProcess
@@ -134,14 +134,14 @@ class Engine(IEngine):
                 pim = pypim.connect()
                 self._instance = pim.create_instance(product_name="modelcenter")
                 self._instance.wait_for_ready()
-                # LTTODO: Will need to check that this library has been updated to use wnua auth
+                # LTTODO: Pypi support not required for this release; this has not been verified to work
                 self._channel = self._instance.build_grpc_channel()
         else:
             self._process = MCDProcess()
             port: int = self._process.start(
                 self._is_run_only, self._heartbeat_interval, self._allowed_heartbeat_misses
             )
-            self._channel = ChannelFactory.create_channel("localhost", port)
+            self._channel = cyberchannel.create_channel("wnua", "localhost", str(port))
 
         # run a background task to send heartbeat messages to the server
         self._heartbeat_condition = Condition()
