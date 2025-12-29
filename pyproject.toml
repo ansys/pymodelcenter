@@ -35,6 +35,7 @@ dependencies = [
     "pyansys-tools-variableinterop>=0.1.1",
     "protobuf>=5.29.2",
     "ansys-engineeringworkflow-api>=0.1.0",
+    "ansys-tools-common>=0.4.0"
 ]
 
 [project.optional-dependencies]
