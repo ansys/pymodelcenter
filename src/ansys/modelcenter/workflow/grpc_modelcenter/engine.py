@@ -134,7 +134,8 @@ class Engine(IEngine):
                 pim = pypim.connect()
                 self._instance = pim.create_instance(product_name="modelcenter")
                 self._instance.wait_for_ready()
-                # LTTODO: Pypi support not required for this release; this has not been verified to work
+                # LTTODO: Pypi support not required for this release;
+                # this has not been verified to work
                 self._channel = self._instance.build_grpc_channel()
         else:
             self._process = MCDProcess()
