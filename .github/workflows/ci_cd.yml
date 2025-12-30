@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAIN_PYTHON_VERSION: '3.10'
+  MAIN_PYTHON_VERSION: '3.13'
   PACKAGE_NAME: 'ansys-modelcenter-workflow'
   PACKAGE_NAMESPACE: 'ansys.modelcenter.workflow'
   DOCUMENTATION_CNAME: 'modelcenter.docs.pyansys.com'
@@ -95,14 +95,14 @@ jobs:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     steps:
       - name: "Install Git and checkout project"
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
 
       - name: "Setup Python"
         uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ matrix.python-version }}
 
       - name: "Install packages for testing"
         run: |
@@ -137,7 +137,7 @@ jobs:
       - name: "Run Ansys documentation building action"
         uses: ansys/actions/doc-build@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
         with:
-          python-version: 3.13
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
   package:
     name: "Package library"
@@ -157,6 +157,8 @@ jobs:
     # Deploy development only when merging to main
     if: github.ref == 'refs/heads/main'
     needs: [package]
+    permissions:
+      contents: write # Needed to push built docs to gh-pages during dev deploy
     steps:
       - name: "Deploy the latest documentation"
         uses: ansys/actions/doc-deploy-dev@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
