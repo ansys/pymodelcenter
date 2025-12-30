@@ -10,6 +10,8 @@
 * [Camille](https://github.com/clatapie)
 * [Cody Leftwich](https://github.com/cleftwich)
 * [Gabriel Garcia](https://github.com/ansggarcia)
+* [John Howard (JHH)](https://github.com/TheZaphod-Beeblebrox)
+* [Joshua Edwards](https://github.com/ejdubu11)
 * [Kathy Pippert](https://github.com/PipKat)
 * [Mark Potter](https://github.com/potterphx)
 * [Mateusz Jasiak](https://github.com/mobigliani)
@@ -18,3 +20,4 @@
 * [Nathan Sharp](https://github.com/phxnsharp)
 * [Revathy Venugopal](https://github.com/Revathyvenugopal162)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
+* [Sébastien Morais](https://github.com/SMoraisAnsys)
