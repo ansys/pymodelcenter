@@ -40,10 +40,10 @@ dependencies = [
 
 [project.optional-dependencies]
 doc=[
-    "ansys-engineeringworkflow-api==0.1.0",
+    "ansys-engineeringworkflow-api==0.1.1",
     "ansys-sphinx-theme[autoapi]==1.6.3",
     "numpydoc==1.10.0",
-    "pyansys-tools-variableinterop==0.1.1",
+    "pyansys-tools-variableinterop==0.1.2",
     "pytest-sphinx==0.6.3",
     "sphinx==8.2.3",
     "sphinx-copybutton==0.5.2",
@@ -51,9 +51,9 @@ doc=[
     "sphinx-notfound-page==1.1.0",
 ]
 tests = [
-    "ansys-engineeringworkflow-api==0.1.0",
+    "ansys-engineeringworkflow-api==0.1.1",
     "grpcio==1.76.0",
-    "pyansys-tools-variableinterop==0.1.1",
+    "pyansys-tools-variableinterop==0.1.2",
     "pytest==9.0.1",
     "pytest-cov==7.0.0",
 ]
