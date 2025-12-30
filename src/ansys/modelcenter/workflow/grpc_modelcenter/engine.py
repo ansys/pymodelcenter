@@ -29,6 +29,7 @@ import ansys.api.modelcenter.v0.engine_messages_pb2 as eng_msg
 from ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc import GRPCModelCenterServiceStub
 from ansys.engineeringworkflow.api import WorkflowEngineInfo
 import ansys.platform.instancemanagement as pypim
+from ansys.tools.common import cyberchannel
 import grpc
 import numpy
 from overrides import overrides
@@ -133,13 +134,15 @@ class Engine(IEngine):
                 pim = pypim.connect()
                 self._instance = pim.create_instance(product_name="modelcenter")
                 self._instance.wait_for_ready()
+                # LTTODO: Pypi support not required for this release;
+                # this has not been verified to work
                 self._channel = self._instance.build_grpc_channel()
         else:
             self._process = MCDProcess()
             port: int = self._process.start(
                 self._is_run_only, self._heartbeat_interval, self._allowed_heartbeat_misses
             )
-            self._channel = grpc.insecure_channel("localhost:" + str(port))
+            self._channel = cyberchannel.create_channel("wnua", "localhost", str(port))
 
         # run a background task to send heartbeat messages to the server
         self._heartbeat_condition = Condition()
