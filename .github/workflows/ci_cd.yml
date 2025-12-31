@@ -199,7 +199,7 @@ jobs:
         uses: ansys/actions/release-github@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
         with:
           library-name: ${{ env.PACKAGE_NAME }}
-
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   doc-deploy-stable:
     name: "Deploy stable documentation"
