@@ -1,0 +1,89 @@
+
+
+
+
+
+
+The ``file_datapin.py`` module
+==============================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.file_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: file_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.file_datapin.FileDatapin`
+            - Represents a file datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.file_datapin.FileArrayDatapin`
+            - Represents a file array datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> FileDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/file_datapin/FileDatapin>
+    <span class="nf nf-cod-symbol_class"></span> FileArrayDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/file_datapin/FileArrayDatapin>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the file datapin classes.
+
+These classes include ``FileDatapin`` and ``FileArrayDatapin``.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

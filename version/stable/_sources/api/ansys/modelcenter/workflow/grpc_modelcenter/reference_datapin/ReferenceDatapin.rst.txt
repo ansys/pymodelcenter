@@ -1,0 +1,247 @@
+
+
+
+
+
+
+:class:`ReferenceDatapin`
+=========================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin.ReferenceDatapin(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ReferenceDatapinBase`, :py:obj:`ansys.modelcenter.workflow.api.IReferenceDatapin`
+
+
+   
+   Represents a reference datapin.
+
+   .. note::
+       This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+       an instantiated ``Engine`` instance and use it to get a valid instance of this object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: ReferenceDatapin
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_state`
+            - Set the state of the datapin.
+          * - :py:attr:`~get_state`
+            - Get the state of the datapin.
+          * - :py:attr:`~get_reference_properties`
+            - Get the reference properties on the reference datapin.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~equation`
+            - Reference equation describing the values that the datapin
+          * - :py:attr:`~is_direct`
+            - Flag indicating if the datapin is a direct reference.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__eq__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin import ReferenceDatapin
+
+Property detail
+---------------
+
+.. py:property:: equation
+   :type: str
+
+
+   
+   Reference equation describing the values that the datapin
+   references.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Reference equation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_direct
+   :type: bool
+
+
+   
+   Flag indicating if the datapin is a direct reference.
+
+   Direct reference datapins refer to one specific datapin only. Their equations
+   are just the name of one other datapin. Only direct-reference datapins that refer
+   to a datapin that can be set directly can use the ``set_state()`` method to set the
+   referenced datapin.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the datapin is a direct reference, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __eq__(other)
+
+.. py:method:: set_state(state: ansys.tools.variableinterop.VariableState) -> None
+
+   
+   Set the state of the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_state(hid: Optional[str] = None) -> ansys.tools.variableinterop.VariableState
+
+   
+   Get the state of the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_reference_properties() -> Mapping[str, ansys.modelcenter.workflow.api.IReferenceProperty]
+
+   
+   Get the reference properties on the reference datapin.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Mapping`\[:class:`python:str`, :obj:`IReferencePropertyBase`]
+           Mapping of names to reference properties.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`EngineLicensingFailedException`
+=======================================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.mcd_process.EngineLicensingFailedException
+
+   Bases: :py:obj:`Exception`
+
+
+   
+   Raised if engine licensing has failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.mcd_process import EngineLicensingFailedException
+
+
+
+
+

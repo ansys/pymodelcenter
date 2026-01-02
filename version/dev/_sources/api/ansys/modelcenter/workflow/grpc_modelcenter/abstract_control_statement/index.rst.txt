@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``abstract_control_statement.py`` module
+============================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_control_statement
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: abstract_control_statement
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_control_statement.AbstractControlStatement`
+            - Defines an abstract base class for control statements.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AbstractControlStatement</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_control_statement/AbstractControlStatement>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the abstract base class for control statement implementations.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

@@ -1,0 +1,146 @@
+
+
+
+
+
+
+:class:`IReferenceArrayProperty`
+================================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.ireferenceproperty.IReferenceArrayProperty
+
+   Bases: :py:obj:`IReferencePropertyBase`, :py:obj:`abc.ABC`
+
+
+   
+   Defines methods for reference array properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: IReferenceArrayProperty
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_value_at`
+            - Set the state of a particular index.
+          * - :py:attr:`~get_state_at`
+            - Get the state of a reference property at a particular index.
+
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.ireferenceproperty import IReferenceArrayProperty
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_value_at(index: int, new_state: ansys.tools.variableinterop.VariableState) -> None
+   :abstractmethod:
+
+
+   
+   Set the state of a particular index.
+
+
+   :Parameters:
+
+       **index** : :class:`python:int`
+           Index to set the state at.
+
+       **new_state: atvi.VariableState**
+           New state of the property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_state_at(index: int) -> ansys.tools.variableinterop.VariableState
+   :abstractmethod:
+
+
+   
+   Get the state of a reference property at a particular index.
+
+
+   :Parameters:
+
+       **index** : :class:`python:int`
+           Index to get the state at.
+
+
+
+   :Returns:
+
+       :obj:`atvi.VariableState`
+           State of the property at the given index.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

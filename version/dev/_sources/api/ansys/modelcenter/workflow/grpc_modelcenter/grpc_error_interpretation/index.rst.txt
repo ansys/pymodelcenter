@@ -1,0 +1,292 @@
+
+
+
+
+
+
+The ``grpc_error_interpretation.py`` module
+===========================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: grpc_error_interpretation
+.. tab-set::
+
+
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation.UnexpectedEngineError`
+            - Raised if an error that is unexpected for the call is made.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation.EngineDisconnectedError`
+            - Raised if the ModelCenter service is not available.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation.InvalidInstanceError`
+            - Raised if the target element ID is no longer valid.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation.ValueOutOfRangeError`
+            - Raised if an argument value is out of range.
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~interpret_rpc_error`
+            - Decorate a function so that the ``grpc.RpcErrors`` that it raises are
+
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~WRAP_NAME_COLLISION`
+            - Pass this to ``wrap_rpcerror`` to wrap ALREADY_EXISTS as a
+
+
+          * - :py:obj:`~WRAP_TARGET_NOT_FOUND`
+            - Pass this to ``wrap_rpcerror`` when NOT_FOUND indicates that the calling
+
+
+          * - :py:obj:`~WRAP_INVALID_ARG`
+            - Pass this to ``wrap_rpcerror`` when responsibility for invalid arguments is
+
+
+          * - :py:obj:`~WRAP_OUT_OF_BOUNDS`
+            - Pass this to the ``wrap_rpcerror`` when the responsibility for out-of-range
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-lightning_bolt"></span> UnexpectedEngineError</api/ansys/modelcenter/workflow/grpc_modelcenter/grpc_error_interpretation/UnexpectedEngineError>
+    <span class="nf nf-md-lightning_bolt"></span> EngineDisconnectedError</api/ansys/modelcenter/workflow/grpc_modelcenter/grpc_error_interpretation/EngineDisconnectedError>
+    <span class="nf nf-md-lightning_bolt"></span> InvalidInstanceError</api/ansys/modelcenter/workflow/grpc_modelcenter/grpc_error_interpretation/InvalidInstanceError>
+    <span class="nf nf-md-lightning_bolt"></span> ValueOutOfRangeError</api/ansys/modelcenter/workflow/grpc_modelcenter/grpc_error_interpretation/ValueOutOfRangeError>
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the decorator and standard exception types.
+
+The decorator and exceptons types interpret errors from the gRPC client.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: interpret_rpc_error(additional_codes: Mapping[grpc.StatusCode, Type[Exception]] = {})
+
+   
+   Decorate a function so that the ``grpc.RpcErrors`` that it raises are
+   wrapped in a more meaningful way.
+
+   By default, the status codes UNAVAILABLE and INTERNAL are mapped to ``EngineDisconnectedError``
+   and ``EngineInternalError``. Callers can specify additional mappings in the ``additional_codes``
+   parameter. The key should be the status code, and the value should be the exception type.
+   The type should take a single parameter in its constructor that is the message from the
+   gRPC error.
+
+   Take care when specifying additional codes to ensure that the wrapped gRPC call is supposed
+   to raise the code in question for a particular reason. This module also supplies some
+   predefined maps that represent commonplace mappings between gRPC error codes and exception
+   types. These are not universally applicable, but they can be passed to the decorator when
+   appropriate for the gRPC call in question. Remember that you can create a merged dictionary
+   on the fly with the following syntax:
+
+   ``{\**DICT_ONE, \**DICT_TWO, additional_key: additional_value}``
+
+   If a code is not specified (or is one of the default codes), it is wrapped as
+   an ``UnexpectedEngineError``.
+
+   :Parameters:
+
+       **additional_codes** : :obj:`Mapping`\[:obj:`grpc.StatusCode`, :obj:`Type`\[:obj:`Exception`]]
+           Map of additional codes to wrap.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: WRAP_NAME_COLLISION
+   :type:  Mapping[grpc.StatusCode, Type[Exception]]
+
+   
+   Pass this to ``wrap_rpcerror`` to wrap ALREADY_EXISTS as a
+   ``NameCollisionError``.
+
+   Do not attempt to modify this map.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: WRAP_TARGET_NOT_FOUND
+   :type:  Mapping[grpc.StatusCode, Type[Exception]]
+
+   
+   Pass this to ``wrap_rpcerror`` when NOT_FOUND indicates that the calling
+   instance is invalid.
+
+   Do not attempt to modify this map.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: WRAP_INVALID_ARG
+   :type:  Mapping[grpc.StatusCode, Type[Exception]]
+
+   
+   Pass this to ``wrap_rpcerror`` when responsibility for invalid arguments is
+   the caller's.
+
+   Note that this is not always the case. For example, sometimes the
+   arguments passed to the gRPC method are entirely calculated by the API,
+   and there is no way for the user to cause it to produce invalid
+   arguments. In this case, you should wrap this code as an internal error.
+
+   Do not attempt to modify this map.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: WRAP_OUT_OF_BOUNDS
+   :type:  Mapping[grpc.StatusCode, Type[Exception]]
+
+   
+   Pass this to the ``wrap_rpcerror`` when the responsibility for out-of-range
+   arguments is the caller's.
+
+   Note that this is not always the case. For example, sometimes the
+   arguments passed to the gRPC method are entirely calculated by the API,
+   and there is no way for the user to cause it to produce invalid
+   arguments. In this case, you should wrap this code as an internal error.
+
+   Do not attempt to modify this map.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

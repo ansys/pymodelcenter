@@ -1,0 +1,89 @@
+
+
+
+
+
+
+The ``integer_datapin.py`` module
+=================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: integer_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin.IntegerDatapin`
+            - Represents an integer datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin.IntegerArrayDatapin`
+            - Represents an integer array datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> IntegerDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/integer_datapin/IntegerDatapin>
+    <span class="nf nf-cod-symbol_class"></span> IntegerArrayDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/integer_datapin/IntegerArrayDatapin>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the integer datapin classes.
+
+These classes include ``IntegerDatapin`` and ``IntegerArray``.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

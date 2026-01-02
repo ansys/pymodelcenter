@@ -1,0 +1,109 @@
+
+
+
+
+
+
+:class:`IReferenceDatapin`
+==========================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.ireferencedatapin.IReferenceDatapin
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.api.idatapin.IDatapin`, :py:obj:`ansys.modelcenter.workflow.api.idatapinreferencebase.IDatapinReferenceBase`, :py:obj:`ansys.modelcenter.workflow.api.ireferenceproperty.IReferencePropertyManager`, :py:obj:`abc.ABC`
+
+
+   
+   Represents a reference datapin on the workflow.
+
+   Reference datapins allow components to have configurable connections
+   to other datapins without creating a full link relationship.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: IReferenceDatapin
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_reference_properties`
+            - Get the reference properties on the reference datapin.
+
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.ireferencedatapin import IReferenceDatapin
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_reference_properties() -> Mapping[str, ansys.modelcenter.workflow.api.ireferenceproperty.IReferenceProperty]
+   :abstractmethod:
+
+
+   
+   Get the reference properties on the reference datapin.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Mapping`\[:class:`python:str`, :obj:`IReferencePropertyBase`]
+           Mapping of names to reference properties.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

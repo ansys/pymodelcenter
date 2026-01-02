@@ -1,0 +1,98 @@
+
+
+
+
+
+
+The ``workflow.py`` module
+==========================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.workflow
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: workflow
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.workflow.Workflow`
+            - Represents a workflow or model in ModelCenter.
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.workflow.WorkflowRunFailedError`
+            - Raised to indicate that a workflow run failed.
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Workflow</api/ansys/modelcenter/workflow/grpc_modelcenter/workflow/Workflow>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-lightning_bolt"></span> WorkflowRunFailedError</api/ansys/modelcenter/workflow/grpc_modelcenter/workflow/WorkflowRunFailedError>
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the workflow.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

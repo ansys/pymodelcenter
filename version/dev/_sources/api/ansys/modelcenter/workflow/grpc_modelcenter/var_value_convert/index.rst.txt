@@ -1,0 +1,295 @@
+
+
+
+
+
+
+The ``var_value_convert.py`` module
+===================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: var_value_convert
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert.ToGRPCVisitor`
+            - Produces a gRPC ``VariableValue`` message for a given
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert.ValueTypeNotSupportedError`
+            - Raised if an attempt is made to convert a value with a known but
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~interop_type_to_mc_type_string`
+            - Given an ``atvi.VariableType``, create the corresponding ModelCenter
+
+
+          * - :py:obj:`~mc_type_string_to_interop_type`
+            - Given a ModelCenter type string, create the corresponding
+
+
+          * - :py:obj:`~grpc_type_enum_to_interop_type`
+            - Given a value of ``VariableType``, return the appropriate value of
+
+
+          * - :py:obj:`~interop_type_to_grpc_type_enum`
+            - Given a value of ``atvi.VaribleType``, return the appropriate value of
+
+
+          * - :py:obj:`~convert_grpc_value_to_atvi`
+            - Produce an ``atvi.IVariableValue`` object from a gRPC message.
+
+
+          * - :py:obj:`~convert_interop_value_to_grpc`
+            - Create an equivalent ``VariableValue`` message from a
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ToGRPCVisitor</api/ansys/modelcenter/workflow/grpc_modelcenter/var_value_convert/ToGRPCVisitor>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-lightning_bolt"></span> ValueTypeNotSupportedError</api/ansys/modelcenter/workflow/grpc_modelcenter/var_value_convert/ValueTypeNotSupportedError>
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines methods for converting between a gRPC message and an IVariableValue.
+
+For more information, see `IVariableValue`_ in the
+*PyAnsys Tools Variable Interop* documentation.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: interop_type_to_mc_type_string(original: ansys.tools.variableinterop.VariableType) -> str
+
+   
+   Given an ``atvi.VariableType``, create the corresponding ModelCenter
+   type string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: mc_type_string_to_interop_type(original: str) -> ansys.tools.variableinterop.VariableType
+
+   
+   Given a ModelCenter type string, create the corresponding
+   ``atvi.VariableType``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: grpc_type_enum_to_interop_type(original: ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableType) -> ansys.tools.variableinterop.VariableType
+
+   
+   Given a value of ``VariableType``, return the appropriate value of
+   ``atvi.VariableType``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: interop_type_to_grpc_type_enum(original: ansys.tools.variableinterop.VariableType) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableType
+
+   
+   Given a value of ``atvi.VaribleType``, return the appropriate value of
+   ``VariableType``.
+
+   .. note::
+       This method does not handle reference types as they map to ``atvi.VariableType.UNKNOWN``
+       and are thus indistinguishable from actual unknown types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_value_to_atvi(original: ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue, engine_is_local: bool = True) -> ansys.tools.variableinterop.IVariableValue
+
+   
+   Produce an ``atvi.IVariableValue`` object from a gRPC message.
+
+
+   :Parameters:
+
+       **original** : :obj:`VariableValue`
+           Original gRPC message.
+
+       **engine_is_local** : :ref:`bool <python:bltin-boolean-values>`
+           Whether the engine that created the file is running on the local machine.
+           The default is ``True``. If ``False``, the engine is running on a remote
+           machine
+
+
+
+   :Returns:
+
+       :obj:`Converted` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_interop_value_to_grpc(original: ansys.tools.variableinterop.IVariableValue, local_file_context_stack: Optional[contextlib.ExitStack] = None, engine_is_local=False) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+   
+   Create an equivalent ``VariableValue`` message from a
+   ``atvi.IVariableValue`` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

@@ -1,0 +1,253 @@
+
+
+
+
+
+
+:class:`ReferenceArrayDatapin`
+==============================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin.ReferenceArrayDatapin(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ReferenceDatapinBase`, :py:obj:`ansys.modelcenter.workflow.api.IReferenceArrayDatapin`
+
+
+   
+   Represents a reference array datapin.
+
+   .. note::
+       This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+       an instantiated ``Engine`` instance  and use it to get a valid instance of this object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+.. py:currentmodule:: ReferenceArrayDatapin
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Implementation of __getitem__ for ``ReferenceArrayDatapins``.
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_length`
+            - Resize the array.
+          * - :py:attr:`~set_state`
+            - Set the state of the datapin.
+          * - :py:attr:`~get_reference_properties`
+            - Get the reference properties on the reference datapin.
+
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__eq__`
+            - 
+          * - :py:attr:`~__len__`
+            - Get the length of the reference array.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin import ReferenceArrayDatapin
+
+
+
+Method detail
+-------------
+
+.. py:method:: __eq__(other)
+
+.. py:method:: __getitem__(index: int) -> ansys.modelcenter.workflow.api.IDatapinReferenceBase
+               __getitem__(index: slice) -> Sequence[ansys.modelcenter.workflow.api.IDatapinReferenceBase]
+   :abstractmethod:
+
+
+   
+   Implementation of __getitem__ for ``ReferenceArrayDatapins``.
+
+
+   :Parameters:
+
+       **index: int | slice**
+           Index in the reference array datapin or a slice of the
+           reference array datapin to return.
+
+
+
+   :Returns:
+
+       ``ReferenceArrayDatapinElement`` :obj:`at` :obj:`the` :obj:`given` :obj:`index` or :obj:`a` :obj:`slice`
+           ..
+
+       :obj:`of` :obj:`the` :obj:`reference` :obj:`array <numpy.ndarray>` datapin.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __len__() -> int
+
+   
+   Get the length of the reference array.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Length` :obj:`of` :obj:`the` :obj:`reference` array.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_length(new_size: int) -> None
+
+   
+   Resize the array.
+
+   If smaller than the current size, elements at the end of the array are dropped.
+   If larger than the current size, new empty elements are added to the end of the array.
+
+   :Parameters:
+
+       **new_size** : :class:`python:int`
+           New size of the array.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_state(state: ansys.tools.variableinterop.VariableState) -> None
+
+   
+   Set the state of the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_reference_properties() -> Mapping[str, ansys.modelcenter.workflow.api.IReferenceArrayProperty]
+
+   
+   Get the reference properties on the reference datapin.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Mapping`\[:class:`python:str`, :obj:`IReferencePropertyBase`]
+           Mapping of names to reference properties.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
