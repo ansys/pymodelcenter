@@ -1,0 +1,296 @@
+
+
+
+
+
+
+:class:`IEngine`
+================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.iengine.IEngine
+
+   Bases: :py:obj:`ansys.engineeringworkflow.api.IFileBasedWorkflowEngine`, :py:obj:`abc.ABC`
+
+
+   
+   Manages creating and running engineering workflows.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+.. py:currentmodule:: IEngine
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~new_workflow`
+            - Create a workflow.
+          * - :py:attr:`~get_formatter`
+            - Create an instance of a formatter that can be used to format numbers
+          * - :py:attr:`~get_preference`
+            - Get the value of a preference.
+          * - :py:attr:`~set_preference`
+            - Set the value of a preference.
+          * - :py:attr:`~get_units`
+            - Get available units by category.
+          * - :py:attr:`~get_run_only_mode`
+            - Get whether the engine is in run-only mode.
+
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.iengine import IEngine
+
+
+
+Method detail
+-------------
+
+.. py:method:: new_workflow(name: str, workflow_type: WorkflowType = WorkflowType.DATA) -> ansys.modelcenter.workflow.api.iworkflow.IWorkflow
+   :abstractmethod:
+
+
+   
+   Create a workflow.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Filename or path where the workflow is to be created.
+
+       **workflow_type** : :obj:`WorkflowType`, :obj:`optional`
+           Type of workflow. The default is a data workflow.
+
+
+
+   :Returns:
+
+       :obj:`IWorkflow`
+           Created ``IWorkflow`` instance.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_formatter(fmt: str) -> ansys.modelcenter.workflow.api.iformat.IFormat
+   :abstractmethod:
+
+
+   
+   Create an instance of a formatter that can be used to format numbers
+   to and from a particular string style.
+
+
+   :Parameters:
+
+       **fmt** : :class:`python:str`
+           Specified string format for the ``IFormat`` object.
+
+
+
+   :Returns:
+
+       :obj:`IFormat`
+           Format object that formats in the given style.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_preference(pref: str) -> Union[bool, int, float, str]
+   :abstractmethod:
+
+
+   
+   Get the value of a preference.
+
+   Preferences control how the engine behaves in various ways.
+   The data type of the value may be ``bool``, ``float``,
+   ``int``, or ``str``.
+
+   :Parameters:
+
+       **pref** : :class:`python:str`
+           Name of the preference to return the value for.
+
+
+
+   :Returns:
+
+       :obj:`Union`\[:ref:`bool <python:bltin-boolean-values>`, :class:`python:int`, :class:`python:float`, :class:`python:str`]
+           Value of the given preference.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_preference(pref: str, value: Union[bool, int, float, str]) -> None
+   :abstractmethod:
+
+
+   
+   Set the value of a preference.
+
+   Preferences control how the engine behaves in various ways.
+   The data type of the value may be ``bool``, ``float``,
+   ``int``, or ``str``.
+
+   :Parameters:
+
+       **pref** : :class:`python:str`
+           Name of the preference to set.
+
+       **value: Union[bool, int, float, str]**
+           Value to set.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_units() -> Mapping[str, Collection[str]]
+   :abstractmethod:
+
+
+   
+   Get available units by category.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Mapping`\[:class:`python:str`, :obj:`Collection`\[:class:`python:str`]]
+           Mapping representing the units available in the engine.
+           The keys in the map are the names of unit categories,
+           and the values are collections containing all the unit names for that category.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_run_only_mode() -> bool
+   :abstractmethod:
+
+
+   
+   Get whether the engine is in run-only mode.
+
+   Run-only mode has lower licensing requirements, but it does not
+   allow for the workflow to be edited.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if in run-only mode, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,603 @@
+
+
+
+
+
+
+The ``var_metadata_convert.py`` module
+======================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: var_metadata_convert
+.. tab-set::
+
+
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert.CustomMetadataValueNotSupportedError`
+            - Raised if a custom metadata item includes an unsupported value type.
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~convert_grpc_reference_metadata`
+            - Given a gRPC reference datapin metadata message, produce an equivalent     ``ReferenceDatapinMetadata`` object.
+
+
+          * - :py:obj:`~convert_grpc_boolean_metadata`
+            - Given a gRPC Boolean datapin metadata message, produce an equivalent     ``atvi.BooleanMetadata`` object.
+
+
+          * - :py:obj:`~convert_grpc_boolean_array_metadata`
+            - Given a gRPC Boolean array datapin metadata message, produce an
+
+
+          * - :py:obj:`~fill_reference_metadata_message`
+            - Fill out a gRPC message representing reference datapin metadata.
+
+
+          * - :py:obj:`~fill_boolean_metadata_message`
+            - Fill out a gRPC message representing an ``atvi.BooleanMetadata`` object.
+
+
+          * - :py:obj:`~fill_real_metadata_message`
+            - Fill out a gRPC message representing real metadata.
+
+
+          * - :py:obj:`~convert_grpc_real_metadata`
+            - Create an ``atvi.RealMetadata`` object for a real datapin from a gRPC
+
+
+          * - :py:obj:`~convert_grpc_real_array_metadata`
+            - Create an ``atvi.RealArrayMetadata`` object for a real array datapin
+
+
+          * - :py:obj:`~fill_integer_metadata_message`
+            - Fill out a gRPC message representing integer metadata.
+
+
+          * - :py:obj:`~convert_grpc_integer_metadata`
+            - Create an ``atvi.IntegerMetadata`` object for an integer datapin from a
+
+
+          * - :py:obj:`~convert_grpc_integer_array_metadata`
+            - Create an ``atvi.IntegerArrayMetadata`` object for an integer array
+
+
+          * - :py:obj:`~fill_string_metadata_message`
+            - Fill out a gRPC message representing string metadata.
+
+
+          * - :py:obj:`~convert_grpc_string_metadata`
+            - Create an ``atvi.StringMetadata`` object for a string datapin from a
+
+
+          * - :py:obj:`~convert_grpc_string_array_metadata`
+            - Create an ``atvi.StringArrayMetadata`` object for a string array datapin
+
+
+          * - :py:obj:`~convert_grpc_file_metadata`
+            - Given a gRPC file datapin metadata message, produce an equivalent
+
+
+          * - :py:obj:`~convert_grpc_file_array_metadata`
+            - Given a gRPC file array datapin metadata message, produce an equivalent
+
+
+          * - :py:obj:`~fill_file_metadata_message`
+            - Fill out a gRPC message representing an ``atvi.FileMetadata`` object.
+
+
+          * - :py:obj:`~convert_grpc_metadata`
+            - Use a generic method to convert any type of variable m.Metadata.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-lightning_bolt"></span> CustomMetadataValueNotSupportedError</api/ansys/modelcenter/workflow/grpc_modelcenter/var_metadata_convert/CustomMetadataValueNotSupportedError>
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines functions for converting between ACVI metadata and gRPC messages.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: convert_grpc_reference_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.ReferenceVariableMetadata) -> ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin_metadata.ReferenceDatapinMetadata
+
+   
+   Given a gRPC reference datapin metadata message, produce an equivalent     ``ReferenceDatapinMetadata`` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_boolean_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.BooleanVariableMetadata) -> ansys.tools.variableinterop.BooleanMetadata
+
+   
+   Given a gRPC Boolean datapin metadata message, produce an equivalent     ``atvi.BooleanMetadata`` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_boolean_array_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.BooleanVariableMetadata) -> ansys.tools.variableinterop.BooleanArrayMetadata
+
+   
+   Given a gRPC Boolean array datapin metadata message, produce an
+   equivalent ``atvi.BooleanArrayMetadata`` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: fill_reference_metadata_message(source: ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin_metadata.ReferenceDatapinMetadata, target: ansys.api.modelcenter.v0.variable_value_messages_pb2.ReferenceVariableMetadata) -> None
+
+   
+   Fill out a gRPC message representing reference datapin metadata.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: fill_boolean_metadata_message(source: ansys.tools.variableinterop.BooleanMetadata, target: ansys.api.modelcenter.v0.variable_value_messages_pb2.BooleanVariableMetadata) -> None
+
+   
+   Fill out a gRPC message representing an ``atvi.BooleanMetadata`` object.
+
+   The subordinate metadata types are also filled out.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: fill_real_metadata_message(source: ansys.tools.variableinterop.RealMetadata, target: ansys.api.modelcenter.v0.variable_value_messages_pb2.DoubleVariableMetadata) -> None
+
+   
+   Fill out a gRPC message representing real metadata.
+
+   All subordinate metadata fields are filled out by this method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_real_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.DoubleVariableMetadata) -> ansys.tools.variableinterop.RealMetadata
+
+   
+   Create an ``atvi.RealMetadata`` object for a real datapin from a gRPC
+   message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_real_array_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.DoubleVariableMetadata) -> ansys.tools.variableinterop.RealArrayMetadata
+
+   
+   Create an ``atvi.RealArrayMetadata`` object for a real array datapin
+   from a gRPC message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: fill_integer_metadata_message(source: ansys.tools.variableinterop.IntegerMetadata, target: ansys.api.modelcenter.v0.variable_value_messages_pb2.IntegerVariableMetadata) -> None
+
+   
+   Fill out a gRPC message representing integer metadata.
+
+   All subordinate metadata fields are filled out by this method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_integer_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.IntegerVariableMetadata) -> ansys.tools.variableinterop.IntegerMetadata
+
+   
+   Create an ``atvi.IntegerMetadata`` object for an integer datapin from a
+   gRPC message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_integer_array_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.IntegerVariableMetadata) -> ansys.tools.variableinterop.IntegerArrayMetadata
+
+   
+   Create an ``atvi.IntegerArrayMetadata`` object for an integer array
+   datapin from a gRPC message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: fill_string_metadata_message(source: ansys.tools.variableinterop.StringMetadata, target: ansys.api.modelcenter.v0.variable_value_messages_pb2.StringVariableMetadata) -> None
+
+   
+   Fill out a gRPC message representing string metadata.
+
+   All subordinate metadata fields are filled out by this method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_string_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.StringVariableMetadata) -> ansys.tools.variableinterop.StringMetadata
+
+   
+   Create an ``atvi.StringMetadata`` object for a string datapin from a
+   gRPC message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_string_array_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.StringVariableMetadata) -> ansys.tools.variableinterop.StringArrayMetadata
+
+   
+   Create an ``atvi.StringArrayMetadata`` object for a string array datapin
+   from a gRPC message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_file_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.FileVariableMetadata) -> ansys.tools.variableinterop.FileMetadata
+
+   
+   Given a gRPC file datapin metadata message, produce an equivalent
+   ``atvi.FileMetadata`` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_file_array_metadata(source: ansys.api.modelcenter.v0.variable_value_messages_pb2.FileVariableMetadata) -> ansys.tools.variableinterop.FileArrayMetadata
+
+   
+   Given a gRPC file array datapin metadata message, produce an equivalent
+   ``atvi.FileMetadata`` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: fill_file_metadata_message(source: ansys.tools.variableinterop.FileMetadata, target: ansys.api.modelcenter.v0.variable_value_messages_pb2.FileVariableMetadata) -> None
+
+   
+   Fill out a gRPC message representing an ``atvi.FileMetadata`` object.
+
+   The subordinate metadata types are also filled out.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: convert_grpc_metadata(source: Union[ansys.api.modelcenter.v0.variable_value_messages_pb2.FileVariableMetadata, ansys.api.modelcenter.v0.variable_value_messages_pb2.StringVariableMetadata, ansys.api.modelcenter.v0.variable_value_messages_pb2.BooleanVariableMetadata, ansys.api.modelcenter.v0.variable_value_messages_pb2.DoubleVariableMetadata, ansys.api.modelcenter.v0.variable_value_messages_pb2.IntegerVariableMetadata], is_array: bool = False) -> ansys.tools.variableinterop.CommonVariableMetadata
+
+   
+   Use a generic method to convert any type of variable m.Metadata.
+
+
+   :Parameters:
+
+       **source** : :obj:`FileVariableMetadata` | :obj:`StringVariableMetadata` | :obj:`BooleanVariableMetadata` |
+           ..
+
+       **DoubleVariableMetadata | IntegerVariableMetadata**
+           gRPC representation of a datapin metadata.
+
+       **is_array** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the metadata i for an array datapin.
+
+
+
+   :Returns:
+
+       :obj:`atvi.CommonVariableMetadata`
+           Equivalent ATVI metadata object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

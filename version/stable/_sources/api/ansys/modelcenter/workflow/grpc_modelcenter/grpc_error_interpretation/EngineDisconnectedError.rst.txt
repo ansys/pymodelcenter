@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`EngineDisconnectedError`
+================================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation.EngineDisconnectedError(message: str)
+
+   Bases: :py:obj:`Exception`
+
+
+   
+   Raised if the ModelCenter service is not available.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation import EngineDisconnectedError
+
+
+
+
+

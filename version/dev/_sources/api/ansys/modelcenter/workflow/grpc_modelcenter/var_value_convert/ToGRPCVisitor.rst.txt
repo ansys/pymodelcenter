@@ -1,0 +1,116 @@
+
+
+
+
+
+
+:class:`ToGRPCVisitor`
+======================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert.ToGRPCVisitor(local_file_context_stack: Optional[contextlib.ExitStack] = None, engine_is_local: bool = True)
+
+   Bases: :py:obj:`ansys.tools.variableinterop.IVariableValueVisitor`\ [\ :py:obj:`ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue`\ ]
+
+
+   
+   Produces a gRPC ``VariableValue`` message for a given
+   ``atvi.IVariableValue`` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ToGRPCVisitor
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~visit_integer`
+            - 
+          * - :py:attr:`~visit_real`
+            - 
+          * - :py:attr:`~visit_boolean`
+            - 
+          * - :py:attr:`~visit_string`
+            - 
+          * - :py:attr:`~visit_integer_array`
+            - 
+          * - :py:attr:`~visit_file`
+            - 
+          * - :py:attr:`~visit_real_array`
+            - 
+          * - :py:attr:`~visit_boolean_array`
+            - 
+          * - :py:attr:`~visit_string_array`
+            - 
+          * - :py:attr:`~visit_file_array`
+            - 
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ToGRPCVisitor
+
+
+
+Method detail
+-------------
+
+.. py:method:: visit_integer(value: ansys.tools.variableinterop.IntegerValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_real(value: ansys.tools.variableinterop.RealValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_boolean(value: ansys.tools.variableinterop.BooleanValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_string(value: ansys.tools.variableinterop.StringValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_integer_array(value: ansys.tools.variableinterop.IntegerArrayValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_file(value: ansys.tools.variableinterop.FileValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_real_array(value: ansys.tools.variableinterop.RealArrayValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_boolean_array(value: ansys.tools.variableinterop.BooleanArrayValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_string_array(value: ansys.tools.variableinterop.StringArrayValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+.. py:method:: visit_file_array(value: ansys.tools.variableinterop.FileArrayValue) -> ansys.api.modelcenter.v0.variable_value_messages_pb2.VariableValue
+
+
+
+

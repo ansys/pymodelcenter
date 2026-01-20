@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``irenamable_elements.py`` module
+=====================================
+
+.. py:module:: ansys.modelcenter.workflow.api.irenamable_elements
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: irenamable_elements
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.irenamable_elements.IRenamableElement`
+            - Contains the interface for workflow elements that can be renamed.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IRenamableElement</api/ansys/modelcenter/workflow/api/irenamable_elements/IRenamableElement>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains the interface for workflow elements that can be renamed.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

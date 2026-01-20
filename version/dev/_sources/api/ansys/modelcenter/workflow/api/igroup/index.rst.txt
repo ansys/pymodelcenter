@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``igroup.py`` module
+========================
+
+.. py:module:: ansys.modelcenter.workflow.api.igroup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: igroup
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.igroup.IGroupOwner`
+            - Represents a workflow element that has groups in ModelCenter.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.igroup.IGroup`
+            - Represents a datapin group in ModelCenter.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IGroupOwner</api/ansys/modelcenter/workflow/api/igroup/IGroupOwner>
+    <span class="nf nf-cod-symbol_interface"></span> IGroup</api/ansys/modelcenter/workflow/api/igroup/IGroup>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines a group of variables.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

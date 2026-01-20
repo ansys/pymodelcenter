@@ -1,0 +1,330 @@
+
+
+
+
+
+
+:class:`AbstractWorkflowElement`
+================================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element.AbstractWorkflowElement(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.engineeringworkflow.api.IElement`, :py:obj:`abc.ABC`
+
+
+   
+   Defines the abstract base class for gRPC-backed workflow elements.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AbstractWorkflowElement
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_property`
+            - Get a property by name.
+          * - :py:attr:`~get_property_names`
+            - Get the names of all properties.
+          * - :py:attr:`~get_properties`
+            - Get all properties of the element.
+          * - :py:attr:`~set_property`
+            - Create or set a property on the element.
+          * - :py:attr:`~get_parent_element`
+            - Get the parent object of the element.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~element_id`
+            - Unique ID for the element.
+          * - :py:attr:`~parent_element_id`
+            - Parent element's ID.
+          * - :py:attr:`~name`
+            - Name of the element.
+          * - :py:attr:`~full_name`
+            - Full name of the element.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import AbstractWorkflowElement
+
+Property detail
+---------------
+
+.. py:property:: element_id
+   :type: str
+
+
+   
+   Unique ID for the element.
+
+   This ID is assigned by the system.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: parent_element_id
+   :type: str
+
+
+   
+   Parent element's ID.
+
+   If this is the root element of the workflow, the parent ID is a blank string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Name of the element.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: full_name
+   :type: str
+
+
+   
+   Full name of the element.
+
+   The full name is returned in dotted notation, starting from the root of the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_property(property_name: str) -> ansys.engineeringworkflow.api.Property
+
+   
+   Get a property by name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_property_names() -> AbstractSet[str]
+
+   
+   Get the names of all properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_properties() -> Mapping[str, ansys.engineeringworkflow.api.Property]
+
+   
+   Get all properties of the element.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_property(property_name: str, property_value: ansys.tools.variableinterop.IVariableValue) -> None
+
+   
+   Create or set a property on the element.
+
+
+   :Parameters:
+
+       **property_name** : :class:`python:str`
+           Name of the property to create or set.
+
+       **property_value** : :obj:`IVariableValue`
+           Value of the property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_parent_element() -> Optional[ansys.engineeringworkflow.api.IElement]
+
+   
+   Get the parent object of the element.
+
+   If this is the root element of the workflow, the method returns ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

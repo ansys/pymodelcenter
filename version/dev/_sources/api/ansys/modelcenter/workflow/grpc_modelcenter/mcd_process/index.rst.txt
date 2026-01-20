@@ -1,0 +1,101 @@
+
+
+
+
+
+
+The ``mcd_process.py`` module
+=============================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.mcd_process
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: mcd_process
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.mcd_process.MCDProcess`
+            - Launches and keeps track of a ModelCenter Desktop process.
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.mcd_process.EngineLicensingFailedException`
+            - Raised if engine licensing has failed.
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> MCDProcess</api/ansys/modelcenter/workflow/grpc_modelcenter/mcd_process/MCDProcess>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-lightning_bolt"></span> EngineLicensingFailedException</api/ansys/modelcenter/workflow/grpc_modelcenter/mcd_process/EngineLicensingFailedException>
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains utilities for a ModelCenter Desktop process.
+
+Methods provide for finding, tracking, and starting a ModelCenter
+Desktop process.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

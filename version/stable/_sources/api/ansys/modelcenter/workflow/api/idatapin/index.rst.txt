@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``idatapin.py`` module
+==========================
+
+.. py:module:: ansys.modelcenter.workflow.api.idatapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: idatapin
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.idatapin.IDatapin`
+            - Represents a datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IDatapin</api/ansys/modelcenter/workflow/api/idatapin/IDatapin>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains the common base class for all variables.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

@@ -1,0 +1,1038 @@
+
+
+
+
+
+
+:class:`Workflow`
+=================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.workflow.Workflow(workflow_id: str, file_path: str, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.api.IWorkflow`
+
+
+   
+   Represents a workflow or model in ModelCenter.
+
+   .. note::
+       This class should not be directly instantiated by clients. Create an ``Engine`` instance
+       and use it to get a valid instance of this object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: Workflow
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_state`
+            - Get the state of the workflow instance.
+          * - :py:attr:`~run`
+            - Set a workflow's input datapins and run it.
+          * - :py:attr:`~start_run`
+            - Set a workflow's input datapins and start running the workflow.
+          * - :py:attr:`~get_root`
+            - Get the root element of the workflow instance.
+          * - :py:attr:`~get_element_by_name`
+            - Get an element of the workflow instance by name.
+          * - :py:attr:`~get_datapin_state`
+            - Get the state of a datapin.
+          * - :py:attr:`~create_link`
+            - Create a link to a given datapin based on a given equation.
+          * - :py:attr:`~save_workflow`
+            - Save the workflow.
+          * - :py:attr:`~save_workflow_as`
+            - Save the workflow to a file.
+          * - :py:attr:`~close_workflow`
+            - Close the workflow.
+          * - :py:attr:`~get_datapin`
+            - Get a datapin with a given name.
+          * - :py:attr:`~get_component`
+            - Get a component from the workflow.
+          * - :py:attr:`~remove_component`
+            - Remove a component from the workflow.
+          * - :py:attr:`~create_assembly`
+            - Create an assembly in the workflow.
+          * - :py:attr:`~auto_link`
+            - Automatically link two components.
+          * - :py:attr:`~get_links`
+            - Get a list of all links in the workflow.
+          * - :py:attr:`~get_workflow_uuid`
+            - Get the unique ID for the workflow.
+          * - :py:attr:`~halt`
+            - Stop execution of the workflow in ModelCenter.
+          * - :py:attr:`~move_component`
+            - Move a component to the parent at the given index.
+          * - :py:attr:`~get_assembly`
+            - Get the named assembly or the top-level assembly.
+          * - :py:attr:`~create_component`
+            - Create a component.
+          * - :py:attr:`~get_datapin_meta_data`
+            - Get the metadata from a datapin.
+          * - :py:attr:`~set_value`
+            - Set the value of a datapin.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~workflow_directory`
+            - Get the directory the workflow is in.
+          * - :py:attr:`~workflow_file_name`
+            - Full path of the workflow.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__enter__`
+            - Initialization when created in a 'with' statement.
+          * - :py:attr:`~__exit__`
+            - Clean up when leaving a 'with' block.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.workflow import Workflow
+
+Property detail
+---------------
+
+.. py:property:: workflow_directory
+   :type: str
+
+
+   
+   Get the directory the workflow is in.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Directory containing the workflow.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: workflow_file_name
+   :type: str
+
+
+   
+   Full path of the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __enter__()
+
+   
+   Initialization when created in a 'with' statement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __exit__(exc_type, exc_val, exc_tb)
+
+   
+   Clean up when leaving a 'with' block.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_state() -> ansys.engineeringworkflow.api.WorkflowInstanceState
+
+   
+   Get the state of the workflow instance.
+
+
+
+
+
+   :Returns:
+
+       :obj:`WorkflowInstanceState`
+           Current state of the workflow instance.
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   Possible states are:
+
+   - ``WorkflowInstanceState.UNKNOWN``:
+       If any datapin validated by the last run no longer exists or some other error occurs
+       getting the state.
+   - ``WorkflowInstanceState.INVALID``:
+       If any datapin validated by the last run is not valid, or the workflow has never been
+       run and the root assembly is invalid. Note that this can be returned by requesting a
+       datapin that is not validated even if the workflow runs successfully, such as
+       a datapin in an inactive branch of an if-component.
+   - ``WorkflowInstanceState.RUNNING``:
+       If the workflow is currently running.
+   - ``WorkflowInstanceState.FAILED``:
+       If the last workflow run terminated due to a failure.
+   - ``WorkflowInstanceState.SUCCESS``:
+       If the workflow ran successfully and all requested datapins are valid.
+
+   Note that ``WorkflowInstanceState.PAUSED`` is never returned.
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: run(inputs: Mapping[str, ansys.tools.variableinterop.VariableState] = {}, reset: bool = False, validation_names: AbstractSet[str] = set(), collect_names: AbstractSet[str] = set()) -> Mapping[str, ansys.tools.variableinterop.VariableState]
+
+   
+   Set a workflow's input datapins and run it.
+
+
+   :Parameters:
+
+       **inputs** : :obj:`Mapping`\[:class:`python:str`, :obj:`VariableState`]
+           Map of datapin names to ``VariableState`` objects for all inputs to
+           set before running the workflow.
+
+       **reset** : :ref:`bool <python:bltin-boolean-values>`, default: :data:`python:False`
+           Whether to reset the workflow before running. If this parameter is set
+           to ``True``, all run components and data links become invalid so that the
+           workflow runs from the beginning. However, it does not reset any input values
+           that have been set to non-default values. Note that setting datapin values
+           could also implicitly reset the states of some components.
+
+       **validation_names** : :obj:`AbstractSet`\[:class:`python:str`]
+           Names of the specific datapins or components that are required to be valid.
+           Setting names may enable the workflow engine to shortcut evaluation of the
+           workflow. If the set is non-empty, the workflow engine may choose which
+           portions of the workflow are run to satisfy the given datapins with the
+           minimum runtime.
+
+       **collect_names** : :obj:`AbstractSet`\[:class:`python:str`]
+           Names of the specific datapins or elements that are to cause the method
+           to return these values after running. If an element is specified, all
+           child datapins are recursively included.
+
+
+
+   :Returns:
+
+       :obj:`Mapping`\[:class:`python:str`, :obj:`VariableState`]
+           Map of output datapin names to ``VariableState`` objects for each datapin specified by
+           the ``collect_names`` parameter.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueOutOfRangeError`
+           If one of the input values violates its datapin's bounds or enumerated values.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: start_run(inputs: Mapping[str, ansys.tools.variableinterop.VariableState], reset: bool, validation_names: AbstractSet[str]) -> None
+
+   
+   Set a workflow's input datapins and start running the workflow.
+
+
+   :Parameters:
+
+       **inputs** : :obj:`Mapping`\[:class:`python:str`, :obj:`VariableState`]
+           Map of datapin names to ``VariableState`` objects for all inputs to
+           set before running the workflow.
+
+       **reset** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to reset the workflow before running. If this parameter is set
+           to ``True``, all run components and data links become invalid so that the
+           workflow runs from the beginning. However, it does not reset any input values
+           that have been set to non-default values. Note that setting datapin values
+           could also implicitly reset the states of some components.
+
+       **validation_names** : :obj:`AbstractSet`\[:class:`python:str`]
+           Names of the specific datapins or components that are required to be valid.
+           Setting names may enable the workflow engine to shortcut evaluation of the
+           workflow. If the set is non-empty, the workflow engine may choose which
+           portions of the workflow are run to satisfy the given datapins with the
+           minimum runtime.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueOutOfRangeError`
+           If one of the input values violates its datapin's bounds or enumerated values.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_root() -> ansys.modelcenter.workflow.grpc_modelcenter.assembly.Assembly
+
+   
+   Get the root element of the workflow instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_element_by_name(element_name: str) -> ansys.engineeringworkflow.api.IElement
+
+   
+   Get an element of the workflow instance by name.
+
+
+   :Parameters:
+
+       **element_name** : :class:`python:str`
+           Name of the element to retrieve in dotted notation. For example,
+           ``'Root.Component.Thing'``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_datapin_state(var_name: str) -> ansys.tools.variableinterop.VariableState
+
+   
+   Get the state of a datapin.
+
+
+   :Parameters:
+
+       **var_name** :  :class:`python:str`
+           Full ModelCenter path of the datapin.
+
+
+
+   :Returns:
+
+       :obj:`VariableState`
+           Value as a ``VariableState``.
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If a datapin with the given name does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_link(datapin: Union[ansys.modelcenter.workflow.api.IDatapin, str], equation: Union[str, ansys.modelcenter.workflow.api.IDatapin]) -> None
+
+   
+   Create a link to a given datapin based on a given equation.
+
+
+   :Parameters:
+
+       **datapin** : :obj:`Union`\[:obj:`IDatapin`, :class:`python:str`]
+           Datapin that the link should target or its full name.
+
+       **equation** : :obj:`Union`\[:class:`python:str`, :obj:`IDatapin`]
+           Equation of the link. You can also pass an ``IDatapin``
+           object here, and its name becomes the equation.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If either the target or equation datapin does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: save_workflow() -> None
+
+   
+   Save the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: save_workflow_as(file_name: str) -> None
+
+   
+   Save the workflow to a file.
+
+
+   :Parameters:
+
+       **file_name** : :class:`python:str`
+           Path to save the workflow in.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: close_workflow() -> None
+
+   
+   Close the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_datapin(name: str) -> ansys.modelcenter.workflow.api.IDatapin
+
+   
+   Get a datapin with a given name.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Full ModelCenter path of the datapin.
+
+
+
+   :Returns:
+
+       :obj:`IDatapin`
+           Datapin with the given name.
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If a datapin with the given name does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_component(name: str) -> ansys.modelcenter.workflow.grpc_modelcenter.component.Component
+
+   
+   Get a component from the workflow.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Full path and file name to the component.
+
+
+
+   :Returns:
+
+       :obj:`IComponent`
+           Component with the given name.
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If a component with the given name does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_component(name: str) -> None
+
+   
+   Remove a component from the workflow.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Full ModelCenter path of the component.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If a component with the given name does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_assembly(name: str, parent: Union[ansys.modelcenter.workflow.api.IAssembly, str], assembly_type: Optional[ansys.modelcenter.workflow.api.AssemblyType] = None) -> ansys.modelcenter.workflow.grpc_modelcenter.assembly.Assembly
+
+   
+   Create an assembly in the workflow.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the new assembly.
+
+       **parent** : :obj:`Union`\[:obj:`IAssembly`, :class:`python:str`]
+           Full ModelCenter path of the parent ``IAssembly`` object or an
+           ``IAssembly`` object that represents it.
+
+       **assembly_type** : :obj:`AssemblyType`, :obj:`optional`
+           Type of the assembly to create. Pass ``None`` to create a
+           regular data-dependency assembly. (This is equivalent to passing
+           ``AssemblyType.ASSEMBLY``.)
+
+
+
+   :Returns:
+
+       :obj:`IAssembly`
+           Created assembly.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: auto_link(src_comp: Union[str, ansys.modelcenter.workflow.api.IComponent], dest_comp: Union[str, ansys.modelcenter.workflow.api.IComponent]) -> Collection[ansys.modelcenter.workflow.api.IDatapinLink]
+
+   
+   Automatically link two components.
+
+
+   :Parameters:
+
+       **src_comp** : :class:`python:str`
+           Source component or the full name of the component desired.
+
+       **dest_comp** : :class:`python:str`
+           Destination component or the full name of the component desired.
+
+
+
+   :Returns:
+
+       :obj:`Collection`\[:obj:`IDatapinLink`]
+           Collection of the created links.
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If either the source or destination component does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_links() -> Collection[ansys.modelcenter.workflow.api.IDatapinLink]
+
+   
+   Get a list of all links in the workflow.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Collection`\[:obj:`IDatapinLink`]
+           Iterable over datapin links.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_workflow_uuid() -> str
+
+   
+   Get the unique ID for the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: halt() -> None
+
+   
+   Stop execution of the workflow in ModelCenter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: move_component(component: Union[ansys.modelcenter.workflow.api.IComponent, str], parent: Union[ansys.engineeringworkflow.api.IControlStatement, str], index: int = -1) -> None
+
+   
+   Move a component to the parent at the given index.
+
+
+   :Parameters:
+
+       **component** : :obj:`Union`\[:obj:`IComponent`, :class:`python:str`]
+           Component to move.
+
+       **parent** : :class:`python:str`
+           Owning object of the component.
+
+       **index** : :class:`python:int`, :obj:`optional`
+           Position in the parent.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If the target component does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_assembly(name: Optional[str] = None) -> ansys.modelcenter.workflow.api.IAssembly
+
+   
+   Get the named assembly or the top-level assembly.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Full name of the desired assembly.
+           If ``None`` is passed, the root assembly of the workflow is
+           returned.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If an assembly with the given name does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_component(server_path: str, name: str, parent: Union[ansys.engineeringworkflow.api.IControlStatement, str], *, init_string: Optional[str] = None, av_position: Optional[Tuple[int, int]] = None, insert_before: Optional[Union[ansys.modelcenter.workflow.api.IComponent, ansys.engineeringworkflow.api.IControlStatement, str]] = None) -> ansys.modelcenter.workflow.grpc_modelcenter.component.Component
+
+   
+   Create a component.
+
+
+   :Parameters:
+
+       **server_path** : :class:`python:str`
+           Source path of the new component, such as the URL to the
+           component in ModelCenter Remote Execution.
+
+       **name** : :class:`python:str`
+           Name of the new component.
+
+       **parent** : :obj:`Union`\[:obj:`aew_api.IControlStatement`, :class:`python:str`]
+           Parent assembly of the component.
+
+       **init_string: str, optional**
+           Initialization string.
+
+       **av_position: Tuple[int, int], optional**
+           Position in the analysis view to insert the component at.
+
+       **insert_before: Union[IComponent, IAssembly, str], optional**
+           Component before where this component is to be inserted.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **IComponent**
+           Created component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_datapin_meta_data(name: str) -> ansys.tools.variableinterop.CommonVariableMetadata
+
+   
+   Get the metadata from a datapin.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Full name of the datapin.
+
+
+
+   :Returns:
+
+       :obj:`atvi.CommonVariableMetadata`
+           Metadata of the datapin.
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If a datapin with the given name does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_value(var_name: str, value: ansys.tools.variableinterop.IVariableValue) -> None
+
+   
+   Set the value of a datapin.
+
+
+   :Parameters:
+
+       **var_name** : :class:`python:str`
+           Full ModelCenter path of the datapin.
+
+       **value** : :obj:`atvi.IVariableValue`
+           New value to set.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`InvalidInstanceError`
+           If a datapin with the given name does not exist.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`WorkflowRunFailedError`
+===============================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.workflow.WorkflowRunFailedError
+
+   Bases: :py:obj:`Exception`
+
+
+   
+   Raised to indicate that a workflow run failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.workflow import WorkflowRunFailedError
+
+
+
+
+

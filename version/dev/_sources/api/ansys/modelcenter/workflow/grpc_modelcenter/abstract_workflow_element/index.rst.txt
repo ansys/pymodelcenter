@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``abstract_workflow_element.py`` module
+===========================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: abstract_workflow_element
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element.AbstractWorkflowElement`
+            - Defines the abstract base class for gRPC-backed workflow elements.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element.UnsupportedWorkflowElement`
+            - Represents a known workflow element whose type is not supported.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AbstractWorkflowElement</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_workflow_element/AbstractWorkflowElement>
+    <span class="nf nf-cod-symbol_class"></span> UnsupportedWorkflowElement</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_workflow_element/UnsupportedWorkflowElement>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the abstract base class for gRPC-backed workflow elements.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

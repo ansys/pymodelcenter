@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``abstract_datapin_container.py`` module
+============================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_datapin_container
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: abstract_datapin_container
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_datapin_container.AbstractGRPCDatapinContainer`
+            - Defines the abstract base class for the datapin container.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AbstractGRPCDatapinContainer</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_datapin_container/AbstractGRPCDatapinContainer>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the abstract base class for the datapin container.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

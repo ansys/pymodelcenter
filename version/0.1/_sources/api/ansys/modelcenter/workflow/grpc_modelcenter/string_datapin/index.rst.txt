@@ -1,0 +1,89 @@
+
+
+
+
+
+
+The ``string_datapin.py`` module
+================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.string_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: string_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.string_datapin.StringDatapin`
+            - Represents a gRPC string datapin on the workflow.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.string_datapin.StringArrayDatapin`
+            - Represents a gRPC double/real array datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> StringDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/string_datapin/StringDatapin>
+    <span class="nf nf-cod-symbol_class"></span> StringArrayDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/string_datapin/StringArrayDatapin>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the string datapin classes.
+
+These classes include ``StringDatapin`` and ``StringArrayDatapin``.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

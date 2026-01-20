@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`InvalidInstanceError`
+=============================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation.InvalidInstanceError(message: str)
+
+   Bases: :py:obj:`Exception`
+
+
+   
+   Raised if the target element ID is no longer valid.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation import InvalidInstanceError
+
+
+
+
+

@@ -1,0 +1,115 @@
+
+
+
+
+
+
+:class:`AbstractControlStatement`
+=================================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_control_statement.AbstractControlStatement(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable.AbstractRenamableElement`, :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_datapin_container.AbstractGRPCDatapinContainer`, :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child.AbstractAssemblyChild`, :py:obj:`ansys.engineeringworkflow.api.IControlStatement`, :py:obj:`abc.ABC`
+
+
+   
+   Defines an abstract base class for control statements.
+
+   Control statements include driver components and assemblies.
+
+   .. note::
+       This class should not be directly instantiated by clients. Get a ``Workflow`` object
+       from an instantiated ``Engine`` instance and use it to get valid ``Assembly``,
+       ``Component``, or ``DriverComponent`` instances.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AbstractControlStatement
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_elements`
+            - Get all elements of the control statement.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.abstract_control_statement import AbstractControlStatement
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_elements() -> Mapping[str, ansys.engineeringworkflow.api.IElement]
+
+   
+   Get all elements of the control statement.
+
+   Because Python dictionaries are ordered, the order in which elements appear in the map
+   may be significant, depending on the engine/workflow instance implementation.
+   For example, some workflows may execute each element in a control statement
+   in a defined order, which should be reflected here.
+
+
+
+
+   :Returns:
+
+       :obj:`Mapping`\[:class:`python:str`, :obj:`IElement`]
+           Child elements of the control statement. Each key is the short name (relative to
+           the parent element) of the corresponding element object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

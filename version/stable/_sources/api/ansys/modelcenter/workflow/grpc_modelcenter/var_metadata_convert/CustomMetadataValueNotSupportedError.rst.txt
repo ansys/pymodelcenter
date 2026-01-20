@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`CustomMetadataValueNotSupportedError`
+=============================================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert.CustomMetadataValueNotSupportedError
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert.ValueTypeNotSupportedError`
+
+
+   
+   Raised if a custom metadata item includes an unsupported value type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert import CustomMetadataValueNotSupportedError
+
+
+
+
+

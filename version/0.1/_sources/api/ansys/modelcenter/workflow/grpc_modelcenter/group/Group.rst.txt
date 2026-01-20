@@ -1,0 +1,83 @@
+
+
+
+
+
+
+:class:`Group`
+==============
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.group.Group(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_datapin_container.AbstractGRPCDatapinContainer`, :py:obj:`ansys.modelcenter.workflow.api.IGroup`
+
+
+   
+   Represents a group in the workflow.
+
+   .. note::
+       This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+       an instantiated ``Engine`` instance and use it to get a valid instance of this object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Group
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__eq__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.group import Group
+
+
+
+Method detail
+-------------
+
+.. py:method:: __eq__(other)
+
+
+
+

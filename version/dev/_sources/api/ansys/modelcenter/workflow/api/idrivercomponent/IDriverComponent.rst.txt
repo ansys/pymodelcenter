@@ -1,0 +1,54 @@
+
+
+
+
+
+
+:class:`IDriverComponent`
+=========================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.idrivercomponent.IDriverComponent
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.api.icomponent.IComponent`, :py:obj:`ansys.engineeringworkflow.api.IControlStatement`
+
+
+   
+   Represents a driver component in a workflow.
+
+   For process-mode workflows, driver components have children.
+   Driver components are still represented by instances of this
+   interface, even if the workflow is a data-dependency workflow and the
+   component in question has no children. (In this case, the ``get_elements()``
+   method returns an empty collection).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.idrivercomponent import IDriverComponent
+
+
+
+
+

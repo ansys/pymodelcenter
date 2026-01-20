@@ -1,0 +1,141 @@
+
+
+
+
+
+
+:class:`IReferenceProperty`
+===========================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.ireferenceproperty.IReferenceProperty
+
+   Bases: :py:obj:`IReferencePropertyBase`, :py:obj:`abc.ABC`
+
+
+   
+   Defines methods for reference properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: IReferenceProperty
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_state`
+            - Get the state of the property.
+          * - :py:attr:`~set_state`
+            - Set the state of the property.
+
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.ireferenceproperty import IReferenceProperty
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_state() -> ansys.tools.variableinterop.VariableState
+   :abstractmethod:
+
+
+   
+   Get the state of the property.
+
+   The returned state may be invalid. The engine does not attempt
+   to run the workflow to validate the property.
+
+
+
+
+   :Returns:
+
+       :obj:`atvi.VariableState`
+           State of the property.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_state(new_state: ansys.tools.variableinterop.VariableState) -> None
+   :abstractmethod:
+
+
+   
+   Set the state of the property.
+
+
+   :Parameters:
+
+       **new_state** : :obj:`atvi.VariableState`
+           New state of the property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

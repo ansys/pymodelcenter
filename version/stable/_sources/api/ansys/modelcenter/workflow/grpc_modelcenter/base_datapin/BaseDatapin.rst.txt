@@ -1,0 +1,270 @@
+
+
+
+
+
+
+:class:`BaseDatapin`
+====================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.base_datapin.BaseDatapin(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element.AbstractWorkflowElement`, :py:obj:`ansys.modelcenter.workflow.api.IDatapin`, :py:obj:`abc.ABC`
+
+
+   
+   Represents a datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BaseDatapin
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_state`
+            - Get the state of the datapin.
+          * - :py:attr:`~get_dependents`
+            - Get the dependent (output) datapins for the datapin.
+          * - :py:attr:`~get_precedents`
+            - Get the precedent (input) datapins for the datapin.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~value_type`
+            - Get the type of value that the datapin stores.
+          * - :py:attr:`~is_input_to_component`
+            - Flag indicating if the datapin is an input in the context of the component it is on.
+          * - :py:attr:`~is_input_to_workflow`
+            - Flag indicating if the datapin is an input in the context of the overall workflow.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.base_datapin import BaseDatapin
+
+Property detail
+---------------
+
+.. py:property:: value_type
+   :type: ansys.tools.variableinterop.VariableType
+
+
+   
+   Get the type of value that the datapin stores.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_input_to_component
+   :type: bool
+
+
+   
+   Flag indicating if the datapin is an input in the context of the component it is on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_input_to_workflow
+   :type: bool
+
+
+   
+   Flag indicating if the datapin is an input in the context of the overall workflow.
+
+   Variables that are inputs in the context of their components are not included in the overall
+   workflow if they are the target of a link.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_state(hid: Optional[str] = None) -> ansys.tools.variableinterop.VariableState
+
+   
+   Get the state of the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_dependents(only_fetch_direct_dependents: bool, follow_suspended_links: bool) -> Collection[ansys.modelcenter.workflow.api.IDatapin]
+
+   
+   Get the dependent (output) datapins for the datapin.
+
+
+   :Parameters:
+
+       **only_fetch_direct_dependents** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to return only the direct dependents. The default is
+           ``False``, in which case all dependents are returned recursively.
+
+       **follow_suspended_links** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to follow suspended links between datapins. The default
+           is ``False``.
+
+
+
+   :Returns:
+
+       :obj:`Collection`\[:obj:`aew_api.IDatapin`]
+           Collection of dependent datapins.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_precedents(only_fetch_direct_precedents: bool, follow_suspended_links: bool) -> Collection[ansys.modelcenter.workflow.api.IDatapin]
+
+   
+   Get the precedent (input) datapins for the datapin.
+
+
+   :Parameters:
+
+       **only_fetch_direct_dependents** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to return only the direct dependents. The default is
+           ``False``, in which case all dependents are returned recursively.
+
+       **follow_suspended_links** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to follow suspended links between datapins. The default
+           is ``False``.
+
+
+
+   :Returns:
+
+       :obj:`Collection`\[:obj:`aew_api.IDatapin`]
+           Collection of precedent datapins.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
