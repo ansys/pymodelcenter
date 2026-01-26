@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Defines the format."""
+
 from abc import ABC, abstractmethod
 
 from numpy import float64, int64

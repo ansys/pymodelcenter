@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Contains implementations of reference property-related classes."""
+
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 

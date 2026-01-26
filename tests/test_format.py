@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Tests for Format."""
+
 from typing import Dict
 
 import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages

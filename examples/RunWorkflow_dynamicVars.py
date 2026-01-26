@@ -111,10 +111,8 @@ with grpcmc.Engine() as mc:
                 print("\nRunning workflow..")
                 break
             else:
-                print(
-                    f'- "{inVarInput}" does not match the required format or \
-                    is not a workflow variable, please try again..'
-                )
+                print(f'- "{inVarInput}" does not match the required format or \
+                    is not a workflow variable, please try again..')
 
         # run workflow
         workflow.run(collect_names=[])

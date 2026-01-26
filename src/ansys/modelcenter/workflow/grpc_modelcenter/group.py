@@ -23,6 +23,7 @@
 
 This interaction is handled in an object-oriented way.
 """
+
 from typing import TYPE_CHECKING
 
 from overrides import overrides
