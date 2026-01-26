@@ -141,7 +141,7 @@ class Assembly(
             ),
         )
         if av_pos is not None:
-            (x_pos, y_pos) = av_pos
+            x_pos, y_pos = av_pos
             request.av_pos.x_pos = x_pos
             request.av_pos.y_pos = y_pos
         response = self._client.AssemblyAddAssembly(request)

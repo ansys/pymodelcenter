@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Contains classes for representing variables with unsupported state types."""
+
 from typing import TYPE_CHECKING
 
 import ansys.tools.variableinterop as atvi

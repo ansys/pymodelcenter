@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Defines the workflow."""
+
 from contextlib import ExitStack
 import os
 from typing import TYPE_CHECKING, AbstractSet, Collection, List, Mapping, Optional, Tuple, Union
