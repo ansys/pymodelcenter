@@ -41,7 +41,7 @@ dependencies = [
 [project.optional-dependencies]
 doc=[
     "ansys-engineeringworkflow-api==0.1.1",
-    "ansys-sphinx-theme[autoapi]==1.6.4",
+    "ansys-sphinx-theme[autoapi]==1.7.0",
     "numpydoc==1.10.0",
     "pyansys-tools-variableinterop==0.1.2",
     "pytest-sphinx==0.6.3",
