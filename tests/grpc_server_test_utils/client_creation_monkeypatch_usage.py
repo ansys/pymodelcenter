@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Demonstrates the use of monkeypatch_client_creation."""
+
 import ansys.api.modelcenter.v0.engine_messages_pb2 as engine_messages
 import ansys.api.modelcenter.v0.grpc_modelcenter_pb2_grpc as engine_grpc
 import grpc

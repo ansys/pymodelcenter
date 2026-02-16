@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Contains a gRPC-backed implementation of the IDriverComponent."""
+
 from typing import TYPE_CHECKING
 
 from .abstract_control_statement import AbstractControlStatement

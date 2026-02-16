@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Defines the engine."""
+
 from os import PathLike
 from string import Template
 from threading import Condition, Thread

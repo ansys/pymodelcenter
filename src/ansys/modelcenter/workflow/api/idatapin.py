@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Contains the common base class for all variables."""
+
 from abc import ABC, abstractmethod
 from typing import Collection
 
