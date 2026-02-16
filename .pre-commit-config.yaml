@@ -8,7 +8,7 @@ repos:
     - --start_year=2022
 
 - repo: https://github.com/psf/black-pre-commit-mirror
-  rev: 25.12.0  # IF VERSION CHANGES --> MODIFY "blacken-docs" MANUALLY AS WELL!!
+  rev: 26.1.0  # IF VERSION CHANGES --> MODIFY "blacken-docs" MANUALLY AS WELL!!
   hooks:
   - id: black
 
@@ -51,6 +51,6 @@ repos:
 
 # this validates our github workflow files
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.36.0
+  rev: 0.36.2
   hooks:
     - id: check-github-workflows
