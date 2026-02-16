@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Defines the base class for reference datapins."""
+
 from abc import ABC, abstractmethod
 from typing import Optional
 

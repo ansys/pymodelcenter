@@ -23,6 +23,7 @@
 
 This interaction is handled in an object-oriented way.
 """
+
 from abc import ABC
 from typing import TYPE_CHECKING, Collection, Optional
 

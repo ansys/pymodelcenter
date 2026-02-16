@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Defines a function that creates a wrapper from gRPC element information."""
+
 from typing import TYPE_CHECKING
 
 import ansys.engineeringworkflow.api as aew_api

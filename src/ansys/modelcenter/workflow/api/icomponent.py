@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Defines the component."""
+
 from abc import ABC, abstractmethod
 
 import ansys.engineeringworkflow.api as aew_api

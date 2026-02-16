@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Defines a group of variables."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
