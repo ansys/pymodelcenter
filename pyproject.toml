@@ -52,7 +52,7 @@ doc=[
 ]
 tests = [
     "ansys-engineeringworkflow-api==0.1.1",
-    "grpcio==1.76.0",
+    "grpcio==1.78.0",
     "pyansys-tools-variableinterop==0.1.2",
     "pytest==9.0.1",
     "pytest-cov==7.0.0",
