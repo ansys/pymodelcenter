@@ -27,14 +27,16 @@
 # - 'inputFileVar' set to "InputFile.txt" contents
 # - 'outputFileVar' linked to 'inputFileVar'
 # When workflow is run, 'inputFileVar' passes value to 'outputFileVar'
-# The temp file used to store 'outputFileVar' value is determined and copied 
+# The temp file used to store 'outputFileVar' value is determined and copied
 # to "OutputFile.txt"
 
 import os
 import shutil
+
 import ansys.tools.variableinterop as atvi
-import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
+
 import ansys.modelcenter.workflow.api as mcapi
+import ansys.modelcenter.workflow.grpc_modelcenter as grpcmc
 
 # initial variables
 # specify the ModelCenter workflow PXCZ path and file paths
@@ -45,7 +47,7 @@ outputFile_path = os.path.join(cwd, "OutputFile.txt")
 
 # create input file with content and empty output file
 with open(inputFile_path, "w") as ifw:
-    ifw.write("inputValue = 5")    
+    ifw.write("inputValue = 5")
 
 with open(outputFile_path, "w") as ofw:
     ofw.write("")
@@ -57,80 +59,74 @@ with grpcmc.Engine() as mc:
 
         # get workflow root element
         workflowRoot = workflow.get_root()
-        
+
         # create assembly to contain input file variable
         inputFile_assembly = workflow.create_assembly(
-            name="InputFile_Assembly", 
-            parent=workflowRoot, 
-            assembly_type=mcapi.AssemblyType.SEQUENCE
+            name="InputFile_Assembly",
+            parent=workflowRoot,
+            assembly_type=mcapi.AssemblyType.SEQUENCE,
         )
         print("- input assembly created")
-        
+
         # create input file variable under assembly
-        inputFile_datapin = inputFile_assembly.add_datapin(
-            "inputFileVar", 
-            atvi.VariableType.FILE
-        )        
+        inputFile_datapin = inputFile_assembly.add_datapin("inputFileVar", atvi.VariableType.FILE)
         print("- input file variable created under input assembly")
-        
+
         # get input file contents as FileValue object and set to input file variable value
         with atvi.NonManagingFileScope() as inputFile_scope:
             inputFile_contents = inputFile_scope.read_from_file(
-                inputFile_path, 
-                mime_type=None, 
-                encoding=None
+                inputFile_path, mime_type=None, encoding=None
             )
             inputFile_datapin.set_state(atvi.VariableState(inputFile_contents, True))
-            print(f'- input file variable value set to input file contents')
-            
+            print(f"- input file variable value set to input file contents")
+
         # create assembly to contain output file variable
         outputFile_assembly = workflow.create_assembly(
-            name="OutputFile_Assembly", 
-            parent=workflowRoot, 
-            assembly_type=mcapi.AssemblyType.SEQUENCE
+            name="OutputFile_Assembly",
+            parent=workflowRoot,
+            assembly_type=mcapi.AssemblyType.SEQUENCE,
         )
         print("- output assembly created")
-        
+
         # create output file variable under assembly
         outputFile_datapin = outputFile_assembly.add_datapin(
-            "outputFileVar", 
-            atvi.VariableType.FILE
-        )        
-        print("- output file variable created under output assembly")  
+            "outputFileVar", atvi.VariableType.FILE
+        )
+        print("- output file variable created under output assembly")
 
-        # don't need to set value for output file variable 
-        # since output file variable will get its value from link to input file variable        
-        
+        # don't need to set value for output file variable
+        # since output file variable will get its value from link to input file variable
+
         # link file variables
         workflow.create_link(outputFile_datapin, inputFile_datapin)
-        print(f'- workflow links created between file variables')
-            
+        print(f"- workflow links created between file variables")
+
         # run workflow
         workflow.run(collect_names=[])
-        print("\nWorkflow ran..")   
-        
+        print("\nWorkflow ran..")
+
         # get output file variable's temporary file path that contains updated contents after run
         # and copy to output file
-        
+
         # From FileValue documentation:
-        ## The FileValue instance is intended to represent an immutable value. 
-        ## The file returned by this call may point to a cached file or even the original file. 
-        ## Callers must not modify the file on disk. Otherwise, undefined behaviors, 
-        ## including class 3 errors, may occur. If the caller needs to modify the file, 
+        ## The FileValue instance is intended to represent an immutable value.
+        ## The file returned by this call may point to a cached file or even the original file.
+        ## Callers must not modify the file on disk. Otherwise, undefined behaviors,
+        ## including class 3 errors, may occur. If the caller needs to modify the file,
         ## consider using the write_file method or copying the file before modifying it
-        
+
         # Message from PyModelCenter SDev:
-        ## You can call get_state on a file variable and what you get back should be an 
-        ## ansys.tools.variableinterop.FileValue or a derivative. That basically "points" 
-        ## to the temp file that ModelCenter is managing with the file content. 
-        ## You can call write_file on that to dump it out to an appropriate path.        
-        
-        #outputFile_datapin.get_state().value.write_file(outputFile_path)  # gives async error    
-        
+        ## You can call get_state on a file variable and what you get back should be an
+        ## ansys.tools.variableinterop.FileValue or a derivative. That basically "points"
+        ## to the temp file that ModelCenter is managing with the file content.
+        ## You can call write_file on that to dump it out to an appropriate path.
+
+        # outputFile_datapin.get_state().value.write_file(outputFile_path)  # gives async error
+
         tempFile_path = outputFile_datapin.get_state().value.original_file_name
         shutil.copyfile(tempFile_path, outputFile_path)
-        print(f'- new outputFile file variable value written to output file')          
-               
+        print(f"- new outputFile file variable value written to output file")
+
         # prompt user if workflow should be saved
         saveInput = input("\nSave workflow (y/n)? ")
         if saveInput in ["yes", "y"]:
