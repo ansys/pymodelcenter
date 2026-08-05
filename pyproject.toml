@@ -8,12 +8,12 @@ version = "0.1.dev0"
 description = "A python wrapper for ModelCenter Desktop"
 readme = "README.rst"
 requires-python = ">=3.10,<4"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
 maintainers = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: Microsoft :: Windows :: Windows 7",
     "Operating System :: Microsoft :: Windows :: Windows Vista",
     "Operating System :: Microsoft :: Windows :: Windows 8",
@@ -25,7 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.13"
 ]
 dependencies = [
     "ansys-platform-instancemanagement>=1.1.1",
@@ -48,14 +48,14 @@ doc=[
     "sphinx==8.2.3",
     "sphinx-copybutton==0.5.2",
     "sphinx-gallery==0.20.0",
-    "sphinx-notfound-page==1.1.0",
+    "sphinx-notfound-page==1.1.0"
 ]
 tests = [
     "ansys-engineeringworkflow-api==0.1.1",
     "grpcio==1.76.0",
     "pyansys-tools-variableinterop==0.1.2",
     "pytest==9.0.1",
-    "pytest-cov==7.0.0",
+    "pytest-cov==7.0.0"
 ]
 
 [tool.flit.module]
