@@ -42,3 +42,12 @@ class ReferenceDatapinMetadata(atvi.CommonVariableMetadata):
     @overrides
     def variable_type(self) -> atvi.VariableType:
         return atvi.VariableType.UNKNOWN
+
+    @overrides
+    def to_dict(self) -> dict:
+        return {}
+
+    @classmethod
+    @overrides
+    def from_dict(cls, data) -> atvi.CommonVariableMetadata:
+        pass

@@ -73,10 +73,10 @@ def test_can_get_engine_info(engine) -> None:
     info: ewapi.WorkflowEngineInfo = engine.get_server_info()
 
     # Assert
-    assert info.release_year == 26
+    assert info.release_year == 27
     assert info.release_id == 1
     assert info.build == 0
-    assert info.version_as_string == "26.1.0"
+    assert info.version_as_string == "27.1.0"
 
     assert info.build_type == ""
     assert info.server_type == ""
@@ -186,7 +186,7 @@ expected_units = {
     "Reciprocal Length": ["m⁻¹", "cm⁻¹"],
     "Time": ["ns", "µs", "ms", "s", "min", "h", "d", "mo", "a", "Ma", "Ga"],
     "Frequency": ["Hz", "kHz", "MHz", "GHz", "THz", "rad/s", "RPM"],
-    "Velocity": ["m/s", "mm/s", "cm/s", "km/h", "km/s", "mph", "in/s", "ft/s", "kn"],
+    "Velocity": ["m/s", "mm/s", "cm/s", "km/h", "km/s", "mph", "in/s", "ft/s", "ft/min", "kn"],
     "Acceleration": ["m/s²", "ft/s²", "g-force"],
     "Mass": ["µg", "mg", "g", "kg", "u", "oz", "t oz", "lbm", "slug", "ton", "tonne"],
     "Mass Flowrate": [
