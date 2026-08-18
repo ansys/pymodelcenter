@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 """Defines the assembly."""
 
 from typing import TYPE_CHECKING, Optional, Tuple
@@ -141,7 +142,7 @@ class Assembly(
             ),
         )
         if av_pos is not None:
-            (x_pos, y_pos) = av_pos
+            x_pos, y_pos = av_pos
             request.av_pos.x_pos = x_pos
             request.av_pos.y_pos = y_pos
         response = self._client.AssemblyAddAssembly(request)
