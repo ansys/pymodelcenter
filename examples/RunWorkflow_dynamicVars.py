@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,11 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-# Description: script loads workflow from specified path (workflowPath), traverses
-# the workflow for all variables and presents to the user, allows user to specify
-# variables and values for modification, run workflow, see result for all variables,
-# save workflow, and close workflow
 
 from ansys.tools.variableinterop.scalar_values import RealValue
 from ansys.tools.variableinterop.variable_state import VariableState
@@ -111,10 +106,8 @@ with grpcmc.Engine() as mc:
                 print("\nRunning workflow..")
                 break
             else:
-                print(
-                    f'- "{inVarInput}" does not match the required format or \
-                    is not a workflow variable, please try again..'
-                )
+                print(f'- "{inVarInput}" does not match the required format or \
+                    is not a workflow variable, please try again..')
 
         # run workflow
         workflow.run(collect_names=[])
