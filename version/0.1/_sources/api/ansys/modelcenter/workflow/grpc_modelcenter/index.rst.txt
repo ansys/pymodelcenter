@@ -1,0 +1,234 @@
+
+
+
+
+
+
+The ``grpc_modelcenter`` package
+====================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: grpc_modelcenter
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child`
+            - Defines the abstract base class for children of assemblies.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_control_statement`
+            - Defines the abstract base class for control statement implementations.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_datapin_container`
+            - Defines the abstract base class for the datapin container.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable`
+            - Defines the implementation for renaming an element with gRPC.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element`
+            - Defines the abstract base class for gRPC-backed workflow elements.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.assembly`
+            - Defines the assembly.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.base_datapin`
+            - Provides for interacting with ModelCenter variables with gRPC.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin`
+            - Defines the Boolean datapin classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.component`
+            - Defines the component.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.create_datapin`
+            - Defines the function for creating a datapin object.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.datapin_link`
+            - Defines the datapin link.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.driver_component`
+            - Contains a gRPC-backed implementation of the IDriverComponent.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper`
+            - Defines a function that creates a wrapper from gRPC element information.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.engine`
+            - Defines the engine.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.file_datapin`
+            - Defines the file datapin classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.format`
+            - Defines the formats.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.group`
+            - Provides for interacting with ModelCenter datapin groups with gRPC.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation`
+            - Defines the decorator and standard exception types.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.integer_datapin`
+            - Defines the integer datapin classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.mcd_process`
+            - Contains utilities for a ModelCenter Desktop process.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.real_datapin`
+            - Defines the real datapin classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin`
+            - Defines the reference datapin classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin_metadata`
+            - Defines the reference datapin metadata.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.reference_property`
+            - Contains implementations of reference property-related classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.string_datapin`
+            - Defines the string datapin classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin`
+            - Contains classes for representing variables with unsupported state types.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.var_metadata_convert`
+            - Defines functions for converting between ACVI metadata and gRPC messages.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert`
+            - Defines methods for converting between a gRPC message and an IVariableValue.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.workflow`
+            - Defines the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> abstract_assembly_child</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_assembly_child/index>
+    <span class="nf nf-fa-file"></span> abstract_control_statement</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_control_statement/index>
+    <span class="nf nf-fa-file"></span> abstract_datapin_container</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_datapin_container/index>
+    <span class="nf nf-fa-file"></span> abstract_renamable</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_renamable/index>
+    <span class="nf nf-fa-file"></span> abstract_workflow_element</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_workflow_element/index>
+    <span class="nf nf-fa-file"></span> assembly</api/ansys/modelcenter/workflow/grpc_modelcenter/assembly/index>
+    <span class="nf nf-fa-file"></span> base_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/base_datapin/index>
+    <span class="nf nf-fa-file"></span> boolean_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/boolean_datapin/index>
+    <span class="nf nf-fa-file"></span> component</api/ansys/modelcenter/workflow/grpc_modelcenter/component/index>
+    <span class="nf nf-fa-file"></span> create_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/create_datapin/index>
+    <span class="nf nf-fa-file"></span> datapin_link</api/ansys/modelcenter/workflow/grpc_modelcenter/datapin_link/index>
+    <span class="nf nf-fa-file"></span> driver_component</api/ansys/modelcenter/workflow/grpc_modelcenter/driver_component/index>
+    <span class="nf nf-fa-file"></span> element_wrapper</api/ansys/modelcenter/workflow/grpc_modelcenter/element_wrapper/index>
+    <span class="nf nf-fa-file"></span> engine</api/ansys/modelcenter/workflow/grpc_modelcenter/engine/index>
+    <span class="nf nf-fa-file"></span> file_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/file_datapin/index>
+    <span class="nf nf-fa-file"></span> format</api/ansys/modelcenter/workflow/grpc_modelcenter/format/index>
+    <span class="nf nf-fa-file"></span> group</api/ansys/modelcenter/workflow/grpc_modelcenter/group/index>
+    <span class="nf nf-fa-file"></span> grpc_error_interpretation</api/ansys/modelcenter/workflow/grpc_modelcenter/grpc_error_interpretation/index>
+    <span class="nf nf-fa-file"></span> integer_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/integer_datapin/index>
+    <span class="nf nf-fa-file"></span> mcd_process</api/ansys/modelcenter/workflow/grpc_modelcenter/mcd_process/index>
+    <span class="nf nf-fa-file"></span> real_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/real_datapin/index>
+    <span class="nf nf-fa-file"></span> reference_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/reference_datapin/index>
+    <span class="nf nf-fa-file"></span> reference_datapin_metadata</api/ansys/modelcenter/workflow/grpc_modelcenter/reference_datapin_metadata/index>
+    <span class="nf nf-fa-file"></span> reference_property</api/ansys/modelcenter/workflow/grpc_modelcenter/reference_property/index>
+    <span class="nf nf-fa-file"></span> string_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/string_datapin/index>
+    <span class="nf nf-fa-file"></span> unsupported_type_datapin</api/ansys/modelcenter/workflow/grpc_modelcenter/unsupported_type_datapin/index>
+    <span class="nf nf-fa-file"></span> var_metadata_convert</api/ansys/modelcenter/workflow/grpc_modelcenter/var_metadata_convert/index>
+    <span class="nf nf-fa-file"></span> var_value_convert</api/ansys/modelcenter/workflow/grpc_modelcenter/var_value_convert/index>
+    <span class="nf nf-fa-file"></span> workflow</api/ansys/modelcenter/workflow/grpc_modelcenter/workflow/index>
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+Implements a gRPC-based version of the Ansys ModelCenter Workflow API.
+
+This implementation finds a local installation of ModelCenter, launches
+it, and attempts to communicate with it with gRPC.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+

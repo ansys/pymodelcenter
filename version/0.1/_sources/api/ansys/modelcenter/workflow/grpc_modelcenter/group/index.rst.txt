@@ -1,0 +1,82 @@
+
+
+
+
+
+
+The ``group.py`` module
+=======================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.group
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: group
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.group.Group`
+            - Represents a group in the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Group</api/ansys/modelcenter/workflow/grpc_modelcenter/group/Group>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides for interacting with ModelCenter datapin groups with gRPC.
+
+This interaction is handled in an object-oriented way.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

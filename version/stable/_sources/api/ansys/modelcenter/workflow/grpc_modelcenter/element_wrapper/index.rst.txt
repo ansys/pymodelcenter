@@ -1,0 +1,109 @@
+
+
+
+
+
+
+The ``element_wrapper.py`` module
+=================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.element_wrapper
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: element_wrapper
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~create_element`
+            - Create an appropriately-typed wrapper given gRPC element information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines a function that creates a wrapper from gRPC element information.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: create_element(info: ansys.api.modelcenter.v0.workflow_messages_pb2.ElementInfo, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine) -> ansys.engineeringworkflow.api.IElement
+
+   
+   Create an appropriately-typed wrapper given gRPC element information.
+
+
+   :Parameters:
+
+       **info** : :obj:`ElementInfo`
+           Element information from gRPC.
+
+       **engine** : :obj:`Engine`
+           Engine to use to create the element.
+
+
+
+   :Returns:
+
+       :obj:`aew_api.IElement`
+           Created element.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

@@ -1,0 +1,131 @@
+
+
+
+
+
+
+:class:`AbstractGRPCDatapinContainer`
+=====================================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_datapin_container.AbstractGRPCDatapinContainer(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element.AbstractWorkflowElement`, :py:obj:`ansys.modelcenter.workflow.api.IGroupOwner`, :py:obj:`abc.ABC`
+
+
+   
+   Defines the abstract base class for the datapin container.
+
+   A datapin container returns child variables and groups.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AbstractGRPCDatapinContainer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_groups`
+            - Get the child groups of the element.
+          * - :py:attr:`~get_datapins`
+            - Get the datapins in the container.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.abstract_datapin_container import AbstractGRPCDatapinContainer
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_groups() -> Mapping[str, ansys.modelcenter.workflow.api.IGroup]
+
+   
+   Get the child groups of the element.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_datapins() -> Mapping[str, ansys.modelcenter.workflow.api.IDatapin]
+
+   
+   Get the datapins in the container.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Mapping`\[:class:`python:str`, :obj:`IDatapin`]
+           Map of the datapins in the container. The keys in the map are the short names of the
+           datapins (relative to the container's name).
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

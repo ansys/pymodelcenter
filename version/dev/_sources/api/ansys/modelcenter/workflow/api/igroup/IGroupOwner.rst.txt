@@ -1,0 +1,103 @@
+
+
+
+
+
+
+:class:`IGroupOwner`
+====================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.igroup.IGroupOwner
+
+   Bases: :py:obj:`ansys.engineeringworkflow.api.IDatapinContainer`, :py:obj:`abc.ABC`
+
+
+   
+   Represents a workflow element that has groups in ModelCenter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: IGroupOwner
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_groups`
+            - Get the groups that the item contains.
+
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.igroup import IGroupOwner
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_groups() -> Mapping[str, IGroup]
+   :abstractmethod:
+
+
+   
+   Get the groups that the item contains.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
