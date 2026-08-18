@@ -30,32 +30,32 @@ classifiers = [
 dependencies = [
     "ansys-platform-instancemanagement>=1.1.1",
     "ansys-api-modelcenter>=0.3.3",
-    "numpy>=1.22.3",
+    "numpy>=1.22.3,<2.5",
     "overrides>=6.1",
-    "pyansys-tools-variableinterop>=0.1.2",
-    "protobuf>=3.20.2,<7",
-    "ansys-engineeringworkflow-api>=0.1.1",
+    "pyansys-tools-variableinterop>=0.1.4",
+    "protobuf>=3.20.2,<8",
+    "ansys-engineeringworkflow-api>=0.1.2",
     "ansys-tools-common>=0.4.0"
 ]
 
 [project.optional-dependencies]
 doc=[
-    "ansys-engineeringworkflow-api==0.1.1",
-    "ansys-sphinx-theme[autoapi]==1.6.4",
+    "ansys-engineeringworkflow-api==0.1.2",
+    "ansys-sphinx-theme[autoapi]==1.10.0",
     "numpydoc==1.10.0",
-    "pyansys-tools-variableinterop==0.1.2",
-    "pytest-sphinx==0.6.3",
-    "sphinx==8.2.3",
+    "pyansys-tools-variableinterop==0.1.4",
+    "pytest-sphinx==0.7.1",
+    "sphinx==9.1.0",
     "sphinx-copybutton==0.5.2",
-    "sphinx-gallery==0.20.0",
+    "sphinx-gallery==0.21.0",
     "sphinx-notfound-page==1.1.0",
 ]
 tests = [
-    "ansys-engineeringworkflow-api==0.1.1",
-    "grpcio==1.76.0",
-    "pyansys-tools-variableinterop==0.1.2",
-    "pytest==9.0.1",
-    "pytest-cov==7.0.0",
+    "ansys-engineeringworkflow-api==0.1.2",
+    "grpcio==1.83.0",
+    "pyansys-tools-variableinterop==0.1.4",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
 ]
 
 [tool.flit.module]
