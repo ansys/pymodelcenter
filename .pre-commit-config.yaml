@@ -1,14 +1,14 @@
 repos:
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: v0.5.2
+  rev: v0.8.0
   hooks:
   - id: add-license-headers
     args:
     - --start_year=2022
 
 - repo: https://github.com/psf/black-pre-commit-mirror
-  rev: 25.12.0  # IF VERSION CHANGES --> MODIFY "blacken-docs" MANUALLY AS WELL!!
+  rev: 26.5.1  # IF VERSION CHANGES --> MODIFY "blacken-docs" MANUALLY AS WELL!!
   hooks:
   - id: black
 
@@ -19,7 +19,7 @@ repos:
     additional_dependencies: [black==25.11.0]
 
 - repo: https://github.com/pycqa/isort
-  rev: 7.0.0
+  rev: 9.0.0b5
   hooks:
   - id: isort
 
@@ -37,10 +37,10 @@ repos:
 #     language: python
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.4.1
+  rev: v2.4.3
   hooks:
   - id: codespell
-    args: ["--ignore-words", "doc/styles/config/vocabularies/ANSYS/accept.txt"]
+    args: ["--ignore-words", "doc/styles/config/vocabularies/ANSYS/accept.txt", "--ignore-words", ".codespellignorewords"]
 
 # - repo: https://github.com/pycqa/pydocstyle
 #   rev: 6.3.0
@@ -51,6 +51,6 @@ repos:
 
 # this validates our github workflow files
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.36.0
+  rev: 0.38.0
   hooks:
     - id: check-github-workflows

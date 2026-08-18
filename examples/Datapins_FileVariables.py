@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,16 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-# Description:
-# Creates a new 'FileVariables.pxcz' Process workflow with:
-# - an 'InputFile_Assembly' assembly with 'inputFileVar' file variable nested
-# - an 'OutputFile_Assembly' assembly with 'outputFileVar' file variable nested
-# - 'inputFileVar' set to "InputFile.txt" contents
-# - 'outputFileVar' linked to 'inputFileVar'
-# When workflow is run, 'inputFileVar' passes value to 'outputFileVar'
-# The temp file used to store 'outputFileVar' value is determined and copied
-# to "OutputFile.txt"
 
 import os
 import shutil
