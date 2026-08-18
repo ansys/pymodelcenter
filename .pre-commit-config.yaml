@@ -40,7 +40,7 @@ repos:
   rev: v2.4.3
   hooks:
   - id: codespell
-    args: ["--ignore-words", "doc/styles/config/vocabularies/ANSYS/accept.txt"]
+    args: ["--ignore-words", "doc/styles/config/vocabularies/ANSYS/accept.txt", "--ignore-words", ".codespellignorewords"]
 
 # - repo: https://github.com/pycqa/pydocstyle
 #   rev: 6.3.0
