@@ -211,7 +211,7 @@ jobs:
       contents: write # Write permissions to deploy the documentation
     steps:
       - name: "Deploy the stable documentation"
-        uses: ansys/actions/doc-deploy-stable@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/doc-deploy-stable@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
