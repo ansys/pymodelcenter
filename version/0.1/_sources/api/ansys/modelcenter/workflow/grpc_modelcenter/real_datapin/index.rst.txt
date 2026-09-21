@@ -1,0 +1,89 @@
+
+
+
+
+
+
+The ``real_datapin.py`` module
+==============================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.real_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: real_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.real_datapin.RealDatapin`
+            - Represents a real (double-precision floating point) datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.real_datapin.RealArrayDatapin`
+            - Represents a real (double-precision floating point) array datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> RealDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/real_datapin/RealDatapin>
+    <span class="nf nf-cod-symbol_class"></span> RealArrayDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/real_datapin/RealArrayDatapin>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the real datapin classes.
+
+These classes include ``RealDatapin`` and ``RealArrayDatapin``.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

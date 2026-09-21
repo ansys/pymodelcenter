@@ -1,0 +1,105 @@
+
+
+
+
+
+
+:class:`AbstractRenamableElement`
+=================================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable.AbstractRenamableElement(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element.AbstractWorkflowElement`, :py:obj:`ansys.modelcenter.workflow.api.IRenamableElement`, :py:obj:`abc.ABC`
+
+
+   
+   Defines the implementation for renaming with gRPC.
+
+   This implementation is inheritable.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AbstractRenamableElement
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~rename`
+            - Rename the item.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable import AbstractRenamableElement
+
+
+
+Method detail
+-------------
+
+.. py:method:: rename(new_name: str) -> None
+
+   
+   Rename the item.
+
+
+   :Parameters:
+
+       **new_name** : :class:`python:str`
+           New short name for the item.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

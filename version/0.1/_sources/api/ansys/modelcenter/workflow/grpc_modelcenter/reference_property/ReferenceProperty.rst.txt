@@ -1,0 +1,135 @@
+
+
+
+
+
+
+:class:`ReferenceProperty`
+==========================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.reference_property.ReferenceProperty(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, name: str, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ReferencePropertyBase`, :py:obj:`ansys.modelcenter.workflow.api.IReferenceProperty`
+
+
+   
+   Represents a reference property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ReferenceProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_state`
+            - Get the state of the property.
+          * - :py:attr:`~set_state`
+            - Set the state of the property.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import ReferenceProperty
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_state() -> ansys.tools.variableinterop.VariableState
+
+   
+   Get the state of the property.
+
+   The returned state may be invalid. The engine does not attempt
+   to run the workflow to validate the property.
+
+
+
+
+   :Returns:
+
+       :obj:`atvi.VariableState`
+           State of the property.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_state(new_state: ansys.tools.variableinterop.VariableState) -> None
+
+   
+   Set the state of the property.
+
+
+   :Parameters:
+
+       **new_state** : :obj:`atvi.VariableState`
+           New state of the property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

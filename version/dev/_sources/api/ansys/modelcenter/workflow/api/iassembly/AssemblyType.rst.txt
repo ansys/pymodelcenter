@@ -1,0 +1,135 @@
+
+
+
+
+
+
+:class:`AssemblyType`
+=====================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.iassembly.AssemblyType(*args, **kwds)
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Represents an allowed assembly type in ModelCenter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AssemblyType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ASSEMBLY`
+            - 
+          * - :py:attr:`~SEQUENCE`
+            - 
+          * - :py:attr:`~IF`
+            - 
+          * - :py:attr:`~PARALLEL`
+            - 
+          * - :py:attr:`~EMPTY`
+            - 
+          * - :py:attr:`~LOOP`
+            - 
+          * - :py:attr:`~FOR_EACH`
+            - 
+          * - :py:attr:`~FOR`
+            - 
+          * - :py:attr:`~WHILE`
+            - 
+          * - :py:attr:`~REPEAT_UNTIL`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.iassembly import AssemblyType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ASSEMBLY
+   :value: 'Assembly'
+
+
+.. py:attribute:: SEQUENCE
+   :value: 'Sequence'
+
+
+.. py:attribute:: IF
+   :value: 'If'
+
+
+.. py:attribute:: PARALLEL
+   :value: 'Parallel'
+
+
+.. py:attribute:: EMPTY
+   :value: 'Empty'
+
+
+.. py:attribute:: LOOP
+   :value: 'Loop'
+
+
+.. py:attribute:: FOR_EACH
+   :value: 'ForEach'
+
+
+.. py:attribute:: FOR
+   :value: 'For'
+
+
+.. py:attribute:: WHILE
+   :value: 'While'
+
+
+.. py:attribute:: REPEAT_UNTIL
+   :value: 'RepeatUntil'
+
+
+
+
+
+

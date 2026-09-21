@@ -1,0 +1,132 @@
+
+
+
+
+
+
+:class:`WorkflowType`
+=====================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.iengine.WorkflowType(*args, **kwds)
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Enumeration of the types of workflows that can be created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: WorkflowType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~DATA`
+            - Legacy style workflow where execution flow is determined from links.
+          * - :py:attr:`~PROCESS`
+            - Modern style workflow where execution flow is explicitly designed.
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.iengine import WorkflowType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: DATA
+   :value: ('dataModel',)
+
+
+   
+   Legacy style workflow where execution flow is determined from links.
+
+   The links between components and an execution strategy determine the
+   workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: PROCESS
+   :value: 'processModel'
+
+
+   
+   Modern style workflow where execution flow is explicitly designed.
+
+   You deinfe the execution flow using flow components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+

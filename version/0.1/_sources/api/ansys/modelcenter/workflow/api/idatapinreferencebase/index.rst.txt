@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``idatapinreferencebase.py`` module
+=======================================
+
+.. py:module:: ansys.modelcenter.workflow.api.idatapinreferencebase
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: idatapinreferencebase
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.idatapinreferencebase.IDatapinReferenceBase`
+            - Defines methods common to an individual reference to another datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IDatapinReferenceBase</api/ansys/modelcenter/workflow/api/idatapinreferencebase/IDatapinReferenceBase>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the base class for reference datapins.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

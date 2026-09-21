@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`UnsupportedWorkflowElement`
+===================================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element.UnsupportedWorkflowElement(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`AbstractWorkflowElement`
+
+
+   
+   Represents a known workflow element whose type is not supported.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element import UnsupportedWorkflowElement
+
+
+
+
+

@@ -1,0 +1,306 @@
+
+
+
+
+
+
+:class:`IComponent`
+===================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.icomponent.IComponent
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.api.irenamable_elements.IRenamableElement`, :py:obj:`ansys.engineeringworkflow.api.IComponent`, :py:obj:`ansys.modelcenter.workflow.api.igroup.IGroupOwner`, :py:obj:`ansys.modelcenter.workflow.api.iassembly.IAssemblyChild`, :py:obj:`abc.ABC`
+
+
+   
+   Represents a component in the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+.. py:currentmodule:: IComponent
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_source`
+            - Get the source of the component.
+          * - :py:attr:`~invoke_method`
+            - Invoke one of the component's methods.
+          * - :py:attr:`~invalidate`
+            - Invalidate the component and all of its datapins.
+          * - :py:attr:`~reconnect`
+            - Reload the component from its source.
+          * - :py:attr:`~download_values`
+            - Download the component's datapin values from the server if it is a
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~control_type`
+            - Type of the component.
+          * - :py:attr:`~is_connected`
+            - Flag indicating if the component is connected to its source.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.icomponent import IComponent
+
+Property detail
+---------------
+
+.. py:property:: control_type
+   :type: str
+
+   :abstractmethod:
+
+
+   
+   Type of the component.
+
+   Options include:
+
+   * Assembly
+   * Component
+   * Empty
+   * ForEach
+   * If
+   * Parallel
+   * Sequence
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Type of the component.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_connected
+   :type: bool
+
+   :abstractmethod:
+
+
+   
+   Flag indicating if the component is connected to its source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_source() -> str
+   :abstractmethod:
+
+
+   
+   Get the source of the component.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source of the component.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: invoke_method(method: str) -> None
+   :abstractmethod:
+
+
+   
+   Invoke one of the component's methods.
+
+
+   :Parameters:
+
+       **method** : :class:`python:str`
+           Name of the method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: invalidate() -> None
+   :abstractmethod:
+
+
+   
+   Invalidate the component and all of its datapins.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: reconnect() -> None
+   :abstractmethod:
+
+
+   
+   Reload the component from its source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: download_values() -> None
+   :abstractmethod:
+
+
+   
+   Download the component's datapin values from the server if it is a
+   ModelCenter Remote Execution component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

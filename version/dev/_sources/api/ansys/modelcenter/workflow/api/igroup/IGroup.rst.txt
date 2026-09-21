@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`IGroup`
+===============
+
+
+.. py:class:: ansys.modelcenter.workflow.api.igroup.IGroup
+
+   Bases: :py:obj:`IGroupOwner`, :py:obj:`abc.ABC`
+
+
+   
+   Represents a datapin group in ModelCenter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.igroup import IGroup
+
+
+
+
+

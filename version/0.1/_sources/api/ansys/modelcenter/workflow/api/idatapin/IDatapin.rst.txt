@@ -1,0 +1,185 @@
+
+
+
+
+
+
+:class:`IDatapin`
+=================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.idatapin.IDatapin
+
+   Bases: :py:obj:`ansys.engineeringworkflow.api.IDatapin`, :py:obj:`abc.ABC`
+
+
+   
+   Represents a datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+.. py:currentmodule:: IDatapin
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_metadata`
+            - Set the standard metadata for the datapin.
+          * - :py:attr:`~get_dependents`
+            - Get the dependent (output) datapins for the datapin.
+          * - :py:attr:`~get_precedents`
+            - Get the precedent (input) datapins for the datapin.
+
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.idatapin import IDatapin
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_metadata(new_metadata: ansys.tools.variableinterop.CommonVariableMetadata) -> None
+   :abstractmethod:
+
+
+   
+   Set the standard metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_dependents(only_fetch_direct_dependents: bool = False, follow_suspended_links: bool = False) -> Collection[ansys.engineeringworkflow.api.IDatapin]
+   :abstractmethod:
+
+
+   
+   Get the dependent (output) datapins for the datapin.
+
+
+   :Parameters:
+
+       **only_fetch_direct_dependents** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to return only the direct dependents. The default is
+           ``False``, in which case all dependents are returned recursively.
+
+       **follow_suspended_links** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to follow suspended links between datapins. The default
+           is ``False``.
+
+
+
+   :Returns:
+
+       :obj:`Collection`\[:obj:`aew_api.IDatapin`]
+           Collection of dependent datapins.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_precedents(only_fetch_direct_precedents: bool = False, follow_suspended_links: bool = False) -> Collection[ansys.engineeringworkflow.api.IDatapin]
+   :abstractmethod:
+
+
+   
+   Get the precedent (input) datapins for the datapin.
+
+
+   :Parameters:
+
+       **only_fetch_direct_dependents** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to return only the direct dependents. The default is
+           ``False``, in which case all dependents are returned recursively.
+
+       **follow_suspended_links** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to follow suspended links between datapins. The default
+           is ``False``.
+
+
+
+   :Returns:
+
+       :obj:`Collection`\[:obj:`aew_api.IDatapin`]
+           Collection of precedent datapins.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

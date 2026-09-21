@@ -1,0 +1,103 @@
+
+
+
+
+
+
+:class:`IBooleanDatapin`
+========================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.ibooleandatapin.IBooleanDatapin
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.api.idatapin.IDatapin`, :py:obj:`abc.ABC`
+
+
+   
+   Represents a Boolean datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: IBooleanDatapin
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_metadata`
+            - Get the metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.ibooleandatapin import IBooleanDatapin
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_metadata() -> ansys.tools.variableinterop.BooleanArrayMetadata
+   :abstractmethod:
+
+
+   
+   Get the metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
