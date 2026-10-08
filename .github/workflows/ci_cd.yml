@@ -161,7 +161,7 @@ jobs:
       contents: write # Needed to push built docs to gh-pages during dev deploy
     steps:
       - name: "Deploy the latest documentation"
-        uses: ansys/actions/doc-deploy-dev7410037bfb276c79ae91eb3617b9f5d2876f0c94 # v11.0.8
+        uses: ansys/actions/doc-deploy-dev@7410037bfb276c79ae91eb3617b9f5d2876f0c94 # v11.0.8
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
