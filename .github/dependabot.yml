@@ -3,6 +3,10 @@ updates:
 - package-ecosystem: "pip" # See documentation for possible values
   cooldown:
     default-days: 10 # Fallback cooldown if no specific rule applies
+    include:
+      - "*"  # Include all dependencies in cooldown
+    exclude:
+      - "ansys/actions"
   directory: "/"
   schedule:
     interval: "weekly"
@@ -11,12 +15,6 @@ updates:
     - "dependencies"
   commit-message:
       prefix: "build"
-  cooldown:
-    default-days: 10
-    include:
-      - "*"  # Include all dependencies in cooldown
-    exclude:
-      - "ansys/actions"
 
 - package-ecosystem: "github-actions"
   cooldown:
@@ -24,8 +22,6 @@ updates:
   directory: "/"
   schedule:
     interval: "weekly"
-  cooldown:
-    default-days: 10
     include:
       - "*"  # Include all dependencies in cooldown
     exclude:
