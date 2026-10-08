@@ -1,0 +1,97 @@
+
+
+
+
+
+
+The ``reference_datapin_metadata.py`` module
+============================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin_metadata
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: reference_datapin_metadata
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin_metadata.ReferenceDatapinMetadata`
+            - Provides metadata for a reference datapin.
+
+
+
+
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~T`
+            - 
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ReferenceDatapinMetadata</api/ansys/modelcenter/workflow/grpc_modelcenter/reference_datapin_metadata/ReferenceDatapinMetadata>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the reference datapin metadata.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: T
+
+
+

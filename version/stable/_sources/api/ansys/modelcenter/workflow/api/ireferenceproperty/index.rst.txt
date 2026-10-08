@@ -1,0 +1,101 @@
+
+
+
+
+
+
+The ``ireferenceproperty.py`` module
+====================================
+
+.. py:module:: ansys.modelcenter.workflow.api.ireferenceproperty
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ireferenceproperty
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ireferenceproperty.IReferencePropertyBase`
+            - Defines common methods for IReference property classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ireferenceproperty.IReferenceProperty`
+            - Defines methods for reference properties.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ireferenceproperty.IReferenceArrayProperty`
+            - Defines methods for reference array properties.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ireferenceproperty.IReferencePropertyManager`
+            - Defines utility methods for getting reference properties.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IReferencePropertyBase</api/ansys/modelcenter/workflow/api/ireferenceproperty/IReferencePropertyBase>
+    <span class="nf nf-cod-symbol_interface"></span> IReferenceProperty</api/ansys/modelcenter/workflow/api/ireferenceproperty/IReferenceProperty>
+    <span class="nf nf-cod-symbol_interface"></span> IReferenceArrayProperty</api/ansys/modelcenter/workflow/api/ireferenceproperty/IReferenceArrayProperty>
+    <span class="nf nf-cod-symbol_interface"></span> IReferencePropertyManager</api/ansys/modelcenter/workflow/api/ireferenceproperty/IReferencePropertyManager>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains definitions for reference properties and the owning datapins.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

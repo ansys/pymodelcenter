@@ -1,0 +1,57 @@
+
+
+
+
+
+
+:class:`UnexpectedEngineError`
+==============================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation.UnexpectedEngineError(message: str, code: grpc.StatusCode)
+
+   Bases: :py:obj:`Exception`
+
+
+   
+   Raised if an error that is unexpected for the call is made.
+
+   Note that this does not necessarily mean that the gRPC client raised
+   an error with the code UNKNOWN or INTERNAL, just that the code
+   raised isn't well defined for the call that was made. For example,
+   some gRPC methods take only a target element as an argument. The
+   client is expected to raise an error with code NOT_FOUND if that
+   element is invalid, so a FAILED_PRECONDITION or INVALID_ARGUMENT
+   code would be unexpected and could indicate an issue within the
+   Python API or the gRPC servicing code.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.grpc_error_interpretation import UnexpectedEngineError
+
+
+
+
+

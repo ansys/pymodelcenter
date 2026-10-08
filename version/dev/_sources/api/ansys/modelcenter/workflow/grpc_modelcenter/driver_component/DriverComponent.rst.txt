@@ -1,0 +1,57 @@
+
+
+
+
+
+
+:class:`DriverComponent`
+========================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.driver_component.DriverComponent(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.component.Component`, :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_control_statement.AbstractControlStatement`, :py:obj:`ansys.modelcenter.workflow.api.IDriverComponent`
+
+
+   
+   Defines a driver component in the workflow.
+
+   In process-mode workflows, driver components can contain children.
+   In data-mode workflows, driver components should still be instantiated with an instance
+   of this class, but the method to get child elements simply returns an empty collection.
+
+   .. note::
+       This class should not be directly instantiated by clients. Get a ``Workflow`` object
+       from an instantiated ``Engine`` instance and use it to get valid ``Assembly``,
+       ``Component``, or ``DriverComponent`` instances.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.driver_component import DriverComponent
+
+
+
+
+

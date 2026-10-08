@@ -1,0 +1,294 @@
+
+
+
+
+
+
+:class:`Component`
+==================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.component.Component(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_renamable.AbstractRenamableElement`, :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_datapin_container.AbstractGRPCDatapinContainer`, :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child.AbstractAssemblyChild`, :py:obj:`ansys.modelcenter.workflow.api.IComponent`
+
+
+   
+   Defines the component in the workflow.
+
+   .. note::
+       This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+       an instantiated ``Engine`` instance and use it to get a valid instance of this object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Component
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_source`
+            - Get the source of the component.
+          * - :py:attr:`~invoke_method`
+            - Invoke one of the component's methods.
+          * - :py:attr:`~invalidate`
+            - Invalidate the component and all of its datapins.
+          * - :py:attr:`~reconnect`
+            - Reload the component from its source.
+          * - :py:attr:`~download_values`
+            - Download the component's datapin values from the server if it is a
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_connected`
+            - Flag indicating if the component is connected to its source.
+          * - :py:attr:`~pacz_url`
+            - URL to the PACZ file or directory.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__eq__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.component import Component
+
+Property detail
+---------------
+
+.. py:property:: is_connected
+   :type: bool
+
+
+   
+   Flag indicating if the component is connected to its source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pacz_url
+   :type: Optional[str]
+
+
+   
+   URL to the PACZ file or directory.
+
+   The URL may be absolute or relative. If relative, the URL must be relative to the workflow
+   definition. While all components are represented by PACZ definitions, in the short term,
+   many components are not currently defined in this way. If there is not a PACZ definition of
+   the component, the method returns ``None``. In such cases, you must fall back on
+   engine-specific methods to determine what the component type is.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __eq__(other)
+
+.. py:method:: get_source() -> str
+
+   
+   Get the source of the component.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source of the component.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: invoke_method(method: str) -> None
+
+   
+   Invoke one of the component's methods.
+
+
+   :Parameters:
+
+       **method** : :class:`python:str`
+           Name of the method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: invalidate() -> None
+
+   
+   Invalidate the component and all of its datapins.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: reconnect() -> None
+
+   
+   Reload the component from its source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: download_values() -> None
+
+   
+   Download the component's datapin values from the server if it is a
+   ModelCenter Remote Execution component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,206 @@
+
+
+
+
+
+
+:class:`AbstractAssemblyChild`
+==============================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child.AbstractAssemblyChild(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.abstract_workflow_element.AbstractWorkflowElement`, :py:obj:`ansys.modelcenter.workflow.api.IAssemblyChild`, :py:obj:`abc.ABC`
+
+
+   
+   Defines an abstract base class for children of assemblies.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AbstractAssemblyChild
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_analysis_view_position`
+            - Get the position of the assembly within the analysis view.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~index_in_parent`
+            - Index of the assembly within its parent assembly.
+          * - :py:attr:`~parent_assembly`
+            - Parent assembly of the assembly.
+          * - :py:attr:`~control_type`
+            - Control type of the item.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child import AbstractAssemblyChild
+
+Property detail
+---------------
+
+.. py:property:: index_in_parent
+   :type: int
+
+
+   
+   Index of the assembly within its parent assembly.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: parent_assembly
+   :type: Optional[ansys.modelcenter.workflow.api.IAssembly]
+
+
+   
+   Parent assembly of the assembly.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Optional`\[:obj:`IAssembly`]
+           Parent assembly or ``None`` if this assembly is the root of
+           the workflow.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: control_type
+   :type: str
+
+
+   
+   Control type of the item.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Control type of the item.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_analysis_view_position() -> Tuple[int, int]
+
+   
+   Get the position of the assembly within the analysis view.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Tuple`\[:class:`python:int`, :class:`python:int`]
+           Two-element tuple where the first element is the x coordinate and the
+           second element is the y coordinate.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

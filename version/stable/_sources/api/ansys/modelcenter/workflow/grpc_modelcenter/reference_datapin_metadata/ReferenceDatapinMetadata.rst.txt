@@ -1,0 +1,234 @@
+
+
+
+
+
+
+:class:`ReferenceDatapinMetadata`
+=================================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin_metadata.ReferenceDatapinMetadata
+
+   Bases: :py:obj:`ansys.tools.variableinterop.CommonVariableMetadata`
+
+
+   
+   Provides metadata for a reference datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: ReferenceDatapinMetadata
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~accept`
+            - Invoke the visitor pattern of this object using the passed-in visitor
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~from_dict`
+            - Creates a new metadata object from the data from a call to to_dict().
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_dict`
+            - Creates a dictionary representation of this object suitable for JSON
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~variable_type`
+            - Variable type of the object.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin_metadata import ReferenceDatapinMetadata
+
+Property detail
+---------------
+
+.. py:property:: variable_type
+   :type: ansys.tools.variableinterop.VariableType
+
+
+   
+   Variable type of the object.
+
+
+
+
+
+   :Returns:
+
+       :obj:`VariableType`
+           Variable type of the object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: accept(visitor: ansys.tools.variableinterop.IVariableMetadataVisitor[T]) -> T
+   :abstractmethod:
+
+
+   
+   Invoke the visitor pattern of this object using the passed-in visitor
+   implementation.
+
+
+   :Parameters:
+
+       **visitor** : :obj:`IVariableMetadataVisitor`\[:obj:`T`]
+           Visitor object to call.
+
+
+
+   :Returns:
+
+       :obj:`T`
+           Results of the visitor invocation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> dict
+
+   
+   Creates a dictionary representation of this object suitable for JSON
+   serialization.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           The generated dictionary
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_dict(data) -> ansys.tools.variableinterop.CommonVariableMetadata
+   :classmethod:
+
+
+   
+   Creates a new metadata object from the data from a call to to_dict().
+
+
+   :Parameters:
+
+       **data**
+           The serialized dictionary data.
+
+
+
+   :Returns:
+
+       :obj:`CommonVariableMetadata`
+           The new metadata object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

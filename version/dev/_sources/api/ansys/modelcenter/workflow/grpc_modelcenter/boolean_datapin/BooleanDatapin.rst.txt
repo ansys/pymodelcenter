@@ -1,0 +1,165 @@
+
+
+
+
+
+
+:class:`BooleanDatapin`
+=======================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin.BooleanDatapin(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.base_datapin.BaseDatapin`, :py:obj:`ansys.modelcenter.workflow.api.IBooleanDatapin`
+
+
+   
+   Represents a Boolean datapin.
+
+   .. note::
+       This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+       an instantiated ``Engine`` instance and use it to get a valid instance of this object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: BooleanDatapin
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_metadata`
+            - Get the metadata for the datapin.
+          * - :py:attr:`~set_metadata`
+            - Set the standard metadata for the datapin.
+          * - :py:attr:`~set_state`
+            - Set the state of the datapin.
+
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__eq__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.boolean_datapin import BooleanDatapin
+
+
+
+Method detail
+-------------
+
+.. py:method:: __eq__(other)
+
+.. py:method:: get_metadata() -> ansys.tools.variableinterop.BooleanMetadata
+
+   
+   Get the metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_metadata(new_metadata: ansys.tools.variableinterop.CommonVariableMetadata) -> None
+
+   
+   Set the standard metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_state(state: ansys.tools.variableinterop.VariableState) -> None
+
+   
+   Set the state of the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

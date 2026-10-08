@@ -1,0 +1,182 @@
+
+
+
+
+
+
+:class:`IAssemblyChild`
+=======================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.iassembly.IAssemblyChild
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   
+   Defines methods related to being the child element of an assembly.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: IAssemblyChild
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_analysis_view_position`
+            - Get the position of the assembly within the analysis view.
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~index_in_parent`
+            - Index of the assembly within its parent assembly.
+          * - :py:attr:`~parent_assembly`
+            - Parent assembly of the assembly.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.iassembly import IAssemblyChild
+
+Property detail
+---------------
+
+.. py:property:: index_in_parent
+   :type: int
+
+   :abstractmethod:
+
+
+   
+   Index of the assembly within its parent assembly.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: parent_assembly
+   :type: Optional[IAssembly]
+
+   :abstractmethod:
+
+
+   
+   Parent assembly of the assembly.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Optional`\[:obj:`IAssembly`]
+           Parent assembly or ``None`` if this assembly is the root of
+           the workflow.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_analysis_view_position() -> Tuple[int, int]
+   :abstractmethod:
+
+
+   
+   Get the position of the assembly within the analysis view.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Tuple`\[:class:`python:int`, :class:`python:int`]
+           Two-element tuple where the first element is the x coordinate and the
+           second element is the y coordinate.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

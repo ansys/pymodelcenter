@@ -1,0 +1,82 @@
+
+
+
+
+
+
+The ``base_datapin.py`` module
+==============================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.base_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: base_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.base_datapin.BaseDatapin`
+            - Represents a datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> BaseDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/base_datapin/BaseDatapin>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides for interacting with ModelCenter variables with gRPC.
+
+This interaction is handled in an object-oriented way.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

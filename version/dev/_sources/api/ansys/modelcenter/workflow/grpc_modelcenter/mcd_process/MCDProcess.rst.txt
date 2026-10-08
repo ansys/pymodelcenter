@@ -1,0 +1,138 @@
+
+
+
+
+
+
+:class:`MCDProcess`
+===================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.mcd_process.MCDProcess
+
+   
+   Launches and keeps track of a ModelCenter Desktop process.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MCDProcess
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~start`
+            - Start the ModelCenter Desktop process.
+          * - :py:attr:`~get_process_id`
+            - Get the process ID of the ModelCenter Desktop process.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.mcd_process import MCDProcess
+
+
+
+Method detail
+-------------
+
+.. py:method:: start(run_only: bool = False, heartbeat_interval: numpy.uint = 30000, allowed_heartbeat_misses: numpy.uint = 3) -> int
+
+   
+   Start the ModelCenter Desktop process.
+
+
+   :Parameters:
+
+       **run_only** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to start ModelCenter in run-only mode. The default
+           is ``False``.
+
+       **heartbeat_interval** : :obj:`numpy.uint`, :obj:`optional`
+           Interval between heartbeat messages. The default is ``30000``.
+
+       **allowed_heartbeat_misses** : :obj:`numpy.uint`, :obj:`optional`
+           Number of allowed missed heartbeats before the server terminates.
+           The default is ``3``.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Port number that the gRPC server was started on.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_process_id() -> int
+
+   
+   Get the process ID of the ModelCenter Desktop process.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

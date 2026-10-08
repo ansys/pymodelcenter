@@ -1,0 +1,279 @@
+
+
+
+
+
+
+:class:`DatapinLink`
+====================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.datapin_link.DatapinLink(stub: ansys.api.modelcenter.v0.grpc_modelcenter_workflow_pb2_grpc.ModelCenterWorkflowServiceStub, lhs_id: str, rhs: str)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.api.IDatapinLink`
+
+
+   
+   Defines a link between the datapins in the workflow.
+
+   .. note::
+       This class should not be directly instantiated by clients. Get a ``Workflow`` object from
+       an instantiated ``Engine`` instance and use it to get a valid instance of this object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: DatapinLink
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~break_link`
+            - Break the link.
+          * - :py:attr:`~suspend`
+            - Suspend the link.
+          * - :py:attr:`~resume`
+            - Resume the link if it is suspended.
+          * - :py:attr:`~is_suspended`
+            - Check whether the link is suspended.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~lhs`
+            - Left-hand side of the link.
+          * - :py:attr:`~rhs`
+            - Right-hand side (source) of the link equation.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__eq__`
+            - 
+          * - :py:attr:`~__str__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.datapin_link import DatapinLink
+
+Property detail
+---------------
+
+.. py:property:: lhs
+   :type: str
+
+
+   
+   Left-hand side of the link.
+
+   The left-hand side receives a value from the right-hand side
+   (analogous to a variable assignment in most languages). This is
+   always a simple datapin name, except in cases where the link
+   target is a single array index, in which case it is the name of
+   the datapin plus an array index.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rhs
+   :type: str
+
+
+   
+   Right-hand side (source) of the link equation.
+
+   This is a simple equation containing the names of the other
+   datapins that this link depends on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __eq__(other)
+
+.. py:method:: __str__()
+
+.. py:method:: break_link() -> None
+
+   
+   Break the link.
+
+   Breaking the link removes the dependencies between the left-hand
+   and right-hand side of the link. The object becomes invalid and
+   cannot be used after calling this method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: suspend() -> None
+
+   
+   Suspend the link.
+
+   Suspending the link causes the engine to behave as if it is not
+   present. This method is idempotent. It is safe to call this
+   method multiple times, even if the link is already suspended.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: resume() -> None
+
+   
+   Resume the link if it is suspended.
+
+   This method is idempotent. it is safe to call this method
+   multiple times, even if the link is already suspended.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_suspended() -> bool
+
+   
+   Check whether the link is suspended.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the link is suspended, and ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

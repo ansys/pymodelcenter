@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``iworkflow.py`` module
+===========================
+
+.. py:module:: ansys.modelcenter.workflow.api.iworkflow
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: iworkflow
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iworkflow.IWorkflow`
+            - Represents a ModelCenter workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IWorkflow</api/ansys/modelcenter/workflow/api/iworkflow/IWorkflow>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the workflow.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

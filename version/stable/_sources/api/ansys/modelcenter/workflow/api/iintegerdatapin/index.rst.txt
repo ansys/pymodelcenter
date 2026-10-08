@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``iintegerdatapin.py`` module
+=================================
+
+.. py:module:: ansys.modelcenter.workflow.api.iintegerdatapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: iintegerdatapin
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iintegerdatapin.IIntegerDatapin`
+            - Represents an integer datapin on the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IIntegerDatapin</api/ansys/modelcenter/workflow/api/iintegerdatapin/IIntegerDatapin>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the integer variable.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+
