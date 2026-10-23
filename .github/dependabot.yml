@@ -19,10 +19,10 @@ updates:
 - package-ecosystem: "github-actions"
   cooldown:
     default-days: 10 # Fallback cooldown if no specific rule applies
-  directory: "/"
-  schedule:
-    interval: "weekly"
     include:
       - "*"  # Include all dependencies in cooldown
     exclude:
       - "ansys/actions"
+  directory: "/"
+  schedule:
+    interval: "weekly"
