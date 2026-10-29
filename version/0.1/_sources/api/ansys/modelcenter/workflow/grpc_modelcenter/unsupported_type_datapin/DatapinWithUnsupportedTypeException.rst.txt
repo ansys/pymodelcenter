@@ -1,0 +1,50 @@
+
+
+
+
+
+
+:class:`DatapinWithUnsupportedTypeException`
+============================================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin.DatapinWithUnsupportedTypeException
+
+   Bases: :py:obj:`BaseException`
+
+
+   
+   Raised if attempting to interact with a datapin of an unsupported
+   type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import DatapinWithUnsupportedTypeException
+
+
+
+
+

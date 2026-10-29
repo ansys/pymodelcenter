@@ -1,0 +1,154 @@
+
+
+
+
+
+
+:class:`UnsupportedTypeDatapin`
+===============================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin.UnsupportedTypeDatapin(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.grpc_modelcenter.base_datapin.BaseDatapin`
+
+
+   
+   Represents a datapin with an unsupported datatype.
+
+   Generally speaking, it is possible to perform interactions that
+   don't require retrieving or otherwise interacting with the datapin's
+   state or metadata. Attempts to get or set the state or metadata
+   raise a ``DatapinWithUnsupportedTypeException``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: UnsupportedTypeDatapin
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_metadata`
+            - Set the standard metadata for the datapin.
+          * - :py:attr:`~set_state`
+            - Set the state of the datapin.
+          * - :py:attr:`~get_metadata`
+            - Get the metadata for the datapin.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.unsupported_type_datapin import UnsupportedTypeDatapin
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_metadata(new_metadata: ansys.tools.variableinterop.CommonVariableMetadata) -> None
+
+   
+   Set the standard metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_state(state: ansys.tools.variableinterop.VariableState) -> None
+
+   
+   Set the state of the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_metadata() -> ansys.tools.variableinterop.CommonVariableMetadata
+
+   
+   Get the metadata for the datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

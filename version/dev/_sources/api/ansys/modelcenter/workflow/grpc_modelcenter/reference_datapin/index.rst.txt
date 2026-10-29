@@ -1,0 +1,103 @@
+
+
+
+
+
+
+The ``reference_datapin.py`` module
+===================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: reference_datapin
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin.ReferenceArrayDatapinElement`
+            - Represents a single element in an reference array datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin.ReferenceDatapinBase`
+            - Defines the base class for reference datapins.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin.ReferenceDatapin`
+            - Represents a reference datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.reference_datapin.ReferenceArrayDatapin`
+            - Represents a reference array datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ReferenceArrayDatapinElement</api/ansys/modelcenter/workflow/grpc_modelcenter/reference_datapin/ReferenceArrayDatapinElement>
+    <span class="nf nf-cod-symbol_class"></span> ReferenceDatapinBase</api/ansys/modelcenter/workflow/grpc_modelcenter/reference_datapin/ReferenceDatapinBase>
+    <span class="nf nf-cod-symbol_class"></span> ReferenceDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/reference_datapin/ReferenceDatapin>
+    <span class="nf nf-cod-symbol_class"></span> ReferenceArrayDatapin</api/ansys/modelcenter/workflow/grpc_modelcenter/reference_datapin/ReferenceArrayDatapin>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the reference datapin classes.
+
+These classes include ``ReferenceDatapin`` and ``ReferenceArrayDatapin``.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

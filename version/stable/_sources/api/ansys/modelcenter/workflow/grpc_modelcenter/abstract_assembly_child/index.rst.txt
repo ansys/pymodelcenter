@@ -1,0 +1,82 @@
+
+
+
+
+
+
+The ``abstract_assembly_child.py`` module
+=========================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: abstract_assembly_child
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.abstract_assembly_child.AbstractAssemblyChild`
+            - Defines an abstract base class for children of assemblies.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AbstractAssemblyChild</api/ansys/modelcenter/workflow/grpc_modelcenter/abstract_assembly_child/AbstractAssemblyChild>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the abstract base class for children of assemblies.
+
+Assemblies themselves are also included.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

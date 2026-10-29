@@ -1,0 +1,549 @@
+
+
+
+
+
+
+:class:`Engine`
+===============
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine(is_run_only: bool = False, force_local: bool = False, heartbeat_interval: numpy.uint = 30000, allowed_heartbeat_misses: numpy.uint = 3)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.api.IEngine`
+
+
+   
+   Provides the gRPC implementation of IEngine.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: Engine
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~close`
+            - Shut down the gRPC server and clear out all objects.
+          * - :py:attr:`~new_workflow`
+            - Create a workflow.
+          * - :py:attr:`~load_workflow`
+            - Load a workflow from a local file into the engine.
+          * - :py:attr:`~get_formatter`
+            - Create an instance of a formatter that can be used to format numbers
+          * - :py:attr:`~get_preference`
+            - Get the value of a preference.
+          * - :py:attr:`~set_preference`
+            - Set the value of a preference.
+          * - :py:attr:`~get_units`
+            - Get available units by category.
+          * - :py:attr:`~get_run_only_mode`
+            - Get whether the engine is in run-only mode.
+          * - :py:attr:`~get_server_info`
+            - Get information about the server that is serving the request.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_closed`
+            - Flag indicating if this instance has been closed.
+          * - :py:attr:`~is_local`
+            - Flag indicating if ModelCenter Desktop was started locally or
+          * - :py:attr:`~channel`
+            - Get the gRPC channel used to communicate with ModelCenter Desktop.
+          * - :py:attr:`~process_id`
+            - ID of the connected process, which is useful for debugging.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__enter__`
+            - Initialization when created in a 'with' statement.
+          * - :py:attr:`~__exit__`
+            - Clean up when leaving a 'with' block.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.engine import Engine
+
+Property detail
+---------------
+
+.. py:property:: is_closed
+   :type: bool
+
+
+   
+   Flag indicating if this instance has been closed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_local
+   :type: bool
+
+
+   
+   Flag indicating if ModelCenter Desktop was started locally or
+   remotely.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if ModelCenter Desktop was started locally, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: channel
+   :type: Optional[grpc.Channel]
+
+
+   
+   Get the gRPC channel used to communicate with ModelCenter Desktop.
+
+
+
+
+
+   :Returns:
+
+       :obj:`grpc.Channel`
+           ``grpc.Channel`` object or ``None`` if it has not been created.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: process_id
+   :type: int
+
+
+   
+   ID of the connected process, which is useful for debugging.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Process ID of the connected ModelCenter Desktop.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __enter__()
+
+   
+   Initialization when created in a 'with' statement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __exit__(exc_type, exc_val, exc_tb)
+
+   
+   Clean up when leaving a 'with' block.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: close()
+
+   
+   Shut down the gRPC server and clear out all objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: new_workflow(name: str, workflow_type: ansys.modelcenter.workflow.api.WorkflowType = WorkflowType.DATA) -> ansys.modelcenter.workflow.grpc_modelcenter.workflow.Workflow
+
+   
+   Create a workflow.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Filename or path where the workflow is to be created.
+
+       **workflow_type** : :obj:`WorkflowType`, :obj:`optional`
+           Type of workflow. The default is a data workflow.
+
+
+
+   :Returns:
+
+       :obj:`IWorkflow`
+           Created ``IWorkflow`` instance.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: load_workflow(file_name: Union[os.PathLike, str], ignore_connection_errors: Optional[bool] = None) -> ansys.modelcenter.workflow.grpc_modelcenter.workflow.Workflow
+
+   
+   Load a workflow from a local file into the engine.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_formatter(fmt: str) -> ansys.modelcenter.workflow.grpc_modelcenter.format.Format
+
+   
+   Create an instance of a formatter that can be used to format numbers
+   to and from a particular string style.
+
+
+   :Parameters:
+
+       **fmt** : :class:`python:str`
+           Specified string format for the ``IFormat`` object.
+
+
+
+   :Returns:
+
+       :obj:`IFormat`
+           Format object that formats in the given style.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_preference(pref: str) -> Union[bool, int, float, str]
+
+   
+   Get the value of a preference.
+
+   Preferences control how the engine behaves in various ways.
+   The data type of the value may be ``bool``, ``float``,
+   ``int``, or ``str``.
+
+   :Parameters:
+
+       **pref** : :class:`python:str`
+           Name of the preference to return the value for.
+
+
+
+   :Returns:
+
+       :obj:`Union`\[:ref:`bool <python:bltin-boolean-values>`, :class:`python:int`, :class:`python:float`, :class:`python:str`]
+           Value of the given preference.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_preference(pref: str, value: Union[bool, int, float, str]) -> None
+
+   
+   Set the value of a preference.
+
+   Preferences control how the engine behaves in various ways.
+   The data type of the value may be ``bool``, ``float``,
+   ``int``, or ``str``.
+
+   :Parameters:
+
+       **pref** : :class:`python:str`
+           Name of the preference to set.
+
+       **value: Union[bool, int, float, str]**
+           Value to set.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_units() -> Mapping[str, Collection[str]]
+
+   
+   Get available units by category.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Mapping`\[:class:`python:str`, :obj:`Collection`\[:class:`python:str`]]
+           Mapping representing the units available in the engine.
+           The keys in the map are the names of unit categories,
+           and the values are collections containing all the unit names for that category.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_run_only_mode() -> bool
+
+   
+   Get whether the engine is in run-only mode.
+
+   Run-only mode has lower licensing requirements, but it does not
+   allow for the workflow to be edited.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if in run-only mode, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_server_info() -> ansys.engineeringworkflow.api.WorkflowEngineInfo
+
+   
+   Get information about the server that is serving the request.
+
+
+
+
+
+   :Returns:
+
+       :obj:`WorkflowEngineInfo`
+           Object with information about the server that is serving the
+           request.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,241 @@
+
+
+
+
+
+
+:class:`ReferencePropertyBase`
+==============================
+
+
+.. py:class:: ansys.modelcenter.workflow.grpc_modelcenter.reference_property.ReferencePropertyBase(element_id: ansys.api.modelcenter.v0.element_messages_pb2.ElementId, name: str, engine: ansys.modelcenter.workflow.grpc_modelcenter.engine.Engine)
+
+   Bases: :py:obj:`ansys.modelcenter.workflow.api.ireferenceproperty.IReferencePropertyBase`
+
+
+   
+   Defines the base class for reference properties that define common
+   methods.
+
+   .. note::
+       This base class should not be used directly. Instead, use the ``ReferenceProperty`` or
+       ``ReferenceArrayProperty`` class as required.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ReferencePropertyBase
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_value_type`
+            - Get the value type of the property.
+          * - :py:attr:`~get_metadata`
+            - Get the metadata for the property.
+          * - :py:attr:`~set_metadata`
+            - Set the metadata for the property.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_input`
+            - Flag indicating if the property is an input or output.
+          * - :py:attr:`~name`
+            - Name of the property.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.reference_property import ReferencePropertyBase
+
+Property detail
+---------------
+
+.. py:property:: is_input
+   :type: bool
+
+
+   
+   Flag indicating if the property is an input or output.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if this property is an input, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Name of the property.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the property.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_value_type() -> ansys.tools.variableinterop.VariableType
+
+   
+   Get the value type of the property.
+
+
+
+
+
+   :Returns:
+
+       :obj:`atvi.VariableType`
+           Type of the property.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_metadata() -> ansys.tools.variableinterop.CommonVariableMetadata
+
+   
+   Get the metadata for the property.
+
+
+
+
+
+   :Returns:
+
+       :obj:`atvi.CommonVariableMetadata`
+           Value of the metadata.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_metadata(new_value: ansys.tools.variableinterop.CommonVariableMetadata)
+
+   
+   Set the metadata for the property.
+
+   Note that this method only has an effect for reference properties where the datatype
+   is numeric, in which case the display format passed in is set.
+
+   :Parameters:
+
+       **new_value** : :obj:`atvi.CommonVariableMetadata`
+           New value for the metadata.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``icomponent.py`` module
+============================
+
+.. py:module:: ansys.modelcenter.workflow.api.icomponent
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: icomponent
+.. tab-set::
+
+
+
+    .. tab-item:: Interfaces
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.icomponent.IComponent`
+            - Represents a component in the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_interface"></span> IComponent</api/ansys/modelcenter/workflow/api/icomponent/IComponent>
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Defines the component.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

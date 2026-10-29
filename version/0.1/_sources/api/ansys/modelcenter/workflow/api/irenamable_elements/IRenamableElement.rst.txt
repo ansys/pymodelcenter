@@ -1,0 +1,107 @@
+
+
+
+
+
+
+:class:`IRenamableElement`
+==========================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.irenamable_elements.IRenamableElement
+
+   Bases: :py:obj:`ansys.engineeringworkflow.api.IElement`, :py:obj:`abc.ABC`
+
+
+   
+   Contains the interface for workflow elements that can be renamed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: IRenamableElement
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~rename`
+            - Rename the item.
+
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.irenamable_elements import IRenamableElement
+
+
+
+Method detail
+-------------
+
+.. py:method:: rename(new_name: str) -> None
+   :abstractmethod:
+
+
+   
+   Rename the item.
+
+
+   :Parameters:
+
+       **new_name** : :class:`python:str`
+           New short name for the item.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

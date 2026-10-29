@@ -1,0 +1,207 @@
+
+
+
+
+
+
+The ``api`` package
+=======================
+
+.. py:module:: ansys.modelcenter.workflow.api
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: api
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iassembly`
+            - Contains definitions for assemblies.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ibooleanarraydatapin`
+            - Defines the Boolean array datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ibooleandatapin`
+            - Defines the Boolean datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.icomponent`
+            - Defines the component.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.idatapin`
+            - Contains the common base class for all variables.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.idatapin_link`
+            - Contains the interface for working with variable links in the workflow.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.idatapinreferencebase`
+            - Defines the base class for reference datapins.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.idrivercomponent`
+            - Contains the interface for driver components.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iengine`
+            - Defines the engine and associated classes.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ifilearraydatapin`
+            - Defines the array file datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ifiledatapin`
+            - Defines the scalar file datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iformat`
+            - Defines the format.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.igroup`
+            - Defines a group of variables.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iintegerarraydatapin`
+            - Defines the integer array variable.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iintegerdatapin`
+            - Defines the integer variable.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.irealarraydatapin`
+            - Defines the array of doubles variables.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.irealdatapin`
+            - Defines the doubles variable.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ireferencearraydatapin`
+            - Defines the reference array datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ireferencedatapin`
+            - Defines the scalar reference datapin.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.ireferenceproperty`
+            - Contains definitions for reference properties and the owning datapins.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.irenamable_elements`
+            - Contains the interface for workflow elements that can be renamed.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.istringarraydatapin`
+            - Defines the string array variable.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.istringdatapin`
+            - Defines the string variable.
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.api.iworkflow`
+            - Defines the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> iassembly</api/ansys/modelcenter/workflow/api/iassembly/index>
+    <span class="nf nf-fa-file"></span> ibooleanarraydatapin</api/ansys/modelcenter/workflow/api/ibooleanarraydatapin/index>
+    <span class="nf nf-fa-file"></span> ibooleandatapin</api/ansys/modelcenter/workflow/api/ibooleandatapin/index>
+    <span class="nf nf-fa-file"></span> icomponent</api/ansys/modelcenter/workflow/api/icomponent/index>
+    <span class="nf nf-fa-file"></span> idatapin</api/ansys/modelcenter/workflow/api/idatapin/index>
+    <span class="nf nf-fa-file"></span> idatapin_link</api/ansys/modelcenter/workflow/api/idatapin_link/index>
+    <span class="nf nf-fa-file"></span> idatapinreferencebase</api/ansys/modelcenter/workflow/api/idatapinreferencebase/index>
+    <span class="nf nf-fa-file"></span> idrivercomponent</api/ansys/modelcenter/workflow/api/idrivercomponent/index>
+    <span class="nf nf-fa-file"></span> iengine</api/ansys/modelcenter/workflow/api/iengine/index>
+    <span class="nf nf-fa-file"></span> ifilearraydatapin</api/ansys/modelcenter/workflow/api/ifilearraydatapin/index>
+    <span class="nf nf-fa-file"></span> ifiledatapin</api/ansys/modelcenter/workflow/api/ifiledatapin/index>
+    <span class="nf nf-fa-file"></span> iformat</api/ansys/modelcenter/workflow/api/iformat/index>
+    <span class="nf nf-fa-file"></span> igroup</api/ansys/modelcenter/workflow/api/igroup/index>
+    <span class="nf nf-fa-file"></span> iintegerarraydatapin</api/ansys/modelcenter/workflow/api/iintegerarraydatapin/index>
+    <span class="nf nf-fa-file"></span> iintegerdatapin</api/ansys/modelcenter/workflow/api/iintegerdatapin/index>
+    <span class="nf nf-fa-file"></span> irealarraydatapin</api/ansys/modelcenter/workflow/api/irealarraydatapin/index>
+    <span class="nf nf-fa-file"></span> irealdatapin</api/ansys/modelcenter/workflow/api/irealdatapin/index>
+    <span class="nf nf-fa-file"></span> ireferencearraydatapin</api/ansys/modelcenter/workflow/api/ireferencearraydatapin/index>
+    <span class="nf nf-fa-file"></span> ireferencedatapin</api/ansys/modelcenter/workflow/api/ireferencedatapin/index>
+    <span class="nf nf-fa-file"></span> ireferenceproperty</api/ansys/modelcenter/workflow/api/ireferenceproperty/index>
+    <span class="nf nf-fa-file"></span> irenamable_elements</api/ansys/modelcenter/workflow/api/irenamable_elements/index>
+    <span class="nf nf-fa-file"></span> istringarraydatapin</api/ansys/modelcenter/workflow/api/istringarraydatapin/index>
+    <span class="nf nf-fa-file"></span> istringdatapin</api/ansys/modelcenter/workflow/api/istringdatapin/index>
+    <span class="nf nf-fa-file"></span> iworkflow</api/ansys/modelcenter/workflow/api/iworkflow/index>
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+Initializes the Ansys ModelCenter Workflow API package.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+

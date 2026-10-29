@@ -1,0 +1,222 @@
+
+
+
+
+
+
+:class:`IDatapinReferenceBase`
+==============================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.idatapinreferencebase.IDatapinReferenceBase
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   
+   Defines methods common to an individual reference to another datapin.
+
+   This could be a single reference datapin or an element in a
+   reference array datapin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: IDatapinReferenceBase
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_state`
+            - Get the state of the reference equation.
+          * - :py:attr:`~set_state`
+            - Set the state of the referenced datapin.
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~equation`
+            - Reference equation describing the values that the datapin
+          * - :py:attr:`~is_direct`
+            - Flag indicating if the datapin is a direct reference.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.idatapinreferencebase import IDatapinReferenceBase
+
+Property detail
+---------------
+
+.. py:property:: equation
+   :type: str
+
+   :abstractmethod:
+
+
+   
+   Reference equation describing the values that the datapin
+   references.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Reference equation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_direct
+   :type: bool
+
+   :abstractmethod:
+
+
+   
+   Flag indicating if the datapin is a direct reference.
+
+   Direct reference datapins refer to one specific datapin only. Their equations
+   are just the name of one other datapin. Only direct-reference datapins that refer
+   to a datapin that can be set directly can use the ``set_state()`` method to set the
+   referenced datapin.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the datapin is a direct reference, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_state(hid: Optional[str] = None) -> ansys.tools.variableinterop.VariableState
+   :abstractmethod:
+
+
+   
+   Get the state of the reference equation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_state(state: ansys.tools.variableinterop.VariableState) -> None
+   :abstractmethod:
+
+
+   
+   Set the state of the referenced datapin.
+
+   This method works only if this is a direct reference.
+   Specifically, it applies if the equation is just the name of a
+   single other datapin with no modification. If it is not a direct
+   reference, a ``ValueError`` is raised. A ``ValueError`` is also raised
+   if the referenced datapin is not allowed to be set directly in
+   the first place. For example, if it is an output or linked
+   input.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

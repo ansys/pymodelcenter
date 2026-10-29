@@ -1,0 +1,50 @@
+
+
+
+
+
+
+:class:`ValueTypeNotSupportedError`
+===================================
+
+
+.. py:exception:: ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert.ValueTypeNotSupportedError
+
+   Bases: :py:obj:`ValueError`
+
+
+   
+   Raised if an attempt is made to convert a value with a known but
+   unsupported type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.grpc_modelcenter.var_value_convert import ValueTypeNotSupportedError
+
+
+
+
+

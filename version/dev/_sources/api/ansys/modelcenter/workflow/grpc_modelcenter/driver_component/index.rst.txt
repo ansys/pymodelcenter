@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``driver_component.py`` module
+==================================
+
+.. py:module:: ansys.modelcenter.workflow.grpc_modelcenter.driver_component
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: driver_component
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.modelcenter.workflow.grpc_modelcenter.driver_component.DriverComponent`
+            - Defines a driver component in the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> DriverComponent</api/ansys/modelcenter/workflow/grpc_modelcenter/driver_component/DriverComponent>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Contains a gRPC-backed implementation of the IDriverComponent.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

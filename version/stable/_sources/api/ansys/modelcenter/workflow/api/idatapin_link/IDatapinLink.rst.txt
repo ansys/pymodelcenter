@@ -1,0 +1,275 @@
+
+
+
+
+
+
+:class:`IDatapinLink`
+=====================
+
+
+.. py:class:: ansys.modelcenter.workflow.api.idatapin_link.IDatapinLink
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   
+   Represents a link between two datapins in the workflow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+.. py:currentmodule:: IDatapinLink
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~break_link`
+            - Break the link.
+          * - :py:attr:`~suspend`
+            - Suspend the link.
+          * - :py:attr:`~resume`
+            - Resume the link if it is suspended.
+          * - :py:attr:`~is_suspended`
+            - Check whether the link is suspended.
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~lhs`
+            - Left-hand side of the link.
+          * - :py:attr:`~rhs`
+            - Right-hand side (source) of the link equation.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.modelcenter.workflow.api.idatapin_link import IDatapinLink
+
+Property detail
+---------------
+
+.. py:property:: lhs
+   :type: str
+
+   :abstractmethod:
+
+
+   
+   Left-hand side of the link.
+
+   The left-hand side receives a value from the right-hand side
+   (analogous to a variable assignment in most languages). This is
+   always a simple datapin name, except in cases where the link
+   target is a single array index, in which case it is the name of
+   the datapin plus an array index.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rhs
+   :type: str
+
+   :abstractmethod:
+
+
+   
+   Right-hand side (source) of the link equation.
+
+   This is a simple equation containing the names of the other
+   datapins that this link depends on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: break_link() -> None
+   :abstractmethod:
+
+
+   
+   Break the link.
+
+   Breaking the link removes the dependencies between the left-hand
+   and right-hand side of the link. The object becomes invalid and
+   cannot be used after calling this method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: suspend() -> None
+   :abstractmethod:
+
+
+   
+   Suspend the link.
+
+   Suspending the link causes the engine to behave as if it is not
+   present. This method is idempotent. It is safe to call this
+   method multiple times, even if the link is already suspended.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: resume() -> None
+   :abstractmethod:
+
+
+   
+   Resume the link if it is suspended.
+
+   This method is idempotent. it is safe to call this method
+   multiple times, even if the link is already suspended.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_suspended() -> bool
+   :abstractmethod:
+
+
+   
+   Check whether the link is suspended.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the link is suspended, and ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
