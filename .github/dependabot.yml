@@ -3,6 +3,8 @@ updates:
 - package-ecosystem: "pip" # See documentation for possible values
   cooldown:
     default-days: 10 # Fallback cooldown if no specific rule applies
+  cooldown:
+    default-days: 10 # Fallback cooldown if no specific rule applies
     include:
       - "*"  # Include all dependencies in cooldown
     exclude:
@@ -17,6 +19,8 @@ updates:
       prefix: "build"
 
 - package-ecosystem: "github-actions"
+  cooldown:
+    default-days: 10 # Fallback cooldown if no specific rule applies
   cooldown:
     default-days: 10 # Fallback cooldown if no specific rule applies
     include:
